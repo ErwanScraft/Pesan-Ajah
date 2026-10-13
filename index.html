@@ -1,32 +1,373 @@
+
 <!doctype html>
 <html lang="id">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#126b46"><meta name="description" content="Belanja dari warung lokal Banyukuning dengan Pesan Ajah.">
-  <title>Pesan Ajah — Marketplace Warung Banyukuning</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css"><script type="module" src="assets/js/main.js"></script>
-</head>
-<body>
-<header class="site-header"><div class="container header-inner">
-  <a class="brand" href="index.html"><span class="brand-mark">P<span>.</span></span><span class="brand-text"><strong>Pesan Ajah</strong><small>Belanja dekat, jadi mudah.</small></span></a>
-  <div class="location"><span class="pin">⌖</span><span><small>Wilayah layanan</small><strong>Banyukuning</strong></span></div>
-  <div class="header-actions"><a class="text-link dashboard-link" href="dashboard.html">Dashboard Warung</a><button class="button button-primary" id="cart-trigger" type="button">Keranjang <span class="count" id="cart-count">0</span></button></div>
-</div></header>
-<main>
-<section class="hero"><div class="container hero-layout"><div class="hero-copy">
-  <span class="eyebrow"><span class="dot"></span> Marketplace lokal Banyukuning</span><h1>Belanja kebutuhan harian, <span>tanpa ribet.</span></h1>
-  <p>Temukan kebutuhan dari warung sekitar. Pilih produk, masukkan keranjang, dan siapkan pesananmu dengan mudah.</p>
-  <form class="search-bar" id="search-form" role="search"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Cari produk atau nama warung..." aria-label="Cari produk atau warung"><button class="button button-primary" type="submit">Cari</button></form>
-  <div class="hero-points"><span>✓ Warung lokal</span><span>✓ Pesan praktis</span><span>✓ Antar sesuai kesepakatan</span></div>
-</div><div class="hero-card" aria-label="Ilustrasi belanja kebutuhan harian"><div class="hero-circle"></div><div class="mini-receipt"><span>DAFTAR BELANJA</span><i></i><i></i><i></i><b>✓ Siap dipesan</b></div><div class="grocery-bag"><span class="bag-handle"></span><strong>P.</strong><small>Belanja lokal</small></div><div class="floating-label"><span class="check-mark">✓</span><span><b>Warung sekitar</b><small>Dukung usaha lokal</small></span></div></div>
-</div></section>
-<section class="container section"><div class="section-heading"><div><span class="eyebrow eyebrow-plain">MULAI DARI SINI</span><h2>Kategori belanja</h2></div><p>Pilih kategori yang kamu butuhkan.</p></div>
-<div class="category-grid" id="category-list"><button class="category-card active" type="button" data-category="Semua" aria-pressed="true"><span>⌂</span>Semua</button><button class="category-card" type="button" data-category="Sembako" aria-pressed="false"><span>🌾</span>Sembako</button><button class="category-card" type="button" data-category="Minuman" aria-pressed="false"><span>🥤</span>Minuman</button><button class="category-card" type="button" data-category="Makanan" aria-pressed="false"><span>🍜</span>Makanan</button><button class="category-card" type="button" data-category="Kebutuhan Rumah" aria-pressed="false"><span>🧹</span>Kebutuhan rumah</button><button class="category-card" type="button" data-category="Lainnya" aria-pressed="false"><span>🛍️</span>Lainnya</button></div></section>
-<section class="container section products-section" id="products"><div class="section-heading"><div><span class="eyebrow eyebrow-plain">PILIHAN UNTUKMU</span><h2>Produk warung</h2><p class="muted">Contoh produk untuk tampilan awal Pesan Ajah.</p></div><span class="muted" id="product-total">0 produk</span></div><div class="product-grid" id="product-grid" aria-live="polite"></div><div class="empty-state" id="empty-state" hidden><h3>Produk tidak ditemukan</h3><p>Coba kata kunci atau kategori lain.</p><button class="button button-outline" id="reset-search" type="button">Lihat semua produk</button></div></section>
-<section class="container seller-promo"><div class="promo-icon">⌂</div><div class="promo-copy"><span class="eyebrow eyebrow-plain">UNTUK PEMILIK WARUNG</span><h2>Warungmu bisa ditemukan lebih banyak warga.</h2><p>Kelola produk, stok, status warung, dan pesanan dari dashboard sederhana.</p></div><a class="button button-primary" href="dashboard.html">Buka dashboard <span>→</span></a></section>
-</main>
-<footer class="site-footer"><div class="container footer-inner"><a class="brand" href="index.html"><span class="brand-mark">P<span>.</span></span><span class="brand-text"><strong>Pesan Ajah</strong><small>Belanja dekat, jadi mudah.</small></span></a><p>Marketplace warung lokal Banyukuning.</p><small>© <span id="current-year"></span> Pesan Ajah</small></div></footer>
-<div class="overlay" id="cart-overlay" hidden><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="panel-heading"><div><span class="eyebrow eyebrow-plain">PESANANMU</span><h2 id="cart-title">Keranjang belanja</h2></div><button class="icon-button" id="close-cart" type="button" aria-label="Tutup keranjang">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-empty" id="cart-empty"><span>🛒</span><strong>Keranjang masih kosong</strong><p>Tambahkan produk untuk mulai belanja.</p></div><div class="cart-footer" id="cart-footer" hidden><div class="total-row"><span>Total sementara</span><strong id="cart-total">Rp0</strong></div><p class="muted small">Biaya pengantaran belum termasuk. Checkout online aktif setelah backend tersedia.</p><button class="button button-primary button-full" id="checkout-button" type="button">Lanjutkan pesanan →</button></div></aside></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#126b46" />
+    <meta
+      name="description"
+      content="Belanja dari warung lokal Banyukuning dengan Pesan Ajah."
+    />
+
+    <title>Pesan Ajah — Marketplace Warung Banyukuning</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <script type="module" src="assets/js/main.js"></script>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">P<span>.</span></span>
+          <span class="brand-text">
+            <strong>Pesan Ajah</strong>
+            <small>Belanja dekat, jadi mudah.</small>
+          </span>
+        </a>
+
+        <div class="location">
+          <span class="pin" aria-hidden="true">⌖</span>
+          <span>
+            <small>Wilayah layanan</small>
+            <strong>Banyukuning</strong>
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <a class="text-link dashboard-link" href="dashboard.html">
+            Dashboard Warung
+          </a>
+
+          <button
+            class="button button-primary cart-trigger"
+            id="cart-trigger"
+            type="button"
+            aria-label="Buka keranjang belanja"
+            title="Keranjang belanja"
+          >
+            <svg
+              class="cart-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <circle cx="10" cy="20" r="1.2" fill="currentColor" />
+              <circle cx="18" cy="20" r="1.2" fill="currentColor" />
+            </svg>
+          
+            <span class="count" id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div class="container hero-layout">
+          <div class="hero-copy">
+            <span class="eyebrow">
+              <span class="dot"></span>
+              Marketplace lokal Banyukuning
+            </span>
+
+            <h1>
+              Belanja kebutuhan harian,
+              <span>tanpa ribet.</span>
+            </h1>
+
+            <p>
+              Temukan kebutuhan dari warung sekitar. Pilih produk,
+              masukkan keranjang, dan siapkan pesananmu dengan mudah.
+            </p>
+
+            <form class="search-bar" id="search-form" role="search">
+              <span aria-hidden="true">⌕</span>
+
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Cari produk atau nama warung..."
+                aria-label="Cari produk atau warung"
+              />
+
+              <button class="button button-primary" type="submit">
+                Cari
+              </button>
+            </form>
+
+            <div class="hero-points">
+              <span>✓ Warung lokal</span>
+              <span>✓ Pesan praktis</span>
+              <span>✓ Antar sesuai kesepakatan</span>
+            </div>
+          </div>
+
+          <div
+            class="hero-card"
+            aria-label="Ilustrasi belanja kebutuhan harian"
+          >
+            <div class="hero-circle"></div>
+
+            <div class="mini-receipt">
+              <span>DAFTAR BELANJA</span>
+              <i></i>
+              <i></i>
+              <i></i>
+              <b>✓ Siap dipesan</b>
+            </div>
+
+            <div class="grocery-bag">
+              <span class="bag-handle"></span>
+              <strong>P.</strong>
+              <small>Belanja lokal</small>
+            </div>
+
+            <div class="floating-label">
+              <span class="check-mark">✓</span>
+              <span>
+                <b>Warung sekitar</b>
+                <small>Dukung usaha lokal</small>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kategori -->
+      <section class="container section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow eyebrow-plain">MULAI DARI SINI</span>
+            <h2>Kategori belanja</h2>
+          </div>
+
+          <p>Pilih kategori yang kamu butuhkan.</p>
+        </div>
+
+        <div class="category-grid" id="category-list">
+          <button
+            class="category-card active"
+            type="button"
+            data-category="Semua"
+            aria-pressed="true"
+          >
+            <span>⌂</span>
+            Semua
+          </button>
+
+          <button
+            class="category-card"
+            type="button"
+            data-category="Sembako"
+            aria-pressed="false"
+          >
+            <span>🌾</span>
+            Sembako
+          </button>
+
+          <button
+            class="category-card"
+            type="button"
+            data-category="Minuman"
+            aria-pressed="false"
+          >
+            <span>🥤</span>
+            Minuman
+          </button>
+
+          <button
+            class="category-card"
+            type="button"
+            data-category="Makanan"
+            aria-pressed="false"
+          >
+            <span>🍜</span>
+            Makanan
+          </button>
+
+          <button
+            class="category-card"
+            type="button"
+            data-category="Kebutuhan Rumah"
+            aria-pressed="false"
+          >
+            <span>🧹</span>
+            Kebutuhan rumah
+          </button>
+
+          <button
+            class="category-card"
+            type="button"
+            data-category="Lainnya"
+            aria-pressed="false"
+          >
+            <span>🛍️</span>
+            Lainnya
+          </button>
+        </div>
+      </section>
+
+      <!-- Produk -->
+      <section
+        class="container section products-section"
+        id="products"
+      >
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow eyebrow-plain">PILIHAN UNTUKMU</span>
+            <h2>Produk warung</h2>
+            <p class="muted">
+              Contoh produk untuk tampilan awal Pesan Ajah.
+            </p>
+          </div>
+
+          <span class="muted" id="product-total">0 produk</span>
+        </div>
+
+        <div
+          class="product-grid"
+          id="product-grid"
+          aria-live="polite"
+        ></div>
+
+        <div class="empty-state" id="empty-state" hidden>
+          <h3>Produk tidak ditemukan</h3>
+          <p>Coba kata kunci atau kategori lain.</p>
+
+          <button
+            class="button button-outline"
+            id="reset-search"
+            type="button"
+          >
+            Lihat semua produk
+          </button>
+        </div>
+      </section>
+
+      <!-- Promosi untuk penjual -->
+      <section class="container seller-promo">
+        <div class="promo-icon" aria-hidden="true">⌂</div>
+
+        <div class="promo-copy">
+          <span class="eyebrow eyebrow-plain">
+            UNTUK PEMILIK WARUNG
+          </span>
+
+          <h2>Warungmu bisa ditemukan lebih banyak warga.</h2>
+
+          <p>
+            Kelola produk, stok, status warung, dan pesanan dari
+            dashboard sederhana.
+          </p>
+        </div>
+
+        <a class="button button-primary" href="dashboard.html">
+          Buka dashboard
+          <span aria-hidden="true">→</span>
+        </a>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">P<span>.</span></span>
+          <span class="brand-text">
+            <strong>Pesan Ajah</strong>
+            <small>Belanja dekat, jadi mudah.</small>
+          </span>
+        </a>
+
+        <p>Marketplace warung lokal Banyukuning.</p>
+
+        <small>
+          © <span id="current-year"></span> Pesan Ajah
+        </small>
+      </div>
+    </footer>
+
+    <!-- Keranjang belanja -->
+    <div class="overlay" id="cart-overlay" hidden>
+      <aside
+        class="cart-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+      >
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow eyebrow-plain">PESANANMU</span>
+            <h2 id="cart-title">Keranjang belanja</h2>
+          </div>
+
+          <button
+            class="icon-button"
+            id="close-cart"
+            type="button"
+            aria-label="Tutup keranjang"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="cart-items" id="cart-items"></div>
+
+        <div class="cart-empty" id="cart-empty">
+          <span aria-hidden="true">🛒</span>
+          <strong>Keranjang masih kosong</strong>
+          <p>Tambahkan produk untuk mulai belanja.</p>
+        </div>
+
+        <div class="cart-footer" id="cart-footer" hidden>
+          <div class="total-row">
+            <span>Total sementara</span>
+            <strong id="cart-total">Rp0</strong>
+          </div>
+
+          <p class="muted small">
+            Biaya pengantaran belum termasuk. Checkout online aktif
+            setelah backend tersedia.
+          </p>
+
+          <button
+            class="button button-primary button-full"
+            id="checkout-button"
+            type="button"
+          >
+            Lanjutkan pesanan →
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Notifikasi -->
+    <div
+      class="toast"
+      id="toast"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </body>
+</html>
