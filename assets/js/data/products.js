@@ -5,7 +5,7 @@
  * Backend PHP + MySQL akan menjadi sumber data utama
  * setelah integrasi database diterapkan.
  */
-export const products = [
+export const defaultProducts = [
   {
     id: 1,
     name: "Beras Premium",
@@ -139,3 +139,35 @@ export const products = [
     available: true,
   },
 ];
+
+const STORAGE_KEY = "pesan-ajah-products";
+
+function loadProducts() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved !== null) {
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.error("Gagal membaca data produk:", error);
+  }
+
+  return defaultProducts.map((product) => ({ ...product }));
+}
+
+export const products = loadProducts();
+
+export function saveProducts() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    return true;
+  } catch (error) {
+    console.error("Gagal menyimpan data produk:", error);
+    return false;
+  }
+}

@@ -563,3 +563,143 @@
   font-size: 11px;
   line-height: 1.7;
 }
+
+/* Product form */
+
+.product-form {
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
+  background: #fcfdfb;
+}
+
+.product-form-heading {
+  margin-bottom: 18px;
+}
+
+.product-form-heading h4 {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.product-form-heading p {
+  margin-bottom: 0;
+  font-size: 11px;
+}
+
+.product-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-field > span {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--green);
+  outline: 3px solid rgb(18 107 70 / 12%);
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 17px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.form-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+}
+
+.product-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.product-form-actions [hidden] {
+  display: none;
+}
+
+.manage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.danger-action {
+  border-color: #f0d4d1;
+  background: #fff7f6;
+  color: var(--danger);
+}
+
+.danger-action:hover {
+  border-color: var(--danger);
+  background: #ffefed;
+}
+
+.product-empty {
+  padding: 28px 22px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 680px) {
+  .product-form {
+    padding: 17px;
+  }
+
+  .product-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .manage-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px 17px;
+  }
+
+  .manage-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .availability-control {
+    margin-right: auto;
+  }
+}

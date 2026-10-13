@@ -18,6 +18,9 @@ export function createCatalog({
     const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
 
     return products.filter((product) => {
+      if (product.archived) {
+        return false;
+      }
       const matchesCategory =
         selectedCategory === "Semua" ||
         product.category === selectedCategory;
