@@ -119,7 +119,7 @@
             <div class="hero-points">
               <span>✓ Warung lokal</span>
               <span>✓ Pesan praktis</span>
-              <span>✓ Antar sesuai kesepakatan</span>
+              <span>✓ Antar atau ambil sendiri</span>
             </div>
           </div>
 
@@ -339,18 +339,64 @@
           <strong>Keranjang masih kosong</strong>
           <p>Tambahkan produk untuk mulai belanja.</p>
         </div>
-
+        
         <div class="cart-footer" id="cart-footer" hidden>
-          <div class="total-row">
-            <span>Total sementara</span>
-            <strong id="cart-total">Rp0</strong>
+          <fieldset class="fulfillment-options">
+            <legend>Metode pesanan</legend>
+        
+            <label class="fulfillment-option">
+              <input
+                type="radio"
+                name="fulfillment-method"
+                value="delivery"
+                checked
+              />
+        
+              <span class="fulfillment-copy">
+                <strong>Delivery</strong>
+                <small>Pesanan diantar ke alamatmu</small>
+              </span>
+        
+              <strong class="fulfillment-price">Rp1.000</strong>
+            </label>
+        
+            <label class="fulfillment-option">
+              <input
+                type="radio"
+                name="fulfillment-method"
+                value="pickup"
+              />
+        
+              <span class="fulfillment-copy">
+                <strong>Ambil sendiri</strong>
+                <small>Ambil pesanan langsung di warung</small>
+              </span>
+        
+              <strong class="fulfillment-price">Gratis</strong>
+            </label>
+          </fieldset>
+        
+          <div class="order-summary">
+            <div class="summary-row">
+              <span>Subtotal produk</span>
+              <strong id="cart-subtotal">Rp0</strong>
+            </div>
+        
+            <div class="summary-row">
+              <span>Ongkir</span>
+              <strong id="delivery-fee">Rp1.000</strong>
+            </div>
+        
+            <div class="total-row">
+              <span>Total pembayaran</span>
+              <strong id="cart-total">Rp0</strong>
+            </div>
           </div>
-
-          <p class="muted small">
-            Biaya pengantaran belum termasuk. Checkout online aktif
-            setelah backend tersedia.
+        
+          <p class="muted small" id="fulfillment-note">
+            Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran.
           </p>
-
+        
           <button
             class="button button-primary button-full"
             id="checkout-button"

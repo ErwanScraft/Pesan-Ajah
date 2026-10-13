@@ -6,11 +6,17 @@ import { showToast } from "./modules/toast.js";
 
 const $ = (selector) => document.querySelector(selector);
 
+const DELIVERY_FEE = 1000;
+
 const toast = $("#toast");
 const cartOverlay = $("#cart-overlay");
 const cartButton = $("#cart-trigger");
 const closeCartButton = $("#close-cart");
 const cartItems = $("#cart-items");
+
+const fulfillmentInputs = document.querySelectorAll(
+  'input[name="fulfillment-method"]',
+);
 
 const cart = createCart(products);
 
@@ -19,7 +25,7 @@ const cartView = {
   list: cartItems,
   empty: $("#cart-empty"),
   footer: $("#cart-footer"),
-  totalLabel: $("#cart-total"),
+  totalLabel: $("#cart-subtotal"),
 };
 
 const catalog = createCatalog({
@@ -33,8 +39,48 @@ const catalog = createCatalog({
   onAdd: addToCart,
 });
 
+function formatRupiah(amount) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function selectedFulfillment() {
+  return (
+    document.querySelector(
+      'input[name="fulfillment-method"]:checked',
+    )?.value ?? "delivery"
+  );
+}
+
+function getDeliveryFee() {
+  if (cart.quantity() === 0) {
+    return 0;
+  }
+
+  return selectedFulfillment() === "delivery"
+    ? DELIVERY_FEE
+    : 0;
+}
+
 function renderCart() {
   cart.render(cartView);
+
+  const deliveryFee = getDeliveryFee();
+  const subtotal = cart.total();
+
+  $("#delivery-fee").textContent =
+    formatRupiah(deliveryFee);
+
+  $("#cart-total").textContent =
+    formatRupiah(subtotal + deliveryFee);
+
+  $("#fulfillment-note").textContent =
+    deliveryFee > 0
+      ? "Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran."
+      : "Ambil sendiri di warung tanpa biaya pengantaran.";
 }
 
 function addToCart(productId) {
@@ -48,7 +94,10 @@ function addToCart(productId) {
   catalog.render();
   renderCart();
 
-  showToast(toast, `${product.name} ditambahkan ke keranjang.`);
+  showToast(
+    toast,
+    `${product.name} ditambahkan ke keranjang.`,
+  );
 }
 
 function openCart() {
@@ -56,6 +105,7 @@ function openCart() {
 
   cartOverlay.hidden = false;
   document.body.classList.add("no-scroll");
+
   closeCartButton.focus();
 }
 
@@ -64,6 +114,7 @@ function closeCart() {
 
   cartOverlay.hidden = true;
   document.body.classList.remove("no-scroll");
+
   cartButton.focus();
 }
 
@@ -71,6 +122,7 @@ $("#search-form").addEventListener("submit", (event) => {
   event.preventDefault();
 
   catalog.setQuery($("#search-input").value);
+
   $("#products").scrollIntoView({
     behavior: "smooth",
     block: "start",
@@ -84,6 +136,10 @@ $("#reset-search").addEventListener("click", () => {
 cartButton.addEventListener("click", openCart);
 closeCartButton.addEventListener("click", closeCart);
 
+fulfillmentInputs.forEach((input) => {
+  input.addEventListener("change", renderCart);
+});
+
 cartItems.addEventListener("click", (event) => {
   const addButton = event.target.closest("[data-add]");
   const removeButton = event.target.closest("[data-remove]");
@@ -95,6 +151,7 @@ cartItems.addEventListener("click", (event) => {
 
   if (removeButton) {
     cart.change(Number(removeButton.dataset.remove), -1);
+
     catalog.render();
     renderCart();
   }
@@ -118,13 +175,22 @@ $("#checkout-button").addEventListener("click", () => {
     return;
   }
 
+  const method = selectedFulfillment();
+
+  const message =
+    method === "delivery"
+      ? "Metode Delivery dipilih. Ongkir Rp1.000 per pengantaran."
+      : "Metode Ambil sendiri dipilih. Tidak ada biaya pengantaran.";
+
   showToast(
     toast,
-    "Checkout akan tersedia setelah backend PHP + MySQL terhubung.",
+    `${message} Checkout akan aktif setelah backend PHP + MySQL tersedia.`,
   );
 });
 
-$("#current-year").textContent = String(new Date().getFullYear());
+$("#current-year").textContent = String(
+  new Date().getFullYear(),
+);
 
 catalog.render();
 renderCart();
