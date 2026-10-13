@@ -1,35 +1,16 @@
-
 <!doctype html>
 <html lang="id">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#126b46" />
-    <meta
-      name="description"
-      content="Dashboard demo untuk mengelola produk, pesanan, dan status warung Pesan Ajah."
-    />
-
-    <title>Dashboard Warung — Pesan Ajah</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <title>Rincian Warung — Pesan Ajah</title>
     <link rel="stylesheet" href="assets/css/style.css" />
-
     <script type="module" src="assets/js/dashboard.js"></script>
   </head>
 
-  <body class="dashboard-page">
+  <body class="dashboard-page" data-page="overview">
     <div class="dashboard-shell">
-      <!-- Sidebar -->
       <aside class="sidebar" id="sidebar">
         <a class="brand sidebar-brand" href="index.html">
           <span class="brand-mark">P<span>.</span></span>
@@ -39,50 +20,33 @@
           </span>
         </a>
 
-        <div class="sidebar-label">MENU UTAMA</div>
+        <div class="sidebar-label">MENU WARUNG</div>
 
         <nav class="side-nav" aria-label="Navigasi dashboard">
-          <a class="side-link active" href="#overview">
-            <span aria-hidden="true">▦</span>
-            Ringkasan
+          <a class="side-link active" href="dashboard.html" aria-current="page">
+            <span aria-hidden="true">▦</span> Rincian
           </a>
-
-          <a class="side-link" href="#orders">
-            <span aria-hidden="true">▤</span>
-            Pesanan
-            <span class="nav-count" id="pending-count">2</span>
+          <a class="side-link" href="pesanan.html">
+            <span aria-hidden="true">▤</span> Pesanan
           </a>
-
-          <a class="side-link" href="#products">
-            <span aria-hidden="true">□</span>
-            Produk
+          <a class="side-link" href="produk.html">
+            <span aria-hidden="true">□</span> Produk
           </a>
-
-          <a class="side-link" href="#store-settings">
-            <span aria-hidden="true">⚙</span>
-            Pengaturan warung
+          <a class="side-link" href="pengaturan.html">
+            <span aria-hidden="true">⚙</span> Pengaturan
           </a>
         </nav>
 
         <div class="sidebar-bottom">
           <div class="seller-avatar">WS</div>
-
           <div>
             <strong id="sidebar-store-name">Warung Sederhana</strong>
             <small>Penjual demo</small>
           </div>
-
-          <a
-            href="index.html"
-            aria-label="Kembali ke marketplace"
-            title="Kembali ke marketplace"
-          >
-            ↗
-          </a>
+          <a href="index.html" aria-label="Kembali ke marketplace">↗</a>
         </div>
       </aside>
 
-      <!-- Konten utama dashboard -->
       <main class="dashboard-main">
         <header class="dashboard-topbar">
           <button
@@ -90,48 +54,38 @@
             id="mobile-menu"
             type="button"
             aria-label="Buka menu"
-          >
-            ☰
-          </button>
+            aria-expanded="false"
+          >☰</button>
 
           <div>
-            <span class="muted small">
-              Panel penjual / Banyukuning
-            </span>
-            <h1>Dashboard warung</h1>
+            <span class="muted small">Panel penjual</span>
+            <h1>Rincian</h1>
           </div>
 
           <a class="button button-outline" href="index.html">
-            ← Lihat marketplace
+            Lihat marketplace
           </a>
         </header>
 
-        <section class="dashboard-content" id="overview">
-          <!-- Sambutan -->
+        <section class="dashboard-content">
           <div class="welcome-row">
             <div>
-              <h2>Selamat datang, pemilik warung.</h2>
-              <p class="muted">
-                Berikut ringkasan aktivitas warungmu hari ini.
-              </p>
+              <h2>Ringkasan warung</h2>
+              <p class="muted">Pantau aktivitas warung dari satu tempat.</p>
             </div>
-
             <span class="demo-badge">
-              <span class="dot"></span>
-              Mode demo
+              <span class="dot"></span> Mode demo
             </span>
           </div>
 
-          <!-- Statistik -->
           <div class="stat-grid">
             <article class="stat-card">
               <div class="stat-top">
                 <span>Total pesanan</span>
                 <span class="stat-icon green" aria-hidden="true">▤</span>
               </div>
-
-              <strong id="stat-orders">12</strong>
-              <small class="stat-caption">Contoh data pesanan</small>
+              <strong id="stat-orders">0</strong>
+              <small class="stat-caption">Seluruh pesanan demo</small>
             </article>
 
             <article class="stat-card">
@@ -139,9 +93,8 @@
                 <span>Perlu diproses</span>
                 <span class="stat-icon amber" aria-hidden="true">◷</span>
               </div>
-
-              <strong id="stat-pending">2</strong>
-              <small class="stat-caption">Menunggu konfirmasi</small>
+              <strong id="stat-pending">0</strong>
+              <small class="stat-caption">Menunggu tindakan</small>
             </article>
 
             <article class="stat-card">
@@ -149,9 +102,8 @@
                 <span>Produk tersedia</span>
                 <span class="stat-icon blue" aria-hidden="true">□</span>
               </div>
-
-              <strong id="stat-products">6</strong>
-              <small class="stat-caption">Dari katalog demo</small>
+              <strong id="stat-products">0</strong>
+              <small class="stat-caption">Produk yang dapat dipesan</small>
             </article>
 
             <article class="stat-card">
@@ -159,269 +111,69 @@
                 <span>Status warung</span>
                 <span class="stat-icon green" aria-hidden="true">●</span>
               </div>
-
-              <strong class="status-value" id="store-status-label">
-                Buka
-              </strong>
-              <small class="stat-caption">
-                Diatur manual oleh penjual
-              </small>
+              <strong class="status-value" id="store-status-label">Buka</strong>
+              <small class="stat-caption">Status operasional</small>
             </article>
           </div>
 
-          <!-- Pengaturan status warung -->
-          <section class="dashboard-card store-control" id="store-settings">
-            <div>
-              <span class="eyebrow eyebrow-plain">OPERASIONAL</span>
-              <h3>Status warung</h3>
-              <p class="muted">
-                Tentukan apakah warung menerima pesanan baru.
-              </p>
-            </div>
-
-            <label class="switch-label" for="store-open-toggle">
-              <span id="store-toggle-text">Warung sedang buka</span>
-
-              <input
-                type="checkbox"
-                id="store-open-toggle"
-                checked
-              />
-
-              <span class="switch" aria-hidden="true"></span>
-            </label>
-          </section>
-          
-          <section class="dashboard-card" id="store-profile-settings">
+          <section class="dashboard-card">
             <div class="card-heading">
               <div>
-                <h3>Profil warung</h3>
-                <p class="muted">
-                  Atur informasi warung yang ditampilkan kepada pembeli.
-                </p>
+                <h3>Akses cepat</h3>
+                <p class="muted">Pilih bagian yang ingin dikelola.</p>
               </div>
             </div>
-          
-            <form class="store-settings-form" id="store-settings-form">
-              <div class="product-form-grid">
-                <label class="form-field">
-                  <span>Nama warung</span>
-                  <input name="name" maxlength="80" required />
-                </label>
-          
-                <label class="form-field">
-                  <span>Nama pemilik</span>
-                  <input name="owner" maxlength="80" required />
-                </label>
-          
-                <label class="form-field">
-                  <span>Nomor WhatsApp / telepon</span>
-                  <input name="phone" type="tel" maxlength="25" />
-                </label>
-          
-                <label class="form-field">
-                  <span>Alamat warung</span>
-                  <input name="address" maxlength="180" required />
-                </label>
-          
-                <label class="form-field store-description-field">
-                  <span>Deskripsi warung</span>
-                  <textarea
-                    name="description"
-                    maxlength="500"
-                    rows="3"
-                  ></textarea>
-                </label>
-              </div>
-          
-              <div class="product-form-actions">
-                <button class="button button-primary" type="submit">
-                  Simpan pengaturan
-                </button>
-          
-                <button
-                  class="button button-outline"
-                  id="reset-store-settings"
-                  type="button"
-                >
-                  Batalkan perubahan
-                </button>
-              </div>
-          
-              <p class="store-settings-help muted">
-                Data demo disimpan di browser ini. Sinkronisasi antarperangkat
-                membutuhkan backend.
-              </p>
-            </form>
-          </section>
 
-          <!-- Daftar pesanan -->
-          <section class="dashboard-card" id="orders">
-            <div class="card-heading">
-              <div>
-                <h3>Pesanan terbaru</h3>
-                <p class="muted">
-                  Contoh data untuk demonstrasi dashboard.
-                </p>
+            <div class="manage-row">
+              <div class="manage-product">
+                <span class="manage-emoji" aria-hidden="true">▤</span>
+                <span>
+                  <strong>Pesanan</strong>
+                  <small>Lihat dan perbarui status pesanan.</small>
+                </span>
               </div>
-
-              <span class="table-caption">3 pesanan</span>
+              <a class="button button-outline" href="pesanan.html">
+                Buka pesanan
+              </a>
             </div>
 
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th scope="col">ID pesanan</th>
-                    <th scope="col">Pembeli</th>
-                    <th scope="col">Ringkasan</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Aksi</th>
-                  </tr>
-                </thead>
+            <div class="manage-row">
+              <div class="manage-product">
+                <span class="manage-emoji" aria-hidden="true">□</span>
+                <span>
+                  <strong>Produk</strong>
+                  <small>Kelola katalog dan ketersediaan.</small>
+                </span>
+              </div>
+              <a class="button button-outline" href="produk.html">
+                Buka produk
+              </a>
+            </div>
 
-                <tbody id="orders-table"></tbody>
-              </table>
+            <div class="manage-row">
+              <div class="manage-product">
+                <span class="manage-emoji" aria-hidden="true">⚙</span>
+                <span>
+                  <strong>Pengaturan warung</strong>
+                  <small>Ubah profil dan status operasional.</small>
+                </span>
+              </div>
+              <a class="button button-outline" href="pengaturan.html">
+                Buka pengaturan
+              </a>
             </div>
           </section>
 
-          <!-- Pengelolaan produk -->
-          <section class="dashboard-card" id="products">
-            <div class="card-heading">
-              <div>
-                <h3>Kelola produk</h3>
-                <p class="muted">
-                  Tambahkan produk baru atau kelola produk warung.
-                </p>
-              </div>
-          
-              <span class="table-caption" id="product-count">
-                0 produk
-              </span>
-            </div>
-          
-            <form class="product-form" id="product-form">
-              <div class="product-form-heading">
-                <h4 id="product-form-title">Tambah produk baru</h4>
-                <p class="muted">
-                  Produk yang disimpan akan masuk ke katalog marketplace.
-                </p>
-              </div>
-          
-              <div class="product-form-grid">
-                <label class="form-field">
-                  <span>Nama produk</span>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Contoh: Beras Premium"
-                    maxlength="100"
-                    required
-                  />
-                </label>
-          
-                <label class="form-field">
-                  <span>Kategori</span>
-                  <select name="category" required>
-                    <option value="Sembako">Sembako</option>
-                    <option value="Makanan">Makanan</option>
-                    <option value="Minuman">Minuman</option>
-                    <option value="Kebutuhan Rumah">Kebutuhan Rumah</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </label>
-          
-                <label class="form-field">
-                  <span>Harga (Rp)</span>
-                  <input
-                    type="number"
-                    name="price"
-                    min="1"
-                    step="1"
-                    placeholder="15000"
-                    required
-                  />
-                </label>
-          
-                <label class="form-field">
-                  <span>Satuan</span>
-                  <input
-                    type="text"
-                    name="unit"
-                    maxlength="40"
-                    placeholder="1 kg, 1 bungkus"
-                    required
-                  />
-                </label>
-          
-                <label class="form-field">
-                  <span>Ikon produk (emoji)</span>
-                  <input
-                    type="text"
-                    name="emoji"
-                    maxlength="8"
-                    value="📦"
-                    required
-                  />
-                </label>
-          
-                <label class="form-field">
-                  <span>Label produk (opsional)</span>
-                  <input
-                    type="text"
-                    name="tag"
-                    maxlength="40"
-                    placeholder="Produk pilihan"
-                  />
-                </label>
-              </div>
-          
-              <label class="form-checkbox">
-                <input type="checkbox" name="available" checked />
-                <span>Produk tersedia dan dapat dipesan</span>
-              </label>
-          
-              <div class="product-form-actions">
-                <button class="button button-primary" type="submit">
-                  Simpan produk
-                </button>
-                <button
-                  class="button button-outline"
-                  id="cancel-product"
-                  type="button"
-                  hidden
-                >
-                  Batal
-                </button>
-              </div>
-            </form>
-          
-            <div
-              class="product-manage-list"
-              id="manage-products"
-              aria-live="polite"
-            ></div>
-          </section>
-
-          <!-- Informasi batasan demo -->
           <div class="dashboard-note">
             <strong>Catatan:</strong>
-            Dashboard ini menggunakan data demo di browser. Login
-            penjual, database, pembatasan akses tiap warung, dan
-            pemrosesan pesanan perlu backend PHP + MySQL sebelum
-            dipakai publik.
+            Dashboard ini masih menggunakan data demo di browser.
+            Pemrosesan pesanan nyata dan sinkronisasi antarperangkat
+            membutuhkan backend PHP dan MySQL.
           </div>
         </section>
       </main>
     </div>
 
-    <!-- Notifikasi -->
-    <div
-      class="toast"
-      id="toast"
-      role="status"
-      aria-live="polite"
-    ></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>

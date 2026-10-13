@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#126b46" />
+    <title>Pengaturan Warung — Pesan Ajah</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script type="module" src="assets/js/dashboard.js"></script>
+  </head>
+
+  <body class="dashboard-page" data-page="settings">
+    <div class="dashboard-shell">
+      <aside class="sidebar" id="sidebar">
+        <a class="brand sidebar-brand" href="index.html">
+          <span class="brand-mark">P<span>.</span></span>
+          <span class="brand-text">
+            <strong>Pesan Ajah</strong>
+            <small>Panel warung</small>
+          </span>
+        </a>
+
+        <div class="sidebar-label">MENU WARUNG</div>
+
+        <nav class="side-nav" aria-label="Navigasi dashboard">
+          <a class="side-link" href="dashboard.html">
+            <span aria-hidden="true">▦</span> Rincian
+          </a>
+          <a class="side-link" href="pesanan.html">
+            <span aria-hidden="true">▤</span> Pesanan
+          </a>
+          <a class="side-link" href="produk.html">
+            <span aria-hidden="true">□</span> Produk
+          </a>
+          <a
+            class="side-link active"
+            href="pengaturan.html"
+            aria-current="page"
+          >
+            <span aria-hidden="true">⚙</span> Pengaturan
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="seller-avatar">WS</div>
+          <div>
+            <strong id="sidebar-store-name">Warung Sederhana</strong>
+            <small>Penjual demo</small>
+          </div>
+          <a href="index.html" aria-label="Kembali ke marketplace">↗</a>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="dashboard-topbar">
+          <button
+            class="icon-button mobile-menu"
+            id="mobile-menu"
+            type="button"
+            aria-label="Buka menu"
+            aria-expanded="false"
+          >☰</button>
+
+          <div>
+            <span class="muted small">Panel penjual</span>
+            <h1>Pengaturan</h1>
+          </div>
+
+          <a class="button button-outline" href="index.html">
+            Lihat marketplace
+          </a>
+        </header>
+
+        <section class="dashboard-content">
+          <div class="welcome-row">
+            <div>
+              <h2>Pengaturan warung</h2>
+              <p class="muted">
+                Kelola informasi profil dan status operasional.
+              </p>
+            </div>
+            <span class="demo-badge">
+              <span class="dot"></span> Mode demo
+            </span>
+          </div>
+
+          <section class="dashboard-card store-control">
+            <div>
+              <span class="eyebrow eyebrow-plain">OPERASIONAL</span>
+              <h3>Status warung</h3>
+              <p class="muted">
+                Atur apakah warung menerima pesanan baru.
+              </p>
+            </div>
+
+            <label class="switch-label" for="store-open-toggle">
+              <span id="store-toggle-text">Warung sedang buka</span>
+              <input
+                type="checkbox"
+                id="store-open-toggle"
+                checked
+              />
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+
+            <p class="muted" id="store-status-feedback" role="status"></p>
+          </section>
+
+          <section class="dashboard-card">
+            <div class="card-heading">
+              <div>
+                <h3>Profil warung</h3>
+                <p class="muted">
+                  Informasi ini digunakan untuk menampilkan identitas warung.
+                </p>
+              </div>
+            </div>
+
+            <form class="store-settings-form" id="store-settings-form">
+              <div class="product-form-grid">
+                <label class="form-field">
+                  <span>Nama warung</span>
+                  <input
+                    name="name"
+                    maxlength="80"
+                    autocomplete="organization"
+                    required
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Nama pemilik</span>
+                  <input
+                    name="owner"
+                    maxlength="80"
+                    autocomplete="name"
+                    required
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Nomor WhatsApp / telepon</span>
+                  <input
+                    name="phone"
+                    type="tel"
+                    maxlength="25"
+                    autocomplete="tel"
+                  />
+                </label>
+
+                <label class="form-field">
+                  <span>Alamat warung</span>
+                  <input
+                    name="address"
+                    maxlength="180"
+                    autocomplete="street-address"
+                    required
+                  />
+                </label>
+
+                <label class="form-field store-description-field">
+                  <span>Deskripsi warung</span>
+                  <textarea
+                    name="description"
+                    maxlength="500"
+                    rows="4"
+                    placeholder="Ceritakan tentang warung Anda"
+                  ></textarea>
+                </label>
+              </div>
+
+              <div class="product-form-actions">
+                <button class="button button-primary" type="submit">
+                  Simpan pengaturan
+                </button>
+                <button
+                  class="button button-outline"
+                  id="reset-store-settings"
+                  type="button"
+                >
+                  Batalkan perubahan
+                </button>
+              </div>
+
+              <p
+                class="store-settings-help muted"
+                id="store-settings-feedback"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </form>
+          </section>
+
+          <div class="dashboard-note">
+            <strong>Catatan:</strong>
+            Pengaturan disimpan di browser ini. Backend diperlukan agar
+            profil warung konsisten bagi semua pembeli dan perangkat.
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
