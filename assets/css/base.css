@@ -1,0 +1,134 @@
+/* =========================================================
+   PESAN AJAH
+   Marketplace warung lokal Banyukuning
+   ========================================================= */
+
+/* 1. Design tokens */
+
+:root {
+  color-scheme: light;
+  --green: #126b46;
+  --green-dark: #0c5336;
+  --green-light: #e9f5ee;
+  --cream: #fbfcf8;
+  --white: #fff;
+  --text: #202820;
+  --muted: #727a72;
+  --border: #e6eae3;
+  --surface: #f3f6f0;
+  --danger: #c93e43;
+  --amber: #946200;
+  --blue: #2456a6;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 2px 8px rgb(22 45 29 / 5%);
+  --shadow-md: 0 8px 24px rgb(22 45 29 / 8%);
+  --container-width: 1120px;
+  --transition: 180ms ease;
+}
+
+/* 2. Reset and base */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--cream);
+  color: var(--text);
+  font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text);
+  line-height: 1.25;
+}
+
+p {
+  color: var(--muted);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 35%);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.container {
+  width: min(var(--container-width), calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 12px;
+}
