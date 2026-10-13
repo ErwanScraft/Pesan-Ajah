@@ -1,6 +1,10 @@
 import { products, saveProducts } from "./data/products.js";
 import { formatRupiah } from "./modules/format.js";
 import { showToast } from "./modules/toast.js";
+import {
+  getStoreSettings,
+  saveStoreSettings,
+} from "./data/store.js";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -8,6 +12,9 @@ const toast = $("#toast");
 const sidebar = $("#sidebar");
 const productForm = $("#product-form");
 const productList = $("#manage-products");
+const storeSettingsForm = $("#store-settings-form");
+const resetStoreSettingsButton = $("#reset-store-settings");
+const storeSettingsFeedback = $("#store-settings-feedback");
 
 const orders = [
   {
@@ -401,7 +408,7 @@ productForm.addEventListener("submit", (event) => {
     price,
     emoji,
     tag,
-    store: "Warung Sederhana",
+    store: getStoreSettings().name,
     available,
   };
 
@@ -446,28 +453,132 @@ productList.addEventListener("change", (event) => {
   );
 });
 
-/* Status warung */
 
-function updateStoreStatus(isOpen) {
-  storeIsOpen = isOpen;
+/* Pengaturan profil warung */
 
-  $("#store-status-label").textContent = isOpen ? "Buka" : "Tutup";
-  $("#store-status-label").style.color = isOpen
-    ? "var(--green)"
-    : "var(--danger)";
+function fillStoreSettingsForm() {
+  if (!storeSettingsForm) return;
 
-  $("#store-toggle-text").textContent = isOpen
-    ? "Warung sedang buka"
-    : "Warung sedang tutup";
+  const settings = getStoreSettings();
+
+  storeSettingsForm.elements.name.value = settings.name;
+  storeSettingsForm.elements.owner.value = settings.owner;
+  storeSettingsForm.elements.phone.value = settings.phone;
+  storeSettingsForm.elements.address.value = settings.address;
+  storeSettingsForm.elements.description.value = settings.description;
+
+  const storeName = $("#sidebar-store-name");
+
+  if (storeName) {
+    storeName.textContent = settings.name;
+  }
 }
 
-$("#store-open-toggle").addEventListener("change", (event) => {
-  updateStoreStatus(event.target.checked);
+function handleStoreSettingsSubmit(event) {
+  event.preventDefault();
 
-  notify(
-    `Warung ditandai ${storeIsOpen ? "buka" : "tutup"} (mode demo).`,
+  const formData = new FormData(storeSettingsForm);
+  const currentSettings = getStoreSettings();
+
+  const settings = {
+    ...currentSettings,
+    name: String(formData.get("name") || "").trim(),
+    owner: String(formData.get("owner") || "").trim(),
+    phone: String(formData.get("phone") || "").trim(),
+    address: String(formData.get("address") || "").trim(),
+    description: String(formData.get("description") || "").trim(),
+  };
+
+  if (!settings.name || !settings.owner || !settings.address) {
+    notify("Nama warung, pemilik, dan alamat wajib diisi.");
+    return;
+  }
+
+  if (!saveStoreSettings(settings)) {
+    storeSettingsFeedback.textContent =
+      "Pengaturan gagal disimpan. Periksa penyimpanan browser.";
+
+    notify("Pengaturan warung gagal disimpan.");
+    return;
+  }
+
+  fillStoreSettingsForm();
+  renderManagedProducts();
+
+  storeSettingsFeedback.textContent = "Pengaturan berhasil disimpan.";
+  notify("Pengaturan warung berhasil disimpan.");
+}
+
+function cancelStoreSettingsChanges() {
+  fillStoreSettingsForm();
+
+  storeSettingsFeedback.textContent =
+    "Perubahan yang belum disimpan telah dibatalkan.";
+}
+
+if (storeSettingsForm) {
+  storeSettingsForm.addEventListener(
+    "submit",
+    handleStoreSettingsSubmit,
   );
-});
+}
+
+if (resetStoreSettingsButton) {
+  resetStoreSettingsButton.addEventListener(
+    "click",
+    cancelStoreSettingsChanges,
+  );
+}
+
+
+/* Status warung */
+
+
+function updateStoreStatus(isOpen, persist = true) {
+  storeIsOpen = isOpen;
+
+  const statusLabel = $("#store-status-label");
+  const toggleText = $("#store-toggle-text");
+
+  if (statusLabel) {
+    statusLabel.textContent = isOpen ? "Buka" : "Tutup";
+    statusLabel.style.color = isOpen
+      ? "var(--green)"
+      : "var(--danger)";
+  }
+
+  if (toggleText) {
+    toggleText.textContent = isOpen
+      ? "Warung sedang buka"
+      : "Warung sedang tutup";
+  }
+
+  if (persist) {
+    const settings = getStoreSettings();
+
+    if (!saveStoreSettings({ ...settings, isOpen })) {
+      notify("Status warung gagal disimpan.");
+    }
+  }
+
+  const toggle = $("#store-open-toggle");
+
+  if (toggle && toggle.checked !== isOpen) {
+    toggle.checked = isOpen;
+  }
+}
+
+const storeOpenToggle = $("#store-open-toggle");
+
+if (storeOpenToggle) {
+  storeOpenToggle.addEventListener("change", (event) => {
+    updateStoreStatus(event.target.checked);
+
+    notify(
+      `Warung ditandai ${storeIsOpen ? "buka" : "tutup"}.`,
+    );
+  });
+}
 
 /* Navigasi dashboard */
 
@@ -493,6 +604,14 @@ document.addEventListener("keydown", (event) => {
 
 /* Inisialisasi */
 
-updateStoreStatus($("#store-open-toggle").checked);
+const initialStoreSettings = getStoreSettings();
+
+fillStoreSettingsForm();
+
+updateStoreStatus(
+  initialStoreSettings.isOpen,
+  false,
+);
+
 renderOrders();
 renderManagedProducts();

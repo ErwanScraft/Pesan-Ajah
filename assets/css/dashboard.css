@@ -703,3 +703,72 @@
     margin-right: auto;
   }
 }
+
+
+/* Pengaturan profil warung */
+
+.store-settings-form {
+  padding: 22px;
+  background: #fcfdfb;
+}
+
+.store-settings-form .product-form-grid {
+  gap: 18px;
+}
+
+.store-settings-form .form-field textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.store-settings-form .form-field textarea:focus {
+  border-color: var(--green);
+  outline: 3px solid rgb(18 107 70 / 12%);
+}
+
+.store-description-field {
+  grid-column: 1 / -1;
+}
+
+.store-settings-help {
+  margin: 14px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.store-settings-form .product-form-actions {
+  align-items: center;
+}
+
+@media (max-width: 680px) {
+  .store-settings-form {
+    padding: 17px;
+  }
+
+  .store-settings-form .product-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .store-description-field {
+    grid-column: auto;
+  }
+
+  .store-settings-form .product-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .store-settings-form .product-form-actions .button {
+    width: 100%;
+  }
+}
+

@@ -68,7 +68,7 @@
           <div class="seller-avatar">WS</div>
 
           <div>
-            <strong>Warung Sederhana</strong>
+            <strong id="sidebar-store-name">Warung Sederhana</strong>
             <small>Penjual demo</small>
           </div>
 
@@ -190,6 +190,69 @@
 
               <span class="switch" aria-hidden="true"></span>
             </label>
+          </section>
+          
+          <section class="dashboard-card" id="store-profile-settings">
+            <div class="card-heading">
+              <div>
+                <h3>Profil warung</h3>
+                <p class="muted">
+                  Atur informasi warung yang ditampilkan kepada pembeli.
+                </p>
+              </div>
+            </div>
+          
+            <form class="store-settings-form" id="store-settings-form">
+              <div class="product-form-grid">
+                <label class="form-field">
+                  <span>Nama warung</span>
+                  <input name="name" maxlength="80" required />
+                </label>
+          
+                <label class="form-field">
+                  <span>Nama pemilik</span>
+                  <input name="owner" maxlength="80" required />
+                </label>
+          
+                <label class="form-field">
+                  <span>Nomor WhatsApp / telepon</span>
+                  <input name="phone" type="tel" maxlength="25" />
+                </label>
+          
+                <label class="form-field">
+                  <span>Alamat warung</span>
+                  <input name="address" maxlength="180" required />
+                </label>
+          
+                <label class="form-field store-description-field">
+                  <span>Deskripsi warung</span>
+                  <textarea
+                    name="description"
+                    maxlength="500"
+                    rows="3"
+                  ></textarea>
+                </label>
+              </div>
+          
+              <div class="product-form-actions">
+                <button class="button button-primary" type="submit">
+                  Simpan pengaturan
+                </button>
+          
+                <button
+                  class="button button-outline"
+                  id="reset-store-settings"
+                  type="button"
+                >
+                  Batalkan perubahan
+                </button>
+              </div>
+          
+              <p class="store-settings-help muted">
+                Data demo disimpan di browser ini. Sinkronisasi antarperangkat
+                membutuhkan backend.
+              </p>
+            </form>
           </section>
 
           <!-- Daftar pesanan -->

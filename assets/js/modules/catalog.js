@@ -1,5 +1,5 @@
-
 import { formatRupiah } from "./format.js";
+import { getStoreSettings } from "../data/store.js";
 
 export function createCatalog({
   products,
@@ -25,10 +25,13 @@ export function createCatalog({
         selectedCategory === "Semua" ||
         product.category === selectedCategory;
 
+      const storeSettings = getStoreSettings();
+      
       const searchableText = [
         product.name,
         product.category,
         product.store,
+        storeSettings.name,
       ]
         .join(" ")
         .toLocaleLowerCase("id-ID");
@@ -62,7 +65,8 @@ export function createCatalog({
 
     const store = document.createElement("div");
     store.className = "product-store";
-    store.textContent = product.store;
+    store.textContent =
+  getStoreSettings().name || product.store;
 
     const name = document.createElement("h3");
     name.className = "product-name";
