@@ -3,6 +3,8 @@ import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
 import { showToast } from "./modules/toast.js";
+import { formatRupiah } from "./modules/format.js";
+
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -38,14 +40,6 @@ const catalog = createCatalog({
   cart,
   onAdd: addToCart,
 });
-
-function formatRupiah(amount) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 function selectedFulfillment() {
   return (

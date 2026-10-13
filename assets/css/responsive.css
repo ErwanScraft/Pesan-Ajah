@@ -1724,3 +1724,159 @@ body {
   }
 }
 
+
+/* Final responsive polish */
+
+.container {
+  width: min(var(--container-width), calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.product-grid,
+.category-grid,
+.stat-grid {
+  min-width: 0;
+}
+
+.product-grid > *,
+.category-grid > *,
+.stat-grid > * {
+  min-width: 0;
+}
+
+img,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+@media (max-width: 1000px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+
+  .header-inner {
+    min-height: 64px;
+    gap: 10px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .hero-layout {
+    gap: 20px;
+    padding: 24px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .product-image {
+    min-height: 120px;
+  }
+
+  .product-emoji {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    font-size: 34px;
+  }
+
+  .product-info {
+    padding: 11px;
+  }
+
+  .product-name {
+    font-size: 13px;
+  }
+
+  .product-price {
+    font-size: 12px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-content {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .dashboard-topbar {
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+
+  .product-grid {
+    gap: 8px;
+  }
+
+  .product-image {
+    min-height: 100px;
+  }
+
+  .product-info {
+    padding: 9px;
+  }
+
+  .product-bottom {
+    gap: 5px;
+  }
+
+  .product-price {
+    font-size: 11px;
+  }
+
+  .add-button {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-content {
+    padding: 12px;
+  }
+}

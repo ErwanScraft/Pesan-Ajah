@@ -273,3 +273,122 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+
+/* Product card polish */
+
+.product-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-color: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbdccf;
+  box-shadow: var(--shadow-md);
+}
+
+.product-image {
+  position: relative;
+  display: grid;
+  min-height: 148px;
+  place-items: center;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f4f7f1, #eaf1e7);
+}
+
+.product-emoji {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 75%);
+  font-size: 42px;
+  transition: transform var(--transition);
+}
+
+.product-card:hover .product-emoji {
+  transform: scale(1.04);
+}
+
+.product-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+}
+
+.product-store {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-name {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.product-unit {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.product-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.product-price {
+  color: var(--green-dark);
+  font-size: 14px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.add-button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: var(--green);
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  transition:
+    background var(--transition),
+    transform var(--transition);
+}
+
+.add-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--green-dark);
+}
+
+.add-button:disabled {
+  background: var(--surface);
+  color: var(--muted);
+}

@@ -16,27 +16,31 @@ export function createCatalog({
 
   function filteredProducts() {
     const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
-
+    const storeSettings = getStoreSettings();
+    const storeName = storeSettings.name || "";
+  
     return products.filter((product) => {
       if (product.archived) {
         return false;
       }
+  
       const matchesCategory =
         selectedCategory === "Semua" ||
         product.category === selectedCategory;
-
-      const storeSettings = getStoreSettings();
-      
+  
       const searchableText = [
         product.name,
         product.category,
         product.store,
-        storeSettings.name,
+        storeName,
       ]
         .join(" ")
         .toLocaleLowerCase("id-ID");
-
-      return matchesCategory && searchableText.includes(normalizedQuery);
+  
+      return (
+        matchesCategory &&
+        searchableText.includes(normalizedQuery)
+      );
     });
   }
 
@@ -66,7 +70,7 @@ export function createCatalog({
     const store = document.createElement("div");
     store.className = "product-store";
     store.textContent =
-  getStoreSettings().name || product.store;
+      getStoreSettings().name || product.store;
 
     const name = document.createElement("h3");
     name.className = "product-name";

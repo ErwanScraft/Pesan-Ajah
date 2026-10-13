@@ -5,29 +5,43 @@
 
 /* 1. Design tokens */
 
+
 :root {
   color-scheme: light;
-  --green: #126b46;
-  --green-dark: #0c5336;
-  --green-light: #e9f5ee;
-  --cream: #fbfcf8;
-  --white: #fff;
+
+  /* Brand */
+  --green: #176b45;
+  --green-dark: #105538;
+  --green-light: #eaf4ed;
+
+  /* Surfaces */
+  --cream: #f8faf7;
+  --white: #ffffff;
+  --surface: #f1f5f1;
+  --border: #e3e9e2;
+
+  /* Typography */
   --text: #202820;
-  --muted: #727a72;
-  --border: #e6eae3;
-  --surface: #f3f6f0;
+  --muted: #707970;
   --danger: #c93e43;
   --amber: #946200;
   --blue: #2456a6;
+
+  /* Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-  --shadow-sm: 0 2px 8px rgb(22 45 29 / 5%);
-  --shadow-md: 0 8px 24px rgb(22 45 29 / 8%);
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* Elevation */
+  --shadow-sm: 0 2px 6px rgb(22 45 29 / 4%);
+  --shadow-md: 0 8px 24px rgb(22 45 29 / 7%);
+
+  /* Layout */
   --container-width: 1120px;
   --transition: 180ms ease;
 }
+
 
 /* 2. Reset and base */
 
@@ -131,4 +145,30 @@ p {
 
 .small {
   font-size: 12px;
+}
+
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid rgb(23 107 69 / 24%);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #dceee1;
+  color: var(--green-dark);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
