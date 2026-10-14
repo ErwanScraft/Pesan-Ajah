@@ -1,0 +1,24 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Tolak akses langsung ke direktori internal.
+RewriteRule ^(?:app|config|database|scripts|routes)/ - [F,L,NC]
+
+# Lindungi file konfigurasi umum.
+<FilesMatch "^(?:\.env|composer\.(?:json|lock))$">
+    Require all denied
+</FilesMatch>
+
+# Jangan mengizinkan akses ke file database SQL.
+<FilesMatch "\.(?:sql|sqlite|db)$">
+    Require all denied
+</FilesMatch>
+
+# File dan direktori yang sudah ada tetap dilayani secara normal.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# URL lainnya ditangani router PHP.
+RewriteRule ^ index.php [QSA,L]

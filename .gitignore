@@ -1,0 +1,31 @@
+# Environment configuration
+.env
+.env.*
+!.env.example
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Local database backups
+*.sql.backup
+*.dump
+
+# Uploaded user files
+storage/uploads/
