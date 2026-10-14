@@ -261,6 +261,91 @@ function require_method(string ...$methods): void
 
 /*
 |--------------------------------------------------------------------------
+| Authentication compatibility helpers
+|--------------------------------------------------------------------------
+*/
+
+function is_logged_in(): bool
+{
+    return is_authenticated();
+}
+
+function current_user(): ?array
+{
+    return auth_user();
+}
+
+function request_is_post(): bool
+{
+    return request_method() === 'POST';
+}
+
+/**
+ * Memastikan pengguna sudah login dan memiliki role yang sesuai.
+ */
+function require_admin(): array
+{
+    $user = auth_user();
+
+    if ($user === null) {
+        redirect('admin/login.php');
+    }
+
+    if (($user['role'] ?? null) !== 'admin') {
+        http_response_code(403);
+
+        exit('Anda tidak memiliki izin mengakses halaman ini.');
+    }
+
+    return $user;
+}
+
+/**
+ * Memastikan pengguna memiliki akses sebagai pemilik warung.
+ */
+function require_warung(): array
+{
+    $user = auth_user();
+
+    if ($user === null) {
+        redirect('warung/login.php');
+    }
+
+    if (($user['role'] ?? null) !== 'warung') {
+        http_response_code(403);
+
+        exit('Anda tidak memiliki izin mengakses halaman ini.');
+    }
+
+    return $user;
+}
+
+/**
+ * Menyimpan atau membaca notifikasi session.
+ *
+ * flash('success', 'Data berhasil disimpan.');
+ * flash('success');
+ */
+function flash(string $key, ?string $message = null): ?string
+{
+    if (!isset($_SESSION['_flash'])) {
+        $_SESSION['_flash'] = [];
+    }
+
+    if ($message !== null) {
+        $_SESSION['_flash'][$key] = $message;
+
+        return null;
+    }
+
+    $value = $_SESSION['_flash'][$key] ?? null;
+
+    unset($_SESSION['_flash'][$key]);
+
+    return is_string($value) ? $value : null;
+}
+/*
+|--------------------------------------------------------------------------
 | CSRF
 |--------------------------------------------------------------------------
 */
@@ -288,7 +373,10 @@ function verify_csrf(): void
 {
     require_method('POST');
 
-    $submitted = $_POST['_token'] ?? '';
+    $submitted = $_POST['_token']
+        ?? $_POST['csrf_token']
+        ?? '';
+
     $stored = $_SESSION['_csrf_token'] ?? '';
 
     if (
@@ -299,7 +387,10 @@ function verify_csrf(): void
     ) {
         http_response_code(419);
 
-        exit('Sesi formulir tidak valid. Silakan muat ulang halaman.');
+        exit(
+            'Sesi formulir tidak valid. '
+            . 'Silakan muat ulang halaman.'
+        );
     }
 }
 
@@ -475,3 +566,11 @@ function is_valid_store_slug(string $slug): bool
 
     return !is_reserved_slug($slug);
 }
+
+/*
+|--------------------------------------------------------------------------
+| Database bootstrap
+|--------------------------------------------------------------------------
+*/
+
+require_once CONFIG_PATH . '/database.php';

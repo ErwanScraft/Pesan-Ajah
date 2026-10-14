@@ -7,8 +7,30 @@ require_once dirname(__DIR__) . '/app/bootstrap.php';
 if (is_logged_in()) {
     $user = current_user();
 
-    if (($user['role'] ?? '') === 'warung') {
-        redirect('/warung/dashboard.html');
+    if (
+        $user
+        && $user['role'] === 'warung'
+        && (bool) $user['is_active']
+        && password_verify($password, $user['password_hash'])
+    ) {
+        $storeStmt = database()->prepare(
+            'SELECT id, is_active
+             FROM stores
+             WHERE user_id = :user_id
+             LIMIT 1'
+        );
+    
+        $storeStmt->execute([
+            'user_id' => (int) $user['id'],
+        ]);
+    
+        $store = $storeStmt->fetch();
+    
+        if ($store && (bool) $store['is_active']) {
+            login_user($user);
+    
+            redirect('/warung/dashboard.html');
+        }
     }
 
     if (($user['role'] ?? '') === 'admin') {
