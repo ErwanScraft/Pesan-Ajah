@@ -9,57 +9,83 @@ $path = parse_url(
     PHP_URL_PATH
 );
 
-$path = is_string($path) ? trim($path, '/') : '';
+$path = is_string($path)
+    ? trim($path, '/')
+    : '';
+
+/*
+|--------------------------------------------------------------------------
+| Halaman utama
+|--------------------------------------------------------------------------
+|
+| Jangan melakukan redirect ke URL yang sama.
+| index.html menjadi halaman utama aplikasi.
+|
+*/
 
 if ($path === '') {
-    redirect('/');
+    $homepage = APP_ROOT . '/index.html';
+
+    if (is_file($homepage) && is_readable($homepage)) {
+        readfile($homepage);
+        exit;
+    }
+
+    http_response_code(404);
+    exit('Halaman beranda tidak ditemukan.');
 }
 
+/*
+|--------------------------------------------------------------------------
+| Validasi path
+|--------------------------------------------------------------------------
+*/
+
 if (
-    str_contains($path, '/')
-    || str_contains($path, '\\')
+    str_contains($path, '\\')
     || str_contains($path, "\0")
 ) {
     http_response_code(404);
-
     exit('Halaman tidak ditemukan.');
 }
 
-$slug = strtolower($path);
+/*
+|--------------------------------------------------------------------------
+| Routing halaman warung
+|--------------------------------------------------------------------------
+|
+| URL utama:
+| /warung/ErwanScraft
+|
+| URL lama tetap didukung:
+| /erwanscraft
+|
+*/
 
-if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+$segments = explode('/', $path);
+
+if (
+    count($segments) === 2
+    && strtolower($segments[0]) === 'warung'
+) {
+    $slug = strtolower($segments[1]);
+} elseif (count($segments) === 1) {
+    // Kompatibilitas dengan URL slug lama.
+    $slug = strtolower($segments[0]);
+} else {
     http_response_code(404);
-
     exit('Halaman tidak ditemukan.');
 }
 
-$stmt = database()->prepare(
-    'SELECT
-        id,
-        name,
-        slug,
-        owner,
-        phone,
-        address,
-        description,
-        is_open,
-        free_delivery
-     FROM stores
-     WHERE slug = :slug
-       AND is_active = 1
-     LIMIT 1'
-);
+/*
+|--------------------------------------------------------------------------
+| Validasi slug warung
+|--------------------------------------------------------------------------
+*/
 
-$stmt->execute([
-    'slug' => $slug,
-]);
-
-$store = $stmt->fetch();
-
-if (!$store) {
+if (!is_valid_store_slug($slug)) {
     http_response_code(404);
-
-    exit('Warung tidak ditemukan atau sedang tidak tersedia.');
+    exit('Warung tidak ditemukan.');
 }
 
 $productStmt = database()->prepare(
