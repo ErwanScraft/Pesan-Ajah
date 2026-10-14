@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
+require_once dirname(__DIR__) . '/app/admin_auth.php';
 
 if (is_logged_in()) {
     $user = current_user();
@@ -21,37 +22,36 @@ $error = null;
 if (request_is_post()) {
     verify_csrf();
 
-    $username = trim((string) ($_POST['username'] ?? ''));
+    $username = trim(
+        (string) ($_POST['username'] ?? '')
+    );
+
     $password = (string) ($_POST['password'] ?? '');
 
     if ($username === '' || $password === '') {
         $error = 'Username dan kata sandi wajib diisi.';
     } else {
-        $stmt = database()->prepare(
-            'SELECT id, username, password_hash, role, is_active
-             FROM users
-             WHERE username = :username
-             LIMIT 1'
-        );
+        try {
+            $user = authenticate_admin(
+                $username,
+                $password
+            );
 
-        $stmt->execute([
-            'username' => $username,
-        ]);
+            if ($user !== null) {
+                login_user($user);
 
-        $user = $stmt->fetch();
+                redirect('/admin/');
+            }
 
-        if (
-            $user
-            && $user['role'] === 'admin'
-            && (bool) $user['is_active']
-            && password_verify($password, $user['password_hash'])
-        ) {
-            login_user($user);
+            $error = 'Username atau kata sandi tidak sesuai.';
+        } catch (Throwable $exception) {
+            error_log(
+                '[Pesan Ajah] Admin login gagal: '
+                . $exception->getMessage()
+            );
 
-            redirect('/admin/');
+            $error = 'Login belum dapat diproses. Silakan coba kembali.';
         }
-
-        $error = 'Username atau kata sandi tidak sesuai.';
     }
 }
 ?>
@@ -59,7 +59,10 @@ if (request_is_post()) {
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
     <meta name="theme-color" content="#176b45">
 
@@ -153,11 +156,7 @@ if (request_is_post()) {
             <?php endif; ?>
 
             <form method="post" action="/admin/login.php">
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="<?= e(csrf_token()) ?>"
-                >
+                <?= csrf_field() ?>
 
                 <label class="auth-field">
                     <span>Username</span>
@@ -166,8 +165,8 @@ if (request_is_post()) {
                         type="text"
                         name="username"
                         autocomplete="username"
-                        required
                         maxlength="50"
+                        required
                     >
                 </label>
 
