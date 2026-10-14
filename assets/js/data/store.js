@@ -1,14 +1,12 @@
-const STORAGE_KEY = "pesan-ajah-store-settings";
+const STORAGE_KEY = "pesan-ajah-store-settings-v2";
 
 export const defaultStoreSettings = {
-  name: "Warung Sederhana",
-  owner: "Pemilik Warung",
+  name: "",
+  owner: "",
   phone: "",
-  address: "Banyukuning",
-  description: "Menyediakan kebutuhan sehari-hari untuk warga sekitar.",
-  isOpen: true,
-
-  // Aktifkan hanya jika sudah disepakati dengan aplikasi.
+  address: "",
+  description: "",
+  isOpen: false,
   freeDelivery: false,
 };
 

@@ -24,30 +24,7 @@ const freeDeliveryFeedback = $("#free-delivery-feedback");
 const ORDERS_STORAGE_KEY = "pesan-ajah-demo-orders";
 
 const defaultOrders = [
-  {
-    id: "PA-0012",
-    buyer: "Siti Aminah",
-    summary: "Beras Premium × 1",
-    total: 16000,
-    status: "Menunggu",
-    key: "pending",
-  },
-  {
-    id: "PA-0011",
-    buyer: "Budi Santoso",
-    summary: "Telur Ayam × 1",
-    total: 29000,
-    status: "Diproses",
-    key: "process",
-  },
-  {
-    id: "PA-0010",
-    buyer: "Dewi Lestari",
-    summary: "Mi Instan × 3",
-    total: 10500,
-    status: "Selesai",
-    key: "done",
-  },
+  // Hapus seluruh pesanan contoh.
 ];
 
 function notify(message) {
@@ -83,7 +60,7 @@ function persistOrders() {
     localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
     return true;
   } catch {
-    notify("Pesanan demo gagal disimpan di browser.");
+    notify("Pesanan gagal disimpan di browser.");
     return false;
   }
 }
@@ -148,6 +125,17 @@ function renderOrders() {
   if (!tableBody) return;
 
   const fragment = document.createDocumentFragment();
+  
+  if (orders.length === 0) {
+    const row = document.createElement("tr");
+    const cell = createCell("Belum ada pesanan.");
+  
+    cell.colSpan = 6;
+    cell.className = "empty-table-cell";
+  
+    row.append(cell);
+    fragment.append(row);
+  }
 
   for (const order of orders) {
     const row = document.createElement("tr");

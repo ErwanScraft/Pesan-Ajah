@@ -473,6 +473,12 @@
   color: var(--muted);
 }
 
+.empty-table-cell {
+  padding: 28px 16px !important;
+  color: var(--muted);
+  text-align: center;
+}
+
 /* 16. Product management */
 
 .product-manage-list {
