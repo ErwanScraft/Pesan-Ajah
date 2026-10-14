@@ -5,27 +5,14 @@ declare(strict_types=1);
 /**
  * Pesan Ajah
  *
- * Application bootstrap:
- * - Load environment configuration.
- * - Configure timezone and error handling.
- * - Initialize secure sessions.
- * - Provide authentication and CSRF helpers.
- * - Provide common application utilities.
+ * Bootstrap aplikasi tanpa dependensi Composer.
  */
-
-use Dotenv\Dotenv;
 
 if (defined('PESANAJAH_BOOTSTRAPPED')) {
     return;
 }
 
 define('PESANAJAH_BOOTSTRAPPED', true);
-
-/*
-|--------------------------------------------------------------------------
-| Application paths
-|--------------------------------------------------------------------------
-*/
 
 define('APP_ROOT', dirname(__DIR__));
 define('APP_PATH', APP_ROOT . '/app');
@@ -34,48 +21,79 @@ define('ASSETS_PATH', APP_ROOT . '/assets');
 
 /*
 |--------------------------------------------------------------------------
-| Load Composer dependencies
+| Load .env
 |--------------------------------------------------------------------------
 */
 
-$autoloadPath = APP_ROOT . '/vendor/autoload.php';
+$customEnvPath = getenv('PESANAJAH_ENV_PATH');
 
-if (!is_file($autoloadPath)) {
-    throw new RuntimeException(
-        'Dependensi aplikasi belum terpasang. Jalankan Composer install.'
-    );
-}
-
-require_once $autoloadPath;
-
-/*
-|--------------------------------------------------------------------------
-| Load environment configuration
-|--------------------------------------------------------------------------
-|
-| Default:
-| - Project: /home/account/public_html
-| - Environment: /home/account/.env
-|
-| PESANAJAH_ENV_PATH dapat digunakan untuk menentukan path alternatif
-| melalui environment server.
-|
-*/
-
-$configuredEnvPath = getenv('PESANAJAH_ENV_PATH');
-
-$envPath = is_string($configuredEnvPath) && $configuredEnvPath !== ''
-    ? $configuredEnvPath
+$envPath = is_string($customEnvPath) && $customEnvPath !== ''
+    ? $customEnvPath
     : dirname(APP_ROOT) . '/.env';
 
 if (!is_file($envPath) || !is_readable($envPath)) {
     throw new RuntimeException(
-        'File konfigurasi lingkungan tidak ditemukan atau tidak dapat dibaca.'
+        'Konfigurasi aplikasi tidak ditemukan.'
     );
 }
 
-$dotenv = Dotenv::createImmutable(dirname($envPath));
-$dotenv->safeLoad();
+/**
+ * Membaca file .env sederhana tanpa library eksternal.
+ */
+function load_env_file(string $path): void
+{
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+    if ($lines === false) {
+        throw new RuntimeException(
+            'File konfigurasi tidak dapat dibaca.'
+        );
+    }
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+
+        $separator = strpos($line, '=');
+
+        if ($separator === false) {
+            continue;
+        }
+
+        $key = trim(substr($line, 0, $separator));
+        $value = trim(substr($line, $separator + 1));
+
+        if (!preg_match('/^[A-Z][A-Z0-9_]*$/', $key)) {
+            continue;
+        }
+
+        // Jangan menimpa environment variable dari server.
+        if (getenv($key) !== false) {
+            continue;
+        }
+
+        // Hapus tanda kutip pembungkus jika ada.
+        if (
+            strlen($value) >= 2
+            && (
+                ($value[0] === '"' && $value[-1] === '"')
+                || ($value[0] === "'" && $value[-1] === "'")
+            )
+        ) {
+            $value = substr($value, 1, -1);
+        }
+
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+
+        putenv($key . '=' . $value);
+    }
+}
+
+load_env_file($envPath);
 
 /*
 |--------------------------------------------------------------------------
@@ -83,25 +101,17 @@ $dotenv->safeLoad();
 |--------------------------------------------------------------------------
 */
 
-/**
- * Retrieve an environment value.
- */
 function env(string $key, mixed $default = null): mixed
 {
-    if (array_key_exists($key, $_ENV)) {
-        return $_ENV[$key];
+    $value = getenv($key);
+
+    if ($value !== false) {
+        return $value;
     }
 
-    if (array_key_exists($key, $_SERVER)) {
-        return $_SERVER[$key];
-    }
-
-    return $default;
+    return $_ENV[$key] ?? $_SERVER[$key] ?? $default;
 }
 
-/**
- * Parse a boolean environment value.
- */
 function env_bool(string $key, bool $default = false): bool
 {
     $value = env($key, $default);
@@ -110,7 +120,11 @@ function env_bool(string $key, bool $default = false): bool
         return $value;
     }
 
-    $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    $parsed = filter_var(
+        $value,
+        FILTER_VALIDATE_BOOLEAN,
+        FILTER_NULL_ON_FAILURE
+    );
 
     return $parsed ?? $default;
 }
@@ -143,30 +157,6 @@ ini_set('log_errors', '1');
 
 /*
 |--------------------------------------------------------------------------
-| HTTPS detection
-|--------------------------------------------------------------------------
-|
-| HTTPS should normally be enabled on the production domain.
-| Do not trust arbitrary X-Forwarded-Proto headers unless the hosting
-| proxy is configured and trusted.
-|
-*/
-
-function request_is_https(): bool
-{
-    if (
-        isset($_SERVER['HTTPS'])
-        && $_SERVER['HTTPS'] !== ''
-        && strtolower((string) $_SERVER['HTTPS']) !== 'off'
-    ) {
-        return true;
-    }
-
-    return (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443;
-}
-
-/*
-|--------------------------------------------------------------------------
 | Session configuration
 |--------------------------------------------------------------------------
 */
@@ -181,12 +171,6 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         throw new RuntimeException('Nama session tidak valid.');
     }
 
-    session_name($sessionName);
-
-    ini_set('session.use_strict_mode', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.use_trans_sid', '0');
-
     $secureCookie = env_bool(
         'SESSION_SECURE',
         APP_ENV === 'production'
@@ -194,9 +178,15 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
     if (APP_ENV === 'production' && !$secureCookie) {
         throw new RuntimeException(
-            'SESSION_SECURE harus aktif pada lingkungan produksi.'
+            'SESSION_SECURE harus aktif di lingkungan produksi.'
         );
     }
+
+    session_name($sessionName);
+
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.use_trans_sid', '0');
 
     session_set_cookie_params([
         'lifetime' => 0,
@@ -211,13 +201,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 /*
 |--------------------------------------------------------------------------
-| Output escaping
+| Common helpers
 |--------------------------------------------------------------------------
 */
 
-/**
- * Escape a value for HTML output.
- */
 function e(mixed $value): string
 {
     return htmlspecialchars(
@@ -227,36 +214,21 @@ function e(mixed $value): string
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| URL helpers
-|--------------------------------------------------------------------------
-*/
-
-/**
- * Generate an application URL.
- */
 function url(string $path = ''): string
 {
-    $baseUrl = APP_URL;
-
-    if ($baseUrl === '') {
+    if (APP_URL === '') {
         throw new RuntimeException(
-            'APP_URL belum dikonfigurasi pada file .env.'
+            'APP_URL belum dikonfigurasi.'
         );
     }
 
-    return $baseUrl . '/' . ltrim($path, '/');
+    return APP_URL . '/' . ltrim($path, '/');
 }
 
-/**
- * Redirect to an internal application path.
- */
 function redirect(string $path, int $statusCode = 302): never
 {
     if (
-        $path === ''
-        || preg_match('/[\r\n]/', $path)
+        preg_match('/[\r\n]/', $path)
         || preg_match('/^[a-z][a-z0-9+.-]*:/i', $path)
         || str_starts_with($path, '//')
     ) {
@@ -265,22 +237,16 @@ function redirect(string $path, int $statusCode = 302): never
         );
     }
 
-    $destination = url($path);
-
-    header('Location: ' . $destination, true, $statusCode);
+    header('Location: ' . url($path), true, $statusCode);
 
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| HTTP method helpers
-|--------------------------------------------------------------------------
-*/
-
 function request_method(): string
 {
-    return strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    return strtoupper(
+        (string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')
+    );
 }
 
 function require_method(string ...$methods): void
@@ -295,19 +261,15 @@ function require_method(string ...$methods): void
 
 /*
 |--------------------------------------------------------------------------
-| CSRF protection
+| CSRF
 |--------------------------------------------------------------------------
 */
 
-/**
- * Generate or retrieve the current CSRF token.
- */
 function csrf_token(): string
 {
     if (
         !isset($_SESSION['_csrf_token'])
         || !is_string($_SESSION['_csrf_token'])
-        || strlen($_SESSION['_csrf_token']) !== 64
     ) {
         $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -315,35 +277,29 @@ function csrf_token(): string
     return $_SESSION['_csrf_token'];
 }
 
-/**
- * Generate a hidden CSRF input.
- */
 function csrf_field(): string
 {
-    return sprintf(
-        '<input type="hidden" name="_token" value="%s">',
-        e(csrf_token())
-    );
+    return '<input type="hidden" name="_token" value="'
+        . e(csrf_token())
+        . '">';
 }
 
-/**
- * Validate the CSRF token from a POST request.
- */
 function verify_csrf(): void
 {
     require_method('POST');
 
-    $submittedToken = $_POST['_token'] ?? null;
-    $sessionToken = $_SESSION['_csrf_token'] ?? null;
+    $submitted = $_POST['_token'] ?? '';
+    $stored = $_SESSION['_csrf_token'] ?? '';
 
     if (
-        !is_string($submittedToken)
-        || !is_string($sessionToken)
-        || !hash_equals($sessionToken, $submittedToken)
+        !is_string($submitted)
+        || !is_string($stored)
+        || $stored === ''
+        || !hash_equals($stored, $submitted)
     ) {
         http_response_code(419);
 
-        exit('Sesi formulir tidak valid atau telah kedaluwarsa. Silakan muat ulang halaman.');
+        exit('Sesi formulir tidak valid. Silakan muat ulang halaman.');
     }
 }
 
@@ -353,12 +309,6 @@ function verify_csrf(): void
 |--------------------------------------------------------------------------
 */
 
-/**
- * Return the authenticated user stored in the session.
- *
- * The database must still be checked when sensitive operations execute,
- * especially to verify that the account is active.
- */
 function auth_user(): ?array
 {
     $user = $_SESSION['auth_user'] ?? null;
@@ -378,27 +328,16 @@ function auth_user(): ?array
     return $user;
 }
 
-/**
- * Check whether a user is authenticated.
- */
 function is_authenticated(): bool
 {
     return auth_user() !== null;
 }
 
-/**
- * Check whether the current user has the specified role.
- */
 function has_role(string $role): bool
 {
-    $user = auth_user();
-
-    return $user !== null && $user['role'] === $role;
+    return (auth_user()['role'] ?? null) === $role;
 }
 
-/**
- * Require an authenticated user.
- */
 function require_auth(): array
 {
     $user = auth_user();
@@ -410,9 +349,6 @@ function require_auth(): array
     return $user;
 }
 
-/**
- * Require a specific role.
- */
 function require_role(string $role): array
 {
     $user = require_auth();
@@ -420,21 +356,15 @@ function require_role(string $role): array
     if ($user['role'] !== $role) {
         http_response_code(403);
 
-        exit('Anda tidak memiliki izin untuk mengakses halaman ini.');
+        exit('Anda tidak memiliki izin mengakses halaman ini.');
     }
 
     return $user;
 }
 
-/**
- * Store authenticated user data in the session.
- *
- * Call this only after verifying the password and account status
- * against the database.
- */
 function login_user(array $user): void
 {
-    $userId = filter_var(
+    $id = filter_var(
         $user['id'] ?? null,
         FILTER_VALIDATE_INT,
         ['options' => ['min_range' => 1]]
@@ -443,30 +373,26 @@ function login_user(array $user): void
     $role = $user['role'] ?? null;
 
     if (
-        $userId === false
+        $id === false
         || !in_array($role, ['admin', 'warung'], true)
     ) {
         throw new InvalidArgumentException(
-            'Data pengguna untuk login tidak valid.'
+            'Data pengguna tidak valid.'
         );
     }
 
     session_regenerate_id(true);
 
     $_SESSION['auth_user'] = [
-        'id' => $userId,
+        'id' => $id,
         'name' => (string) ($user['name'] ?? ''),
         'email' => (string) ($user['email'] ?? ''),
         'role' => $role,
     ];
 
-    // Generate a fresh CSRF token after login.
     $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
 }
 
-/**
- * Log out the current user.
- */
 function logout_user(): void
 {
     $_SESSION = [];
@@ -495,18 +421,13 @@ function logout_user(): void
 |--------------------------------------------------------------------------
 */
 
-/**
- * Convert a name into a URL-friendly slug.
- */
 function slugify(string $value): string
 {
-    $value = trim($value);
-
     if (function_exists('iconv')) {
         $converted = iconv(
             'UTF-8',
             'ASCII//TRANSLIT//IGNORE',
-            $value
+            trim($value)
         );
 
         if ($converted !== false) {
@@ -516,17 +437,13 @@ function slugify(string $value): string
 
     $value = strtolower($value);
     $value = preg_replace('/[^a-z0-9]+/', '-', $value) ?? '';
-    $value = trim($value, '-');
 
-    return $value;
+    return trim($value, '-');
 }
 
-/**
- * Check whether a slug uses a reserved application route.
- */
 function is_reserved_slug(string $slug): bool
 {
-    $reserved = [
+    return in_array(strtolower($slug), [
         'admin',
         'api',
         'app',
@@ -543,18 +460,9 @@ function is_reserved_slug(string $slug): bool
         'storage',
         'vendor',
         'index',
-        'index.php',
-        'favicon.ico',
-        'robots.txt',
-        'sitemap.xml',
-    ];
-
-    return in_array(strtolower($slug), $reserved, true);
+    ], true);
 }
 
-/**
- * Validate a store slug.
- */
 function is_valid_store_slug(string $slug): bool
 {
     if (
