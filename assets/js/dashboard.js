@@ -1,88 +1,90 @@
-import { products, saveProducts } from "./data/products.js";
-import { formatRupiah } from "./modules/format.js";
-import { showToast } from "./modules/toast.js";
-import {
-  getStoreSettings,
-  saveStoreSettings,
-} from "./data/store.js";
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) =>
-  [...root.querySelectorAll(selector)];
+const $ = (selector) => document.querySelector(selector);
 
 const page = document.body.dataset.page;
-const toast = $("#toast");
-const sidebar = $("#sidebar");
+const csrfToken = document.body.dataset.csrfToken;
 
-const productForm = $("#product-form");
-const productList = $("#manage-products");
-const storeSettingsForm = $("#store-settings-form");
-const freeDeliveryToggle = $("#free-delivery-toggle");
-const freeDeliveryToggleText = $("#free-delivery-toggle-text");
-const freeDeliveryFeedback = $("#free-delivery-feedback");
+const API = {
+  dashboard: "/warung/api/dashboard.php",
+  products: "/warung/api/products.php",
+  orders: "/warung/api/orders.php",
+  settings: "/warung/api/settings.php",
+};
 
-const storeId = document.body.dataset.storeId;
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    credentials: "same-origin",
+    cache: "no-store",
+    ...options,
+    headers: {
+      Accept: "application/json",
+      ...(options.body
+        ? { "Content-Type": "application/json" }
+        : {}),
+      ...(options.method && options.method !== "GET"
+        ? { "X-CSRF-Token": csrfToken }
+        : {}),
+      ...options.headers,
+    },
+  });
 
-const ORDERS_STORAGE_KEY = storeId
-  ? `pesan-ajah-store-${storeId}-demo-orders`
-  : "pesan-ajah-demo-orders";
+  let data;
 
-const defaultOrders = [
-  // Hapus seluruh pesanan contoh.
-];
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("Respons server tidak valid.");
+  }
+
+  if (!response.ok || data.success === false) {
+    if (response.status === 401) {
+      window.location.href = "/warung/login.php";
+    }
+
+    throw new Error(
+      data.message || "Permintaan gagal diproses.",
+    );
+  }
+
+  return data;
+}
+
+async function postJSON(url, body, method = "POST") {
+  return apiRequest(url, {
+    method,
+    body: JSON.stringify(body),
+  });
+}
 
 function notify(message) {
-  showToast(toast, message);
-}
+  const toast = $("#toast");
 
-/* Penyimpanan pesanan demo */
-
-function loadOrders() {
-  try {
-    const saved = localStorage.getItem(ORDERS_STORAGE_KEY);
-
-    if (!saved) {
-      return defaultOrders.map((order) => ({ ...order }));
-    }
-
-    const parsed = JSON.parse(saved);
-
-    if (!Array.isArray(parsed)) {
-      return defaultOrders.map((order) => ({ ...order }));
-    }
-
-    return parsed;
-  } catch {
-    return defaultOrders.map((order) => ({ ...order }));
-  }
-}
-
-const orders = loadOrders();
-
-function persistOrders() {
-  try {
-    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
-    return true;
-  } catch {
-    notify("Pesanan gagal disimpan di browser.");
-    return false;
-  }
-}
-
-/* Penyimpanan produk */
-
-function persistProducts() {
-  if (!saveProducts()) {
-    notify("Data gagal disimpan. Periksa penyimpanan browser.");
-    return false;
+  if (!toast) {
+    window.alert(message);
+    return;
   }
 
-  return true;
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  window.clearTimeout(notify.timeout);
+
+  notify.timeout = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+function formatRupiah(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
 }
 
 function createCell(value, className = "") {
   const cell = document.createElement("td");
-  cell.textContent = String(value);
+
+  cell.textContent = String(value ?? "");
 
   if (className) {
     cell.className = className;
@@ -91,7 +93,7 @@ function createCell(value, className = "") {
   return cell;
 }
 
-function createButton(text, className, callback) {
+function createButton(text, callback, className = "table-action") {
   const button = document.createElement("button");
 
   button.type = "button";
@@ -102,681 +104,642 @@ function createButton(text, className, callback) {
   return button;
 }
 
-/* Rincian dan pesanan */
+/* =========================================================
+   DASHBOARD STATISTIK
+========================================================= */
 
-function renderOrders() {
-  const tableBody = $("#orders-table");
-  const pendingCount = orders.filter(
-    (order) => order.key === "pending",
-  ).length;
+async function loadDashboard() {
+  const data = await apiRequest(API.dashboard);
+  const stats = data.stats;
 
-  const pendingLabel = $("#pending-count");
-  const pendingStat = $("#stat-pending");
-  const ordersStat = $("#stat-orders");
+  const orders = $("#stat-orders");
+  const pending = $("#stat-pending");
+  const products = $("#stat-products");
+  const status = $("#store-status-label");
 
-  if (pendingLabel) {
-    pendingLabel.textContent = String(pendingCount);
+  if (orders) {
+    orders.textContent = String(stats.total_orders);
   }
 
-  if (pendingStat) {
-    pendingStat.textContent = String(pendingCount);
+  if (pending) {
+    pending.textContent = String(stats.pending_orders);
   }
 
-  if (ordersStat) {
-    ordersStat.textContent = String(orders.length);
+  if (products) {
+    products.textContent = String(stats.available_products);
   }
 
-  if (!tableBody) return;
-
-  const fragment = document.createDocumentFragment();
-  
-  if (orders.length === 0) {
-    const row = document.createElement("tr");
-    const cell = createCell("Belum ada pesanan.");
-  
-    cell.colSpan = 6;
-    cell.className = "empty-table-cell";
-  
-    row.append(cell);
-    fragment.append(row);
+  if (status) {
+    status.textContent = stats.is_open ? "Buka" : "Tutup";
   }
 
-  for (const order of orders) {
-    const row = document.createElement("tr");
+  const revenue = $("#stat-revenue");
 
-    const total = document.createElement("strong");
-    total.textContent = formatRupiah(order.total);
-
-    const totalCell = document.createElement("td");
-    totalCell.append(total);
-
-    const status = document.createElement("span");
-    status.className = `status-pill status-${order.key}`;
-    status.textContent = order.status;
-
-    const statusCell = document.createElement("td");
-    statusCell.append(status);
-
-    const actionCell = document.createElement("td");
-    const actionButton = document.createElement("button");
-
-    actionButton.className = "table-action";
-    actionButton.type = "button";
-    actionButton.dataset.order = order.id;
-
-    if (order.key === "pending") {
-      actionButton.textContent = "Konfirmasi";
-    } else if (order.key === "process") {
-      actionButton.textContent = "Selesaikan";
-    } else {
-      actionButton.textContent = "Selesai";
-      actionButton.disabled = true;
-    }
-
-    actionCell.append(actionButton);
-
-    row.append(
-      createCell(order.id, "order-id"),
-      createCell(order.buyer),
-      createCell(order.summary),
-      totalCell,
-      statusCell,
-      actionCell,
-    );
-
-    fragment.append(row);
-  }
-
-  tableBody.replaceChildren(fragment);
-}
-
-const ordersTable = $("#orders-table");
-
-if (ordersTable) {
-  ordersTable.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-order]");
-
-    if (!button) return;
-
-    const order = orders.find(
-      (item) => item.id === button.dataset.order,
-    );
-
-    if (!order || order.key === "done") return;
-
-    const previous = {
-      key: order.key,
-      status: order.status,
-    };
-
-    if (order.key === "pending") {
-      order.key = "process";
-      order.status = "Diproses";
-    } else {
-      order.key = "done";
-      order.status = "Selesai";
-    }
-
-    if (!persistOrders()) {
-      Object.assign(order, previous);
-    }
-
-    renderOrders();
-    notify(`Status pesanan ${order.id} diperbarui.`);
-  });
-}
-
-/* Produk */
-
-function activeProducts() {
-  return products.filter((product) => !product.archived);
-}
-
-function renderManagedProducts() {
-  const visibleProducts = activeProducts();
-  const productsStat = $("#stat-products");
-  const productCount = $("#product-count");
-
-  if (productsStat) {
-    productsStat.textContent = String(
-      visibleProducts.filter((product) => product.available).length,
+  if (revenue) {
+    revenue.textContent = formatRupiah(
+      stats.completed_revenue,
     );
   }
 
-  if (productCount) {
-    productCount.textContent = `${visibleProducts.length} produk`;
-  }
+  const recent = $("#recent-orders");
 
+  if (recent) {
+    recent.replaceChildren();
+
+    for (const order of data.recent_orders) {
+      const row = document.createElement("tr");
+
+      row.append(
+        createCell(order.order_number, "order-id"),
+        createCell(order.buyer_name),
+        createCell(formatRupiah(order.total)),
+        createCell(order.status),
+      );
+
+      recent.append(row);
+    }
+  }
+}
+
+/* =========================================================
+   PRODUK
+========================================================= */
+
+let products = [];
+let editingProductId = null;
+
+const productForm = $("#product-form");
+const productList = $("#manage-products");
+
+async function loadProducts() {
+  const data = await apiRequest(API.products);
+
+  products = data.products.map((product) => ({
+    ...product,
+    id: Number(product.id),
+    price: Number(product.price),
+    available: Boolean(Number(product.is_available)),
+  }));
+
+  renderProducts();
+}
+
+function renderProducts() {
   if (!productList) return;
 
-  const fragment = document.createDocumentFragment();
+  productList.replaceChildren();
 
-  for (const product of visibleProducts) {
+  const count = $("#product-count");
+
+  if (count) {
+    count.textContent = `${products.length} produk`;
+  }
+
+  if (products.length === 0) {
+    const empty = document.createElement("p");
+
+    empty.className = "product-empty";
+    empty.textContent = "Belum ada produk.";
+
+    productList.append(empty);
+    return;
+  }
+
+  for (const product of products) {
     const row = document.createElement("div");
     row.className = "manage-row";
 
     const info = document.createElement("div");
     info.className = "manage-product";
 
-    const emoji = document.createElement("span");
-    emoji.className = "manage-emoji";
-    emoji.setAttribute("aria-hidden", "true");
-    emoji.textContent = product.emoji || "📦";
-
     const details = document.createElement("span");
     const name = document.createElement("strong");
     const metadata = document.createElement("small");
 
     name.textContent = product.name;
+
     metadata.textContent =
       `${product.unit} · ${formatRupiah(product.price)}`;
 
     details.append(name, metadata);
-    info.append(emoji, details);
+    info.append(details);
 
     const actions = document.createElement("div");
     actions.className = "manage-actions";
 
     const availabilityLabel = document.createElement("label");
-    availabilityLabel.className = product.available
-      ? "availability-control availability-yes"
-      : "availability-control availability-no";
+    availabilityLabel.className = "availability-control";
 
     const checkbox = document.createElement("input");
+
     checkbox.type = "checkbox";
-    checkbox.checked = Boolean(product.available);
-    checkbox.dataset.product = String(product.id);
-    checkbox.setAttribute(
-      "aria-label",
-      `Ketersediaan ${product.name}`,
-    );
+    checkbox.checked = product.available;
 
     const availabilityText = document.createElement("span");
+
     availabilityText.textContent = product.available
       ? "Tersedia"
       : "Habis";
 
-    availabilityLabel.append(checkbox, availabilityText);
+    checkbox.addEventListener("change", async () => {
+      try {
+        await postJSON(
+          API.products,
+          {
+            id: product.id,
+            name: product.name,
+            category: product.category,
+            description: product.description || "",
+            price: product.price,
+            unit: product.unit,
+            available: checkbox.checked,
+          },
+          "PUT",
+        );
 
-    const editButton = createButton(
-      "Edit",
-      "table-action",
-      () => editProduct(product.id),
+        await loadProducts();
+
+        notify("Ketersediaan produk diperbarui.");
+      } catch (error) {
+        checkbox.checked = product.available;
+        notify(error.message);
+      }
+    });
+
+    availabilityLabel.append(
+      checkbox,
+      availabilityText,
     );
+
+    const editButton = createButton("Edit", () => {
+      editProduct(product.id);
+    });
 
     const deleteButton = createButton(
       "Hapus",
-      "table-action danger-action",
       () => deleteProduct(product.id),
+      "table-action danger-action",
     );
 
-    deleteButton.setAttribute(
-      "aria-label",
-      `Hapus produk ${product.name}`,
+    actions.append(
+      availabilityLabel,
+      editButton,
+      deleteButton,
     );
 
-    actions.append(availabilityLabel, editButton, deleteButton);
     row.append(info, actions);
-    fragment.append(row);
+
+    productList.append(row);
   }
-
-  if (visibleProducts.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "product-empty";
-    empty.textContent =
-      "Belum ada produk. Gunakan formulir di atas untuk menambahkan produk.";
-
-    fragment.append(empty);
-  }
-
-  productList.replaceChildren(fragment);
 }
 
 function resetProductForm() {
   if (!productForm) return;
 
   productForm.reset();
-  productForm.elements.available.checked = true;
-  productForm.elements.emoji.value = "📦";
-  productForm.dataset.editingId = "";
+  editingProductId = null;
 
-  $("#product-form-title").textContent = "Tambah produk baru";
+  const title = $("#product-form-title");
+  const submit = productForm.querySelector('[type="submit"]');
+  const cancel = $("#cancel-product");
 
-  productForm.querySelector('[type="submit"]').textContent =
-    "Simpan produk";
+  if (title) {
+    title.textContent = "Tambah produk baru";
+  }
 
-  const cancelButton = $("#cancel-product");
+  if (submit) {
+    submit.textContent = "Simpan produk";
+  }
 
-  if (cancelButton) {
-    cancelButton.hidden = true;
+  if (cancel) {
+    cancel.hidden = true;
   }
 }
 
-function editProduct(productId) {
+function editProduct(id) {
   const product = products.find(
-    (item) => item.id === productId && !item.archived,
+    (item) => item.id === id,
   );
 
-  if (!product || !productForm) {
-    notify("Produk tidak ditemukan.");
-    return;
-  }
+  if (!product || !productForm) return;
+
+  editingProductId = product.id;
 
   productForm.elements.name.value = product.name;
   productForm.elements.category.value = product.category;
   productForm.elements.price.value = String(product.price);
   productForm.elements.unit.value = product.unit;
-  productForm.elements.emoji.value = product.emoji || "📦";
-  productForm.elements.tag.value = product.tag || "";
-  productForm.elements.available.checked = Boolean(product.available);
 
-  productForm.dataset.editingId = String(product.id);
+  productForm.elements.available.checked =
+    product.available;
+
+  const description = productForm.elements.description;
+
+  if (description) {
+    description.value = product.description || "";
+  }
 
   $("#product-form-title").textContent = "Edit produk";
 
   productForm.querySelector('[type="submit"]').textContent =
     "Simpan perubahan";
 
-  const cancelButton = $("#cancel-product");
-
-  if (cancelButton) {
-    cancelButton.hidden = false;
-  }
+  $("#cancel-product").hidden = false;
 
   productForm.scrollIntoView({
     behavior: "smooth",
     block: "start",
   });
-
-  productForm.elements.name.focus();
 }
 
-function deleteProduct(productId) {
+async function deleteProduct(id) {
   const product = products.find(
-    (item) => item.id === productId && !item.archived,
+    (item) => item.id === id,
   );
 
-  if (!product) {
-    notify("Produk tidak ditemukan.");
+  if (!product) return;
+
+  if (
+    !window.confirm(
+      `Hapus produk "${product.name}" dari katalog?`,
+    )
+  ) {
     return;
   }
 
-  const confirmed = window.confirm(
-    `Hapus "${product.name}" dari katalog? Produk tidak akan ditampilkan lagi di marketplace.`,
-  );
+  try {
+    await postJSON(
+      API.products,
+      { id },
+      "DELETE",
+    );
 
-  if (!confirmed) return;
-
-  product.archived = true;
-
-  if (!persistProducts()) {
-    product.archived = false;
-    return;
-  }
-
-  if (productForm?.dataset.editingId === String(productId)) {
+    await loadProducts();
     resetProductForm();
-  }
 
-  renderManagedProducts();
-  notify(`Produk "${product.name}" berhasil dihapus dari katalog.`);
+    notify("Produk berhasil dihapus.");
+  } catch (error) {
+    notify(error.message);
+  }
 }
 
 if (productForm) {
-  productForm.addEventListener("submit", (event) => {
+  productForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(productForm);
 
-    const name = String(formData.get("name") || "").trim();
-    const category = String(formData.get("category") || "").trim();
-    const unit = String(formData.get("unit") || "").trim();
-    const emoji = String(formData.get("emoji") || "📦").trim();
-    const tag = String(formData.get("tag") || "").trim();
-    const price = Number(formData.get("price"));
-    const available = formData.has("available");
-
-    if (!name || !category || !unit) {
-      notify("Lengkapi semua informasi produk.");
-      return;
-    }
-
-    if (!Number.isSafeInteger(price) || price < 1) {
-      notify("Harga harus berupa bilangan bulat lebih dari nol.");
-      return;
-    }
-
-    const editingId = productForm.dataset.editingId;
-
-    if (editingId) {
-      const product = products.find(
-        (item) => item.id === Number(editingId) && !item.archived,
-      );
-
-      if (!product) {
-        notify("Produk yang akan diedit tidak ditemukan.");
-        resetProductForm();
-        return;
-      }
-
-      const previous = { ...product };
-
-      Object.assign(product, {
-        name,
-        category,
-        unit,
-        price,
-        emoji,
-        tag,
-        available,
-      });
-
-      if (!persistProducts()) {
-        Object.assign(product, previous);
-        return;
-      }
-
-      renderManagedProducts();
-      resetProductForm();
-      notify(`Produk "${name}" berhasil diperbarui.`);
-      return;
-    }
-
-    const nextId =
-      products.reduce((max, item) => Math.max(max, item.id), 0) + 1;
-
-    const newProduct = {
-      id: nextId,
-      name,
-      category,
-      unit,
-      price,
-      emoji,
-      tag,
-      store: getStoreSettings().name,
-      available,
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      category: String(formData.get("category") || "").trim(),
+      price: Number(formData.get("price")),
+      unit: String(formData.get("unit") || "").trim(),
+      description: String(
+        formData.get("description") || "",
+      ).trim(),
+      available: formData.has("available"),
     };
 
-    products.push(newProduct);
-
-    if (!persistProducts()) {
-      products.pop();
+    if (
+      !payload.name
+      || !payload.category
+      || !payload.unit
+      || !Number.isSafeInteger(payload.price)
+      || payload.price < 1
+    ) {
+      notify("Periksa kembali informasi produk.");
       return;
     }
 
-    renderManagedProducts();
-    resetProductForm();
-    notify(`Produk "${name}" berhasil ditambahkan.`);
-  });
-}
+    try {
+      if (editingProductId !== null) {
+        await postJSON(
+          API.products,
+          {
+            id: editingProductId,
+            ...payload,
+          },
+          "PUT",
+        );
+      } else {
+        await postJSON(API.products, payload);
+      }
 
-const cancelProductButton = $("#cancel-product");
+      await loadProducts();
+      resetProductForm();
 
-if (cancelProductButton) {
-  cancelProductButton.addEventListener("click", resetProductForm);
-}
-
-if (productList) {
-  productList.addEventListener("change", (event) => {
-    const input = event.target.closest("[data-product]");
-
-    if (!input) return;
-
-    const product = products.find(
-      (item) => item.id === Number(input.dataset.product),
-    );
-
-    if (!product) return;
-
-    const previousValue = product.available;
-    product.available = input.checked;
-
-    if (!persistProducts()) {
-      product.available = previousValue;
-      renderManagedProducts();
-      return;
+      notify("Produk berhasil disimpan.");
+    } catch (error) {
+      notify(error.message);
     }
-
-    renderManagedProducts();
-
-    notify(
-      `${product.name}: ${product.available ? "tersedia" : "habis"}.`,
-    );
   });
 }
 
-/* Pengaturan profil warung */
+$("#cancel-product")?.addEventListener(
+  "click",
+  resetProductForm,
+);
 
-function fillStoreSettingsForm() {
-  const settings = getStoreSettings();
-  const storeName = $("#sidebar-store-name");
+/* =========================================================
+   PESANAN
+========================================================= */
 
-  if (storeName) {
-    storeName.textContent = settings.name || "Warung";
+let orders = [];
+
+async function loadOrders() {
+  const data = await apiRequest(API.orders);
+
+  orders = data.orders;
+
+  renderOrders();
+}
+
+function nextOrderStatus(status) {
+  const next = {
+    pending: {
+      value: "confirmed",
+      label: "Konfirmasi",
+    },
+
+    confirmed: {
+      value: "processing",
+      label: "Proses",
+    },
+
+    processing: {
+      value: "completed",
+      label: "Selesaikan",
+    },
+  };
+
+  return next[status] || null;
+}
+
+function renderOrders() {
+  const table = $("#orders-table");
+
+  if (!table) return;
+
+  table.replaceChildren();
+
+  if (orders.length === 0) {
+    const row = document.createElement("tr");
+    const cell = createCell("Belum ada pesanan.");
+
+    cell.colSpan = 6;
+    cell.className = "empty-table-cell";
+
+    row.append(cell);
+    table.append(row);
+
+    return;
   }
 
-  if (storeSettingsForm) {
-    storeSettingsForm.elements.name.value =
-      settings.name || "";
+  for (const order of orders) {
+    const row = document.createElement("tr");
 
-    storeSettingsForm.elements.owner.value =
-      settings.owner || "";
+    const itemSummary = (order.items || [])
+      .map(
+        (item) =>
+          `${item.product_name} × ${item.quantity}`,
+      )
+      .join(", ");
 
-    storeSettingsForm.elements.phone.value =
-      settings.phone || "";
+    const status = document.createElement("span");
 
-    storeSettingsForm.elements.address.value =
-      settings.address || "";
+    status.className = `status-pill status-${order.status}`;
+    status.textContent = order.status;
 
-    storeSettingsForm.elements.description.value =
-      settings.description || "";
+    const statusCell = document.createElement("td");
+
+    statusCell.append(status);
+
+    const actions = document.createElement("td");
+
+    const next = nextOrderStatus(order.status);
+
+    if (next) {
+      actions.append(
+        createButton(next.label, async () => {
+          await changeOrderStatus(order, next.value);
+        }),
+      );
+    }
+
+    if (
+      order.status === "pending"
+      || order.status === "confirmed"
+    ) {
+      actions.append(
+        createButton(
+          "Batalkan",
+          async () => {
+            await changeOrderStatus(order, "cancelled");
+          },
+          "table-action danger-action",
+        ),
+      );
+    }
+
+    row.append(
+      createCell(order.order_number, "order-id"),
+      createCell(
+        `${order.buyer_name}\n${order.buyer_phone}`,
+      ),
+      createCell(itemSummary || "Tidak ada rincian"),
+      createCell(formatRupiah(order.total)),
+      statusCell,
+      actions,
+    );
+
+    table.append(row);
+  }
+}
+
+async function changeOrderStatus(order, status) {
+  const labels = {
+    confirmed: "mengonfirmasi",
+    processing: "memproses",
+    completed: "menyelesaikan",
+    cancelled: "membatalkan",
+  };
+
+  if (
+    !window.confirm(
+      `Anda yakin ingin ${labels[status]} pesanan ${order.order_number}?`,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    await postJSON(API.orders, {
+      id: order.id,
+      status,
+    });
+
+    await Promise.all([
+      loadOrders(),
+      loadDashboard(),
+    ]);
+
+    notify("Status pesanan berhasil diperbarui.");
+  } catch (error) {
+    notify(error.message);
+  }
+}
+
+/* =========================================================
+   PENGATURAN
+========================================================= */
+
+const settingsForm = $("#store-settings-form");
+const openToggle = $("#store-open-toggle");
+const freeDeliveryToggle = $("#free-delivery-toggle");
+
+async function loadSettings() {
+  const data = await apiRequest(API.settings);
+
+  const settings = data.settings;
+
+  if (settingsForm) {
+    for (const key of [
+      "name",
+      "owner",
+      "phone",
+      "address",
+      "description",
+    ]) {
+      if (settingsForm.elements[key]) {
+        settingsForm.elements[key].value =
+          settings[key] || "";
+      }
+    }
+  }
+
+  if (openToggle) {
+    openToggle.checked = settings.is_open;
   }
 
   if (freeDeliveryToggle) {
     freeDeliveryToggle.checked =
-      Boolean(settings.freeDelivery);
+      settings.free_delivery;
   }
 
-  updateFreeDeliveryLabel(
-    Boolean(settings.freeDelivery),
-  );
+  updateSettingLabels(settings);
 }
 
-function updateFreeDeliveryLabel(isEnabled) {
-  if (freeDeliveryToggleText) {
-    freeDeliveryToggleText.textContent = isEnabled
+function updateSettingLabels(settings) {
+  const openText = $("#store-toggle-text");
+  const freeText = $("#free-delivery-toggle-text");
+
+  if (openText) {
+    openText.textContent = settings.is_open
+      ? "Warung sedang buka"
+      : "Warung sedang tutup";
+  }
+
+  if (freeText) {
+    freeText.textContent = settings.free_delivery
       ? "Gratis ongkir aktif"
       : "Gratis ongkir tidak aktif";
   }
 }
 
-function handleStoreSettingsSubmit(event) {
-  event.preventDefault();
+async function updateSettingStatus(key, value) {
+  try {
+    await postJSON(API.settings, {
+      [key]: value,
+    });
 
-  const formData = new FormData(storeSettingsForm);
-  const currentSettings = getStoreSettings();
+    await Promise.all([
+      loadSettings(),
+      loadDashboard(),
+    ]);
 
-  const settings = {
-    ...currentSettings,
-
-    name: String(
-      formData.get("name") || "",
-    ).trim(),
-
-    owner: String(
-      formData.get("owner") || "",
-    ).trim(),
-
-    phone: String(
-      formData.get("phone") || "",
-    ).trim(),
-
-    address: String(
-      formData.get("address") || "",
-    ).trim(),
-
-    description: String(
-      formData.get("description") || "",
-    ).trim(),
-
-    freeDelivery: Boolean(
-      freeDeliveryToggle?.checked,
-    ),
-  };
-
-  if (
-    !settings.name ||
-    !settings.owner ||
-    !settings.address
-  ) {
-    notify(
-      "Nama warung, pemilik, dan alamat wajib diisi.",
-    );
-
-    return;
+    notify("Pengaturan berhasil disimpan.");
+  } catch (error) {
+    await loadSettings();
+    notify(error.message);
   }
+}
 
-  const feedback = $("#store-settings-feedback");
+if (settingsForm) {
+  settingsForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  if (!saveStoreSettings(settings)) {
-    if (feedback) {
-      feedback.textContent =
-        "Pengaturan gagal disimpan. Periksa penyimpanan browser.";
+    const formData = new FormData(settingsForm);
+
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      owner: String(formData.get("owner") || "").trim(),
+      phone: String(formData.get("phone") || "").trim(),
+      address: String(formData.get("address") || "").trim(),
+      description: String(
+        formData.get("description") || "",
+      ).trim(),
+    };
+
+    if (
+      !payload.name
+      || !payload.owner
+      || !payload.address
+    ) {
+      notify("Nama warung, pemilik, dan alamat wajib diisi.");
+      return;
     }
 
-    notify("Pengaturan warung gagal disimpan.");
-
-    return;
-  }
-
-  fillStoreSettingsForm();
-  renderManagedProducts();
-
-  if (feedback) {
-    feedback.textContent =
-      "Pengaturan berhasil disimpan.";
-  }
-
-  if (freeDeliveryFeedback) {
-    freeDeliveryFeedback.textContent =
-      settings.freeDelivery
-        ? "Gratis ongkir diaktifkan."
-        : "Gratis ongkir dinonaktifkan.";
-  }
-
-  notify("Pengaturan warung berhasil disimpan.");
-}
-
-function cancelStoreSettingsChanges() {
-  fillStoreSettingsForm();
-
-  const feedback = $("#store-settings-feedback");
-
-  if (feedback) {
-    feedback.textContent =
-      "Perubahan yang belum disimpan telah dibatalkan.";
-  }
-}
-
-if (storeSettingsForm) {
-  storeSettingsForm.addEventListener(
-    "submit",
-    handleStoreSettingsSubmit,
-  );
-}
-
-if (freeDeliveryToggle) {
-  freeDeliveryToggle.addEventListener(
-    "change",
-    () => {
-      updateFreeDeliveryLabel(
-        freeDeliveryToggle.checked,
+    try {
+      const result = await postJSON(
+        API.settings,
+        payload,
       );
-    },
-  );
-}
 
-const resetStoreSettingsButton = $("#reset-store-settings");
+      $("#store-settings-feedback").textContent =
+        result.message;
 
-if (resetStoreSettingsButton) {
-  resetStoreSettingsButton.addEventListener(
-    "click",
-    cancelStoreSettingsChanges,
-  );
-}
+      await loadSettings();
 
-/* Status buka/tutup warung */
-
-function updateStoreStatus(isOpen, persist = true) {
-  const statusLabel = $("#store-status-label");
-  const toggleText = $("#store-toggle-text");
-  const toggle = $("#store-open-toggle");
-  const feedback = $("#store-status-feedback");
-
-  if (statusLabel) {
-    statusLabel.textContent = isOpen ? "Buka" : "Tutup";
-    statusLabel.style.color = isOpen
-      ? "var(--green)"
-      : "var(--danger)";
-  }
-
-  if (toggleText) {
-    toggleText.textContent = isOpen
-      ? "Warung sedang buka"
-      : "Warung sedang tutup";
-  }
-
-  if (toggle && toggle.checked !== isOpen) {
-    toggle.checked = isOpen;
-  }
-
-  if (!persist) return;
-
-  const settings = getStoreSettings();
-
-  if (!saveStoreSettings({ ...settings, isOpen })) {
-    if (feedback) {
-      feedback.textContent = "Status warung gagal disimpan.";
+      notify(result.message);
+    } catch (error) {
+      notify(error.message);
     }
-
-    notify("Status warung gagal disimpan.");
-    return;
-  }
-
-  if (feedback) {
-    feedback.textContent = isOpen
-      ? "Warung ditandai buka."
-      : "Warung ditandai tutup.";
-  }
-
-  notify(`Warung ditandai ${isOpen ? "buka" : "tutup"}.`);
-}
-
-const storeOpenToggle = $("#store-open-toggle");
-
-if (storeOpenToggle) {
-  storeOpenToggle.addEventListener("change", (event) => {
-    updateStoreStatus(event.target.checked);
   });
 }
 
-/* Navigasi mobile */
+$("#reset-store-settings")?.addEventListener(
+  "click",
+  loadSettings,
+);
 
+openToggle?.addEventListener("change", () => {
+  updateSettingStatus(
+    "is_open",
+    openToggle.checked,
+  );
+});
+
+freeDeliveryToggle?.addEventListener("change", () => {
+  updateSettingStatus(
+    "free_delivery",
+    freeDeliveryToggle.checked,
+  );
+});
+
+/* =========================================================
+   NAVIGASI
+========================================================= */
+
+const sidebar = $("#sidebar");
 const mobileMenu = $("#mobile-menu");
 
-if (mobileMenu && sidebar) {
-  mobileMenu.addEventListener("click", () => {
-    const isOpen = sidebar.classList.toggle("open");
+mobileMenu?.addEventListener("click", () => {
+  const open = sidebar?.classList.toggle("open");
 
-    mobileMenu.setAttribute("aria-expanded", String(isOpen));
-  });
-}
-
-$$("#sidebar .side-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    sidebar?.classList.remove("open");
-    mobileMenu?.setAttribute("aria-expanded", "false");
-  });
+  mobileMenu.setAttribute(
+    "aria-expanded",
+    String(Boolean(open)),
+  );
 });
 
 document.addEventListener("keydown", (event) => {
@@ -786,36 +749,29 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-/* Inisialisasi sesuai halaman */
+/* =========================================================
+   INISIALISASI
+========================================================= */
 
-function initializeDashboard() {
-  const settingsElement = document.body.dataset.storeSettings;
-
-  if (settingsElement) {
-    try {
-      const serverSettings = JSON.parse(settingsElement);
-      const savedSettings = getStoreSettings();
-
-      // Inisialisasi data lokal dari database jika belum ada.
-      if (!savedSettings.name) {
-        saveStoreSettings(serverSettings);
-      }
-    } catch (error) {
-      console.error(
-        "Gagal membaca pengaturan warung dari server:",
-        error,
-      );
+async function initializeDashboard() {
+  try {
+    if (page === "overview") {
+      await loadDashboard();
     }
-  }
 
-  const settings = getStoreSettings();
+    if (page === "products") {
+      await loadProducts();
+    }
 
-  fillStoreSettingsForm();
-  renderOrders();
-  renderManagedProducts();
+    if (page === "orders") {
+      await loadOrders();
+    }
 
-  if ($("#store-status-label") || storeOpenToggle) {
-    updateStoreStatus(Boolean(settings.isOpen), false);
+    if (page === "settings") {
+      await loadSettings();
+    }
+  } catch (error) {
+    notify(error.message);
   }
 }
 

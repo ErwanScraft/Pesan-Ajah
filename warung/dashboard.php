@@ -104,6 +104,23 @@ require __DIR__ . '/_header.php';
             Status operasional
         </small>
     </article>
+    
+    <article class="stat-card">
+        <div class="stat-top">
+            <span>Omzet selesai</span>
+    
+            <span
+                class="stat-icon green"
+                aria-hidden="true"
+            >Rp</span>
+        </div>
+    
+        <strong id="stat-revenue">Rp0</strong>
+    
+        <small class="stat-caption">
+            Total pesanan yang selesai
+        </small>
+    </article>
 
 </div>
 

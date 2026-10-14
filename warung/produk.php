@@ -138,6 +138,17 @@ require __DIR__ . '/_header.php';
                     placeholder="Produk pilihan"
                 >
             </label>
+            
+            <label class="form-field">
+                <span>Deskripsi produk</span>
+            
+                <textarea
+                    name="description"
+                    maxlength="5000"
+                    rows="3"
+                    placeholder="Deskripsi produk"
+                ></textarea>
+            </label>
 
         </div>
 

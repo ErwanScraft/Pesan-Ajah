@@ -67,15 +67,7 @@ $storeInitial = function_exists('mb_substr')
     class="dashboard-page"
     data-page="<?= e($pageKey) ?>"
     data-store-id="<?= e($store['store_id'] ?? '') ?>"
-    data-store-settings="<?= e(json_encode([
-        'name' => (string) ($store['name'] ?? ''),
-        'owner' => (string) ($store['owner'] ?? ''),
-        'phone' => (string) ($store['phone'] ?? ''),
-        'address' => (string) ($store['address'] ?? ''),
-        'description' => (string) ($store['description'] ?? ''),
-        'isOpen' => (bool) ($store['is_open'] ?? false),
-        'freeDelivery' => (bool) ($store['free_delivery'] ?? false),
-    ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP)) ?>"
+    data-csrf-token="<?= e(csrf_token()) ?>"
 >
     <div class="dashboard-shell">
 
