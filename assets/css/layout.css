@@ -130,6 +130,15 @@
   font-weight: 800;
 }
 
+.sidebar-logout {
+    margin: 16px;
+}
+
+.sidebar-logout .button {
+    width: 100%;
+    justify-content: center;
+}
+
 /* 5. Hero */
 
 .hero {

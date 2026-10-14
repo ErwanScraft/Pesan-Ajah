@@ -8,6 +8,8 @@ require_method('POST');
 
 verify_csrf();
 
+$user = require_warung();
+
 logout_user();
 
-redirect('warung/login.php');
+redirect('/warung/login.php');

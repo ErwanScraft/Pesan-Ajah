@@ -44,7 +44,7 @@ if (is_logged_in()) {
             && (bool) $account['user_is_active']
             && (bool) $account['store_is_active']
         ) {
-            redirect('/warung/dashboard.html');
+            redirect('/warung/dashboard.php');
         }
 
         logout_user();
