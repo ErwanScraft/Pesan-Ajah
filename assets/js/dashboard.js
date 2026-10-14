@@ -21,7 +21,11 @@ const freeDeliveryToggle = $("#free-delivery-toggle");
 const freeDeliveryToggleText = $("#free-delivery-toggle-text");
 const freeDeliveryFeedback = $("#free-delivery-feedback");
 
-const ORDERS_STORAGE_KEY = "pesan-ajah-demo-orders";
+const storeId = document.body.dataset.storeId;
+
+const ORDERS_STORAGE_KEY = storeId
+  ? `pesan-ajah-store-${storeId}-demo-orders`
+  : "pesan-ajah-demo-orders";
 
 const defaultOrders = [
   // Hapus seluruh pesanan contoh.
@@ -785,6 +789,25 @@ document.addEventListener("keydown", (event) => {
 /* Inisialisasi sesuai halaman */
 
 function initializeDashboard() {
+  const settingsElement = document.body.dataset.storeSettings;
+
+  if (settingsElement) {
+    try {
+      const serverSettings = JSON.parse(settingsElement);
+      const savedSettings = getStoreSettings();
+
+      // Inisialisasi data lokal dari database jika belum ada.
+      if (!savedSettings.name) {
+        saveStoreSettings(serverSettings);
+      }
+    } catch (error) {
+      console.error(
+        "Gagal membaca pengaturan warung dari server:",
+        error,
+      );
+    }
+  }
+
   const settings = getStoreSettings();
 
   fillStoreSettingsForm();

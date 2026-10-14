@@ -1,4 +1,8 @@
-const STORAGE_KEY = "pesan-ajah-store-settings-v2";
+const storeId = document.body?.dataset.storeId;
+
+const STORAGE_KEY = storeId
+  ? `pesan-ajah-store-${storeId}-settings-v2`
+  : "pesan-ajah-store-settings-v2";
 
 export const defaultStoreSettings = {
   name: "",
@@ -15,10 +19,14 @@ export function getStoreSettings() {
     const saved = localStorage.getItem(STORAGE_KEY);
 
     if (saved) {
-      return {
-        ...defaultStoreSettings,
-        ...JSON.parse(saved),
-      };
+      const parsed = JSON.parse(saved);
+
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return {
+          ...defaultStoreSettings,
+          ...parsed,
+        };
+      }
     }
   } catch (error) {
     console.error(

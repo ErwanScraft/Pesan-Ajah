@@ -88,6 +88,51 @@ if (!is_valid_store_slug($slug)) {
     exit('Warung tidak ditemukan.');
 }
 
+/*
+|--------------------------------------------------------------------------
+| Ambil profil warung
+|--------------------------------------------------------------------------
+*/
+
+$storeStmt = database()->prepare(
+    'SELECT
+        s.id,
+        s.name,
+        s.slug,
+        s.owner,
+        s.phone,
+        s.address,
+        s.description,
+        s.is_open,
+        s.free_delivery
+    FROM stores s
+    INNER JOIN users u
+        ON u.id = s.user_id
+    WHERE s.slug = :slug
+      AND s.is_active = 1
+      AND u.is_active = 1
+      AND u.role = :role
+    LIMIT 1'
+);
+
+$storeStmt->execute([
+    'slug' => $slug,
+    'role' => 'warung',
+]);
+
+$store = $storeStmt->fetch();
+
+if (!$store) {
+    http_response_code(404);
+    exit('Warung tidak ditemukan.');
+}
+
+/*
+|--------------------------------------------------------------------------
+| Ambil produk milik warung
+|--------------------------------------------------------------------------
+*/
+
 $productStmt = database()->prepare(
     'SELECT
         id,
@@ -98,10 +143,10 @@ $productStmt = database()->prepare(
         unit,
         image,
         is_available
-     FROM products
-     WHERE store_id = :store_id
-       AND is_available = 1
-     ORDER BY name ASC'
+    FROM products
+    WHERE store_id = :store_id
+      AND is_available = 1
+    ORDER BY name ASC'
 );
 
 $productStmt->execute([

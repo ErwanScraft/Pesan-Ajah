@@ -1,4 +1,8 @@
-const STORAGE_KEY = "pesan-ajah-products-v2";
+const storeId = document.body?.dataset.storeId;
+
+const STORAGE_KEY = storeId
+  ? `pesan-ajah-store-${storeId}-products-v2`
+  : "pesan-ajah-products-v2";
 
 function loadProducts() {
   try {
@@ -29,10 +33,7 @@ export function saveProducts() {
 
     return true;
   } catch (error) {
-    console.error(
-      "Gagal menyimpan data produk:",
-      error,
-    );
+    console.error("Gagal menyimpan data produk:", error);
 
     return false;
   }

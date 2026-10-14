@@ -129,7 +129,7 @@ if (request_is_post()) {
                 'role' => 'warung',
             ]);
 
-            redirect('/warung/dashboard.html');
+            redirect('/warung/dashboard.php');
         }
 
         $error = 'Username atau kata sandi tidak sesuai.';
