@@ -4,60 +4,99 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 
+/*
+|--------------------------------------------------------------------------
+| Pemeriksaan sesi
+|--------------------------------------------------------------------------
+*/
+
 if (is_logged_in()) {
-    $user = current_user();
+    $currentUser = current_user();
 
-    if (
-        $user
-        && $user['role'] === 'warung'
-        && (bool) $user['is_active']
-        && password_verify($password, $user['password_hash'])
-    ) {
-        $storeStmt = database()->prepare(
-            'SELECT id, is_active
-             FROM stores
-             WHERE user_id = :user_id
-             LIMIT 1'
-        );
-    
-        $storeStmt->execute([
-            'user_id' => (int) $user['id'],
-        ]);
-    
-        $store = $storeStmt->fetch();
-    
-        if ($store && (bool) $store['is_active']) {
-            login_user($user);
-    
-            redirect('/warung/dashboard.html');
-        }
-    }
-
-    if (($user['role'] ?? '') === 'admin') {
+    if (($currentUser['role'] ?? '') === 'admin') {
         redirect('/admin/');
     }
+
+    if (($currentUser['role'] ?? '') === 'warung') {
+        $stmt = database()->prepare(
+            'SELECT
+                u.id,
+                u.username,
+                u.is_active AS user_is_active,
+                s.id AS store_id,
+                s.is_active AS store_is_active
+             FROM users u
+             INNER JOIN stores s ON s.user_id = u.id
+             WHERE u.id = :user_id
+               AND u.role = :role
+             LIMIT 1'
+        );
+
+        $stmt->execute([
+            'user_id' => (int) $currentUser['id'],
+            'role' => 'warung',
+        ]);
+
+        $account = $stmt->fetch();
+
+        if (
+            $account
+            && (bool) $account['user_is_active']
+            && (bool) $account['store_is_active']
+        ) {
+            redirect('/warung/dashboard.html');
+        }
+
+        logout_user();
+
+        flash(
+            'error',
+            'Akun warung tidak aktif atau profil warung tidak tersedia.'
+        );
+
+        redirect('/warung/login.php');
+    }
+
+    logout_user();
 }
 
-$error = null;
+/*
+|--------------------------------------------------------------------------
+| Login
+|--------------------------------------------------------------------------
+*/
+
+$error = flash('error');
 
 if (request_is_post()) {
     verify_csrf();
 
-    $username = trim((string) ($_POST['username'] ?? ''));
+    $username = trim(
+        (string) ($_POST['username'] ?? '')
+    );
+
     $password = (string) ($_POST['password'] ?? '');
 
     if ($username === '' || $password === '') {
         $error = 'Username dan kata sandi wajib diisi.';
+    } elseif (
+        strlen($username) > 50
+        || strlen($password) > 4096
+    ) {
+        $error = 'Username atau kata sandi tidak valid.';
     } else {
         $stmt = database()->prepare(
             'SELECT
-                id,
-                username,
-                password_hash,
-                role,
-                is_active
-             FROM users
-             WHERE username = :username
+                u.id,
+                u.username,
+                u.password_hash,
+                u.role,
+                u.is_active AS user_is_active,
+                s.id AS store_id,
+                s.is_active AS store_is_active
+             FROM users u
+             LEFT JOIN stores s ON s.user_id = u.id
+             WHERE u.username = :username
              LIMIT 1'
         );
 
@@ -67,41 +106,46 @@ if (request_is_post()) {
 
         $user = $stmt->fetch();
 
-        if (
+        /*
+         * Hanya akun warung yang dibuat admin
+         * dan memiliki profil warung yang bisa login.
+         */
+        $validAccount = (
             $user
             && $user['role'] === 'warung'
-            && (bool) $user['is_active']
-            && password_verify($password, $user['password_hash'])
-        ) {
-            $storeStmt = database()->prepare(
-                'SELECT id, is_active
-                 FROM stores
-                 WHERE user_id = :user_id
-                 LIMIT 1'
-            );
+            && (bool) $user['user_is_active']
+            && $user['store_id'] !== null
+            && (bool) $user['store_is_active']
+            && password_verify(
+                $password,
+                (string) $user['password_hash']
+            )
+        );
 
-            $storeStmt->execute([
-                'user_id' => (int) $user['id'],
+        if ($validAccount) {
+            login_user([
+                'id' => (int) $user['id'],
+                'name' => (string) $user['username'],
+                'role' => 'warung',
             ]);
 
-            $store = $storeStmt->fetch();
-
-            if ($store && (bool) $store['is_active']) {
-                login_user($user);
-
-                redirect('/warung/dashboard.html');
-            }
+            redirect('/warung/dashboard.html');
         }
 
         $error = 'Username atau kata sandi tidak sesuai.';
     }
 }
+
 ?>
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
     <meta name="theme-color" content="#176b45">
 
@@ -113,7 +157,10 @@ if (request_is_post()) {
         href="/assets/images/logo.webp"
     >
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css"
+    >
 
     <style>
         .auth-page {
@@ -130,7 +177,16 @@ if (request_is_post()) {
             padding: 28px;
             border: 1px solid #e5eae7;
             border-radius: 20px;
-            background: white;
+            background: #fff;
+        }
+
+        .auth-brand {
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .auth-card h1 {
+            margin-bottom: 8px;
         }
 
         .auth-card form {
@@ -153,11 +209,20 @@ if (request_is_post()) {
             font: inherit;
         }
 
+        .auth-card button {
+            width: 100%;
+        }
+
         .auth-error {
             padding: 12px;
             border-radius: 10px;
             color: #a32323;
             background: #fff0f0;
+        }
+
+        .auth-footer {
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -165,7 +230,7 @@ if (request_is_post()) {
 <body>
     <main class="auth-page">
         <section class="auth-card">
-            <a href="/">
+            <a class="auth-brand" href="/">
                 <img
                     src="/assets/images/logo.webp"
                     width="48"
@@ -177,7 +242,7 @@ if (request_is_post()) {
             <h1>Login warung</h1>
 
             <p class="muted">
-                Masuk untuk mengelola warung Anda.
+                Masuk menggunakan akun yang diberikan admin.
             </p>
 
             <?php if ($error !== null): ?>
@@ -186,17 +251,17 @@ if (request_is_post()) {
                 </p>
             <?php endif; ?>
 
-            <form method="post" action="/warung/login.php">
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="<?= e(csrf_token()) ?>"
-                >
+            <form
+                method="post"
+                action="/warung/login.php"
+            >
+                <?= csrf_field() ?>
 
                 <label class="auth-field">
                     <span>Username</span>
 
                     <input
+                        type="text"
                         name="username"
                         autocomplete="username"
                         maxlength="50"
@@ -211,6 +276,7 @@ if (request_is_post()) {
                         type="password"
                         name="password"
                         autocomplete="current-password"
+                        maxlength="4096"
                         required
                     >
                 </label>
@@ -219,13 +285,24 @@ if (request_is_post()) {
                     class="button button-primary"
                     type="submit"
                 >
-                    Masuk ke warung
+                    Masuk ke dashboard
                 </button>
             </form>
 
-            <p>
-                <a href="/">Kembali ke marketplace</a>
-            </p>
+            <div class="auth-footer">
+                <p class="muted">
+                    Belum memiliki akun?
+                </p>
+
+                <p>
+                    Hubungi administrator Pesan Ajah untuk
+                    mendapatkan akun warung.
+                </p>
+
+                <a href="/">
+                    Kembali ke marketplace
+                </a>
+            </div>
         </section>
     </main>
 </body>
