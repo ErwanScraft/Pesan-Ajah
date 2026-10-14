@@ -233,8 +233,19 @@
 }
 
 .fulfillment-price {
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+.delivery-price-original {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
 }
 
 /* Order summary */

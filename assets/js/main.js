@@ -1,4 +1,4 @@
-
+import { getStoreSettings } from "./data/store.js";
 import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
@@ -54,27 +54,62 @@ function getDeliveryFee() {
     return 0;
   }
 
-  return selectedFulfillment() === "delivery"
-    ? DELIVERY_FEE
-    : 0;
+  if (selectedFulfillment() !== "delivery") {
+    return 0;
+  }
+
+  const settings = getStoreSettings();
+
+  return settings.freeDelivery
+    ? 0
+    : DELIVERY_FEE;
 }
 
 function renderCart() {
   cart.render(cartView);
 
+  const settings = getStoreSettings();
   const deliveryFee = getDeliveryFee();
   const subtotal = cart.total();
 
+  const deliveryOptionPrice = $("#delivery-option-price");
+
+  // Tampilan harga pada pilihan Delivery.
+  if (deliveryOptionPrice) {
+    if (settings.freeDelivery) {
+      deliveryOptionPrice.innerHTML = `
+        <span class="delivery-price-original">
+          Rp1.000
+        </span>
+      `;
+    } else {
+      deliveryOptionPrice.textContent = "Rp1.000";
+    }
+  }
+
+  // Ringkasan ongkir.
   $("#delivery-fee").textContent =
     formatRupiah(deliveryFee);
 
+  // Total pembayaran.
   $("#cart-total").textContent =
     formatRupiah(subtotal + deliveryFee);
 
-  $("#fulfillment-note").textContent =
-    deliveryFee > 0
-      ? "Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran."
-      : "Ambil sendiri di warung tanpa biaya pengantaran.";
+  // Keterangan metode pesanan.
+  const fulfillmentNote = $("#fulfillment-note");
+
+  if (fulfillmentNote) {
+    if (selectedFulfillment() === "pickup") {
+      fulfillmentNote.textContent =
+        "Ambil sendiri di warung tanpa biaya pengantaran.";
+    } else if (settings.freeDelivery) {
+      fulfillmentNote.textContent =
+        "Biaya pengantaran ditanggung sesuai kesepakatan gratis ongkir.";
+    } else {
+      fulfillmentNote.textContent =
+        "Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran.";
+    }
+  }
 }
 
 function addToCart(productId) {
@@ -171,10 +206,20 @@ $("#checkout-button").addEventListener("click", () => {
 
   const method = selectedFulfillment();
 
-  const message =
-    method === "delivery"
-      ? "Metode Delivery dipilih. Ongkir Rp1.000 per pengantaran."
-      : "Metode Ambil sendiri dipilih. Tidak ada biaya pengantaran.";
+  const settings = getStoreSettings();
+
+  let message;
+  
+  if (method === "pickup") {
+    message =
+      "Metode Ambil Sendiri dipilih. Tidak ada biaya pengantaran.";
+  } else if (settings.freeDelivery) {
+    message =
+      "Metode Delivery dipilih. Biaya pengantaran Rp0.";
+  } else {
+    message =
+      "Metode Delivery dipilih. Ongkir Rp1.000 per pengantaran.";
+  }
 
   showToast(
     toast,

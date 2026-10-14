@@ -7,6 +7,9 @@ export const defaultStoreSettings = {
   address: "Banyukuning",
   description: "Menyediakan kebutuhan sehari-hari untuk warga sekitar.",
   isOpen: true,
+
+  // Aktifkan hanya jika sudah disepakati dengan aplikasi.
+  freeDelivery: false,
 };
 
 export function getStoreSettings() {
@@ -20,7 +23,10 @@ export function getStoreSettings() {
       };
     }
   } catch (error) {
-    console.error("Gagal membaca pengaturan warung:", error);
+    console.error(
+      "Gagal membaca pengaturan warung:",
+      error,
+    );
   }
 
   return { ...defaultStoreSettings };
@@ -38,7 +44,11 @@ export function saveStoreSettings(settings) {
 
     return true;
   } catch (error) {
-    console.error("Gagal menyimpan pengaturan warung:", error);
+    console.error(
+      "Gagal menyimpan pengaturan warung:",
+      error,
+    );
+
     return false;
   }
 }

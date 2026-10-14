@@ -17,6 +17,9 @@ const sidebar = $("#sidebar");
 const productForm = $("#product-form");
 const productList = $("#manage-products");
 const storeSettingsForm = $("#store-settings-form");
+const freeDeliveryToggle = $("#free-delivery-toggle");
+const freeDeliveryToggleText = $("#free-delivery-toggle-text");
+const freeDeliveryFeedback = $("#free-delivery-feedback");
 
 const ORDERS_STORAGE_KEY = "pesan-ajah-demo-orders";
 
@@ -560,14 +563,39 @@ function fillStoreSettingsForm() {
     storeName.textContent = settings.name || "Warung";
   }
 
-  if (!storeSettingsForm) return;
+  if (storeSettingsForm) {
+    storeSettingsForm.elements.name.value =
+      settings.name || "";
 
-  storeSettingsForm.elements.name.value = settings.name || "";
-  storeSettingsForm.elements.owner.value = settings.owner || "";
-  storeSettingsForm.elements.phone.value = settings.phone || "";
-  storeSettingsForm.elements.address.value = settings.address || "";
-  storeSettingsForm.elements.description.value =
-    settings.description || "";
+    storeSettingsForm.elements.owner.value =
+      settings.owner || "";
+
+    storeSettingsForm.elements.phone.value =
+      settings.phone || "";
+
+    storeSettingsForm.elements.address.value =
+      settings.address || "";
+
+    storeSettingsForm.elements.description.value =
+      settings.description || "";
+  }
+
+  if (freeDeliveryToggle) {
+    freeDeliveryToggle.checked =
+      Boolean(settings.freeDelivery);
+  }
+
+  updateFreeDeliveryLabel(
+    Boolean(settings.freeDelivery),
+  );
+}
+
+function updateFreeDeliveryLabel(isEnabled) {
+  if (freeDeliveryToggleText) {
+    freeDeliveryToggleText.textContent = isEnabled
+      ? "Gratis ongkir aktif"
+      : "Gratis ongkir tidak aktif";
+  }
 }
 
 function handleStoreSettingsSubmit(event) {
@@ -578,15 +606,41 @@ function handleStoreSettingsSubmit(event) {
 
   const settings = {
     ...currentSettings,
-    name: String(formData.get("name") || "").trim(),
-    owner: String(formData.get("owner") || "").trim(),
-    phone: String(formData.get("phone") || "").trim(),
-    address: String(formData.get("address") || "").trim(),
-    description: String(formData.get("description") || "").trim(),
+
+    name: String(
+      formData.get("name") || "",
+    ).trim(),
+
+    owner: String(
+      formData.get("owner") || "",
+    ).trim(),
+
+    phone: String(
+      formData.get("phone") || "",
+    ).trim(),
+
+    address: String(
+      formData.get("address") || "",
+    ).trim(),
+
+    description: String(
+      formData.get("description") || "",
+    ).trim(),
+
+    freeDelivery: Boolean(
+      freeDeliveryToggle?.checked,
+    ),
   };
 
-  if (!settings.name || !settings.owner || !settings.address) {
-    notify("Nama warung, pemilik, dan alamat wajib diisi.");
+  if (
+    !settings.name ||
+    !settings.owner ||
+    !settings.address
+  ) {
+    notify(
+      "Nama warung, pemilik, dan alamat wajib diisi.",
+    );
+
     return;
   }
 
@@ -599,6 +653,7 @@ function handleStoreSettingsSubmit(event) {
     }
 
     notify("Pengaturan warung gagal disimpan.");
+
     return;
   }
 
@@ -606,7 +661,15 @@ function handleStoreSettingsSubmit(event) {
   renderManagedProducts();
 
   if (feedback) {
-    feedback.textContent = "Pengaturan berhasil disimpan.";
+    feedback.textContent =
+      "Pengaturan berhasil disimpan.";
+  }
+
+  if (freeDeliveryFeedback) {
+    freeDeliveryFeedback.textContent =
+      settings.freeDelivery
+        ? "Gratis ongkir diaktifkan."
+        : "Gratis ongkir dinonaktifkan.";
   }
 
   notify("Pengaturan warung berhasil disimpan.");
@@ -627,6 +690,17 @@ if (storeSettingsForm) {
   storeSettingsForm.addEventListener(
     "submit",
     handleStoreSettingsSubmit,
+  );
+}
+
+if (freeDeliveryToggle) {
+  freeDeliveryToggle.addEventListener(
+    "change",
+    () => {
+      updateFreeDeliveryLabel(
+        freeDeliveryToggle.checked,
+      );
+    },
   );
 }
 
