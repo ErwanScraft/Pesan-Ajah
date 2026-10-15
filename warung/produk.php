@@ -20,14 +20,10 @@ require __DIR__ . '/_header.php';
         <h2>Kelola produk</h2>
 
         <p class="muted">
-            Tambah, edit, arsipkan, dan atur ketersediaan produk.
+            Tambah, edit, dan atur ketersediaan produk
+            beserta foto yang ditampilkan di marketplace.
         </p>
     </div>
-
-    <span class="demo-badge">
-        <span class="dot"></span>
-        Mode demo
-    </span>
 </div>
 
 <section class="dashboard-card">
@@ -117,12 +113,14 @@ require __DIR__ . '/_header.php';
             </label>
 
             <div class="form-field product-image-field">
-                <span>Foto produk</span>
+                <span id="product-image-label">Foto produk</span>
             
                 <div class="product-image-editor">
                     <div
                         class="product-image-preview"
                         id="product-image-preview"
+                        role="group"
+                        aria-labelledby="product-image-label"
                     >
                         <span id="product-image-placeholder">
                             Belum ada foto
@@ -131,6 +129,8 @@ require __DIR__ . '/_header.php';
                         <img
                             id="product-image-preview-img"
                             alt="Pratinjau foto produk"
+                            loading="eager"
+                            decoding="async"
                             hidden
                         >
                     </div>
@@ -148,6 +148,7 @@ require __DIR__ . '/_header.php';
                             name="image"
                             id="product-image-input"
                             accept="image/jpeg,image/png,image/webp"
+                            aria-label="Pilih foto produk"
                             hidden
                         >
             
@@ -162,7 +163,8 @@ require __DIR__ . '/_header.php';
                     </div>
             
                     <p class="form-help">
-                        Format JPG, PNG, atau WebP. Maksimal 5 MB.
+                        Gunakan foto produk yang jelas.
+                        Format JPG, PNG, atau WebP, maksimal 5 MB.
                     </p>
             
                     <label
@@ -246,17 +248,5 @@ require __DIR__ . '/_header.php';
     ></div>
 
 </section>
-
-<div class="dashboard-note">
-    <strong>Catatan:</strong>
-
-    <p>
-        Halaman ini sudah dilindungi autentikasi PHP.
-        Pengelolaan produk masih menggunakan implementasi
-        JavaScript yang ada. Penyimpanan permanen dan
-        pemisahan produk per warung membutuhkan integrasi
-        database MySQL.
-    </p>
-</div>
 
 <?php require __DIR__ . '/_footer.php'; ?>

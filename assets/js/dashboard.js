@@ -371,81 +371,57 @@ function renderProducts() {
     const info = document.createElement("div");
     info.className = "manage-product";
     
+    // Thumbnail produk
     const thumbnail = document.createElement("div");
 
     thumbnail.className = "manage-product-thumbnail";
-    
+
     const imagePlaceholder = document.createElement("span");
-    
+
+    imagePlaceholder.className = "manage-product-image-placeholder";
     imagePlaceholder.textContent = "Tanpa foto";
-    
+
     const image = document.createElement("img");
-    
+
     image.alt = product.name
       ? `Foto ${product.name}`
       : "Foto produk";
-    
+
     image.loading = "lazy";
     image.decoding = "async";
-    
-    const showPlaceholder = () => {
+    image.hidden = true;
+
+    thumbnail.append(image, imagePlaceholder);
+
+    const showImagePlaceholder = () => {
       image.hidden = true;
+      image.removeAttribute("src");
       imagePlaceholder.hidden = false;
     };
-    
-    const imageLoaded = setImageSource(
-      image,
-      product.image,
-      showPlaceholder,
-    );
-    
-    if (imageLoaded) {
+
+    const imageUrl = resolveImageUrl(product.image);
+
+    if (imageUrl) {
       imagePlaceholder.hidden = true;
-      thumbnail.append(image);
-    } else {
-      image.hidden = true;
-      imagePlaceholder.hidden = false;
-    }
-    
-    image.addEventListener(
-      "load",
-      () => {
-        image.hidden = false;
-        imagePlaceholder.hidden = true;
-      },
-      { once: true },
-    );
-    
-    thumbnail.append(imagePlaceholder);
-    
-    if (product.image) {
-      const image = document.createElement("img");
-    
-      image.src = product.image;
-      image.alt = product.name;
-      image.loading = "lazy";
-    
+
       image.addEventListener(
-        "error",
+        "load",
         () => {
-          thumbnail.replaceChildren();
-    
-          const placeholder = document.createElement("span");
-    
-          placeholder.textContent = "Tanpa foto";
-    
-          thumbnail.append(placeholder);
+          image.hidden = false;
+          imagePlaceholder.hidden = true;
         },
         { once: true },
       );
-    
-      thumbnail.append(image);
+
+      image.addEventListener(
+        "error",
+        showImagePlaceholder,
+        { once: true },
+      );
+
+      image.src = imageUrl;
     } else {
-      const placeholder = document.createElement("span");
-    
-      placeholder.textContent = "Tanpa foto";
-    
-      thumbnail.append(placeholder);
+      showImagePlaceholder();
     }
 
     const details = document.createElement("span");
