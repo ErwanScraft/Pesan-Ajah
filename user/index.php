@@ -45,7 +45,7 @@ header('Cache-Control: no-store, private');
             <a
                 class="brand"
                 href="/"
-                aria-label="Kembali ke Pesan Ajah"
+                aria-label="Pesan Ajah — Beranda"
             >
                 <img
                     class="brand-logo"
@@ -54,15 +54,16 @@ header('Cache-Control: no-store, private');
                     width="44"
                     height="44"
                 >
-
+    
                 <span class="brand-text">
                     <strong>Pesan Ajah</strong>
                     <small>Belanja dekat, jadi mudah.</small>
                 </span>
             </a>
-
-            <a class="text-link" href="/">
-                ← Kembali belanja
+    
+            <a class="button button-outline" href="/">
+                <span aria-hidden="true">←</span>
+                <span>Kembali belanja</span>
             </a>
         </div>
     </header>

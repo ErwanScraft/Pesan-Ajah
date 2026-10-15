@@ -1,45 +1,71 @@
+/* =========================================================
+   Pesan Ajah — Buyer Dashboard
+   ========================================================= */
+
+/* Page layout
+   --------------------------------------------------------- */
+
 .buyer-page {
   min-height: 70vh;
-  padding-block: 42px 60px;
+  padding-block: 40px 64px;
 }
 
 .buyer-container {
+  width: 100%;
   max-width: 900px;
+  margin-inline: auto;
 }
 
 .buyer-intro {
   margin-bottom: 28px;
 }
 
+.buyer-intro .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .buyer-intro h1 {
-  margin: 8px 0;
-  font-size: clamp(28px, 5vw, 40px);
+  margin: 10px 0 8px;
+  font-size: clamp(28px, 4vw, 38px);
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: -1.1px;
+  line-height: 1.2;
 }
 
 .buyer-intro p {
-  max-width: 600px;
+  max-width: 560px;
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
+/* Loading and notification
+   --------------------------------------------------------- */
+
 .buyer-message {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--white);
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
+
+.buyer-message[hidden] {
+  display: none;
+}
+
+/* Order list
+   --------------------------------------------------------- */
 
 .buyer-orders {
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .buyer-order-card {
@@ -49,13 +75,24 @@
   border-radius: 18px;
   background: var(--white);
   box-shadow: var(--shadow-sm);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
+
+.buyer-order-card:hover {
+  border-color: #d2dfd4;
+  box-shadow: 0 8px 28px rgb(24 48 32 / 6%);
+}
+
+/* Order heading
+   --------------------------------------------------------- */
 
 .buyer-order-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
   padding: 22px;
   border-bottom: 1px solid var(--border);
 }
@@ -65,101 +102,132 @@
 }
 
 .buyer-order-label {
+  display: block;
+  margin-bottom: 7px;
   color: var(--muted);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .buyer-order-number {
-  margin: 5px 0;
+  margin: 0 0 7px;
   overflow-wrap: anywhere;
-  font-size: 18px;
+  color: var(--text);
+  font-size: 17px;
   font-weight: 800;
+  line-height: 1.45;
 }
 
 .buyer-order-store {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.6;
 }
 
+/* Order status
+   --------------------------------------------------------- */
+
 .buyer-status {
+  display: inline-flex;
   flex-shrink: 0;
-  padding: 7px 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  max-width: 190px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 750;
+  line-height: 1.4;
   text-align: center;
 }
 
 .buyer-status-pending {
-  background: #fff4d6;
-  color: #8b5a00;
+  border-color: #f2dfab;
+  background: #fff8e6;
+  color: #8a5a00;
 }
 
 .buyer-status-confirmed {
-  background: #e5efff;
+  border-color: #c9dcff;
+  background: #edf4ff;
   color: #174ea6;
 }
 
 .buyer-status-processing {
-  background: #e6f4ea;
+  border-color: #c5e6d1;
+  background: #edf8f0;
   color: #176b45;
 }
 
 .buyer-status-completed {
-  background: #dff5e5;
+  border-color: #bce5c8;
+  background: #e5f7e9;
   color: #126b46;
 }
 
 .buyer-status-cancelled {
-  background: #fde8e7;
+  border-color: #f2c9c7;
+  background: #fff0ef;
   color: #b42318;
 }
+
+/* Order details
+   --------------------------------------------------------- */
 
 .buyer-order-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 24px;
-  padding: 18px 22px;
+  gap: 0 28px;
+  padding: 12px 22px;
 }
 
 .buyer-detail-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  padding-block: 9px;
+  gap: 16px;
+  min-width: 0;
+  padding-block: 12px;
   border-bottom: 1px solid #edf0eb;
 }
 
 .buyer-detail-label {
+  flex-shrink: 0;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.6;
 }
 
 .buyer-detail-value {
+  min-width: 0;
   overflow-wrap: anywhere;
+  color: var(--text);
   font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
   text-align: right;
 }
 
-.buyer-order-items,
-.buyer-address-section {
-  padding: 18px 22px;
+/* Product details
+   --------------------------------------------------------- */
+
+.buyer-order-items {
+  padding: 20px 22px;
   border-top: 1px solid var(--border);
 }
 
-.buyer-order-items h3,
-.buyer-address-section h3 {
-  margin: 0 0 12px;
+.buyer-order-items h3 {
+  margin: 0 0 15px;
   font-size: 13px;
   font-weight: 800;
 }
 
 .buyer-item-list {
   display: grid;
-  gap: 10px;
+  gap: 13px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -167,46 +235,94 @@
 
 .buyer-item {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
-  font-size: 12px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .buyer-item-name {
+  min-width: 0;
   overflow-wrap: anywhere;
   color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .buyer-item-total {
   flex-shrink: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.7;
+  text-align: right;
+}
+
+/* Delivery address
+   --------------------------------------------------------- */
+
+.buyer-address-section {
+  padding: 20px 22px;
+  border-top: 1px solid var(--border);
+  background: #fcfdfb;
+}
+
+.buyer-address-section h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .buyer-address {
-  margin: 0 0 14px;
+  margin: 0 0 15px;
   overflow-wrap: anywhere;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.8;
 }
 
 .buyer-map-button {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
   text-decoration: none;
 }
 
+.buyer-map-button:focus-visible {
+  outline: 3px solid rgb(23 107 69 / 20%);
+  outline-offset: 3px;
+}
+
+/* Card footer
+   --------------------------------------------------------- */
+
 .buyer-order-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 14px 22px;
   border-top: 1px solid var(--border);
-  background: #f8faf6;
+  background: #f8faf7;
 }
 
 .buyer-order-updated {
   color: var(--muted);
   font-size: 10px;
+  line-height: 1.6;
 }
 
+/* Empty state
+   --------------------------------------------------------- */
+
 .buyer-empty {
-  padding: 42px 20px;
+  padding: 44px 24px;
   border: 1px dashed var(--border);
   border-radius: 18px;
   background: var(--white);
@@ -219,64 +335,271 @@
 
 .buyer-empty-icon {
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 60px;
+  height: 60px;
   place-items: center;
-  margin: 0 auto 16px;
-  border-radius: 16px;
+  margin: 0 auto 18px;
+  border: 1px solid #dce9de;
+  border-radius: 18px;
   background: var(--green-light);
   color: var(--green);
+  font-size: 15px;
   font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .buyer-empty h2 {
-  margin: 0 0 8px;
+  margin: 0 0 9px;
   font-size: 19px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 .buyer-empty p {
-  margin: 0 auto 20px;
+  max-width: 380px;
+  margin: 0 auto 22px;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.8;
 }
+
+.buyer-empty .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+/* Privacy note
+   --------------------------------------------------------- */
 
 .buyer-security-note {
-  margin-top: 24px;
+  margin: 22px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8faf7;
   color: var(--muted);
   font-size: 11px;
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
-@media (max-width: 600px) {
+/* Keyboard accessibility
+   --------------------------------------------------------- */
+
+.buyer-page a:focus-visible {
+  outline: 3px solid rgb(23 107 69 / 22%);
+  outline-offset: 3px;
+}
+
+/* Tablet
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
   .buyer-page {
-    padding-block: 28px 42px;
+    padding-block: 32px 48px;
+  }
+
+  .buyer-container {
+    max-width: 100%;
+  }
+
+  .buyer-intro {
+    margin-bottom: 24px;
   }
 
   .buyer-order-header {
-    flex-direction: column;
-    padding: 18px;
+    padding: 20px;
   }
 
   .buyer-order-details {
-    grid-template-columns: 1fr;
-    padding: 14px 18px;
+    gap: 0 18px;
+    padding-inline: 20px;
   }
 
   .buyer-order-items,
   .buyer-address-section {
-    padding: 16px 18px;
+    padding-inline: 20px;
   }
 
   .buyer-order-footer {
-    padding: 12px 18px;
+    padding-inline: 20px;
+  }
+}
+
+/* Mobile
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .buyer-page {
+    padding-block: 26px 38px;
+  }
+
+  .buyer-intro {
+    margin-bottom: 20px;
+  }
+
+  .buyer-intro h1 {
+    margin-top: 9px;
+    font-size: 29px;
+    letter-spacing: -0.8px;
+  }
+
+  .buyer-intro p {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .buyer-message {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .buyer-orders {
+    gap: 14px;
+  }
+
+  .buyer-order-card {
+    border-radius: 15px;
+  }
+
+  .buyer-order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 17px;
+  }
+
+  .buyer-order-number {
+    font-size: 16px;
+  }
+
+  .buyer-status {
+    max-width: 100%;
+    min-height: 28px;
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .buyer-order-details {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 8px 17px;
+  }
+
+  .buyer-detail-row {
+    gap: 14px;
+    padding-block: 11px;
+  }
+
+  .buyer-detail-label,
+  .buyer-detail-value {
+    font-size: 12px;
+  }
+
+  .buyer-order-items {
+    padding: 17px;
+  }
+
+  .buyer-order-items h3 {
+    margin-bottom: 13px;
+  }
+
+  .buyer-item-list {
+    gap: 12px;
   }
 
   .buyer-item {
-    align-items: flex-start;
+    gap: 12px;
   }
 
+  .buyer-item-name,
   .buyer-item-total {
-    text-align: right;
+    font-size: 12px;
+  }
+
+  .buyer-address-section {
+    padding: 17px;
+  }
+
+  .buyer-address {
+    font-size: 12px;
+  }
+
+  .buyer-map-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .buyer-order-footer {
+    padding: 12px 17px;
+  }
+
+  .buyer-order-updated {
+    font-size: 10px;
+  }
+
+  .buyer-empty {
+    padding: 34px 18px;
+    border-radius: 15px;
+  }
+
+  .buyer-empty h2 {
+    font-size: 17px;
+  }
+
+  .buyer-empty p {
+    font-size: 12px;
+  }
+
+  .buyer-security-note {
+    margin-top: 18px;
+    padding: 12px 14px;
+    font-size: 10px;
+  }
+}
+
+/* Very small devices
+   --------------------------------------------------------- */
+
+@media (max-width: 360px) {
+  .buyer-intro h1 {
+    font-size: 26px;
+  }
+
+  .buyer-order-header {
+    padding: 15px;
+  }
+
+  .buyer-order-details {
+    padding-inline: 15px;
+  }
+
+  .buyer-order-items,
+  .buyer-address-section {
+    padding: 15px;
+  }
+
+  .buyer-order-footer {
+    padding-inline: 15px;
+  }
+
+  .buyer-detail-row {
+    gap: 8px;
+  }
+
+  .buyer-detail-label,
+  .buyer-detail-value {
+    font-size: 11px;
+  }
+}
+
+/* Reduced motion
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .buyer-order-card {
+    transition: none;
   }
 }

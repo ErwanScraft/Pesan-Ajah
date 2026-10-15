@@ -83,6 +83,12 @@ function getDeliveryFee() {
 
 function renderCart() {
   cart.render(cartView);
+  
+  const cartCountLabel = $("#cart-count-label");
+
+  if (cartCountLabel) {
+    cartCountLabel.textContent = String(cart.quantity());
+  }
 
   const deliveryFee = getDeliveryFee();
   const subtotal = cart.total();
@@ -777,6 +783,11 @@ $("#reset-search")?.addEventListener(
 cartButton?.addEventListener("click", openCart);
 
 closeCartButton?.addEventListener(
+  "click",
+  closeCart,
+);
+
+$("#empty-cart-close")?.addEventListener(
   "click",
   closeCart,
 );
