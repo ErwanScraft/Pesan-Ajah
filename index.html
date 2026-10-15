@@ -88,8 +88,8 @@
         </div>
 
         <div class="header-actions">
-          <a class="text-link dashboard-link" href="warung/login.php">
-            Dashboard Warung
+          <a class="text-link dashboard-link" href="/user/">
+            Dashboard Buyer
           </a>
 
           <button
@@ -431,6 +431,134 @@
               <strong class="fulfillment-price">Gratis</strong>
             </label>
           </fieldset>
+          
+          <section class="checkout-form" id="checkout-form-section">
+            <div class="checkout-form-heading">
+              <span class="eyebrow eyebrow-plain">DATA PEMESANAN</span>
+              <h3>Informasi pembeli</h3>
+              <p class="muted">
+                Isi informasi agar warung dapat memproses pesananmu.
+              </p>
+            </div>
+          
+            <div class="form-field">
+              <label for="buyer-name">Nama lengkap</label>
+              <input
+                id="buyer-name"
+                name="buyer_name"
+                type="text"
+                maxlength="100"
+                autocomplete="name"
+                placeholder="Nama penerima pesanan"
+                required
+              />
+            </div>
+          
+            <div class="form-field">
+              <label for="buyer-phone">Nomor WhatsApp</label>
+              <input
+                id="buyer-phone"
+                name="buyer_phone"
+                type="tel"
+                maxlength="25"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="Contoh: 081234567890"
+                required
+              />
+              <small class="muted">
+                Gunakan nomor yang bisa dihubungi.
+              </small>
+            </div>
+          
+            <div id="delivery-address-section">
+              <div class="form-field">
+                <label for="delivery-address">Alamat lengkap</label>
+                <textarea
+                  id="delivery-address"
+                  name="delivery_address"
+                  rows="3"
+                  maxlength="255"
+                  autocomplete="street-address"
+                  placeholder="Nama jalan, nomor rumah, RT/RW, desa, dan patokan"
+                ></textarea>
+              </div>
+          
+              <div class="location-picker">
+                <div class="location-picker-heading">
+                  <strong>Lokasi Google Maps</strong>
+                  <span class="optional-label">Opsional</span>
+                </div>
+          
+                <p class="muted small">
+                  Gunakan GPS atau tempel tautan lokasi rumah dari Google Maps.
+                </p>
+          
+                <button
+                  class="button button-outline button-full"
+                  id="use-location-button"
+                  type="button"
+                >
+                  Gunakan Lokasi Saya
+                </button>
+          
+                <div
+                  id="location-status"
+                  class="location-status"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Belum ada lokasi yang dipilih.
+                </div>
+          
+                <div class="form-field">
+                  <label for="delivery-maps-url">
+                    Tautan Google Maps
+                  </label>
+          
+                  <input
+                    id="delivery-maps-url"
+                    name="delivery_maps_url"
+                    type="url"
+                    inputmode="url"
+                    maxlength="500"
+                    placeholder="https://maps.google.com/..."
+                  />
+          
+                  <small class="muted">
+                    Kamu juga bisa menempelkan tautan lokasi yang dibagikan dari Google Maps.
+                  </small>
+                </div>
+          
+                <input
+                  id="delivery-latitude"
+                  type="hidden"
+                  name="delivery_latitude"
+                />
+          
+                <input
+                  id="delivery-longitude"
+                  type="hidden"
+                  name="delivery_longitude"
+                />
+          
+                <a
+                  id="preview-location-link"
+                  class="location-preview-link"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  hidden
+                >
+                  Buka lokasi di Google Maps
+                </a>
+              </div>
+            </div>
+          
+            <p class="checkout-privacy-note">
+              Data ini digunakan untuk memproses dan mengantarkan pesanan.
+            </p>
+          </section>
         
           <div class="order-summary">
             <div class="summary-row">

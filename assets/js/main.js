@@ -308,6 +308,198 @@ async function loadCatalog() {
 |--------------------------------------------------------------------------
 */
 
+function setLocationStatus(message, type = "") {
+  const element = $("#location-status");
+
+  if (!element) {
+    return;
+  }
+
+  element.textContent = message;
+  element.classList.remove("is-success", "is-error");
+
+  if (type === "success") {
+    element.classList.add("is-success");
+  } else if (type === "error") {
+    element.classList.add("is-error");
+  }
+}
+
+function updateLocationPreview() {
+  const urlInput = $("#delivery-maps-url");
+  const preview = $("#preview-location-link");
+
+  if (!urlInput || !preview) {
+    return;
+  }
+
+  const value = urlInput.value.trim();
+
+  if (!value) {
+    preview.hidden = true;
+    preview.removeAttribute("href");
+    return;
+  }
+
+  try {
+    const url = new URL(value);
+
+    const allowedHosts = [
+      "google.com",
+      "www.google.com",
+      "maps.google.com",
+      "maps.app.goo.gl",
+      "goo.gl",
+    ];
+
+    const validHost =
+      allowedHosts.includes(url.hostname.toLowerCase()) ||
+      url.hostname.toLowerCase().endsWith(".google.com");
+
+    if (url.protocol !== "https:" || !validHost) {
+      preview.hidden = true;
+      preview.removeAttribute("href");
+      return;
+    }
+
+    preview.href = url.href;
+    preview.hidden = false;
+  } catch {
+    preview.hidden = true;
+    preview.removeAttribute("href");
+  }
+}
+
+function toggleDeliveryFields() {
+  const section = $("#delivery-address-section");
+  const isDelivery = selectedFulfillment() === "delivery";
+
+  if (section) {
+    section.hidden = !isDelivery;
+  }
+
+  const address = $("#delivery-address");
+
+  if (address) {
+    address.required = isDelivery;
+  }
+
+  if (!isDelivery) {
+    const urlInput = $("#delivery-maps-url");
+    const latitude = $("#delivery-latitude");
+    const longitude = $("#delivery-longitude");
+
+    if (urlInput) urlInput.value = "";
+    if (latitude) latitude.value = "";
+    if (longitude) longitude.value = "";
+
+    updateLocationPreview();
+    setLocationStatus("Lokasi tidak diperlukan untuk ambil sendiri.");
+  } else {
+    setLocationStatus("Belum ada lokasi yang dipilih.");
+  }
+}
+
+function validMapsUrl(value) {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    const url = new URL(value);
+
+    const host = url.hostname.toLowerCase();
+
+    const allowedHosts = [
+      "google.com",
+      "www.google.com",
+      "maps.google.com",
+      "maps.app.goo.gl",
+      "goo.gl",
+    ];
+
+    return (
+      url.protocol === "https:" &&
+      (
+        allowedHosts.includes(host) ||
+        host.endsWith(".google.com")
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function useCurrentLocation() {
+  if (!navigator.geolocation) {
+    setLocationStatus(
+      "Browser tidak mendukung akses lokasi. Tempel tautan Google Maps secara manual.",
+      "error",
+    );
+
+    return;
+  }
+
+  const button = $("#use-location-button");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Mengambil lokasi...";
+  }
+
+  setLocationStatus("Meminta izin akses lokasi...");
+
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        resolve,
+        reject,
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0,
+        },
+      );
+    });
+
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    $("#delivery-latitude").value = latitude.toFixed(7);
+    $("#delivery-longitude").value = longitude.toFixed(7);
+
+    $("#delivery-maps-url").value =
+      `https://maps.google.com/?q=${latitude},${longitude}`;
+
+    updateLocationPreview();
+
+    setLocationStatus(
+      `Lokasi berhasil dipilih: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}.`,
+      "success",
+    );
+  } catch (error) {
+    let message = "Lokasi tidak berhasil diperoleh.";
+
+    if (error?.code === 1) {
+      message =
+        "Izin lokasi ditolak. Aktifkan izin lokasi atau tempel tautan Google Maps.";
+    } else if (error?.code === 2) {
+      message =
+        "Lokasi tidak tersedia. Periksa GPS atau gunakan tautan Google Maps.";
+    } else if (error?.code === 3) {
+      message =
+        "Pengambilan lokasi melewati batas waktu. Silakan coba lagi.";
+    }
+
+    setLocationStatus(message, "error");
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Gunakan Lokasi Saya";
+    }
+  }
+}
+
 async function submitCheckout() {
   if (cart.quantity() === 0) {
     showToast(toast, "Keranjang masih kosong.");
@@ -326,68 +518,75 @@ async function submitCheckout() {
     return;
   }
 
-  /*
-   * Buka tab kosong langsung dari aksi klik agar
-   * browser tidak memblokir pembukaan WhatsApp.
-   *
-   * Tab hanya diarahkan ke WhatsApp setelah server
-   * mengonfirmasi pesanan berhasil disimpan.
-   */
-  const whatsappWindow = window.open(
-    "about:blank",
-    "_blank",
-  );
-
-  const buyerName = window.prompt(
-    "Masukkan nama pembeli:",
-  )?.trim();
-
-  if (!buyerName) {
-    whatsappWindow?.close();
-
-    showToast(
-      toast,
-      "Nama pembeli wajib diisi.",
-    );
-
-    return;
-  }
-
-  const buyerPhone = window.prompt(
-    "Masukkan nomor telepon pembeli:",
-  )?.trim();
-
-  if (!buyerPhone) {
-    whatsappWindow?.close();
-
-    showToast(
-      toast,
-      "Nomor telepon pembeli wajib diisi.",
-    );
-
-    return;
-  }
-
-  let deliveryAddress = "";
+  const buyerName = $("#buyer-name")?.value.trim() ?? "";
+  const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
 
   const deliveryMethod = selectedFulfillment();
 
-  if (deliveryMethod === "delivery") {
-    deliveryAddress = window.prompt(
-      "Masukkan alamat lengkap pengantaran:",
-    )?.trim() ?? "";
+  const deliveryAddress =
+    $("#delivery-address")?.value.trim() ?? "";
 
-    if (!deliveryAddress) {
-      whatsappWindow?.close();
+  const deliveryMapsUrl =
+    $("#delivery-maps-url")?.value.trim() ?? "";
 
-      showToast(
-        toast,
-        "Alamat pengantaran wajib diisi.",
-      );
+  const deliveryLatitude =
+    $("#delivery-latitude")?.value.trim() ?? "";
 
-      return;
-    }
+  const deliveryLongitude =
+    $("#delivery-longitude")?.value.trim() ?? "";
+
+  if (!buyerName || buyerName.length > 100) {
+    showToast(toast, "Nama pembeli wajib diisi.");
+    $("#buyer-name")?.focus();
+    return;
   }
+
+  if (!buyerPhone || buyerPhone.length > 25) {
+    showToast(toast, "Nomor WhatsApp wajib diisi.");
+    $("#buyer-phone")?.focus();
+    return;
+  }
+
+  if (
+    deliveryMethod === "delivery" &&
+    (!deliveryAddress || deliveryAddress.length > 255)
+  ) {
+    showToast(
+      toast,
+      "Alamat pengantaran wajib diisi dan maksimal 255 karakter.",
+    );
+
+    $("#delivery-address")?.focus();
+    return;
+  }
+
+  if (
+    deliveryMethod === "delivery" &&
+    !validMapsUrl(deliveryMapsUrl)
+  ) {
+    showToast(
+      toast,
+      "Tautan lokasi harus berupa tautan Google Maps yang valid.",
+    );
+
+    $("#delivery-maps-url")?.focus();
+    return;
+  }
+
+  if (
+    (deliveryLatitude && !deliveryLongitude) ||
+    (!deliveryLatitude && deliveryLongitude)
+  ) {
+    showToast(toast, "Koordinat lokasi tidak lengkap.");
+    return;
+  }
+
+  /*
+   * Buka tab kosong langsung dari aksi klik.
+   * WhatsApp baru dibuka setelah database mengonfirmasi
+   * bahwa pesanan berhasil disimpan.
+   */
+  const whatsappWindow = window.open("about:blank", "_blank");
 
   checkoutButton.disabled = true;
 
@@ -396,9 +595,6 @@ async function submitCheckout() {
   checkoutButton.textContent = "Menyimpan pesanan...";
 
   try {
-    /*
-     * Muat token terbaru sebelum mengirim checkout.
-     */
     if (!csrfToken) {
       await loadCsrfToken();
     }
@@ -413,14 +609,26 @@ async function submitCheckout() {
 
       delivery_method: deliveryMethod,
 
-      delivery_address: deliveryMethod === "delivery"
-        ? deliveryAddress
-        : "",
+      delivery_address:
+        deliveryMethod === "delivery"
+          ? deliveryAddress
+          : "",
 
-      /*
-       * Hanya kirim ID dan jumlah produk.
-       * Harga dihitung ulang di server.
-       */
+      delivery_maps_url:
+        deliveryMethod === "delivery"
+          ? deliveryMapsUrl
+          : "",
+
+      delivery_latitude:
+        deliveryMethod === "delivery"
+          ? deliveryLatitude
+          : "",
+
+      delivery_longitude:
+        deliveryMethod === "delivery"
+          ? deliveryLongitude
+          : "",
+
       items: cart.entries(),
     };
 
@@ -446,40 +654,83 @@ async function submitCheckout() {
     }
 
     /*
-     * Pada titik ini server sudah melakukan COMMIT.
-     * Pesanan telah tersimpan dengan status pending.
+     * Simpan token agar pembeli dapat membuka
+     * Dashboard Buyer setelah meninggalkan halaman.
      */
+    if (
+      typeof result.buyer_token !== "string" ||
+      !/^[a-f0-9]{64}$/i.test(result.buyer_token)
+    ) {
+      throw new Error(
+        "Pesanan tersimpan, tetapi token pelacakan tidak diterima. Simpan nomor pesanan: " +
+          result.order_number,
+      );
+    }
+
+    const storageKey = "pesan_ajah_order_tokens";
+
+    let savedOrders = [];
+
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem(storageKey) || "[]",
+      );
+
+      if (Array.isArray(stored)) {
+        savedOrders = stored;
+      }
+    } catch {
+      savedOrders = [];
+    }
+
+    savedOrders = savedOrders.filter(
+      (order) =>
+        order &&
+        order.order_number !== result.order_number,
+    );
+
+    savedOrders.unshift({
+      token: result.buyer_token,
+      order_number: result.order_number,
+      created_at: new Date().toISOString(),
+    });
+
+    /*
+     * Simpan paling banyak 50 token pesanan pada browser.
+     */
+    savedOrders = savedOrders.slice(0, 50);
+
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify(savedOrders),
+      );
+    } catch {
+      showToast(
+        toast,
+        "Pesanan tersimpan, tetapi browser tidak dapat menyimpan riwayat. Buka Dashboard Buyer setelah checkout ini.",
+      );
+    }
+
     cart.clear();
 
     renderCart();
     catalog.render();
-
     closeCart();
 
     showToast(
       toast,
-      `Pesanan ${result.order_number} tersimpan dengan status pending.`,
+      `Pesanan ${result.order_number} tersimpan dengan status menunggu konfirmasi.`,
     );
 
-    /*
-     * WhatsApp hanya dibuka setelah penyimpanan sukses.
-     */
     if (result.whatsapp_url) {
       if (whatsappWindow && !whatsappWindow.closed) {
         whatsappWindow.location.href = result.whatsapp_url;
       } else {
-        /*
-         * Fallback apabila browser memblokir tab baru.
-         */
         window.location.href = result.whatsapp_url;
       }
     } else {
       whatsappWindow?.close();
-
-      showToast(
-        toast,
-        `Pesanan ${result.order_number} sudah tercatat, tetapi tautan WhatsApp tidak tersedia.`,
-      );
     }
   } catch (error) {
     whatsappWindow?.close();
@@ -530,9 +781,24 @@ closeCartButton?.addEventListener(
   closeCart,
 );
 
+$("#use-location-button")?.addEventListener(
+  "click",
+  useCurrentLocation,
+);
+
+$("#delivery-maps-url")?.addEventListener(
+  "input",
+  updateLocationPreview,
+);
+
 fulfillmentInputs.forEach((input) => {
-  input.addEventListener("change", renderCart);
+  input.addEventListener("change", () => {
+    toggleDeliveryFields();
+    renderCart();
+  });
 });
+
+toggleDeliveryFields();
 
 cartItems?.addEventListener("click", (event) => {
   const addButton = event.target.closest("[data-add]");

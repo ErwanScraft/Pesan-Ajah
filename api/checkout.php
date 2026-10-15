@@ -163,7 +163,125 @@ $deliveryAddress = trim(
         : ''
 );
 
+$deliveryMapsUrl = trim(
+    is_string($input['delivery_maps_url'] ?? null)
+        ? $input['delivery_maps_url']
+        : ''
+);
+
+$latitudeInput = $input['delivery_latitude'] ?? null;
+$longitudeInput = $input['delivery_longitude'] ?? null;
+
+$deliveryLatitude = null;
+$deliveryLongitude = null;
+
 $items = $input['items'] ?? [];
+
+if ($deliveryMapsUrl !== '') {
+    if (mb_strlen($deliveryMapsUrl, 'UTF-8') > 500) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Tautan Google Maps terlalu panjang.',
+        ], 422);
+    }
+
+    $parts = parse_url($deliveryMapsUrl);
+
+    $host = strtolower(
+        is_array($parts)
+            ? (string) ($parts['host'] ?? '')
+            : ''
+    );
+
+    $allowedHosts = [
+        'google.com',
+        'www.google.com',
+        'maps.google.com',
+        'maps.app.goo.gl',
+        'goo.gl',
+    ];
+
+    $validMapsHost = in_array($host, $allowedHosts, true)
+        || str_ends_with($host, '.google.com');
+
+    if (
+        !filter_var($deliveryMapsUrl, FILTER_VALIDATE_URL)
+        || strtolower((string) ($parts['scheme'] ?? '')) !== 'https'
+        || !$validMapsHost
+    ) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Tautan lokasi harus berupa tautan Google Maps yang valid.',
+        ], 422);
+    }
+}
+
+if ($latitudeInput !== null && $latitudeInput !== '') {
+    if (!is_numeric($latitudeInput)) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat lintang tidak valid.',
+        ], 422);
+    }
+
+    $deliveryLatitude = (float) $latitudeInput;
+
+    if (
+        !is_finite($deliveryLatitude)
+        || $deliveryLatitude < -90
+        || $deliveryLatitude > 90
+    ) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat lintang berada di luar rentang yang valid.',
+        ], 422);
+    }
+}
+
+if ($longitudeInput !== null && $longitudeInput !== '') {
+    if (!is_numeric($longitudeInput)) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat bujur tidak valid.',
+        ], 422);
+    }
+
+    $deliveryLongitude = (float) $longitudeInput;
+
+    if (
+        !is_finite($deliveryLongitude)
+        || $deliveryLongitude < -180
+        || $deliveryLongitude > 180
+    ) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat bujur berada di luar rentang yang valid.',
+        ], 422);
+    }
+}
+
+if (
+    ($deliveryLatitude === null) !== ($deliveryLongitude === null)
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Koordinat lintang dan bujur harus diisi bersama.',
+    ], 422);
+}
+
+if (
+    $deliveryMethod === 'pickup'
+    && (
+        $deliveryMapsUrl !== ''
+        || $deliveryLatitude !== null
+        || $deliveryLongitude !== null
+    )
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Lokasi pengantaran tidak diperlukan untuk metode ambil sendiri.',
+    ], 422);
+}
 
 if (
     $storeId === false
@@ -449,6 +567,19 @@ try {
     $orderNumber = 'PA'
         . date('ymd')
         . strtoupper(bin2hex(random_bytes(4)));
+    
+    /*
+     * Token pelacakan acak.
+     *
+     * Token mentah hanya dikirim kepada pembeli satu kali.
+     * Database hanya menyimpan SHA-256 token.
+     */
+    $buyerTrackingToken = bin2hex(random_bytes(32));
+    
+    $buyerTrackingTokenHash = hash(
+        'sha256',
+        $buyerTrackingToken
+    );
 
     /*
      * Simpan pesanan sebagai pending.
@@ -461,6 +592,10 @@ try {
             buyer_phone,
             delivery_method,
             delivery_address,
+            delivery_maps_url,
+            delivery_latitude,
+            delivery_longitude,
+            buyer_token_hash,
             delivery_fee,
             subtotal,
             total,
@@ -472,22 +607,44 @@ try {
             :buyer_phone,
             :delivery_method,
             :delivery_address,
+            :delivery_maps_url,
+            :delivery_latitude,
+            :delivery_longitude,
+            :buyer_token_hash,
             :delivery_fee,
             :subtotal,
             :total,
             'pending'
         )"
     );
-
+    
     $insertOrder->execute([
         'store_id' => (int) $storeId,
         'order_number' => $orderNumber,
         'buyer_name' => $buyerName,
         'buyer_phone' => $buyerPhone,
+    
         'delivery_method' => $deliveryMethod,
+    
         'delivery_address' => $deliveryMethod === 'delivery'
             ? $deliveryAddress
             : null,
+    
+        'delivery_maps_url' => $deliveryMethod === 'delivery'
+            && $deliveryMapsUrl !== ''
+                ? $deliveryMapsUrl
+                : null,
+    
+        'delivery_latitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLatitude
+            : null,
+    
+        'delivery_longitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLongitude
+            : null,
+    
+        'buyer_token_hash' => $buyerTrackingTokenHash,
+    
         'delivery_fee' => $deliveryFee,
         'subtotal' => $subtotal,
         'total' => $total,
@@ -575,6 +732,19 @@ try {
         $lines[] = 'Metode: Delivery';
 
         $lines[] = 'Alamat: ' . $deliveryAddress;
+        
+        if ($deliveryMapsUrl !== '') {
+            $lines[] = 'Lokasi Google Maps: ' . $deliveryMapsUrl;
+        } elseif (
+            $deliveryLatitude !== null
+            && $deliveryLongitude !== null
+        ) {
+            $lines[] = sprintf(
+                'Lokasi Google Maps: https://maps.google.com/?q=%s,%s',
+                $deliveryLatitude,
+                $deliveryLongitude
+            );
+        }
 
         if ($deliveryFee === 0.0) {
             $lines[] = 'Ongkir: Rp0';
@@ -602,12 +772,17 @@ try {
     checkout_json([
         'success' => true,
         'message' => 'Pesanan berhasil disimpan.',
+    
         'order_id' => $orderId,
         'order_number' => $orderNumber,
         'status' => 'pending',
+    
         'subtotal' => $subtotal,
         'delivery_fee' => $deliveryFee,
         'total' => $total,
+    
+        'buyer_token' => $buyerTrackingToken,
+    
         'whatsapp_url' => $whatsappUrl,
     ], 201);
 } catch (Throwable $exception) {

@@ -336,3 +336,161 @@
     transition: none;
   }
 }
+
+/* Checkout form */
+
+.checkout-form {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.checkout-form-heading h3 {
+  margin: 0 0 7px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.checkout-form-heading p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.form-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.form-field label {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  outline: none;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.form-field input {
+  min-height: 46px;
+}
+
+.form-field textarea {
+  min-height: 90px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgb(23 107 69 / 10%);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: #969e96;
+}
+
+.form-field small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.location-picker {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #f8faf6;
+}
+
+.location-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.location-picker-heading strong {
+  font-size: 13px;
+}
+
+.optional-label {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.location-picker > p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.location-status {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.location-status.is-success {
+  color: var(--green);
+}
+
+.location-status.is-error {
+  color: #b42318;
+}
+
+.location-preview-link {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.location-preview-link[hidden] {
+  display: none;
+}
+
+.checkout-privacy-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .checkout-form {
+    gap: 16px;
+    padding: 18px 16px;
+  }
+
+  .location-picker {
+    padding: 12px;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    font-size: 16px;
+  }
+}

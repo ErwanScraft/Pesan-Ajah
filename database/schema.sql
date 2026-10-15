@@ -124,6 +124,16 @@ CREATE TABLE IF NOT EXISTS orders (
         'completed',
         'cancelled'
     ) NOT NULL DEFAULT 'pending',
+    
+    buyer_token_hash CHAR(64) DEFAULT NULL,
+    
+    delivery_maps_url VARCHAR(500) DEFAULT NULL,
+    
+    delivery_latitude DECIMAL(10, 7) DEFAULT NULL,
+    
+    delivery_longitude DECIMAL(10, 7) DEFAULT NULL,
+    
+    uq_orders_buyer_token_hash (buyer_token_hash);
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
