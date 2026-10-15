@@ -1,10 +1,14 @@
 Options -Indexes
 
-DirectoryIndex index.html index.php
+DirectoryIndex index.php
 
 RewriteEngine On
 
-# Lindungi direktori internal aplikasi.
+# =========================================================
+# PESAN AJAH — PROTECTION
+# =========================================================
+
+# Lindungi direktori internal.
 RewriteRule ^(?:app|config|database|scripts|routes)/ - [F,L,NC]
 
 # Lindungi file konfigurasi.
@@ -17,10 +21,25 @@ RewriteRule ^(?:app|config|database|scripts|routes)/ - [F,L,NC]
     Require all denied
 </FilesMatch>
 
-# Jangan memproses ulang file atau direktori yang sudah ada.
+# =========================================================
+# PESAN AJAH — PUBLIC STORE ROUTING
+# =========================================================
+
+# /warung/terasrambutan
+# diarahkan ke warung.php?slug=terasrambutan
+#
+# Aturan ini harus diletakkan sebelum pengecekan
+# apakah path merupakan file atau direktori.
+
+RewriteRule ^warung/([A-Za-z0-9_-]+)/?$ warung.php?slug=$1 [QSA,L,NC]
+
+# =========================================================
+# PESAN AJAH — EXISTING FILES
+# =========================================================
+
+# Biarkan file dan direktori yang memang ada
+# ditangani secara langsung oleh server.
+
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-
-# URL selain file dan direktori diarahkan ke router PHP.
-RewriteRule ^ index.php [QSA,L]
