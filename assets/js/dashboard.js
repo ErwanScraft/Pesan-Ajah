@@ -167,6 +167,152 @@ async function loadDashboard() {
 
 let products = [];
 let editingProductId = null;
+const productImageInput = $("#product-image-input");
+const productImagePreview = $("#product-image-preview-img");
+const productImagePlaceholder = $("#product-image-placeholder");
+const removeProductImageButton = $("#remove-product-image");
+const removeProductImageOption = $("#remove-product-image-option");
+const removeProductImageCheckbox = $("#remove-product-image-checkbox");
+
+let currentProductImage = null;
+let selectedProductImage = null;
+
+function renderProductImagePreview(imageUrl = null) {
+  if (!productImagePreview || !productImagePlaceholder) {
+    return;
+  }
+
+  if (imageUrl) {
+    productImagePreview.src = imageUrl;
+    productImagePreview.hidden = false;
+    productImagePlaceholder.hidden = true;
+  } else {
+    productImagePreview.removeAttribute("src");
+    productImagePreview.hidden = true;
+    productImagePlaceholder.hidden = false;
+  }
+}
+
+function resetProductImageState() {
+  currentProductImage = null;
+  selectedProductImage = null;
+
+  if (productImageInput) {
+    productImageInput.value = "";
+  }
+
+  if (removeProductImageCheckbox) {
+    removeProductImageCheckbox.checked = false;
+  }
+
+  if (removeProductImageButton) {
+    removeProductImageButton.hidden = true;
+  }
+
+  if (removeProductImageOption) {
+    removeProductImageOption.hidden = true;
+  }
+
+  renderProductImagePreview();
+}
+
+productImageInput?.addEventListener("change", () => {
+  const file = productImageInput.files?.[0];
+
+  if (!file) {
+    selectedProductImage = null;
+
+    renderProductImagePreview(currentProductImage);
+
+    return;
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    productImageInput.value = "";
+
+    selectedProductImage = null;
+
+    renderProductImagePreview(currentProductImage);
+
+    notify("Format foto harus JPG, PNG, atau WebP.");
+
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    productImageInput.value = "";
+
+    selectedProductImage = null;
+
+    renderProductImagePreview(currentProductImage);
+
+    notify("Ukuran foto maksimal 5 MB.");
+
+    return;
+  }
+
+  selectedProductImage = file;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    if (typeof reader.result === "string") {
+      renderProductImagePreview(reader.result);
+    }
+  };
+
+  reader.onerror = () => {
+    notify("Foto tidak dapat dibaca.");
+  };
+
+  reader.readAsDataURL(file);
+
+  if (removeProductImageCheckbox) {
+    removeProductImageCheckbox.checked = false;
+  }
+});
+
+removeProductImageButton?.addEventListener("click", () => {
+  selectedProductImage = null;
+
+  if (productImageInput) {
+    productImageInput.value = "";
+  }
+
+  if (currentProductImage) {
+    if (removeProductImageCheckbox) {
+      removeProductImageCheckbox.checked = true;
+    }
+
+    renderProductImagePreview();
+  } else {
+    renderProductImagePreview();
+  }
+});
+
+removeProductImageCheckbox?.addEventListener("change", () => {
+  if (removeProductImageCheckbox.checked) {
+    selectedProductImage = null;
+
+    if (productImageInput) {
+      productImageInput.value = "";
+    }
+
+    renderProductImagePreview();
+  } else {
+    renderProductImagePreview(
+      selectedProductImage
+        ? null
+        : currentProductImage,
+    );
+  }
+});
 
 const productForm = $("#product-form");
 const productList = $("#manage-products");
@@ -211,6 +357,39 @@ function renderProducts() {
 
     const info = document.createElement("div");
     info.className = "manage-product";
+    
+    const thumbnail = document.createElement("div");
+    thumbnail.className = "manage-product-thumbnail";
+    
+    if (product.image) {
+      const image = document.createElement("img");
+    
+      image.src = product.image;
+      image.alt = product.name;
+      image.loading = "lazy";
+    
+      image.addEventListener(
+        "error",
+        () => {
+          thumbnail.replaceChildren();
+    
+          const placeholder = document.createElement("span");
+    
+          placeholder.textContent = "Tanpa foto";
+    
+          thumbnail.append(placeholder);
+        },
+        { once: true },
+      );
+    
+      thumbnail.append(image);
+    } else {
+      const placeholder = document.createElement("span");
+    
+      placeholder.textContent = "Tanpa foto";
+    
+      thumbnail.append(placeholder);
+    }
 
     const details = document.createElement("span");
     const name = document.createElement("strong");
@@ -222,7 +401,7 @@ function renderProducts() {
       `${product.unit} · ${formatRupiah(product.price)}`;
 
     details.append(name, metadata);
-    info.append(details);
+    info.append(thumbnail, details);
 
     const actions = document.createElement("div");
     actions.className = "manage-actions";
@@ -298,6 +477,7 @@ function resetProductForm() {
 
   productForm.reset();
   editingProductId = null;
+  resetProductImageState();
 
   const title = $("#product-form-title");
   const submit = productForm.querySelector('[type="submit"]');
@@ -329,6 +509,27 @@ function editProduct(id) {
   productForm.elements.category.value = product.category;
   productForm.elements.price.value = String(product.price);
   productForm.elements.unit.value = product.unit;
+  
+  currentProductImage = product.image || null;
+  selectedProductImage = null;
+  
+  if (productImageInput) {
+    productImageInput.value = "";
+  }
+  
+  if (removeProductImageCheckbox) {
+    removeProductImageCheckbox.checked = false;
+  }
+  
+  renderProductImagePreview(currentProductImage);
+  
+  if (removeProductImageButton) {
+    removeProductImageButton.hidden = !currentProductImage;
+  }
+  
+  if (removeProductImageOption) {
+    removeProductImageOption.hidden = !currentProductImage;
+  }
 
   productForm.elements.available.checked =
     product.available;
@@ -401,36 +602,108 @@ if (productForm) {
     };
 
     if (
-      !payload.name
-      || !payload.category
-      || !payload.unit
-      || !Number.isSafeInteger(payload.price)
-      || payload.price < 1
+      !payload.name ||
+      !payload.category ||
+      !payload.unit ||
+      !Number.isSafeInteger(payload.price) ||
+      payload.price < 1
     ) {
       notify("Periksa kembali informasi produk.");
+
       return;
     }
 
+    /*
+     * FormData dipakai agar file foto dapat dikirim.
+     */
+    const requestData = new FormData();
+
+    requestData.set("name", payload.name);
+    requestData.set("category", payload.category);
+    requestData.set("price", String(payload.price));
+    requestData.set("unit", payload.unit);
+    requestData.set("description", payload.description);
+    requestData.set("available", String(payload.available));
+
+    if (editingProductId !== null) {
+      requestData.set("id", String(editingProductId));
+    }
+
+    if (selectedProductImage) {
+      requestData.set("image", selectedProductImage);
+    }
+
+    if (
+      removeProductImageCheckbox?.checked &&
+      !selectedProductImage
+    ) {
+      requestData.set("remove_image", "1");
+    }
+
+    const submitButton = productForm.querySelector(
+      '[type="submit"]',
+    );
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Menyimpan...";
+    }
+
     try {
-      if (editingProductId !== null) {
-        await postJSON(
-          API.products,
-          {
-            id: editingProductId,
-            ...payload,
-          },
-          "PUT",
+      const response = await fetch(API.products, {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
+        body: requestData,
+      });
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Respons server tidak valid.");
+      }
+
+      if (!response.ok || data.success === false) {
+        if (response.status === 401) {
+          window.location.href = "/warung/login.php";
+
+          return;
+        }
+
+        throw new Error(
+          data.message || "Produk gagal disimpan.",
         );
-      } else {
-        await postJSON(API.products, payload);
       }
 
       await loadProducts();
+
       resetProductForm();
 
-      notify("Produk berhasil disimpan.");
+      notify(
+        wasEditing
+          ? "Produk berhasil diperbarui."
+          : "Produk berhasil ditambahkan.",
+      );
     } catch (error) {
-      notify(error.message);
+      notify(
+        error instanceof Error
+          ? error.message
+          : "Produk gagal disimpan.",
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent =
+          editingProductId !== null
+            ? "Simpan perubahan"
+            : "Simpan produk";
+      }
     }
   });
 }
@@ -667,7 +940,8 @@ async function updateSettingStatus(key, value) {
 if (settingsForm) {
   settingsForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-
+    
+    const wasEditing = editingProductId !== null;
     const formData = new FormData(settingsForm);
 
     const payload = {

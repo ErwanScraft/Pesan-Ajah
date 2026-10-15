@@ -5,7 +5,8 @@ export function createCart(products) {
 
   function findProduct(productId) {
     return products.find(
-      (product) => Number(product.id) === Number(productId),
+      (product) =>
+        Number(product.id) === Number(productId),
     );
   }
 
@@ -16,7 +17,8 @@ export function createCart(products) {
       return null;
     }
 
-    const current = items.get(Number(productId)) ?? 0;
+    const current =
+      items.get(Number(productId)) ?? 0;
 
     if (current >= 99) {
       return null;
@@ -29,15 +31,21 @@ export function createCart(products) {
 
   function change(productId, delta) {
     const id = Number(productId);
+
     const current = items.get(id) ?? 0;
+
     const next = current + Number(delta);
 
     if (!Number.isFinite(next) || next <= 0) {
       items.delete(id);
+
       return 0;
     }
 
-    const quantity = Math.min(99, Math.floor(next));
+    const quantity = Math.min(
+      99,
+      Math.floor(next),
+    );
 
     items.set(id, quantity);
 
@@ -72,10 +80,6 @@ export function createCart(products) {
     return amount;
   }
 
-  /*
-   * Daftar item untuk dikirim ke endpoint checkout.
-   * Harga tidak dikirim sebagai sumber kebenaran.
-   */
   function entries() {
     return [...items.entries()].map(
       ([productId, quantity]) => ({
@@ -87,6 +91,45 @@ export function createCart(products) {
 
   function clear() {
     items.clear();
+  }
+
+  function createCartImage(product) {
+    const container = document.createElement("div");
+
+    container.className = "cart-item-image";
+
+    if (product.image) {
+      const image = document.createElement("img");
+
+      image.src = product.image;
+      image.alt = product.name;
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      image.addEventListener(
+        "error",
+        () => {
+          const placeholder = document.createElement("span");
+
+          placeholder.className = "cart-item-image-placeholder";
+          placeholder.textContent = "Foto tidak tersedia";
+
+          container.replaceChildren(placeholder);
+        },
+        { once: true },
+      );
+
+      container.append(image);
+    } else {
+      const placeholder = document.createElement("span");
+
+      placeholder.className = "cart-item-image-placeholder";
+      placeholder.textContent = "Foto tidak tersedia";
+
+      container.append(placeholder);
+    }
+
+    return container;
   }
 
   function render(view) {
@@ -120,13 +163,11 @@ export function createCart(products) {
 
       item.className = "cart-item";
 
-      const image = document.createElement("div");
-
-      image.className = "cart-item-emoji";
-      image.setAttribute("aria-hidden", "true");
-      image.textContent = product.emoji || "📦";
+      const image = createCartImage(product);
 
       const details = document.createElement("div");
+
+      details.className = "cart-item-details";
 
       const name = document.createElement("p");
 
@@ -136,6 +177,7 @@ export function createCart(products) {
       const price = document.createElement("span");
 
       price.className = "cart-item-price";
+
       price.textContent = formatRupiah(
         Number(product.price) * amount,
       );
@@ -150,27 +192,37 @@ export function createCart(products) {
 
       removeButton.type = "button";
       removeButton.dataset.remove = String(productId);
+
       removeButton.setAttribute(
         "aria-label",
         `Kurangi ${product.name}`,
       );
+
       removeButton.textContent = "−";
 
       const quantityLabel = document.createElement("span");
 
       quantityLabel.textContent = String(amount);
-      quantityLabel.setAttribute("aria-label", "Jumlah");
+
+      quantityLabel.setAttribute(
+        "aria-label",
+        "Jumlah",
+      );
 
       const addButton = document.createElement("button");
 
       addButton.type = "button";
       addButton.dataset.add = String(productId);
+
       addButton.setAttribute(
         "aria-label",
         `Tambah ${product.name}`,
       );
+
       addButton.textContent = "+";
-      addButton.disabled = !product.available || amount >= 99;
+
+      addButton.disabled =
+        !product.available || amount >= 99;
 
       controls.append(
         removeButton,

@@ -15,18 +15,18 @@ export function createCatalog({
 
   function filteredProducts() {
     const normalizedQuery = query
-    .trim()
-    .toLocaleLowerCase("id-ID");
-  
+      .trim()
+      .toLocaleLowerCase("id-ID");
+
     return products.filter((product) => {
       if (product.archived) {
         return false;
       }
-  
+
       const matchesCategory =
         selectedCategory === "Semua" ||
         product.category === selectedCategory;
-  
+
       const searchableText = [
         product.name,
         product.category,
@@ -34,7 +34,7 @@ export function createCatalog({
       ]
         .join(" ")
         .toLocaleLowerCase("id-ID");
-  
+
       return (
         matchesCategory &&
         searchableText.includes(normalizedQuery)
@@ -42,56 +42,103 @@ export function createCatalog({
     });
   }
 
-  function createProductCard(product) {
-    const card = document.createElement("article");
-    card.className = "product-card";
+  function createProductImage(product) {
+    const container = document.createElement("div");
 
-    const image = document.createElement("div");
-    image.className = "product-image";
+    container.className = "product-image";
 
-    const emoji = document.createElement("span");
-    emoji.className = "product-emoji";
-    emoji.setAttribute("aria-hidden", "true");
-    emoji.textContent = product.emoji;
-    image.append(emoji);
+    if (product.image) {
+      const image = document.createElement("img");
+
+      image.className = "product-photo";
+      image.src = product.image;
+      image.alt = product.name;
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      image.addEventListener(
+        "error",
+        () => {
+          const placeholder = document.createElement("span");
+
+          placeholder.className = "product-image-placeholder";
+          placeholder.textContent = "Foto belum tersedia";
+
+          container.replaceChildren(placeholder);
+        },
+        { once: true },
+      );
+
+      container.append(image);
+    } else {
+      const placeholder = document.createElement("span");
+
+      placeholder.className = "product-image-placeholder";
+      placeholder.textContent = "Foto belum tersedia";
+
+      container.append(placeholder);
+    }
 
     if (product.tag) {
       const tag = document.createElement("span");
+
       tag.className = "product-tag";
       tag.textContent = product.tag;
-      image.append(tag);
+
+      container.append(tag);
     }
 
+    return container;
+  }
+
+  function createProductCard(product) {
+    const card = document.createElement("article");
+
+    card.className = "product-card";
+
+    const image = createProductImage(product);
+
     const info = document.createElement("div");
+
     info.className = "product-info";
 
     const store = document.createElement("div");
-    
+
     store.className = "product-store";
     store.textContent = product.store || "Warung";
 
     const name = document.createElement("h3");
+
     name.className = "product-name";
     name.textContent = product.name;
 
     const unit = document.createElement("span");
+
     unit.className = "product-unit";
     unit.textContent = product.unit;
 
     const bottom = document.createElement("div");
+
     bottom.className = "product-bottom";
 
     const price = document.createElement("span");
+
     price.className = "product-price";
     price.textContent = formatRupiah(product.price);
 
     const addButton = document.createElement("button");
+
     addButton.className = "add-button";
     addButton.type = "button";
     addButton.dataset.add = String(product.id);
-    addButton.setAttribute("aria-label", `Tambah ${product.name}`);
+
+    addButton.setAttribute(
+      "aria-label",
+      `Tambah ${product.name}`,
+    );
 
     addButton.disabled = !product.available;
+
     addButton.title = product.available
       ? "Tambah ke keranjang"
       : "Produk habis";
@@ -101,7 +148,9 @@ export function createCatalog({
       : "–";
 
     bottom.append(price, addButton);
+
     info.append(store, name, unit, bottom);
+
     card.append(image, info);
 
     return card;
@@ -109,6 +158,7 @@ export function createCatalog({
 
   function render() {
     const result = filteredProducts();
+
     const fragment = document.createDocumentFragment();
 
     for (const product of result) {
@@ -116,20 +166,29 @@ export function createCatalog({
     }
 
     grid.replaceChildren(fragment);
+
     grid.hidden = result.length === 0;
     empty.hidden = result.length !== 0;
+
     total.textContent = `${result.length} produk`;
   }
 
   function setCategory(category) {
     selectedCategory = category;
 
-    categoryList.querySelectorAll("[data-category]").forEach((button) => {
-      const isActive = button.dataset.category === selectedCategory;
+    categoryList
+      .querySelectorAll("[data-category]")
+      .forEach((button) => {
+        const isActive =
+          button.dataset.category === selectedCategory;
 
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    });
+        button.classList.toggle("active", isActive);
+
+        button.setAttribute(
+          "aria-pressed",
+          String(isActive),
+        );
+      });
 
     render();
   }
@@ -137,20 +196,29 @@ export function createCatalog({
   categoryList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-category]");
 
-    if (!button || !categoryList.contains(button)) return;
+    if (!button || !categoryList.contains(button)) {
+      return;
+    }
 
     setCategory(button.dataset.category);
   });
 
   searchInput.addEventListener("input", () => {
     query = searchInput.value;
+
     render();
   });
 
   grid.addEventListener("click", (event) => {
     const button = event.target.closest("[data-add]");
 
-    if (!button || button.disabled || !grid.contains(button)) return;
+    if (
+      !button ||
+      button.disabled ||
+      !grid.contains(button)
+    ) {
+      return;
+    }
 
     onAdd(Number(button.dataset.add));
   });
@@ -158,12 +226,15 @@ export function createCatalog({
   function reset() {
     query = "";
     searchInput.value = "";
+
     setCategory("Semua");
   }
 
   function setQuery(value) {
     query = String(value ?? "");
+
     searchInput.value = query;
+
     render();
   }
 

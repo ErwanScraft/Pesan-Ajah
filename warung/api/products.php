@@ -9,6 +9,294 @@ $storeId = (int) $store['store_id'];
 
 $method = request_method();
 
+const PRODUCT_IMAGE_MAX_SIZE = 5 * 1024 * 1024;
+
+const PRODUCT_IMAGE_DIRECTORY = 'storage/uploads/products/';
+
+/**
+ * Lokasi direktori penyimpanan foto.
+ */
+function product_image_directory(): string
+{
+    return APP_ROOT . '/' . PRODUCT_IMAGE_DIRECTORY;
+}
+
+/**
+ * Hapus foto produk hanya jika berada di direktori upload produk.
+ */
+function delete_product_image_file(?string $image): void
+{
+    if (!is_string($image) || $image === '') {
+        return;
+    }
+
+    $prefix = PRODUCT_IMAGE_DIRECTORY;
+
+    if (!str_starts_with($image, $prefix)) {
+        return;
+    }
+
+    $filename = substr($image, strlen($prefix));
+
+    if (
+        $filename === ''
+        || !preg_match(
+            '/^[a-f0-9]{32}\.(?:jpg|png|webp)$/',
+            $filename
+        )
+    ) {
+        return;
+    }
+
+    $directory = realpath(product_image_directory());
+
+    if ($directory === false) {
+        return;
+    }
+
+    $path = $directory . DIRECTORY_SEPARATOR . $filename;
+
+    if (is_file($path) && !is_link($path)) {
+        @unlink($path);
+    }
+}
+
+/**
+ * Unggah foto produk.
+ *
+ * Return:
+ * - null jika tidak ada file yang diunggah.
+ * - path relatif jika berhasil.
+ *
+ * Error validasi dikirim sebagai respons JSON.
+ */
+function upload_product_image(): ?string
+{
+    if (!isset($_FILES['image'])) {
+        return null;
+    }
+
+    $file = $_FILES['image'];
+
+    if (!is_array($file)) {
+        api_json([
+            'success' => false,
+            'message' => 'Data foto tidak valid.',
+        ], 422);
+    }
+
+    $error = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+
+    if ($error === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($error !== UPLOAD_ERR_OK) {
+        $message = match ($error) {
+            UPLOAD_ERR_INI_SIZE,
+            UPLOAD_ERR_FORM_SIZE =>
+                'Ukuran foto melebihi batas upload server.',
+
+            UPLOAD_ERR_PARTIAL =>
+                'Foto gagal diunggah sepenuhnya.',
+
+            UPLOAD_ERR_NO_TMP_DIR =>
+                'Direktori sementara upload tidak tersedia.',
+
+            UPLOAD_ERR_CANT_WRITE =>
+                'Server tidak dapat menyimpan foto.',
+
+            default =>
+                'Upload foto gagal.',
+        };
+
+        api_json([
+            'success' => false,
+            'message' => $message,
+        ], 422);
+    }
+
+    $temporaryPath = $file['tmp_name'] ?? '';
+    $fileSize = (int) ($file['size'] ?? 0);
+
+    if (
+        !is_string($temporaryPath)
+        || !is_uploaded_file($temporaryPath)
+    ) {
+        api_json([
+            'success' => false,
+            'message' => 'File upload tidak valid.',
+        ], 422);
+    }
+
+    if (
+        $fileSize < 1
+        || $fileSize > PRODUCT_IMAGE_MAX_SIZE
+    ) {
+        api_json([
+            'success' => false,
+            'message' => 'Ukuran foto maksimal 5 MB.',
+        ], 422);
+    }
+
+    /*
+     * Validasi konten gambar, bukan hanya ekstensi file.
+     */
+    $imageInfo = @getimagesize($temporaryPath);
+
+    if ($imageInfo === false) {
+        api_json([
+            'success' => false,
+            'message' => 'File yang dipilih bukan gambar valid.',
+        ], 422);
+    }
+
+    $mime = (string) ($imageInfo['mime'] ?? '');
+
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
+    if (!isset($extensions[$mime])) {
+        api_json([
+            'success' => false,
+            'message' => 'Format foto harus JPG, PNG, atau WebP.',
+        ], 422);
+    }
+
+    $directory = product_image_directory();
+
+    if (
+        !is_dir($directory)
+        && !mkdir($directory, 0755, true)
+        && !is_dir($directory)
+    ) {
+        api_json([
+            'success' => false,
+            'message' => 'Direktori penyimpanan foto tidak tersedia.',
+        ], 500);
+    }
+
+    if (!is_writable($directory)) {
+        api_json([
+            'success' => false,
+            'message' => 'Direktori foto tidak dapat ditulis server.',
+        ], 500);
+    }
+
+    $filename = bin2hex(random_bytes(16))
+        . '.'
+        . $extensions[$mime];
+
+    $destination = $directory . $filename;
+
+    if (!move_uploaded_file($temporaryPath, $destination)) {
+        api_json([
+            'success' => false,
+            'message' => 'Foto gagal disimpan ke server.',
+        ], 500);
+    }
+
+    return PRODUCT_IMAGE_DIRECTORY . $filename;
+}
+
+/**
+ * Mengambil nilai boolean dari input JSON atau multipart.
+ */
+function product_available_value(mixed $value): bool
+{
+    $available = filter_var(
+        $value ?? true,
+        FILTER_VALIDATE_BOOLEAN,
+        FILTER_NULL_ON_FAILURE
+    );
+
+    if ($available === null) {
+        api_json([
+            'success' => false,
+            'message' => 'Status ketersediaan tidak valid.',
+        ], 422);
+    }
+
+    return $available;
+}
+
+/**
+ * Validasi seluruh data teks produk.
+ */
+function validate_product_input(array $input): array
+{
+    $name = api_required_text(
+        $input['name'] ?? null,
+        'Nama produk',
+        120
+    );
+
+    $category = api_required_text(
+        $input['category'] ?? null,
+        'Kategori',
+        80
+    );
+
+    $unit = api_required_text(
+        $input['unit'] ?? null,
+        'Satuan',
+        30
+    );
+
+    $description = trim(
+        is_string($input['description'] ?? null)
+            ? $input['description']
+            : ''
+    );
+
+    if (mb_strlen($description, 'UTF-8') > 5000) {
+        api_json([
+            'success' => false,
+            'message' => 'Deskripsi maksimal 5.000 karakter.',
+        ], 422);
+    }
+
+    $price = filter_var(
+        $input['price'] ?? null,
+        FILTER_VALIDATE_INT,
+        [
+            'options' => [
+                'min_range' => 1,
+                'max_range' => 999999999999,
+            ],
+        ]
+    );
+
+    if ($price === false) {
+        api_json([
+            'success' => false,
+            'message' => 'Harga harus berupa bilangan bulat positif.',
+        ], 422);
+    }
+
+    return [
+        'name' => $name,
+        'category' => $category,
+        'unit' => $unit,
+        'description' => $description !== ''
+            ? $description
+            : null,
+        'price' => $price,
+        'available' => product_available_value(
+            $input['available'] ?? true
+        ),
+    ];
+}
+
+/*
+|--------------------------------------------------------------------------
+| GET — Daftar produk milik warung
+|--------------------------------------------------------------------------
+*/
+
 if ($method === 'GET') {
     $stmt = database()->prepare(
         'SELECT
@@ -40,250 +328,249 @@ if ($method === 'GET') {
     ]);
 }
 
+/*
+|--------------------------------------------------------------------------
+| Validasi CSRF untuk seluruh operasi perubahan
+|--------------------------------------------------------------------------
+*/
+
 api_verify_csrf();
 
-$input = api_json_input();
+/*
+ * POST multipart dipakai untuk upload foto.
+ * PUT JSON tetap didukung untuk update biasa,
+ * misalnya ketika hanya mengubah status ketersediaan.
+ */
+$contentType = (string) (
+    $_SERVER['CONTENT_TYPE'] ?? ''
+);
 
-if ($method === 'POST') {
-    $name = api_required_text(
-        $input['name'] ?? null,
-        'Nama produk',
-        120
+$isMultipart = str_contains(
+    strtolower($contentType),
+    'multipart/form-data'
+);
+
+$input = $isMultipart
+    ? $_POST
+    : api_json_input();
+
+/*
+|--------------------------------------------------------------------------
+| POST — Tambah produk atau edit produk dengan foto
+|--------------------------------------------------------------------------
+|
+| POST tanpa ID: tambah produk.
+| POST dengan ID: edit produk melalui multipart/form-data.
+|
+*/
+
+$isProductUpdate = $method === 'PUT'
+    || (
+        $method === 'POST'
+        && isset($input['id'])
     );
 
-    $category = api_required_text(
-        $input['category'] ?? null,
-        'Kategori',
-        80
-    );
+if ($method === 'POST' || $method === 'PUT') {
+    $id = $isProductUpdate
+        ? api_positive_id($input['id'] ?? null)
+        : null;
 
-    $unit = api_required_text(
-        $input['unit'] ?? null,
-        'Satuan',
-        30
-    );
+    $data = validate_product_input($input);
 
-    $description = trim(
-        is_string($input['description'] ?? null)
-            ? $input['description']
-            : ''
-    );
+    /*
+     * Pastikan produk yang diedit benar-benar milik warung ini.
+     */
+    $existingProduct = null;
 
-    if (mb_strlen($description, 'UTF-8') > 5000) {
-        api_json([
-            'success' => false,
-            'message' => 'Deskripsi maksimal 5.000 karakter.',
-        ], 422);
+    if ($id !== null) {
+        $find = database()->prepare(
+            'SELECT id, image
+             FROM products
+             WHERE id = :id
+               AND store_id = :store_id
+             LIMIT 1'
+        );
+
+        $find->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        $existingProduct = $find->fetch();
+
+        if (!$existingProduct) {
+            api_json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan.',
+            ], 404);
+        }
     }
 
-    $price = filter_var(
-        $input['price'] ?? null,
-        FILTER_VALIDATE_INT,
-        [
-            'options' => [
-                'min_range' => 1,
-                'max_range' => 999999999999,
-            ],
-        ]
+    /*
+     * Upload dilakukan setelah validasi data teks.
+     */
+    $newImage = $isMultipart
+        ? upload_product_image()
+        : null;
+
+    $removeImage = filter_var(
+        $input['remove_image'] ?? false,
+        FILTER_VALIDATE_BOOLEAN
     );
 
-    if ($price === false) {
-        api_json([
-            'success' => false,
-            'message' => 'Harga harus berupa bilangan bulat positif.',
-        ], 422);
+    $oldImage = $existingProduct['image'] ?? null;
+
+    $imageToSave = $oldImage;
+
+    if ($newImage !== null) {
+        $imageToSave = $newImage;
+    } elseif ($removeImage) {
+        $imageToSave = null;
     }
 
-    $available = filter_var(
-        $input['available'] ?? true,
-        FILTER_VALIDATE_BOOLEAN,
-        FILTER_NULL_ON_FAILURE
-    );
+    try {
+        if ($id === null) {
+            $stmt = database()->prepare(
+                'INSERT INTO products (
+                    store_id,
+                    name,
+                    description,
+                    category,
+                    price,
+                    unit,
+                    image,
+                    is_available
+                ) VALUES (
+                    :store_id,
+                    :name,
+                    :description,
+                    :category,
+                    :price,
+                    :unit,
+                    :image,
+                    :is_available
+                )'
+            );
 
-    if ($available === null) {
-        api_json([
-            'success' => false,
-            'message' => 'Status ketersediaan tidak valid.',
-        ], 422);
+            $stmt->execute([
+                'store_id' => $storeId,
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'category' => $data['category'],
+                'price' => $data['price'],
+                'unit' => $data['unit'],
+                'image' => $imageToSave,
+                'is_available' => $data['available'] ? 1 : 0,
+            ]);
+
+            $productId = (int) database()->lastInsertId();
+        } else {
+            $stmt = database()->prepare(
+                'UPDATE products
+                 SET
+                    name = :name,
+                    description = :description,
+                    category = :category,
+                    price = :price,
+                    unit = :unit,
+                    image = :image,
+                    is_available = :is_available
+                 WHERE id = :id
+                   AND store_id = :store_id'
+            );
+
+            $stmt->execute([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'category' => $data['category'],
+                'price' => $data['price'],
+                'unit' => $data['unit'],
+                'image' => $imageToSave,
+                'is_available' => $data['available'] ? 1 : 0,
+                'id' => $id,
+                'store_id' => $storeId,
+            ]);
+
+            $productId = $id;
+        }
+    } catch (Throwable $exception) {
+        /*
+         * Jangan meninggalkan foto baru jika penyimpanan
+         * database gagal.
+         */
+        if ($newImage !== null) {
+            delete_product_image_file($newImage);
+        }
+
+        throw $exception;
     }
 
-    $stmt = database()->prepare(
-        'INSERT INTO products (
-            store_id,
-            name,
-            description,
-            category,
-            price,
-            unit,
-            is_available
-        ) VALUES (
-            :store_id,
-            :name,
-            :description,
-            :category,
-            :price,
-            :unit,
-            :is_available
-        )'
-    );
-
-    $stmt->execute([
-        'store_id' => $storeId,
-        'name' => $name,
-        'description' => $description !== '' ? $description : null,
-        'category' => $category,
-        'price' => $price,
-        'unit' => $unit,
-        'is_available' => $available ? 1 : 0,
-    ]);
+    /*
+     * Hapus file lama setelah perubahan database berhasil.
+     */
+    if (
+        $oldImage
+        && $oldImage !== $imageToSave
+    ) {
+        delete_product_image_file((string) $oldImage);
+    }
 
     api_json([
         'success' => true,
-        'message' => 'Produk berhasil ditambahkan.',
-        'id' => (int) database()->lastInsertId(),
-    ], 201);
+        'message' => $id === null
+            ? 'Produk berhasil ditambahkan.'
+            : 'Produk berhasil diperbarui.',
+        'id' => $productId,
+        'image' => $imageToSave,
+    ], $id === null ? 201 : 200);
 }
 
-if ($method === 'PUT') {
+/*
+|--------------------------------------------------------------------------
+| DELETE — Hapus produk
+|--------------------------------------------------------------------------
+*/
+
+if ($method === 'DELETE') {
     $id = api_positive_id($input['id'] ?? null);
 
-    $name = api_required_text(
-        $input['name'] ?? null,
-        'Nama produk',
-        120
-    );
-
-    $category = api_required_text(
-        $input['category'] ?? null,
-        'Kategori',
-        80
-    );
-
-    $unit = api_required_text(
-        $input['unit'] ?? null,
-        'Satuan',
-        30
-    );
-
-    $description = trim(
-        is_string($input['description'] ?? null)
-            ? $input['description']
-            : ''
-    );
-
-    if (mb_strlen($description, 'UTF-8') > 5000) {
-        api_json([
-            'success' => false,
-            'message' => 'Deskripsi maksimal 5.000 karakter.',
-        ], 422);
-    }
-
-    $price = filter_var(
-        $input['price'] ?? null,
-        FILTER_VALIDATE_INT,
-        [
-            'options' => [
-                'min_range' => 1,
-                'max_range' => 999999999999,
-            ],
-        ]
-    );
-
-    if ($price === false) {
-        api_json([
-            'success' => false,
-            'message' => 'Harga harus berupa bilangan bulat positif.',
-        ], 422);
-    }
-
-    $available = filter_var(
-        $input['available'] ?? true,
-        FILTER_VALIDATE_BOOLEAN,
-        FILTER_NULL_ON_FAILURE
-    );
-
-    if ($available === null) {
-        api_json([
-            'success' => false,
-            'message' => 'Status ketersediaan tidak valid.',
-        ], 422);
-    }
-
-    $stmt = database()->prepare(
-        'UPDATE products
-
-        SET
-            name = :name,
-            description = :description,
-            category = :category,
-            price = :price,
-            unit = :unit,
-            is_available = :is_available
-
-        WHERE id = :id
-          AND store_id = :store_id'
-    );
-
-    $stmt->execute([
-        'name' => $name,
-        'description' => $description !== '' ? $description : null,
-        'category' => $category,
-        'price' => $price,
-        'unit' => $unit,
-        'is_available' => $available ? 1 : 0,
-        'id' => $id,
-        'store_id' => $storeId,
-    ]);
-
-    $check = database()->prepare(
-        'SELECT id
+    $find = database()->prepare(
+        'SELECT image
          FROM products
          WHERE id = :id
            AND store_id = :store_id
          LIMIT 1'
     );
 
-    $check->execute([
+    $find->execute([
         'id' => $id,
         'store_id' => $storeId,
     ]);
 
-    if (!$check->fetch()) {
+    $product = $find->fetch();
+
+    if (!$product) {
         api_json([
             'success' => false,
             'message' => 'Produk tidak ditemukan.',
         ], 404);
     }
 
-    api_json([
-        'success' => true,
-        'message' => 'Produk berhasil diperbarui.',
-    ]);
-}
-
-if ($method === 'DELETE') {
-    $id = api_positive_id($input['id'] ?? null);
-
-    /*
-     * order_items.product_id menggunakan ON DELETE SET NULL.
-     * Riwayat tetap mempertahankan product_name dan harga.
-     */
-    $stmt = database()->prepare(
+    $delete = database()->prepare(
         'DELETE FROM products
          WHERE id = :id
            AND store_id = :store_id'
     );
 
-    $stmt->execute([
+    $delete->execute([
         'id' => $id,
         'store_id' => $storeId,
     ]);
 
-    if ($stmt->rowCount() === 0) {
-        api_json([
-            'success' => false,
-            'message' => 'Produk tidak ditemukan.',
-        ], 404);
+    if ($product['image']) {
+        delete_product_image_file(
+            (string) $product['image']
+        );
     }
 
     api_json([

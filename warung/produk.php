@@ -116,17 +116,70 @@ require __DIR__ . '/_header.php';
                 >
             </label>
 
-            <label class="form-field">
-                <span>Ikon produk (emoji)</span>
-
-                <input
-                    type="text"
-                    name="emoji"
-                    maxlength="8"
-                    value="📦"
-                    required
-                >
-            </label>
+            <div class="form-field product-image-field">
+                <span>Foto produk</span>
+            
+                <div class="product-image-editor">
+                    <div
+                        class="product-image-preview"
+                        id="product-image-preview"
+                    >
+                        <span id="product-image-placeholder">
+                            Belum ada foto
+                        </span>
+            
+                        <img
+                            id="product-image-preview-img"
+                            alt="Pratinjau foto produk"
+                            hidden
+                        >
+                    </div>
+            
+                    <div class="product-image-actions">
+                        <label
+                            class="button button-outline product-image-picker"
+                            for="product-image-input"
+                        >
+                            Pilih foto
+                        </label>
+            
+                        <input
+                            type="file"
+                            name="image"
+                            id="product-image-input"
+                            accept="image/jpeg,image/png,image/webp"
+                            hidden
+                        >
+            
+                        <button
+                            class="button button-outline"
+                            type="button"
+                            id="remove-product-image"
+                            hidden
+                        >
+                            Hapus foto
+                        </button>
+                    </div>
+            
+                    <p class="form-help">
+                        Format JPG, PNG, atau WebP. Maksimal 5 MB.
+                    </p>
+            
+                    <label
+                        class="form-checkbox product-remove-image-option"
+                        id="remove-product-image-option"
+                        hidden
+                    >
+                        <input
+                            type="checkbox"
+                            name="remove_image"
+                            id="remove-product-image-checkbox"
+                        >
+            
+                        <span>Hapus foto yang tersimpan</span>
+                    </label>
+                </div>
+            </div>
 
             <label class="form-field">
                 <span>Label produk (opsional)</span>

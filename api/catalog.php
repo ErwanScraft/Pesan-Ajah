@@ -149,8 +149,21 @@ try {
             $product['is_available']
             && $product['store_is_open'];
 
-        $product['emoji'] = '📦';
-
+        /*
+         * Foto produk berasal dari kolom products.image.
+         * Properti image sudah tersedia pada hasil SELECT.
+         */
+        $product['image'] = is_string($product['image'] ?? null)
+            && $product['image'] !== ''
+                ? $product['image']
+                : null;
+        
+        /*
+         * Pertahankan properti lama sementara agar
+         * kode frontend lain tidak langsung rusak.
+         */
+        $product['emoji'] = '';
+        
         $product['tag'] = '';
     }
 
