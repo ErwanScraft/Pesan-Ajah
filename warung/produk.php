@@ -15,28 +15,11 @@ require __DIR__ . '/_header.php';
 
 ?>
 
-<div class="welcome-row">
-    <div>
-        <h2>Kelola produk</h2>
+<div class="products-page">
 
-        <p class="muted">
-            Tambah, edit, dan atur ketersediaan produk
-            beserta foto yang ditampilkan di marketplace.
-        </p>
-    </div>
-</div>
-
-<section class="dashboard-card">
-
-    <div class="card-heading">
-        <div>
-            <h3>Daftar produk</h3>
-
-            <p class="muted">
-                Produk yang tersedia akan ditampilkan
-                di katalog marketplace.
-            </p>
-        </div>
+    <!-- Header halaman -->
+    <div class="products-page-heading">
+        <h2>Produk</h2>
 
         <span
             class="table-caption"
@@ -44,209 +27,250 @@ require __DIR__ . '/_header.php';
         >0 produk</span>
     </div>
 
-    <form
-        class="product-form"
-        id="product-form"
+    <!-- Form produk -->
+    <section
+        class="dashboard-card products-card"
+        aria-labelledby="product-form-title"
     >
 
-        <div class="product-form-heading">
-            <h4 id="product-form-title">
-                Tambah produk baru
-            </h4>
+        <form
+            class="product-form"
+            id="product-form"
+        >
 
-            <p class="muted">
-                Isi informasi produk dengan benar.
-            </p>
-        </div>
-
-        <div class="product-form-grid">
-
-            <label class="form-field">
-                <span>Nama produk</span>
-
-                <input
-                    type="text"
-                    name="name"
-                    maxlength="100"
-                    placeholder="Contoh: Beras Premium"
-                    required
-                >
-            </label>
-
-            <label class="form-field">
-                <span>Kategori</span>
-
-                <select name="category" required>
-                    <option value="Sembako">Sembako</option>
-                    <option value="Makanan">Makanan</option>
-                    <option value="Minuman">Minuman</option>
-                    <option value="Kebutuhan Rumah">
-                        Kebutuhan Rumah
-                    </option>
-                    <option value="Lainnya">Lainnya</option>
-                </select>
-            </label>
-
-            <label class="form-field">
-                <span>Harga (Rp)</span>
-
-                <input
-                    type="number"
-                    name="price"
-                    min="1"
-                    step="1"
-                    placeholder="15000"
-                    required
-                >
-            </label>
-
-            <label class="form-field">
-                <span>Satuan</span>
-
-                <input
-                    type="text"
-                    name="unit"
-                    maxlength="40"
-                    placeholder="1 kg, 1 bungkus"
-                    required
-                >
-            </label>
-
-            <div class="form-field product-image-field">
-                <span id="product-image-label">Foto produk</span>
-            
-                <div class="product-image-editor">
-                    <div
-                        class="product-image-preview"
-                        id="product-image-preview"
-                        role="group"
-                        aria-labelledby="product-image-label"
-                    >
-                        <span id="product-image-placeholder">
-                            Belum ada foto
-                        </span>
-            
-                        <img
-                            id="product-image-preview-img"
-                            alt="Pratinjau foto produk"
-                            loading="eager"
-                            decoding="async"
-                            hidden
-                        >
-                    </div>
-            
-                    <div class="product-image-actions">
-                        <label
-                            class="button button-outline product-image-picker"
-                            for="product-image-input"
-                        >
-                            Pilih foto
-                        </label>
-            
-                        <input
-                            type="file"
-                            name="image"
-                            id="product-image-input"
-                            accept="image/jpeg,image/png,image/webp"
-                            aria-label="Pilih foto produk"
-                            hidden
-                        >
-            
-                        <button
-                            class="button button-outline"
-                            type="button"
-                            id="remove-product-image"
-                            hidden
-                        >
-                            Hapus foto
-                        </button>
-                    </div>
-            
-                    <p class="form-help">
-                        Gunakan foto produk yang jelas.
-                        Format JPG, PNG, atau WebP, maksimal 5 MB.
-                    </p>
-            
-                    <label
-                        class="form-checkbox product-remove-image-option"
-                        id="remove-product-image-option"
-                        hidden
-                    >
-                        <input
-                            type="checkbox"
-                            name="remove_image"
-                            id="remove-product-image-checkbox"
-                        >
-            
-                        <span>Hapus foto yang tersimpan</span>
-                    </label>
-                </div>
+            <div class="product-form-heading">
+                <h3 id="product-form-title">
+                    Tambah produk
+                </h3>
             </div>
 
-            <label class="form-field">
-                <span>Label produk (opsional)</span>
+            <div class="product-form-grid">
+
+                <!-- Nama -->
+                <label class="form-field">
+                    <span>Nama produk</span>
+
+                    <input
+                        type="text"
+                        name="name"
+                        maxlength="100"
+                        placeholder="Nama produk"
+                        autocomplete="off"
+                        required
+                    >
+                </label>
+
+                <!-- Kategori -->
+                <label class="form-field">
+                    <span>Kategori</span>
+
+                    <select
+                        name="category"
+                        required
+                    >
+                        <option value="Sembako">Sembako</option>
+                        <option value="Makanan">Makanan</option>
+                        <option value="Minuman">Minuman</option>
+                        <option value="Kebutuhan Rumah">
+                            Kebutuhan Rumah
+                        </option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </label>
+
+                <!-- Harga -->
+                <label class="form-field">
+                    <span>Harga (Rp)</span>
+
+                    <input
+                        type="number"
+                        name="price"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
+                        placeholder="15000"
+                        required
+                    >
+                </label>
+
+                <!-- Satuan -->
+                <label class="form-field">
+                    <span>Satuan</span>
+
+                    <input
+                        type="text"
+                        name="unit"
+                        maxlength="40"
+                        placeholder="Contoh: 1 kg"
+                        required
+                    >
+                </label>
+
+                <!-- Foto produk -->
+                <div class="form-field product-image-field">
+
+                    <span id="product-image-label">
+                        Foto produk
+                    </span>
+
+                    <div class="product-image-editor">
+
+                        <div
+                            class="product-image-preview"
+                            id="product-image-preview"
+                            role="group"
+                            aria-labelledby="product-image-label"
+                        >
+
+                            <span id="product-image-placeholder">
+                                Belum ada foto
+                            </span>
+
+                            <img
+                                id="product-image-preview-img"
+                                alt="Pratinjau foto produk"
+                                loading="eager"
+                                decoding="async"
+                                hidden
+                            >
+
+                        </div>
+
+                        <div class="product-image-actions">
+
+                            <label
+                                class="button button-outline product-image-picker"
+                                for="product-image-input"
+                            >
+                                Pilih foto
+                            </label>
+
+                            <input
+                                type="file"
+                                name="image"
+                                id="product-image-input"
+                                accept="image/jpeg,image/png,image/webp"
+                                aria-label="Pilih foto produk"
+                                hidden
+                            >
+
+                            <button
+                                class="button button-outline"
+                                type="button"
+                                id="remove-product-image"
+                                hidden
+                            >
+                                Hapus foto
+                            </button>
+
+                        </div>
+
+                        <p class="form-help">
+                            JPG, PNG, WebP · Maks. 5 MB
+                        </p>
+
+                        <!-- Opsi hapus foto yang sudah tersimpan -->
+                        <label
+                            class="form-checkbox product-remove-image-option"
+                            id="remove-product-image-option"
+                            hidden
+                        >
+
+                            <input
+                                type="checkbox"
+                                name="remove_image"
+                                id="remove-product-image-checkbox"
+                            >
+
+                            <span>Hapus foto tersimpan</span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <!-- Label -->
+                <label class="form-field">
+                    <span>
+                        Label produk
+                        <small>(opsional)</small>
+                    </span>
+
+                    <input
+                        type="text"
+                        name="tag"
+                        maxlength="40"
+                        placeholder="Contoh: Terlaris"
+                    >
+                </label>
+
+                <!-- Deskripsi -->
+                <label class="form-field product-description-field">
+                    <span>
+                        Deskripsi
+                        <small>(opsional)</small>
+                    </span>
+
+                    <textarea
+                        name="description"
+                        maxlength="5000"
+                        rows="3"
+                        placeholder="Deskripsi singkat produk"
+                    ></textarea>
+                </label>
+
+            </div>
+
+            <!-- Ketersediaan -->
+            <label class="form-checkbox product-availability">
 
                 <input
-                    type="text"
-                    name="tag"
-                    maxlength="40"
-                    placeholder="Produk pilihan"
+                    type="checkbox"
+                    name="available"
+                    checked
                 >
-            </label>
-            
-            <label class="form-field">
-                <span>Deskripsi produk</span>
-            
-                <textarea
-                    name="description"
-                    maxlength="5000"
-                    rows="3"
-                    placeholder="Deskripsi produk"
-                ></textarea>
+
+                <span>Produk tersedia</span>
+
             </label>
 
+            <!-- Tombol aksi -->
+            <div class="product-form-actions">
+
+                <button
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Simpan produk
+                </button>
+
+                <button
+                    class="button button-outline"
+                    id="cancel-product"
+                    type="button"
+                    hidden
+                >
+                    Batal
+                </button>
+
+            </div>
+
+        </form>
+
+        <!-- Daftar produk -->
+        <div class="products-list-heading">
+            <h3>Daftar produk</h3>
         </div>
 
-        <label class="form-checkbox">
-            <input
-                type="checkbox"
-                name="available"
-                checked
-            >
+        <div
+            class="product-manage-list"
+            id="manage-products"
+            aria-live="polite"
+        ></div>
 
-            <span>
-                Produk tersedia dan dapat dipesan
-            </span>
-        </label>
+    </section>
 
-        <div class="product-form-actions">
-
-            <button
-                class="button button-primary"
-                type="submit"
-            >
-                Simpan produk
-            </button>
-
-            <button
-                class="button button-outline"
-                id="cancel-product"
-                type="button"
-                hidden
-            >
-                Batal
-            </button>
-
-        </div>
-
-    </form>
-
-    <div
-        class="product-manage-list"
-        id="manage-products"
-        aria-live="polite"
-    ></div>
-
-</section>
+</div>
 
 <?php require __DIR__ . '/_footer.php'; ?>
