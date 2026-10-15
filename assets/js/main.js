@@ -200,6 +200,11 @@ function openCart() {
 
   cartOverlay.hidden = false;
 
+  // Aktifkan overlay dan animasi drawer.
+  requestAnimationFrame(() => {
+    cartOverlay.classList.add("active");
+  });
+
   document.body.classList.add("no-scroll");
 
   closeCartButton?.focus();
@@ -210,9 +215,11 @@ function closeCart() {
     return;
   }
 
-  cartOverlay.hidden = true;
+  cartOverlay.classList.remove("active");
 
   document.body.classList.remove("no-scroll");
+
+  cartOverlay.hidden = true;
 
   cartButton?.focus();
 }
