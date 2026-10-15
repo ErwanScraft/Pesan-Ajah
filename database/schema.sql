@@ -70,6 +70,8 @@ CREATE TABLE IF NOT EXISTS stores (
     address VARCHAR(180) NOT NULL,
 
     description VARCHAR(500) DEFAULT NULL,
+    
+    icon_image VARCHAR(255) DEFAULT NULL,
 
     is_open TINYINT(1)
         NOT NULL DEFAULT 0,

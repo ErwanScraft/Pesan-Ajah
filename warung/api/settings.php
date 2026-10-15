@@ -9,12 +9,16 @@ $store = api_store_owner();
 if (request_method() === 'GET') {
     api_json([
         'success' => true,
+
         'settings' => [
             'name' => $store['name'],
             'owner' => $store['owner'],
             'phone' => $store['phone'],
             'address' => $store['address'],
             'description' => $store['description'],
+
+            'icon_image' => $store['icon_image'] ?? null,
+
             'is_open' => (bool) $store['is_open'],
             'free_delivery' => (bool) $store['free_delivery'],
         ],

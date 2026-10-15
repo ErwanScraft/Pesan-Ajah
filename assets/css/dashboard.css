@@ -135,17 +135,35 @@
   border-top: 1px solid var(--border);
 }
 
+/* =========================================================
+   IDENTITAS WARUNG DI SIDEBAR
+========================================================= */
+
 .seller-avatar {
   display: grid;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  overflow: hidden;
   place-items: center;
+  border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--green-light);
   color: var(--green-dark);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
+}
+
+.seller-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.seller-avatar img[hidden],
+.seller-avatar span[hidden] {
+  display: none !important;
 }
 
 .sidebar-bottom > div:nth-child(2) {
@@ -402,264 +420,182 @@
   line-height: 1.6;
 }
 
-/* Ikon toko — Pengaturan Warung */
+/* =========================================================
+   PENGATURAN — IKON TOKO
+========================================================= */
 
-.store-icon-field {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 24px;
+.store-icon-section {
+  min-width: 0;
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 
-.store-icon-label {
-    font-size: 13px;
-    font-weight: 700;
+.store-icon-heading {
+  margin-bottom: 16px;
+}
+
+.store-icon-heading h4 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.store-icon-heading p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.store-icon-layout {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
 }
 
 .store-icon-preview {
-    display: grid;
-    width: 104px;
-    height: 104px;
-    overflow: hidden;
-    place-items: center;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 12px;
-    text-align: center;
+  display: grid;
+  width: 104px;
+  height: 104px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  color: var(--muted);
+  text-align: center;
 }
 
 .store-icon-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .store-icon-preview img[hidden],
 .store-icon-preview div[hidden] {
-    display: none;
+  display: none !important;
 }
 
-.store-icon-field > small {
-    font-size: 11px;
-    line-height: 1.6;
-}
-
-.store-icon-field #save-store-icon {
-    min-width: 160px;
-}
-
-#store-icon-feedback {
-    margin: 0;
-    font-size: 12px;
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 480px) {
-    .store-icon-preview {
-        width: 88px;
-        height: 88px;
-        border-radius: 15px;
-    }
-
-    .store-icon-field #save-store-icon {
-        width: 100%;
-    }
-}
-
-.switch-label {
+.store-icon-preview div {
   display: flex;
-  min-width: 0;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 750;
-  cursor: pointer;
+  gap: 6px;
+  padding: 8px;
 }
 
-.switch-label input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  clip-path: inset(50%);
+.store-icon-preview div span {
+  font-size: 24px;
+  line-height: 1;
 }
 
-.switch {
-  position: relative;
-  width: 44px;
-  height: 25px;
-  flex: 0 0 44px;
-  border-radius: 999px;
-  background: #c9cec7;
-  transition: background var(--transition);
-}
-
-.switch::after {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: var(--white);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
-  content: "";
-  transition: transform var(--transition);
-}
-
-.switch-label input:checked + .switch {
-  background: var(--green);
-}
-
-.switch-label input:checked + .switch::after {
-  transform: translateX(19px);
-}
-
-.switch-label input:focus-visible + .switch {
-  outline: 3px solid rgb(18 107 70 / 30%);
-  outline-offset: 3px;
-}
-
-/* ---------------------------------------------------------
-   9. HEADING KARTU
---------------------------------------------------------- */
-
-.card-heading {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px;
-  border-bottom: 1px solid var(--border);
-}
-
-.card-heading > div {
-  min-width: 0;
-}
-
-.table-caption {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  padding: 6px 9px;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--muted);
+.store-icon-preview div small {
   font-size: 10px;
-  font-weight: 700;
   line-height: 1.4;
 }
 
-/* ---------------------------------------------------------
-   10. TABEL PESANAN
---------------------------------------------------------- */
-
-.table-wrap {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
+.store-icon-controls {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.data-table th,
-.data-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
+.store-icon-controls > small {
   font-size: 11px;
-  white-space: nowrap;
+  line-height: 1.6;
 }
 
-.data-table th {
-  background: #f8f9f7;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
+.store-icon-controls #save-store-icon {
+  min-width: 160px;
 }
 
-.data-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.data-table tbody tr:hover {
-  background: #fbfcf9;
-}
-
-.order-id {
-  color: var(--green);
-  font-weight: 800;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 8px;
-  border-radius: 999px;
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.status-pending {
-  background: #fff4d8;
-  color: #895d00;
-}
-
-.status-process {
-  background: #e8f1ff;
-  color: #2456a6;
-}
-
-.status-done {
-  background: #e7f6eb;
-  color: #17683d;
-}
-
-.table-action {
-  display: inline-flex;
-  min-height: 32px;
-  align-items: center;
-  justify-content: center;
-  padding: 7px 10px;
-  border: 1px solid #d7e8d8;
-  border-radius: 8px;
-  background: #f5faf2;
-  color: var(--green-dark);
-  font-size: 10px;
-  font-weight: 750;
-  cursor: pointer;
-}
-
-.table-action:hover:not(:disabled) {
-  border-color: var(--green);
-  background: var(--green-light);
-}
-
-.table-action:disabled {
-  border-color: var(--border);
-  background: var(--surface);
-  color: var(--muted);
+.store-icon-controls #save-store-icon:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.empty-table-cell {
-  padding: 28px 16px !important;
-  color: var(--muted);
-  text-align: center;
+.store-icon-feedback {
+  min-height: 0;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.store-icon-feedback:empty {
+  display: none;
+}
+
+/* Header halaman pengaturan */
+
+.settings-page-heading {
+  margin-bottom: 20px;
+}
+
+.settings-page-heading .eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .store-icon-section {
+    padding: 14px;
+  }
+
+  .store-icon-layout {
+    grid-template-columns: 80px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+  }
+
+  .store-icon-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+  }
+
+  .store-icon-controls {
+    gap: 10px;
+  }
+
+  .store-icon-controls .button {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .store-icon-controls #save-store-icon {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .store-icon-section {
+    padding: 12px;
+  }
+
+  .store-icon-layout {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .store-icon-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+  }
 }
 
 /* ---------------------------------------------------------

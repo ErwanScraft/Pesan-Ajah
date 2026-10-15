@@ -5,7 +5,19 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 require_once APP_PATH . '/warung_auth.php';
 
+/*
+|--------------------------------------------------------------------------
+| AUTENTIKASI WARUNG
+|--------------------------------------------------------------------------
+*/
+
 $store = require_store_owner();
+
+/*
+|--------------------------------------------------------------------------
+| INFORMASI HALAMAN
+|--------------------------------------------------------------------------
+*/
 
 $pageKey = 'settings';
 $pageTitle = 'Pengaturan';
@@ -15,29 +27,41 @@ require __DIR__ . '/_header.php';
 
 ?>
 
-<div class="welcome-row">
+<!-- =========================================================
+     HEADER HALAMAN
+========================================================= -->
+
+<div class="welcome-row settings-page-heading">
     <div>
+        <span class="eyebrow eyebrow-plain">
+            PREFERENSI WARUNG
+        </span>
+
         <h2>Pengaturan warung</h2>
 
         <p class="muted">
-            Kelola informasi profil dan status operasional.
+            Kelola identitas, informasi profil, dan operasional warung.
         </p>
     </div>
-
-    <span class="demo-badge">
-        <span class="dot"></span>
-        Mode demo
-    </span>
 </div>
 
-<section class="dashboard-card store-control">
 
+<!-- =========================================================
+     STATUS OPERASIONAL WARUNG
+========================================================= -->
+
+<section
+    class="dashboard-card store-control"
+    aria-labelledby="store-status-heading"
+>
     <div>
         <span class="eyebrow eyebrow-plain">
             OPERASIONAL
         </span>
 
-        <h3>Status warung</h3>
+        <h3 id="store-status-heading">
+            Status warung
+        </h3>
 
         <p class="muted">
             Atur apakah warung menerima pesanan baru.
@@ -49,7 +73,7 @@ require __DIR__ . '/_header.php';
         for="store-open-toggle"
     >
         <span id="store-toggle-text">
-            <?= (bool) $store['is_open']
+            <?= (bool) ($store['is_open'] ?? false)
                 ? 'Warung sedang buka'
                 : 'Warung sedang tutup' ?>
         </span>
@@ -57,7 +81,9 @@ require __DIR__ . '/_header.php';
         <input
             type="checkbox"
             id="store-open-toggle"
-            <?= (bool) $store['is_open'] ? 'checked' : '' ?>
+            <?= (bool) ($store['is_open'] ?? false)
+                ? 'checked'
+                : '' ?>
         >
 
         <span
@@ -70,18 +96,27 @@ require __DIR__ . '/_header.php';
         class="muted"
         id="store-status-feedback"
         role="status"
+        aria-live="polite"
     ></p>
-
 </section>
 
-<section class="dashboard-card store-control">
 
+<!-- =========================================================
+     PENGATURAN GRATIS ONGKIR
+========================================================= -->
+
+<section
+    class="dashboard-card store-control"
+    aria-labelledby="free-delivery-heading"
+>
     <div>
         <span class="eyebrow eyebrow-plain">
             PENGIRIMAN
         </span>
 
-        <h3>Gratis ongkir</h3>
+        <h3 id="free-delivery-heading">
+            Gratis ongkir
+        </h3>
 
         <p class="muted">
             Aktifkan jika program gratis ongkir sudah
@@ -94,7 +129,7 @@ require __DIR__ . '/_header.php';
         for="free-delivery-toggle"
     >
         <span id="free-delivery-toggle-text">
-            <?= (bool) $store['free_delivery']
+            <?= (bool) ($store['free_delivery'] ?? false)
                 ? 'Gratis ongkir aktif'
                 : 'Gratis ongkir tidak aktif' ?>
         </span>
@@ -102,7 +137,9 @@ require __DIR__ . '/_header.php';
         <input
             type="checkbox"
             id="free-delivery-toggle"
-            <?= (bool) $store['free_delivery'] ? 'checked' : '' ?>
+            <?= (bool) ($store['free_delivery'] ?? false)
+                ? 'checked'
+                : '' ?>
         >
 
         <span
@@ -117,18 +154,26 @@ require __DIR__ . '/_header.php';
         role="status"
         aria-live="polite"
     ></p>
-
 </section>
 
-<section class="dashboard-card">
 
+<!-- =========================================================
+     PROFIL WARUNG
+========================================================= -->
+
+<section
+    class="dashboard-card"
+    aria-labelledby="store-profile-heading"
+>
     <div class="card-heading">
         <div>
-            <h3>Profil warung</h3>
+            <h3 id="store-profile-heading">
+                Profil warung
+            </h3>
 
             <p class="muted">
-                Informasi ini digunakan untuk menampilkan
-                identitas warung.
+                Kelola informasi dan identitas yang ditampilkan
+                kepada pembeli.
             </p>
         </div>
     </div>
@@ -138,7 +183,115 @@ require __DIR__ . '/_header.php';
         id="store-settings-form"
     >
 
+        <!-- =================================================
+             IKON TOKO
+
+             Terpisah dari product-form-grid agar komponen
+             gambar tidak memengaruhi tata letak formulir.
+        ================================================== -->
+
+        <section
+            class="store-icon-section"
+            aria-labelledby="store-icon-heading"
+        >
+            <div class="store-icon-heading">
+                <h4 id="store-icon-heading">
+                    Ikon toko
+                </h4>
+
+                <p class="muted">
+                    Gunakan gambar yang mudah dikenali pembeli.
+                    Ikon akan ditampilkan di navigasi warung.
+                </p>
+            </div>
+
+            <div class="store-icon-layout">
+
+                <!-- Pratinjau ikon toko -->
+
+                <div class="store-icon-preview">
+
+                    <img
+                        id="store-icon-preview"
+                        src="<?= !empty($store['icon_image'])
+                            ? e(url($store['icon_image']))
+                            : '' ?>"
+                        alt="Pratinjau ikon toko"
+                        <?= empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+
+                    <div
+                        id="store-icon-placeholder"
+                        <?= !empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+                        <span aria-hidden="true">+</span>
+
+                        <small>
+                            Belum ada ikon
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <!-- Kontrol unggah ikon -->
+
+                <div class="store-icon-controls">
+
+                    <label
+                        class="button button-outline"
+                        for="store-icon-input"
+                    >
+                        Pilih gambar
+                    </label>
+
+                    <input
+                        type="file"
+                        id="store-icon-input"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                    >
+
+                    <small class="muted">
+                        Format JPG, PNG, atau WebP.
+                        Maksimal 2 MB.
+                    </small>
+
+                    <button
+                        class="button button-primary"
+                        id="save-store-icon"
+                        type="button"
+                        disabled
+                    >
+                        Simpan ikon toko
+                    </button>
+
+                    <p
+                        id="store-icon-feedback"
+                        class="store-icon-feedback muted"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- =================================================
+             FORMULIR INFORMASI WARUNG
+
+             Semua field profil tetap berada dalam grid.
+        ================================================== -->
+
         <div class="product-form-grid">
+
+            <!-- Nama warung -->
 
             <label class="form-field">
                 <span>Nama warung</span>
@@ -151,68 +304,9 @@ require __DIR__ . '/_header.php';
                     required
                 >
             </label>
-            
-            <div class="store-icon-field">
-                <span class="store-icon-label">
-                    Ikon toko
-                </span>
-            
-                <div class="store-icon-preview">
-                    <img
-                        id="store-icon-preview"
-                        src="<?= !empty($store['icon_image'])
-                            ? e(url($store['icon_image']))
-                            : '' ?>"
-                        alt="Pratinjau ikon toko"
-                        <?= empty($store['icon_image'])
-                            ? 'hidden'
-                            : '' ?>
-                    >
-            
-                    <div
-                        id="store-icon-placeholder"
-                        <?= !empty($store['icon_image'])
-                            ? 'hidden'
-                            : '' ?>
-                    >
-                        Ikon toko
-                    </div>
-                </div>
-            
-                <label
-                    class="button button-outline"
-                    for="store-icon-input"
-                >
-                    Pilih gambar
-                </label>
-            
-                <input
-                    type="file"
-                    id="store-icon-input"
-                    accept="image/jpeg,image/png,image/webp"
-                    hidden
-                >
-            
-                <small class="muted">
-                    Format JPG, PNG, atau WebP. Maksimal 2 MB.
-                </small>
-            
-                <button
-                    class="button button-primary"
-                    id="save-store-icon"
-                    type="button"
-                    disabled
-                >
-                    Simpan ikon toko
-                </button>
-            
-                <p
-                    id="store-icon-feedback"
-                    class="muted"
-                    role="status"
-                    aria-live="polite"
-                ></p>
-            </div>
+
+
+            <!-- Nama pemilik -->
 
             <label class="form-field">
                 <span>Nama pemilik</span>
@@ -226,6 +320,9 @@ require __DIR__ . '/_header.php';
                 >
             </label>
 
+
+            <!-- Nomor WhatsApp -->
+
             <label class="form-field">
                 <span>Nomor WhatsApp / telepon</span>
 
@@ -237,6 +334,9 @@ require __DIR__ . '/_header.php';
                     value="<?= e($store['phone'] ?? '') ?>"
                 >
             </label>
+
+
+            <!-- Alamat warung -->
 
             <label class="form-field">
                 <span>Alamat warung</span>
@@ -250,6 +350,9 @@ require __DIR__ . '/_header.php';
                 >
             </label>
 
+
+            <!-- Deskripsi warung -->
+
             <label class="form-field store-description-field">
                 <span>Deskripsi warung</span>
 
@@ -262,6 +365,11 @@ require __DIR__ . '/_header.php';
             </label>
 
         </div>
+
+
+        <!-- =================================================
+             AKSI FORMULIR
+        ================================================== -->
 
         <div class="product-form-actions">
 
@@ -282,6 +390,9 @@ require __DIR__ . '/_header.php';
 
         </div>
 
+
+        <!-- Pesan status penyimpanan profil -->
+
         <p
             class="store-settings-help muted"
             id="store-settings-feedback"
@@ -290,17 +401,7 @@ require __DIR__ . '/_header.php';
         ></p>
 
     </form>
-
 </section>
 
-<div class="dashboard-note">
-    <strong>Catatan:</strong>
-
-    <p>
-        Data profil awal diambil dari database.
-        Proses penyimpanan perubahan masih perlu
-        dihubungkan ke backend PHP.
-    </p>
-</div>
 
 <?php require __DIR__ . '/_footer.php'; ?>

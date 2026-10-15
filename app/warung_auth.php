@@ -37,6 +37,7 @@ function require_store_owner(): array
             s.phone,
             s.address,
             s.description,
+            s.icon_image,
             s.is_open,
             s.free_delivery,
             s.is_active AS store_is_active

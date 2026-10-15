@@ -152,8 +152,29 @@ $storeInitial = function_exists('mb_substr')
 
             <div class="sidebar-bottom">
 
-                <div class="seller-avatar">
-                    <?= e($storeInitial) ?>
+                <div
+                    class="seller-avatar"
+                    id="sidebar-store-avatar"
+                >
+                    <img
+                        id="sidebar-store-icon"
+                        src="<?= !empty($store['icon_image'])
+                            ? e(url($store['icon_image']))
+                            : '' ?>"
+                        alt="Ikon <?= e($storeName) ?>"
+                        <?= empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+                
+                    <span
+                        id="sidebar-store-initial"
+                        <?= !empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+                        <?= e($storeInitial) ?>
+                    </span>
                 </div>
 
                 <div>

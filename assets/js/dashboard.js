@@ -1149,6 +1149,12 @@ async function loadSettings() {
   const data = await apiRequest(API.settings);
 
   const settings = data.settings;
+  
+  const sidebarStoreName = $("#sidebar-store-name");
+
+  if (sidebarStoreName) {
+    sidebarStoreName.textContent = settings.name || "Warung Anda";
+  }
 
   if (settingsForm) {
     for (const key of [
@@ -1363,6 +1369,32 @@ storeIconInput?.addEventListener("change", () => {
   image.src = imageUrl;
 });
 
+function updateSidebarStoreIcon(imagePath) {
+  const avatar = $("#sidebar-store-avatar");
+
+  if (!avatar || !imagePath) {
+    return;
+  }
+
+  let image = $("#sidebar-store-icon");
+  let initial = $("#sidebar-store-initial");
+
+  if (!image) {
+    image = document.createElement("img");
+    image.id = "sidebar-store-icon";
+    image.alt = "Ikon toko";
+
+    avatar.prepend(image);
+  }
+
+  image.src = `/${imagePath}?v=${Date.now()}`;
+  image.hidden = false;
+
+  if (initial) {
+    initial.hidden = true;
+  }
+}
+
 saveStoreIconButton?.addEventListener("click", async () => {
   if (!selectedStoreIcon) {
     return;
@@ -1405,12 +1437,17 @@ saveStoreIconButton?.addEventListener("click", async () => {
 
     selectedStoreIcon = null;
     storeIconInput.value = "";
-
-    storeIconPreview.src =
-      `/${result.icon_image}?v=${Date.now()}`;
-
+    
+    const iconUrl = `/${result.icon_image}?v=${Date.now()}`;
+    
+    storeIconPreview.src = iconUrl;
+    storeIconPreview.hidden = false;
+    storeIconPlaceholder.hidden = true;
+    
+    updateSidebarStoreIcon(result.icon_image);
+    
     saveStoreIconButton.disabled = true;
-
+    
     notify(result.message);
   } catch (error) {
     storeIconFeedback.textContent =
