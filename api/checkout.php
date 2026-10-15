@@ -10,12 +10,6 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, private');
 header('X-Content-Type-Options: nosniff');
 
-/*
-|--------------------------------------------------------------------------
-| JSON RESPONSE
-|--------------------------------------------------------------------------
-*/
-
 function checkout_json(
     array $data,
     int $status = 200
@@ -25,54 +19,41 @@ function checkout_json(
     echo json_encode(
         $data,
         JSON_UNESCAPED_UNICODE
-        | JSON_INVALID_UTF8_SUBSTITUTE
         | JSON_UNESCAPED_SLASHES
+        | JSON_INVALID_UTF8_SUBSTITUTE
     );
 
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| NORMALISASI NOMOR WHATSAPP
-|--------------------------------------------------------------------------
-*/
-
-function checkout_whatsapp_number(
-    mixed $phone
-): ?string {
-    if (!is_string($phone)) {
+function checkout_phone(mixed $value): ?string
+{
+    if (!is_string($value)) {
         return null;
     }
 
-    $number = preg_replace('/\D+/', '', $phone);
+    $phone = preg_replace('/\D+/', '', $value);
 
-    if (!is_string($number) || $number === '') {
+    if (!$phone) {
         return null;
     }
 
-    if (str_starts_with($number, '0')) {
-        $number = '62' . substr($number, 1);
-    } elseif (str_starts_with($number, '8')) {
-        $number = '62' . $number;
+    if (str_starts_with($phone, '0')) {
+        $phone = '62' . substr($phone, 1);
+    } elseif (str_starts_with($phone, '8')) {
+        $phone = '62' . $phone;
     }
 
     if (
-        !str_starts_with($number, '62')
-        || strlen($number) < 10
-        || strlen($number) > 16
+        !str_starts_with($phone, '62')
+        || strlen($phone) < 10
+        || strlen($phone) > 16
     ) {
         return null;
     }
 
-    return $number;
+    return $phone;
 }
-
-/*
-|--------------------------------------------------------------------------
-| FORMAT RUPIAH
-|--------------------------------------------------------------------------
-*/
 
 function checkout_rupiah(float $amount): string
 {
@@ -86,15 +67,13 @@ function checkout_rupiah(float $amount): string
 
 /*
 |--------------------------------------------------------------------------
-| BACA JSON
+| BACA DAN VALIDASI REQUEST
 |--------------------------------------------------------------------------
 */
 
-$rawInput = file_get_contents('php://input');
-
 try {
     $input = json_decode(
-        $rawInput ?: '',
+        file_get_contents('php://input') ?: '',
         true,
         512,
         JSON_THROW_ON_ERROR
@@ -102,7 +81,7 @@ try {
 } catch (JsonException) {
     checkout_json([
         'success' => false,
-        'message' => 'Format data checkout tidak valid.',
+        'message' => 'Data checkout tidak valid.',
     ], 400);
 }
 
@@ -113,20 +92,14 @@ if (!is_array($input)) {
     ], 400);
 }
 
-/*
-|--------------------------------------------------------------------------
-| VALIDASI CSRF
-|--------------------------------------------------------------------------
-*/
-
 $csrf = $input['_token'] ?? '';
-$storedToken = $_SESSION['_csrf_token'] ?? '';
+$storedCsrf = $_SESSION['_csrf_token'] ?? '';
 
 if (
     !is_string($csrf)
-    || !is_string($storedToken)
-    || $storedToken === ''
-    || !hash_equals($storedToken, $csrf)
+    || !is_string($storedCsrf)
+    || $storedCsrf === ''
+    || !hash_equals($storedCsrf, $csrf)
 ) {
     checkout_json([
         'success' => false,
@@ -134,20 +107,10 @@ if (
     ], 419);
 }
 
-/*
-|--------------------------------------------------------------------------
-| DATA PEMBELI
-|--------------------------------------------------------------------------
-*/
-
 $storeId = filter_var(
     $input['store_id'] ?? null,
     FILTER_VALIDATE_INT,
-    [
-        'options' => [
-            'min_range' => 1,
-        ],
-    ]
+    ['options' => ['min_range' => 1]]
 );
 
 $buyerName = trim(
@@ -161,6 +124,8 @@ $buyerPhone = trim(
         ? $input['buyer_phone']
         : ''
 );
+
+$buyerPhoneNormalized = checkout_phone($buyerPhone);
 
 $deliveryMethod = $input['delivery_method'] ?? '';
 
@@ -179,184 +144,21 @@ $deliveryMapsUrl = trim(
 $latitudeInput = $input['delivery_latitude'] ?? null;
 $longitudeInput = $input['delivery_longitude'] ?? null;
 
-$deliveryLatitude = null;
-$deliveryLongitude = null;
-
 $items = $input['items'] ?? [];
-
-/*
-|--------------------------------------------------------------------------
-| VALIDASI NOMOR TELEPON
-|--------------------------------------------------------------------------
-|
-| Nomor WhatsApp dinormalisasi untuk profil buyer.
-| Nomor asli tetap disimpan pada orders agar informasi
-| transaksi sesuai dengan input pembeli.
-|--------------------------------------------------------------------------
-*/
-
-$buyerPhoneNormalized = checkout_whatsapp_number(
-    $buyerPhone
-);
-
-/*
-|--------------------------------------------------------------------------
-| VALIDASI GOOGLE MAPS
-|--------------------------------------------------------------------------
-*/
-
-if ($deliveryMapsUrl !== '') {
-    if (mb_strlen($deliveryMapsUrl, 'UTF-8') > 500) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Tautan Google Maps terlalu panjang.',
-        ], 422);
-    }
-
-    $parts = parse_url($deliveryMapsUrl);
-
-    $host = strtolower(
-        is_array($parts)
-            ? (string) ($parts['host'] ?? '')
-            : ''
-    );
-
-    $allowedHosts = [
-        'google.com',
-        'www.google.com',
-        'maps.google.com',
-        'maps.app.goo.gl',
-        'goo.gl',
-    ];
-
-    $validMapsHost = in_array(
-        $host,
-        $allowedHosts,
-        true
-    ) || str_ends_with($host, '.google.com');
-
-    if (
-        !filter_var(
-            $deliveryMapsUrl,
-            FILTER_VALIDATE_URL
-        )
-        || strtolower(
-            (string) ($parts['scheme'] ?? '')
-        ) !== 'https'
-        || !$validMapsHost
-    ) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Tautan lokasi harus berupa tautan Google Maps yang valid.',
-        ], 422);
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| VALIDASI KOORDINAT
-|--------------------------------------------------------------------------
-*/
-
-if (
-    $latitudeInput !== null
-    && $latitudeInput !== ''
-) {
-    if (!is_numeric($latitudeInput)) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Koordinat lintang tidak valid.',
-        ], 422);
-    }
-
-    $deliveryLatitude = (float) $latitudeInput;
-
-    if (
-        !is_finite($deliveryLatitude)
-        || $deliveryLatitude < -90
-        || $deliveryLatitude > 90
-    ) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Koordinat lintang berada di luar rentang yang valid.',
-        ], 422);
-    }
-}
-
-if (
-    $longitudeInput !== null
-    && $longitudeInput !== ''
-) {
-    if (!is_numeric($longitudeInput)) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Koordinat bujur tidak valid.',
-        ], 422);
-    }
-
-    $deliveryLongitude = (float) $longitudeInput;
-
-    if (
-        !is_finite($deliveryLongitude)
-        || $deliveryLongitude < -180
-        || $deliveryLongitude > 180
-    ) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Koordinat bujur berada di luar rentang yang valid.',
-        ], 422);
-    }
-}
-
-if (
-    ($deliveryLatitude === null)
-    !== ($deliveryLongitude === null)
-) {
-    checkout_json([
-        'success' => false,
-        'message' => 'Koordinat lintang dan bujur harus diisi bersama.',
-    ], 422);
-}
-
-/*
-|--------------------------------------------------------------------------
-| VALIDASI METODE PESANAN
-|--------------------------------------------------------------------------
-*/
-
-if (
-    $deliveryMethod === 'pickup'
-    && (
-        $deliveryMapsUrl !== ''
-        || $deliveryLatitude !== null
-        || $deliveryLongitude !== null
-    )
-) {
-    checkout_json([
-        'success' => false,
-        'message' => 'Lokasi pengantaran tidak diperlukan untuk metode ambil sendiri.',
-    ], 422);
-}
 
 if (
     $storeId === false
     || $buyerName === ''
     || mb_strlen($buyerName, 'UTF-8') > 100
-    || $buyerPhone === ''
-    || mb_strlen($buyerPhone, 'UTF-8') > 25
     || $buyerPhoneNormalized === null
-    || !in_array(
-        $deliveryMethod,
-        ['delivery', 'pickup'],
-        true
-    )
+    || !in_array($deliveryMethod, ['delivery', 'pickup'], true)
     || !is_array($items)
     || count($items) < 1
     || count($items) > 50
 ) {
     checkout_json([
         'success' => false,
-        'message' => 'Periksa kembali nama, nomor WhatsApp, metode pesanan, dan produk.',
+        'message' => 'Periksa kembali data pembeli dan produk.',
     ], 422);
 }
 
@@ -369,17 +171,56 @@ if (
 ) {
     checkout_json([
         'success' => false,
-        'message' => 'Alamat pengantaran wajib diisi dan maksimal 255 karakter.',
+        'message' => 'Alamat pengantaran wajib diisi.',
+    ], 422);
+}
+
+$deliveryLatitude = null;
+$deliveryLongitude = null;
+
+if ($latitudeInput !== null && $latitudeInput !== '') {
+    if (
+        !is_numeric($latitudeInput)
+        || (float) $latitudeInput < -90
+        || (float) $latitudeInput > 90
+    ) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat lintang tidak valid.',
+        ], 422);
+    }
+
+    $deliveryLatitude = (float) $latitudeInput;
+}
+
+if ($longitudeInput !== null && $longitudeInput !== '') {
+    if (
+        !is_numeric($longitudeInput)
+        || (float) $longitudeInput < -180
+        || (float) $longitudeInput > 180
+    ) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Koordinat bujur tidak valid.',
+        ], 422);
+    }
+
+    $deliveryLongitude = (float) $longitudeInput;
+}
+
+if (
+    ($deliveryLatitude === null)
+    !== ($deliveryLongitude === null)
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Koordinat lokasi harus diisi bersama.',
     ], 422);
 }
 
 /*
 |--------------------------------------------------------------------------
 | NORMALISASI KERANJANG
-|--------------------------------------------------------------------------
-|
-| Browser hanya mengirim product_id dan quantity.
-| Harga dari browser tidak dipercaya.
 |--------------------------------------------------------------------------
 */
 
@@ -396,31 +237,22 @@ foreach ($items as $item) {
     $productId = filter_var(
         $item['product_id'] ?? null,
         FILTER_VALIDATE_INT,
-        [
-            'options' => [
-                'min_range' => 1,
-            ],
-        ]
+        ['options' => ['min_range' => 1]]
     );
 
     $quantity = filter_var(
         $item['quantity'] ?? null,
         FILTER_VALIDATE_INT,
-        [
-            'options' => [
-                'min_range' => 1,
-                'max_range' => 99,
-            ],
-        ]
+        ['options' => [
+            'min_range' => 1,
+            'max_range' => 99,
+        ]]
     );
 
-    if (
-        $productId === false
-        || $quantity === false
-    ) {
+    if ($productId === false || $quantity === false) {
         checkout_json([
             'success' => false,
-            'message' => 'ID atau jumlah produk tidak valid.',
+            'message' => 'Produk atau jumlah produk tidak valid.',
         ], 422);
     }
 
@@ -438,19 +270,6 @@ foreach ($items as $item) {
     }
 }
 
-if ($quantities === []) {
-    checkout_json([
-        'success' => false,
-        'message' => 'Keranjang masih kosong.',
-    ], 422);
-}
-
-/*
-|--------------------------------------------------------------------------
-| DATABASE TRANSACTION
-|--------------------------------------------------------------------------
-*/
-
 $db = database();
 
 try {
@@ -462,13 +281,11 @@ try {
     |--------------------------------------------------------------------------
     */
 
-    $storeStmt = $db->prepare(
+    $stmt = $db->prepare(
         "SELECT
             s.id,
             s.name,
-            s.slug,
             s.phone,
-            s.address,
             s.is_open,
             s.free_delivery,
             s.is_active,
@@ -487,62 +304,41 @@ try {
         FOR UPDATE"
     );
 
-    $storeStmt->execute([
+    $stmt->execute([
         'store_id' => (int) $storeId,
     ]);
 
-    $store = $storeStmt->fetch();
+    $store = $stmt->fetch();
 
     if (
         !$store
         || !(bool) $store['is_active']
         || !(bool) $store['user_is_active']
     ) {
-        $db->rollBack();
-
-        checkout_json([
-            'success' => false,
-            'message' => 'Warung tidak tersedia.',
-        ], 404);
+        throw new RuntimeException(
+            'Warung tidak tersedia.'
+        );
     }
 
     if (!(bool) $store['is_open']) {
-        $db->rollBack();
-
-        checkout_json([
-            'success' => false,
-            'message' => 'Warung sedang tutup dan tidak menerima pesanan.',
-        ], 409);
+        throw new RuntimeException(
+            'Warung sedang tutup.'
+        );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDASI WHATSAPP SELLER
-    |--------------------------------------------------------------------------
-    */
-
-    $sellerPhone = checkout_whatsapp_number(
+    $sellerPhone = checkout_phone(
         $store['phone'] ?? null
     );
 
     if ($sellerPhone === null) {
-        $db->rollBack();
-
-        checkout_json([
-            'success' => false,
-            'message' => 'Nomor WhatsApp warung belum valid. Hubungi admin warung.',
-        ], 422);
+        throw new RuntimeException(
+            'Nomor WhatsApp warung belum valid.'
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | SIMPAN / PERBARUI PROFIL BUYER
-    |--------------------------------------------------------------------------
-    |
-    | Tabel buyers harus sudah dibuat.
-    | Nomor telepon yang dinormalisasi menjadi identitas profil.
-    |
-    | Pembelian dengan nomor yang sama memperbarui profil yang sama.
+    | SIMPAN PROFIL PEMBELI
     |--------------------------------------------------------------------------
     */
 
@@ -550,19 +346,8 @@ try {
         ? $deliveryAddress
         : null;
 
-    $buyerMapsUrl = (
-        $deliveryMethod === 'delivery'
-        && $deliveryMapsUrl !== ''
-    )
-        ? $deliveryMapsUrl
-        : null;
-
-    $buyerLatitude = $deliveryMethod === 'delivery'
-        ? $deliveryLatitude
-        : null;
-
-    $buyerLongitude = $deliveryMethod === 'delivery'
-        ? $deliveryLongitude
+    $buyerMapsUrl = $deliveryMethod === 'delivery'
+        ? ($deliveryMapsUrl !== '' ? $deliveryMapsUrl : null)
         : null;
 
     $buyerStmt = $db->prepare(
@@ -576,11 +361,12 @@ try {
         ) VALUES (
             :name,
             :phone,
-            :delivery_address,
-            :delivery_maps_url,
-            :delivery_latitude,
-            :delivery_longitude
+            :address,
+            :maps_url,
+            :latitude,
+            :longitude
         )
+
         ON DUPLICATE KEY UPDATE
             id = LAST_INSERT_ID(id),
             name = VALUES(name),
@@ -588,18 +374,15 @@ try {
                 VALUES(delivery_address),
                 delivery_address
             ),
-            delivery_maps_url = IF(
-                VALUES(delivery_address) IS NOT NULL,
+            delivery_maps_url = COALESCE(
                 VALUES(delivery_maps_url),
                 delivery_maps_url
             ),
-            delivery_latitude = IF(
-                VALUES(delivery_address) IS NOT NULL,
+            delivery_latitude = COALESCE(
                 VALUES(delivery_latitude),
                 delivery_latitude
             ),
-            delivery_longitude = IF(
-                VALUES(delivery_address) IS NOT NULL,
+            delivery_longitude = COALESCE(
                 VALUES(delivery_longitude),
                 delivery_longitude
             )"
@@ -608,38 +391,34 @@ try {
     $buyerStmt->execute([
         'name' => $buyerName,
         'phone' => $buyerPhoneNormalized,
-        'delivery_address' => $buyerAddress,
-        'delivery_maps_url' => $buyerMapsUrl,
-        'delivery_latitude' => $buyerLatitude,
-        'delivery_longitude' => $buyerLongitude,
+        'address' => $buyerAddress,
+        'maps_url' => $buyerMapsUrl,
+        'latitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLatitude
+            : null,
+        'longitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLongitude
+            : null,
     ]);
 
     $buyerId = (int) $db->lastInsertId();
 
-    if ($buyerId < 1) {
-        throw new RuntimeException(
-            'Profil pembeli gagal disimpan.'
-        );
-    }
-
     /*
     |--------------------------------------------------------------------------
-    | VALIDASI DAN AMBIL PRODUK
+    | VALIDASI PRODUK DAN HITUNG TOTAL
     |--------------------------------------------------------------------------
     */
 
     $productStmt = $db->prepare(
         'SELECT
             id,
-            store_id,
             name,
             price,
-            unit,
             is_available
 
         FROM products
 
-        WHERE id = :id
+        WHERE id = :product_id
           AND store_id = :store_id
 
         LIMIT 1
@@ -652,30 +431,20 @@ try {
 
     foreach ($quantities as $productId => $quantity) {
         $productStmt->execute([
-            'id' => $productId,
+            'product_id' => $productId,
             'store_id' => (int) $storeId,
         ]);
 
         $product = $productStmt->fetch();
 
-        if (
-            !$product
-            || !(bool) $product['is_available']
-        ) {
-            $db->rollBack();
-
-            checkout_json([
-                'success' => false,
-                'message' => 'Salah satu produk sudah tidak tersedia. Periksa keranjang kembali.',
-            ], 409);
+        if (!$product || !(bool) $product['is_available']) {
+            throw new RuntimeException(
+                'Produk tidak ditemukan atau sudah habis.'
+            );
         }
 
         $price = (float) $product['price'];
-
-        $lineSubtotal = round(
-            $price * $quantity,
-            2
-        );
+        $lineSubtotal = round($price * $quantity, 2);
 
         $subtotal = round(
             $subtotal + $lineSubtotal,
@@ -691,33 +460,16 @@ try {
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HITUNG ONGKIR DAN TOTAL
-    |--------------------------------------------------------------------------
-    |
-    | Delivery normal       : Rp1.000
-    | Delivery gratis       : Rp0
-    | Ambil sendiri         : Rp0
-    |--------------------------------------------------------------------------
-    */
+    $deliveryFee = (
+        $deliveryMethod === 'delivery'
+        && !(bool) $store['free_delivery']
+    ) ? 1000.0 : 0.0;
 
-    $deliveryFee = 0.0;
-
-    if ($deliveryMethod === 'delivery') {
-        $deliveryFee = (bool) $store['free_delivery']
-            ? 0.0
-            : 1000.0;
-    }
-
-    $total = round(
-        $subtotal + $deliveryFee,
-        2
-    );
+    $total = round($subtotal + $deliveryFee, 2);
 
     /*
     |--------------------------------------------------------------------------
-    | GENERATE IDENTITAS PESANAN
+    | SIMPAN PESANAN DAN TOKEN BUYER
     |--------------------------------------------------------------------------
     */
 
@@ -725,29 +477,10 @@ try {
         . date('ymd')
         . strtoupper(bin2hex(random_bytes(4)));
 
-    /*
-     * Token mentah diberikan kepada pembeli.
-     * Database hanya menyimpan hash token.
-     */
-    $buyerTrackingToken = bin2hex(
-        random_bytes(32)
-    );
+    $buyerToken = bin2hex(random_bytes(32));
+    $buyerTokenHash = hash('sha256', $buyerToken);
 
-    $buyerTrackingTokenHash = hash(
-        'sha256',
-        $buyerTrackingToken
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | SIMPAN PESANAN
-    |--------------------------------------------------------------------------
-    |
-    | buyer_id menghubungkan pesanan dengan profil buyers.
-    |--------------------------------------------------------------------------
-    */
-
-    $insertOrder = $db->prepare(
+    $orderStmt = $db->prepare(
         "INSERT INTO orders (
             store_id,
             buyer_id,
@@ -776,23 +509,144 @@ try {
             :subtotal,
             :total,
             'pending',
-            :buyer_token_hash,
-            :delivery_maps_url,
-            :delivery_latitude,
-            :delivery_longitude
+            :token_hash,
+            :maps_url,
+            :latitude,
+            :longitude
         )"
     );
 
-    $insertOrder->execute([
+    $orderStmt->execute([
         'store_id' => (int) $storeId,
         'buyer_id' => $buyerId,
-
         'order_number' => $orderNumber,
         'buyer_name' => $buyerName,
         'buyer_phone' => $buyerPhone,
-
         'delivery_method' => $deliveryMethod,
+        'delivery_address' => $buyerAddress,
+        'delivery_fee' => $deliveryFee,
+        'subtotal' => $subtotal,
+        'total' => $total,
+        'token_hash' => $buyerTokenHash,
+        'maps_url' => $buyerMapsUrl,
+        'latitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLatitude
+            : null,
+        'longitude' => $deliveryMethod === 'delivery'
+            ? $deliveryLongitude
+            : null,
+    ]);
 
-        'delivery_address' => (
-            $deliveryMethod === 'delivery'
-       
+    $orderId = (int) $db->lastInsertId();
+
+    $itemStmt = $db->prepare(
+        'INSERT INTO order_items (
+            order_id,
+            product_id,
+            product_name,
+            quantity,
+            price,
+            subtotal
+        ) VALUES (
+            :order_id,
+            :product_id,
+            :product_name,
+            :quantity,
+            :price,
+            :subtotal
+        )'
+    );
+
+    foreach ($orderItems as $item) {
+        $itemStmt->execute([
+            'order_id' => $orderId,
+            'product_id' => $item['product_id'],
+            'product_name' => $item['product_name'],
+            'quantity' => $item['quantity'],
+            'price' => $item['price'],
+            'subtotal' => $item['subtotal'],
+        ]);
+    }
+
+    /*
+     * Pesanan harus benar-benar tersimpan sebelum
+     * URL WhatsApp dikirim ke browser.
+     */
+    $db->commit();
+
+    /*
+    |--------------------------------------------------------------------------
+    | BUAT PESAN WHATSAPP
+    |--------------------------------------------------------------------------
+    */
+
+    $message = [];
+    $message[] = '*PESANAN BARU — PESAN AJAH*';
+    $message[] = '';
+    $message[] = 'No. Pesanan: ' . $orderNumber;
+    $message[] = 'Nama: ' . $buyerName;
+    $message[] = 'WhatsApp: ' . $buyerPhone;
+    $message[] = 'Metode: ' . (
+        $deliveryMethod === 'delivery'
+            ? 'Diantar'
+            : 'Ambil sendiri'
+    );
+    $message[] = '';
+
+    foreach ($orderItems as $item) {
+        $message[] = $item['product_name']
+            . ' x' . $item['quantity']
+            . ' — ' . checkout_rupiah($item['subtotal']);
+    }
+
+    $message[] = '';
+    $message[] = 'Subtotal: ' . checkout_rupiah($subtotal);
+    $message[] = 'Ongkir: ' . checkout_rupiah($deliveryFee);
+    $message[] = 'Total: ' . checkout_rupiah($total);
+
+    if ($deliveryMethod === 'delivery') {
+        $message[] = 'Alamat: ' . $deliveryAddress;
+
+        if ($buyerMapsUrl !== null) {
+            $message[] = 'Lokasi: ' . $buyerMapsUrl;
+        }
+    }
+
+    $message[] = '';
+    $message[] = 'Mohon konfirmasi pesanan ini.';
+
+    $whatsappUrl = 'https://wa.me/'
+        . $sellerPhone
+        . '?text='
+        . rawurlencode(implode("\n", $message));
+
+    checkout_json([
+        'success' => true,
+        'message' => 'Pesanan berhasil disimpan.',
+        'order_id' => $orderId,
+        'order_number' => $orderNumber,
+        'status' => 'pending',
+        'subtotal' => $subtotal,
+        'delivery_fee' => $deliveryFee,
+        'total' => $total,
+        'buyer_token' => $buyerToken,
+        'whatsapp_url' => $whatsappUrl,
+    ], 201);
+
+} catch (Throwable $exception) {
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
+
+    error_log(
+        '[Pesan Ajah] Checkout gagal: '
+        . $exception->getMessage()
+    );
+
+    checkout_json([
+        'success' => false,
+        'message' => $exception instanceof RuntimeException
+            ? $exception->getMessage()
+            : 'Checkout gagal disimpan. Periksa konfigurasi database.',
+    ], 500);
+}
