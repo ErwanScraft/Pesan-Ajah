@@ -458,401 +458,380 @@
           </section>
     
           <!-- Checkout -->
-          <div class="cart-footer" id="cart-footer" hidden>
-            <!-- Fulfillment method -->
-            <fieldset class="fulfillment-options">
-              <legend>Metode pesanan</legend>
+    <div class="cart-footer" id="cart-footer" hidden>
+      <!-- Data Pemesan -->
+      <section
+        class="checkout-form"
+        id="checkout-form-section"
+        aria-labelledby="buyer-heading"
+      >
+        <h3 id="buyer-heading">Data pemesan</h3>
     
-              <label class="fulfillment-option">
-                <input
-                  type="radio"
-                  name="fulfillment-method"
-                  value="delivery"
-                  checked
-                />
+        <div class="form-field">
+          <label for="buyer-name">Nama lengkap</label>
     
-                <span class="fulfillment-option-icon" aria-hidden="true">
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linejoin="round"
-                    />
+          <input
+            id="buyer-name"
+            name="buyer_name"
+            type="text"
+            maxlength="100"
+            autocomplete="name"
+            placeholder="Nama penerima"
+            required
+          />
+        </div>
     
-                    <circle
-                      cx="7.5"
-                      cy="18"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                    />
+        <div class="form-field">
+          <label for="buyer-phone">Nomor WhatsApp</label>
     
-                    <circle
-                      cx="17.5"
-                      cy="18"
-                      r="1.5"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                    />
-                  </svg>
-                </span>
+          <input
+            id="buyer-phone"
+            name="buyer_phone"
+            type="tel"
+            maxlength="25"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="08xxxxxxxxxx"
+            required
+          />
+        </div>
     
-                <span class="fulfillment-copy">
-                  <strong>Delivery</strong>
+        <!-- Alamat Pengantaran -->
+        <div
+          class="delivery-address-section"
+          id="delivery-address-section"
+        >
+          <div class="checkout-divider"></div>
     
-                  <small>
-                    Pesanan diantar ke alamatmu
-                  </small>
-                </span>
+          <h4>Alamat pengantaran</h4>
     
-                <span
-                  class="fulfillment-price"
-                  id="delivery-option-price"
-                >
-                  Rp1.000
-                </span>
-              </label>
+          <div class="form-field">
+            <label for="delivery-address">Alamat lengkap</label>
     
-              <label class="fulfillment-option">
-                <input
-                  type="radio"
-                  name="fulfillment-method"
-                  value="pickup"
-                />
+            <textarea
+              id="delivery-address"
+              name="delivery_address"
+              rows="3"
+              maxlength="255"
+              autocomplete="street-address"
+              placeholder="Nama jalan, RT/RW, desa, patokan rumah"
+            ></textarea>
+          </div>
     
-                <span class="fulfillment-option-icon" aria-hidden="true">
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3 10h18M5 10l1.5-6h11L19 10M5 10v10h14V10M9 20v-6h6v6"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </span>
-    
-                <span class="fulfillment-copy">
-                  <strong>Ambil sendiri</strong>
-    
-                  <small>
-                    Ambil langsung di warung
-                  </small>
-                </span>
-    
-                <span class="fulfillment-price">
-                  Gratis
-                </span>
-              </label>
-            </fieldset>
-    
-            <!-- Buyer information -->
-            <section
-              class="checkout-form"
-              id="checkout-form-section"
-            >
-              <div class="checkout-form-heading">
-                <span class="eyebrow eyebrow-plain">
-                  INFORMASI PEMBELI
-                </span>
-    
-                <h3>Data pemesanan</h3>
-    
-                <p>
-                  Isi informasi berikut agar warung dapat memproses
-                  pesananmu.
-                </p>
-              </div>
-    
-              <div class="form-field">
-                <label for="buyer-name">
-                  Nama lengkap
-                </label>
-    
-                <input
-                  id="buyer-name"
-                  name="buyer_name"
-                  type="text"
-                  maxlength="100"
-                  autocomplete="name"
-                  placeholder="Masukkan nama penerima"
-                  required
-                />
-              </div>
-    
-              <div class="form-field">
-                <label for="buyer-phone">
-                  Nomor WhatsApp
-                </label>
-    
-                <input
-                  id="buyer-phone"
-                  name="buyer_phone"
-                  type="tel"
-                  maxlength="25"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  placeholder="Contoh: 081234567890"
-                  required
-                />
-    
-                <small>
-                  Gunakan nomor WhatsApp yang aktif.
-                </small>
-              </div>
-    
-              <!-- Delivery address -->
-              <div
-                class="delivery-address-section"
-                id="delivery-address-section"
-              >
-                <div class="checkout-divider"></div>
-    
-                <div class="checkout-subheading">
-                  <h4>Alamat pengantaran</h4>
-    
-                  <p>
-                    Pastikan alamat dan lokasi mudah ditemukan.
-                  </p>
-                </div>
-    
-                <div class="form-field">
-                  <label for="delivery-address">
-                    Alamat lengkap
-                  </label>
-    
-                  <textarea
-                    id="delivery-address"
-                    name="delivery_address"
-                    rows="3"
-                    maxlength="255"
-                    autocomplete="street-address"
-                    placeholder="Nama jalan, RT/RW, desa, dan patokan rumah"
-                  ></textarea>
-                </div>
-    
-                <!-- Google Maps -->
-                <div class="location-picker">
-                  <div class="location-picker-heading">
-                    <span class="location-picker-icon" aria-hidden="true">
-                      <svg
-                        width="21"
-                        height="21"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-                          stroke="currentColor"
-                          stroke-width="1.6"
-                          stroke-linejoin="round"
-                        />
-    
-                        <circle
-                          cx="12"
-                          cy="10"
-                          r="2.5"
-                          stroke="currentColor"
-                          stroke-width="1.6"
-                        />
-                      </svg>
-                    </span>
-    
-                    <span class="location-picker-title">
-                      <strong>Lokasi rumah</strong>
-    
-                      <small>
-                        Google Maps
-                      </small>
-                    </span>
-    
-                    <span class="optional-label">
-                      Opsional
-                    </span>
-                  </div>
-    
-                  <p>
-                    Bagikan lokasi GPS agar pengantaran lebih mudah.
-                  </p>
-    
-                  <button
-                    class="button button-outline button-full"
-                    id="use-location-button"
-                    type="button"
-                  >
-                    <svg
-                      width="17"
-                      height="17"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      aria-hidden="true"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="7"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                      />
-    
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="2"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                      />
-    
-                      <path
-                        d="M12 2v3M12 19v3M2 12h3M19 12h3"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-    
-                    Gunakan Lokasi Saya
-                  </button>
-    
-                  <div
-                    id="location-status"
-                    class="location-status"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    Belum ada lokasi yang dipilih.
-                  </div>
-    
-                  <div class="form-field">
-                    <label for="delivery-maps-url">
-                      Tautan Google Maps
-                    </label>
-    
-                    <input
-                      id="delivery-maps-url"
-                      name="delivery_maps_url"
-                      type="url"
-                      inputmode="url"
-                      maxlength="500"
-                      placeholder="Tempel tautan lokasi"
-                    />
-    
-                    <small>
-                      Bisa menggunakan tautan lokasi yang dibagikan
-                      melalui Google Maps.
-                    </small>
-                  </div>
-    
-                  <input
-                    id="delivery-latitude"
-                    type="hidden"
-                    name="delivery_latitude"
-                  />
-    
-                  <input
-                    id="delivery-longitude"
-                    type="hidden"
-                    name="delivery_longitude"
-                  />
-    
-                  <a
-                    id="preview-location-link"
-                    class="location-preview-link"
-                    href="#"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    hidden
-                  >
-                    Buka lokasi di Google Maps →
-                  </a>
-                </div>
-              </div>
-    
-              <p class="checkout-privacy-note">
-                Informasi ini digunakan untuk memproses pesananmu.
-              </p>
-            </section>
-    
-            <!-- Order summary -->
-            <section
-              class="order-summary"
-              aria-label="Ringkasan pembayaran"
-            >
-              <h3>Ringkasan pembayaran</h3>
-    
-              <div class="summary-row">
-                <span>Subtotal produk</span>
-    
-                <strong id="cart-subtotal">
-                  Rp0
-                </strong>
-              </div>
-    
-              <div class="summary-row">
-                <span>Ongkos kirim</span>
-    
-                <strong id="delivery-fee">
-                  Rp1.000
-                </strong>
-              </div>
-    
-              <div class="total-row">
-                <span>Total pembayaran</span>
-    
-                <strong id="cart-total">
-                  Rp0
-                </strong>
-              </div>
-            </section>
-    
-            <p class="fulfillment-note muted" id="fulfillment-note">
-              Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran.
-            </p>
-    
-            <!-- Checkout action -->
-            <div class="checkout-actions">
-              <button
-                class="button button-primary button-full"
-                id="checkout-button"
-                type="button"
-              >
-                Lanjutkan pesanan
-    
+          <!-- Google Maps -->
+          <div class="location-picker">
+            <div class="location-picker-heading">
+              <span class="location-picker-icon" aria-hidden="true">
                 <svg
-                  width="18"
-                  height="18"
+                  width="21"
+                  height="21"
                   viewBox="0 0 24 24"
                   fill="none"
-                  aria-hidden="true"
                 >
                   <path
-                    d="M5 12h14M13 6l6 6-6 6"
+                    d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
                     stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
+                    stroke-width="1.6"
                     stroke-linejoin="round"
                   />
-                </svg>
-              </button>
     
-              <p>
-                Pastikan data pesanan sudah benar sebelum melanjutkan.
-              </p>
+                  <circle
+                    cx="12"
+                    cy="10"
+                    r="2.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                </svg>
+              </span>
+    
+              <span class="location-picker-title">
+                <strong>Lokasi rumah</strong>
+                <small>Google Maps</small>
+              </span>
+    
+              <span class="optional-label">Opsional</span>
             </div>
+    
+            <button
+              class="button button-outline button-full"
+              id="use-location-button"
+              type="button"
+            >
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+    
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="2"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                />
+    
+                <path
+                  d="M12 2v3M12 19v3M2 12h3M19 12h3"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+    
+              Gunakan lokasi saya
+            </button>
+    
+            <div
+              id="location-status"
+              class="location-status"
+              role="status"
+              aria-live="polite"
+            >
+              Belum ada lokasi yang dipilih.
+            </div>
+    
+            <div class="form-field">
+              <label for="delivery-maps-url">
+                Tautan Google Maps
+              </label>
+    
+              <input
+                id="delivery-maps-url"
+                name="delivery_maps_url"
+                type="url"
+                inputmode="url"
+                maxlength="500"
+                placeholder="Tempel tautan lokasi"
+              />
+            </div>
+    
+            <input
+              id="delivery-latitude"
+              type="hidden"
+              name="delivery_latitude"
+            />
+    
+            <input
+              id="delivery-longitude"
+              type="hidden"
+              name="delivery_longitude"
+            />
+    
+            <a
+              id="preview-location-link"
+              class="location-preview-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              hidden
+            >
+              Buka lokasi di Google Maps →
+            </a>
           </div>
         </div>
-      </aside>
+      </section>
+    
+      <!-- Produk Pilihan -->
+      <section
+        class="cart-products-section"
+        aria-label="Produk dalam keranjang"
+      >
+        <div class="cart-section-heading">
+          <h3>Produk pilihan</h3>
+    
+          <span class="cart-item-count">
+            <span id="cart-count-label">0</span> item
+          </span>
+        </div>
+    
+        <div class="cart-items" id="cart-items"></div>
+    
+        <div class="cart-empty" id="cart-empty">
+          <div class="cart-empty-icon" aria-hidden="true">
+            <svg
+              width="34"
+              height="34"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+    
+              <circle cx="10" cy="20" r="1.2" fill="currentColor" />
+              <circle cx="18" cy="20" r="1.2" fill="currentColor" />
+            </svg>
+          </div>
+    
+          <h3>Keranjang masih kosong</h3>
+    
+          <button
+            class="button button-outline"
+            id="empty-cart-close"
+            type="button"
+          >
+            Lanjut belanja
+          </button>
+        </div>
+      </section>
+    
+      <!-- Metode Pesanan -->
+      <fieldset class="fulfillment-options">
+        <legend>Metode pesanan</legend>
+    
+        <label class="fulfillment-option">
+          <input
+            type="radio"
+            name="fulfillment-method"
+            value="delivery"
+            checked
+          />
+    
+          <span class="fulfillment-option-icon" aria-hidden="true">
+            <svg
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+    
+              <circle
+                cx="7.5"
+                cy="18"
+                r="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+    
+              <circle
+                cx="17.5"
+                cy="18"
+                r="1.5"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+            </svg>
+          </span>
+    
+          <span class="fulfillment-copy">
+            <strong>Delivery</strong>
+          </span>
+    
+          <span
+            class="fulfillment-price"
+            id="delivery-option-price"
+          >
+            Rp1.000
+          </span>
+        </label>
+    
+        <label class="fulfillment-option">
+          <input
+            type="radio"
+            name="fulfillment-method"
+            value="pickup"
+          />
+    
+          <span class="fulfillment-option-icon" aria-hidden="true">
+            <svg
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M3 10h18M5 10l1.5-6h11L19 10M5 10v10h14V10M9 20v-6h6v6"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+    
+          <span class="fulfillment-copy">
+            <strong>Ambil sendiri</strong>
+          </span>
+    
+          <span class="fulfillment-price">Gratis</span>
+        </label>
+      </fieldset>
+    
+      <!-- Ringkasan Pembayaran -->
+      <section
+        class="order-summary"
+        aria-label="Ringkasan pembayaran"
+      >
+        <h3>Ringkasan pembayaran</h3>
+    
+        <div class="summary-row">
+          <span>Subtotal produk</span>
+    
+          <strong id="cart-subtotal">Rp0</strong>
+        </div>
+    
+        <div class="summary-row">
+          <span>Ongkos kirim</span>
+    
+          <strong id="delivery-fee">Rp1.000</strong>
+        </div>
+    
+        <div class="total-row">
+          <span>Total pembayaran</span>
+    
+          <strong id="cart-total">Rp0</strong>
+        </div>
+      </section>
+    
+      <p class="fulfillment-note muted" id="fulfillment-note"></p>
+    
+      <!-- Checkout -->
+      <div class="checkout-actions">
+        <button
+          class="button button-primary button-full"
+          id="checkout-button"
+          type="button"
+        >
+          Pesan sekarang
+    
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 12h14M13 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Notifikasi -->
