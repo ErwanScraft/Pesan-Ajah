@@ -252,7 +252,18 @@ async function loadCsrfToken() {
 }
 
 async function loadCatalog() {
-  const response = await fetch("/api/catalog.php", {
+  const storeId = document.body.dataset.storeId;
+
+  const catalogUrl = new URL(
+    "/api/catalog.php",
+    window.location.origin,
+  );
+
+  if (storeId) {
+    catalogUrl.searchParams.set("store_id", storeId);
+  }
+
+  const response = await fetch(catalogUrl, {
     method: "GET",
     credentials: "same-origin",
     cache: "no-store",

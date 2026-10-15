@@ -11,6 +11,8 @@ export function createCatalog({
   cart,
   onAdd,
 }) {
+  const groupedMode = document.body.dataset.storePage === "true";
+
   let selectedCategory = "Semua";
   let query = "";
 
@@ -119,7 +121,21 @@ export function createCatalog({
     const store = document.createElement("div");
 
     store.className = "product-store";
-    store.textContent = product.store || "Warung";
+    
+    if (product.store_slug) {
+      const storeLink = document.createElement("a");
+    
+      storeLink.className = "store-product-store-link";
+    
+      storeLink.href =
+        `/warung/${encodeURIComponent(product.store_slug)}`;
+    
+      storeLink.textContent = product.store || "Warung";
+    
+      store.append(storeLink);
+    } else {
+      store.textContent = product.store || "Warung";
+    }
 
     const name = document.createElement("h3");
 
@@ -170,20 +186,96 @@ export function createCatalog({
     return card;
   }
 
+  function renderGroupedProducts(result) {
+    const groups = new Map();
+  
+    for (const product of result) {
+      const category = String(
+        product.category || "Lainnya",
+      ).trim() || "Lainnya";
+  
+      if (!groups.has(category)) {
+        groups.set(category, []);
+      }
+  
+      groups.get(category).push(product);
+    }
+  
+    const fragment = document.createDocumentFragment();
+  
+    for (const [category, categoryProducts] of groups) {
+      const section = document.createElement("section");
+  
+      section.className = "store-category-section";
+  
+      section.dataset.categoryName = category;
+  
+      const heading = document.createElement("div");
+  
+      heading.className = "store-category-heading";
+  
+      const headingContent = document.createElement("div");
+  
+      const title = document.createElement("h2");
+  
+      title.textContent = category;
+  
+      headingContent.append(title);
+  
+      const count = document.createElement("span");
+  
+      count.className = "store-category-count";
+  
+      count.textContent = `${categoryProducts.length} produk`;
+  
+      heading.append(headingContent, count);
+  
+      const productList = document.createElement("div");
+  
+      productList.className = "store-category-products";
+  
+      for (const product of categoryProducts) {
+        productList.append(createProductCard(product));
+      }
+  
+      section.append(heading, productList);
+  
+      fragment.append(section);
+    }
+  
+    grid.replaceChildren(fragment);
+  
+    grid.hidden = result.length === 0;
+  
+    if (empty) {
+      empty.hidden = result.length !== 0;
+    }
+  
+    total.textContent = `${result.length} produk`;
+  }
+
   function render() {
     const result = filteredProducts();
-
+  
+    if (groupedMode) {
+      renderGroupedProducts(result);
+      return;
+    }
+  
     const fragment = document.createDocumentFragment();
-
+  
     for (const product of result) {
       fragment.append(createProductCard(product));
     }
-
+  
     grid.replaceChildren(fragment);
-
+  
     grid.hidden = result.length === 0;
-    empty.hidden = result.length !== 0;
-
+  
+    if (empty) {
+      empty.hidden = result.length !== 0;
+    }
+  
     total.textContent = `${result.length} produk`;
   }
 
@@ -209,11 +301,28 @@ export function createCatalog({
 
   categoryList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-category]");
-
+  
     if (!button || !categoryList.contains(button)) {
       return;
     }
-
+  
+    if (groupedMode) {
+      const category = button.dataset.category;
+  
+      const section = [
+        ...grid.querySelectorAll("[data-category-name]"),
+      ].find(
+        (item) => item.dataset.categoryName === category,
+      );
+  
+      section?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  
+      return;
+    }
+  
     setCategory(button.dataset.category);
   });
 

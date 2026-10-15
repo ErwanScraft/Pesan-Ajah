@@ -343,10 +343,17 @@ function store_product_image_url(mixed $image): ?string
     </style>
 </head>
 
-<body>
-    <header class="site-header">
+<body
+    data-store-page="true"
+    data-store-id="<?= (int) $store['id'] ?>"
+>
+    <header class="site-header store-header">
         <div class="container header-inner">
-            <a class="brand" href="/">
+            <a
+                class="brand"
+                href="/"
+                aria-label="Pesan Ajah — Beranda"
+            >
                 <img
                     class="brand-logo"
                     src="/assets/images/logo.webp"
@@ -354,139 +361,226 @@ function store_product_image_url(mixed $image): ?string
                     height="44"
                     alt=""
                 >
-
+    
                 <span class="brand-text">
                     <strong>Pesan Ajah</strong>
                     <small>Belanja dekat, jadi mudah.</small>
                 </span>
             </a>
-
-            <a class="button button-outline" href="/">
-                Marketplace
-            </a>
+    
+            <div class="store-header-actions">
+                <a
+                    class="text-link dashboard-link"
+                    href="/user/"
+                >
+                    Dashboard Buyer
+                </a>
+    
+                <button
+                    class="button button-primary cart-trigger store-cart-trigger"
+                    id="cart-trigger"
+                    type="button"
+                    aria-label="Buka keranjang belanja"
+                >
+                    <svg
+                        class="cart-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+    
+                        <circle
+                            cx="10"
+                            cy="20"
+                            r="1.2"
+                            fill="currentColor"
+                        />
+    
+                        <circle
+                            cx="18"
+                            cy="20"
+                            r="1.2"
+                            fill="currentColor"
+                        />
+                    </svg>
+    
+                    <span class="count" id="cart-count">0</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <main class="store-page">
         <section class="store-profile">
-            <span class="eyebrow eyebrow-plain">
-                WARUNG LOKAL BANYUKUNING
-            </span>
-            
-            <?php if (!empty($store['icon_image'])): ?>
+            <?php
+            $storeIconUrl = store_product_image_url(
+                $store['icon_image'] ?? null
+            );
+            ?>
+        
+            <?php if ($storeIconUrl !== null): ?>
                 <img
                     class="store-profile-icon"
-                    src="/<?= e($store['icon_image']) ?>"
+                    src="<?= e($storeIconUrl) ?>"
                     alt="Ikon <?= e($store['name']) ?>"
                     width="88"
                     height="88"
                 >
             <?php endif; ?>
-            
-            <h1><?= e($store['name']) ?></h1>
-
-            <p class="muted">
-                <?= e($store['description'] ?: 'Selamat datang di ' . $store['name'] . '.') ?>
-            </p>
-
-            <div class="store-meta">
-                <span class="store-chip">
-                    <?= $store['is_open'] ? 'Warung buka' : 'Warung tutup' ?>
+        
+            <div class="store-profile-content">
+                <span class="eyebrow eyebrow-plain">
+                    WARUNG LOKAL BANYUKUNING
                 </span>
-
-                <?php if ($store['free_delivery']): ?>
-                    <span class="store-chip">
-                        Gratis ongkir
-                    </span>
-                <?php endif; ?>
-
-                <span class="store-chip">
-                    <?= e($store['address']) ?>
-                </span>
-            </div>
-
-            <?php if ($store['phone']): ?>
-                <p>
-                    Kontak:
-                    <?= e($store['phone']) ?>
+        
+                <h1><?= e($store['name']) ?></h1>
+        
+                <p class="store-profile-description muted">
+                    <?= e(
+                        $store['description']
+                        ?: 'Selamat datang di ' . $store['name'] . '.'
+                    ) ?>
                 </p>
-            <?php endif; ?>
+        
+                <div class="store-meta">
+                    <span
+                        class="store-chip <?= $store['is_open']
+                            ? 'is-open'
+                            : 'is-closed' ?>"
+                    >
+                        <?= $store['is_open']
+                            ? 'Warung buka'
+                            : 'Warung tutup' ?>
+                    </span>
+        
+                    <?php if ($store['free_delivery']): ?>
+                        <span class="store-chip">
+                            Gratis ongkir
+                        </span>
+                    <?php endif; ?>
+        
+                    <?php if (!empty($store['address'])): ?>
+                        <span class="store-chip">
+                            <?= e($store['address']) ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+        
+                <?php if (!empty($store['phone'])): ?>
+                    <p class="store-contact">
+                        Kontak: <?= e($store['phone']) ?>
+                    </p>
+                <?php endif; ?>
+            </div>
         </section>
 
-        <section>
+        <section class="store-search-section">
+            <form
+                class="store-search-form"
+                id="search-form"
+                role="search"
+            >
+                <input
+                    id="search-input"
+                    type="search"
+                    placeholder="Cari produk di warung ini..."
+                    aria-label="Cari produk di warung ini"
+                >
+        
+                <button
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Cari
+                </button>
+            </form>
+        </section>
+        
+        <nav
+            class="store-category-nav"
+            id="category-list"
+            aria-label="Kategori produk"
+        >
+            <?php
+            $categories = [];
+        
+            foreach ($products as $product) {
+                $category = trim(
+                    (string) ($product['category'] ?? '')
+                );
+        
+                if ($category === '') {
+                    $category = 'Lainnya';
+                }
+        
+                if (!in_array($category, $categories, true)) {
+                    $categories[] = $category;
+                }
+            }
+        
+            sort($categories, SORT_NATURAL | SORT_FLAG_CASE);
+            ?>
+        
+            <?php foreach ($categories as $category): ?>
+                <a
+                    href="#"
+                    data-category="<?= e($category) ?>"
+                >
+                    <?= e($category) ?>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+        
+        <section
+            class="container products-section"
+            id="products"
+        >
             <div class="section-heading">
                 <div>
                     <span class="eyebrow eyebrow-plain">
                         KATALOG WARUNG
                     </span>
-
+        
                     <h2>Produk tersedia</h2>
                 </div>
-
-                <span class="muted">
+        
+                <span class="muted" id="product-total">
                     <?= count($products) ?> produk
                 </span>
             </div>
-
-            <div class="store-product-grid">
-                <?php foreach ($products as $product): ?>
-                    <article class="store-product">
-                        <?php
-                        $productImageUrl = store_product_image_url(
-                            $product['image'] ?? null
-                        );
-                        ?>
-                        
-                        <div class="store-product-image">
-                            <?php if ($productImageUrl !== null): ?>
-                                <img
-                                    src="<?= e($productImageUrl) ?>"
-                                    alt="<?= e($product['name']) ?>"
-                                    loading="lazy"
-                                    decoding="async"
-                                >
-                        
-                                <span class="store-product-image-placeholder" hidden>
-                                    Foto tidak tersedia
-                                </span>
-                            <?php else: ?>
-                                <span class="store-product-image-placeholder">
-                                    Foto tidak tersedia
-                                </span>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="store-product-body">
-                            <h3><?= e($product['name']) ?></h3>
-
-                            <?php if (!empty($product['description'])): ?>
-                                <p class="muted">
-                                    <?= e($product['description']) ?>
-                                </p>
-                            <?php endif; ?>
-
-                            <strong>
-                                Rp<?= number_format(
-                                    (float) $product['price'],
-                                    0,
-                                    ',',
-                                    '.'
-                                ) ?>
-                            </strong>
-
-                            <small>
-                                / <?= e($product['unit']) ?>
-                            </small>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-
-            <?php if (!$products): ?>
-                <p class="muted">
-                    Warung ini belum menambahkan produk.
+        
+            <div
+                class="store-products"
+                id="product-grid"
+                aria-live="polite"
+            ></div>
+        
+            <div
+                class="store-empty"
+                id="empty-state"
+                hidden
+            >
+                <h3>Produk tidak ditemukan</h3>
+        
+                <p>
+                    Coba kata kunci lain atau periksa kembali kategori produk.
                 </p>
-            <?php endif; ?>
+        
+                <button
+                    class="button button-outline"
+                    id="reset-search"
+                    type="button"
+                >
+                    Lihat semua produk
+                </button>
+            </div>
         </section>
     </main>
     <script>
