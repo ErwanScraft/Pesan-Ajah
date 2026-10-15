@@ -1,1882 +1,1316 @@
-
-/* =========================================
-   17. Animations
-========================================= */
-
-@keyframes slide-in {
-  from {
-    transform: translateX(20px);
-    opacity: 0.7;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* =========================================
-   18. Tablet
-========================================= */
-
-@media (max-width: 1000px) {
-  .hero-layout {
-    gap: 26px;
-    padding: 30px;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .dashboard-shell {
-    grid-template-columns: 220px minmax(0, 1fr);
-  }
-
-  .dashboard-content {
-    padding-inline: 22px;
-  }
-
-  .dashboard-topbar {
-    padding-inline: 22px;
-  }
-
-  .stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* =========================================
-   19. Mobile
-========================================= */
-
-@media (max-width: 700px) {
-  html {
-    scroll-padding-top: 72px;
-  }
-
-  .container {
-    width: calc(100% - 28px);
-  }
-
-  .header-inner {
-    min-height: 68px;
-    gap: 10px;
-  }
-
-  .brand-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    font-size: 22px;
-  }
-
-  .brand-text strong {
-    font-size: 13px;
-  }
-
-  .brand-text small {
-    font-size: 9px;
-  }
-
-  .location {
-    display: none;
-  }
-
-  .header-actions {
-    gap: 10px;
-    margin-left: auto;
-  }
-
-  .header-actions .dashboard-link {
-    max-width: 90px;
-    font-size: 10px;
-    line-height: 1.35;
-    text-align: right;
-  }
-
-  .cart-trigger {
-    width: 42px;
-    min-width: 42px;
-    height: 42px;
-    min-height: 42px;
-  }
-
-  .cart-icon {
-    width: 21px;
-    height: 21px;
-  }
-
-  .hero {
-    padding-block: 18px 8px;
-  }
-
-  .hero-layout {
-    grid-template-columns: 1fr;
-    gap: 22px;
-    padding: 24px 20px;
-    border-radius: var(--radius-lg);
-  }
-
-  .hero h1 {
-    font-size: clamp(30px, 8vw, 42px);
-    letter-spacing: -1.3px;
-  }
-
-  .hero-copy > p {
-    font-size: 12px;
-  }
-
-  .hero-card {
-    min-height: 220px;
-  }
-
-  .hero-circle {
-    width: 190px;
-    height: 190px;
-  }
-
-  .grocery-bag {
-    width: 120px;
-    height: 130px;
-  }
-
-  .grocery-bag strong {
-    font-size: 38px;
-  }
-
-  .mini-receipt {
-    top: 15px;
-    left: 12px;
-    width: 115px;
-    padding: 11px;
-  }
-
-  .floating-label {
-    right: 9px;
-    bottom: 12px;
-    gap: 7px;
-    padding: 9px;
-  }
-
-  .floating-label b {
-    font-size: 9px;
-  }
-
-  .floating-label small {
-    font-size: 8px;
-  }
-
-  .section {
-    padding-block: 28px;
-  }
-
-  .section-heading {
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .section-heading h2 {
-    font-size: 21px;
-  }
-
-  .section-heading > .muted {
-    flex-shrink: 0;
-    padding-top: 5px;
-    font-size: 10px;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 9px;
-  }
-
-  .category-card {
-    min-height: 98px;
-    gap: 7px;
-    padding: 11px 5px;
-    border-radius: var(--radius-md);
-    font-size: 10px;
-  }
-
-  .category-card > span {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    font-size: 20px;
-  }
-
-  .products-section {
-    padding-top: 14px;
-    padding-bottom: 30px;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 11px;
-  }
-
-  .product-card {
-    border-radius: var(--radius-md);
-  }
-
-  .product-image {
-    aspect-ratio: 1 / 0.9;
-  }
-
-  .product-emoji {
-    width: 68px;
-    height: 68px;
-    font-size: 34px;
-  }
-
-  .product-tag {
-    top: 7px;
-    left: 7px;
-    padding: 4px 6px;
-    font-size: 8px;
-  }
-
-  .product-info {
-    gap: 6px;
-    padding: 10px;
-  }
-
-  .product-name {
-    min-height: 34px;
-    font-size: 11px;
-  }
-
-  .product-store,
-  .product-unit {
-    font-size: 9px;
-  }
-
-  .product-price {
-    font-size: 13px;
-  }
-
-  .add-button {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-  }
-
-  .seller-promo {
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 28px;
-    padding: 18px;
-    border-radius: var(--radius-lg);
-  }
-
-  .promo-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 13px;
-    font-size: 22px;
-  }
-
-  .promo-copy {
-    flex-basis: calc(100% - 64px);
-  }
-
-  .promo-copy h2 {
-    font-size: 17px;
-  }
-
-  .promo-copy p {
-    font-size: 11px;
-  }
-
-  .seller-promo > .button {
-    width: 100%;
-  }
-
-  .footer-inner {
-    align-items: flex-start;
-    gap: 16px;
-    padding-block: 22px;
-  }
-
-  .footer-inner > p {
-    order: 1;
-    flex-basis: 100%;
-  }
-
-  .footer-inner > small {
-    order: 2;
-  }
-
-  /* Cart panel */
-
-  .overlay {
-    align-items: flex-end;
-  }
-
-  .cart-panel {
-    width: 100%;
-    height: min(90dvh, 760px);
-    border-radius: 22px 22px 0 0;
-    animation: none;
-  }
-
-  .panel-heading {
-    padding: 17px;
-  }
-
-  .cart-items {
-    padding: 17px;
-  }
-
-  .cart-footer {
-    padding: 17px;
-  }
-
-  .cart-item {
-    grid-template-columns: 42px minmax(0, 1fr) auto;
-    gap: 9px;
-  }
-
-  .cart-item-emoji {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
-  }
-
-  .quantity-control {
-    gap: 5px;
-  }
-
-  .quantity-control button {
-    width: 28px;
-    height: 28px;
-  }
-
-  .toast {
-    right: 14px;
-    bottom: 14px;
-    max-width: calc(100% - 28px);
-  }
-
-  /* Dashboard mobile navigation */
-
-  .dashboard-shell {
-    display: block;
-  }
-
-  .sidebar {
-    position: fixed;
-    z-index: 80;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: min(280px, 86vw);
-    height: 100dvh;
-    box-shadow: 12px 0 32px rgb(0 0 0 / 10%);
-    transform: translateX(-110%);
-    transition: transform 200ms ease;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-label {
-    margin-top: 26px;
-  }
-
-  .dashboard-topbar {
-    min-height: 76px;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 14px;
-  }
-
-  .mobile-menu {
-    display: grid;
-  }
-
-  .dashboard-topbar > div {
-    min-width: 0;
-    flex: 1;
-  }
-
-  .dashboard-topbar h1 {
-    font-size: 17px;
-  }
-
-  .dashboard-topbar .muted {
-    font-size: 10px;
-  }
-
-  .dashboard-topbar > .button {
-    min-height: 36px;
-    padding: 8px;
-    font-size: 9px;
-  }
-
-  .dashboard-content {
-    padding: 22px 14px 32px;
-  }
-
-  .welcome-row {
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .welcome-row h2 {
-    font-size: 18px;
-  }
-
-  .stat-grid {
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .stat-card {
-    padding: 13px;
-    border-radius: var(--radius-md);
-  }
-
-  .stat-top {
-    align-items: flex-start;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .stat-top > span:first-child {
-    font-size: 10px;
-  }
-
-  .stat-icon {
-    width: 29px;
-    height: 29px;
-    font-size: 14px;
-  }
-
-  .stat-card > strong {
-    font-size: 23px;
-  }
-
-  .stat-card .status-value {
-    font-size: 19px;
-  }
-
-  .stat-caption {
-    font-size: 9px;
-  }
-
-  .dashboard-card {
-    margin-bottom: 15px;
-    border-radius: var(--radius-md);
-  }
-
-  .store-control {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 17px;
-  }
-
-  .switch-label {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .card-heading {
-    align-items: flex-start;
-    padding: 16px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 12px;
-  }
-
-  .manage-row {
-    gap: 10px;
-    padding: 12px 14px;
-  }
-
-  .manage-product {
-    gap: 9px;
-  }
-
-  .manage-emoji {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
-
-  .availability-control {
-    gap: 5px;
-    font-size: 9px;
-  }
-
-  .dashboard-note {
-    font-size: 10px;
-  }
-}
-
-/* =========================================
-   20. Small mobile
-========================================= */
-
-@media (max-width: 380px) {
-  .container {
-    width: calc(100% - 24px);
-  }
-
-  .brand-text small {
-    display: none;
-  }
-
-  .header-actions {
-    gap: 7px;
-  }
-
-  .header-actions .dashboard-link {
-    max-width: 78px;
-    font-size: 9px;
-  }
-
-  .hero-layout {
-    padding: 21px 15px;
-  }
-
-  .hero h1 {
-    font-size: 30px;
-  }
-
-  .hero-points {
-    gap: 8px;
-  }
-
-  .search-bar {
-    gap: 6px;
-    padding-left: 10px;
-  }
-
-  .search-bar input {
-    font-size: 11px;
-  }
-
-  .search-bar .button {
-    padding-inline: 10px;
-  }
-
-  .product-grid {
-    gap: 8px;
-  }
-
-  .product-info {
-    padding: 9px;
-  }
-
-  .product-price {
-    font-size: 12px;
-  }
-
-  .add-button {
-    width: 31px;
-    height: 31px;
-  }
-
-  .dashboard-topbar > .button {
-    max-width: 108px;
-    white-space: normal;
-    text-align: center;
-  }
-
-  .stat-card {
-    padding: 11px;
-  }
-}
-
-/* =========================================
-   21. Clean modern UI
-========================================= */
-
-/* Global polish */
-
-body {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-:where(a, button, input, select, textarea):focus-visible {
-  outline: 3px solid rgb(18 107 70 / 25%);
-  outline-offset: 3px;
-}
-
-.button,
-.icon-button,
-.category-card,
-.add-button,
-.table-action {
-  transition:
-    color 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
-}
-
-/* Header */
-
-.site-header {
-  background: rgb(255 255 255 / 94%);
-  border-bottom-color: #edf0eb;
-}
-
-.brand-mark {
-  box-shadow: 0 4px 10px rgb(18 107 70 / 12%);
-}
-
-/* Hero */
-
-.hero {
-  padding-top: 32px;
-}
-
-.hero-layout {
-  border-color: #e8eee5;
-  background:
-    radial-gradient(
-      circle at 86% 12%,
-      rgb(220 239 210 / 60%),
-      transparent 34%
-    ),
-    #f7faf5;
-}
-
-.search-bar {
-  border-color: #e5eae2;
-  box-shadow: 0 5px 18px rgb(26 53 32 / 5%);
-}
-
-/* Categories */
-
-.section-heading {
-  margin-bottom: 18px;
-}
-
-.category-card {
-  border-color: #e9ede7;
-  background: #fff;
-}
-
-.category-card:hover,
-.category-card.active {
-  border-color: #b8d7bd;
-  background: #f5faf2;
-  box-shadow: none;
-}
-
-/* Products */
-
-.product-card {
-  border-color: #e9ede7;
-  box-shadow: none;
-}
-
-.product-card:hover {
-  border-color: #d8e5d6;
-  box-shadow: 0 8px 22px rgb(26 53 32 / 7%);
-}
-
-.product-image {
-  background: #f5f7f2;
-}
-
-.add-button {
-  border-radius: 11px;
-}
-
-.seller-promo {
-  border-color: #e5ece1;
-  background: #f7faf5;
-}
-
-/* Cart */
-
-.cart-panel {
-  background: #fff;
-}
-
-.panel-heading,
-.cart-footer {
-  border-color: #ecefe9;
-}
-
-/* Dashboard */
-
-.dashboard-page {
-  background: #f7f8f6;
-}
-
-.sidebar {
-  border-right-color: #ecefe9;
-}
-
-.dashboard-topbar {
-  border-bottom-color: #ecefe9;
-}
-
-.side-link.active {
-  background: #edf6eb;
-  color: var(--green-dark);
-}
-
-.stat-card,
-.dashboard-card {
-  border-color: #e9ede7;
-  box-shadow: 0 2px 8px rgb(20 45 28 / 3%);
-}
-
-.product-form,
-.store-settings-form {
-  background: #fff;
-}
-
-.form-field input,
-.form-field select,
-.store-settings-form .form-field textarea {
-  border-color: #e3e8e0;
-}
-
-.data-table th {
-  background: #f8f9f7;
-}
-
-/* Desktop refinement */
-
-@media (min-width: 1001px) {
-  .container {
-    width: min(calc(100% - 48px), 1180px);
-  }
-
-  .hero-layout {
-    padding: 48px;
-  }
-
-  .dashboard-content {
-    padding-top: 34px;
-  }
-}
-
-/* Mobile refinement */
-
-@media (max-width: 700px) {
-  .hero {
-    padding-top: 14px;
-  }
-
-  .hero-layout {
-    gap: 18px;
-    padding: 22px 16px;
-  }
-
-  .hero-card {
-    min-height: 200px;
-  }
-
-  .section {
-    padding-block: 24px;
-  }
-
-  .section-heading {
-    gap: 10px;
-  }
-
-  .category-grid {
-    gap: 8px;
-  }
-
-  .category-card {
-    min-height: 88px;
-    border-radius: 12px;
-  }
-
-  .product-grid {
-    gap: 10px;
-  }
-
-  .product-card:hover {
-    transform: none;
-  }
-
-  .seller-promo {
-    gap: 12px;
-  }
-
-  .dashboard-content {
-    padding-top: 18px;
-  }
-
-  .stat-grid {
-    gap: 9px;
-  }
-
-  .stat-card {
-    box-shadow: none;
-  }
-
-  .cart-panel {
-    border-radius: 22px 22px 0 0;
-  }
-}
-
-/* =========================================
-   22. Reduced motion
-========================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-
-/* =========================================
-   23. Mobile Layout Fix
-========================================= */
-
-/* Hindari elemen melebar keluar layar */
-@media (max-width: 700px) {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
-  html,
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: clip;
-  }
-
-  .container {
-    width: calc(100% - 32px);
-    max-width: 100%;
-    margin-inline: auto;
-  }
-
-  img,
-  video,
-  iframe {
-    max-width: 100%;
-  }
-
-  /* Header marketplace */
-  .header-inner {
-    display: flex;
-    min-width: 0;
-    min-height: 64px;
-    gap: 8px;
-  }
-
-  .brand {
-    min-width: 0;
-    gap: 8px;
-  }
-
-  .brand-mark {
-    width: 36px;
-    min-width: 36px;
-    height: 36px;
-    font-size: 20px;
-  }
-
-  .brand-text {
-    min-width: 0;
-  }
-
-  .brand-text strong {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .brand-text small {
-    overflow: hidden;
-    font-size: 9px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .header-actions {
-    min-width: 0;
-    gap: 8px;
-  }
-
-  .header-actions .text-link,
-  .header-actions .dashboard-link {
-    max-width: 90px;
-    font-size: 10px;
-    overflow-wrap: anywhere;
-  }
-
-  .cart-trigger {
-    flex: 0 0 40px;
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    min-height: 40px;
-  }
-
-  /* Hero */
-  .hero {
-    padding: 16px 0 8px;
-  }
-
-  .hero-layout {
-    display: grid;
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-    padding: 22px 16px;
-    border-radius: 20px;
-  }
-
-  .hero-copy {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .hero h1 {
-    max-width: 100%;
-    font-size: clamp(28px, 8vw, 38px);
-    letter-spacing: -1px;
-    line-height: 1.12;
-    overflow-wrap: anywhere;
-  }
-
-  .hero-copy > p {
-    max-width: 100%;
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  .search-bar {
-    width: 100%;
-    min-width: 0;
-    gap: 8px;
-    padding: 6px;
-  }
-
-  .search-bar > span {
-    flex: 0 0 auto;
-    font-size: 19px;
-  }
-
-  .search-bar input {
-    flex: 1 1 auto;
-    width: 0;
-    min-width: 0;
-    font-size: 12px;
-  }
-
-  .search-bar .button {
-    flex: 0 0 auto;
-    min-height: 38px;
-    padding: 9px 11px;
-    font-size: 11px;
-  }
-
-  .hero-points {
-    gap: 9px 12px;
-    font-size: 10px;
-    line-height: 1.5;
-  }
-
-  .hero-card {
-    width: 100%;
-    min-width: 0;
-    min-height: 205px;
-  }
-
-  .hero-circle {
-    width: 165px;
-    height: 165px;
-  }
-
-  .grocery-bag {
-    width: 105px;
-    height: 120px;
-  }
-
-  .grocery-bag strong {
-    font-size: 34px;
-  }
-
-  .mini-receipt {
-    top: 12px;
-    left: 8px;
-    width: 105px;
-    padding: 10px;
-  }
-
-  .floating-label {
-    right: 8px;
-    bottom: 8px;
-    max-width: 155px;
-    gap: 7px;
-    padding: 8px;
-  }
-
-  .check-mark {
-    width: 27px;
-    height: 27px;
-    flex: 0 0 27px;
-  }
-
-  /* Section headings */
-  .section {
-    padding-block: 24px;
-  }
-
-  .section-heading {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    min-width: 0;
-    margin-bottom: 16px;
-  }
-
-  .section-heading > div {
-    min-width: 0;
-  }
-
-  .section-heading h2 {
-    font-size: 20px;
-    line-height: 1.25;
-    overflow-wrap: anywhere;
-  }
-
-  .section-heading p {
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .section-heading > .muted {
-    max-width: 110px;
-    font-size: 10px;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  /* Kategori */
-  .category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .category-card {
-    min-width: 0;
-    min-height: 88px;
-    gap: 8px;
-    padding: 10px 4px;
-    font-size: 10px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .category-card > span {
-    width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
-    font-size: 19px;
-  }
-
-  /* Katalog produk */
-  .products-section {
-    padding-top: 12px;
-    padding-bottom: 28px;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .product-card {
-    min-width: 0;
-    width: 100%;
-    border-radius: 14px;
-  }
-
-  .product-image {
-    width: 100%;
-    aspect-ratio: 1 / 0.9;
-  }
-
-  .product-emoji {
-    width: 58px;
-    height: 58px;
-    font-size: 30px;
-  }
-
-  .product-info {
-    min-width: 0;
-    gap: 6px;
-    padding: 10px;
-  }
-
-  .product-name {
-    min-height: 0;
-    font-size: 12px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-  }
-
-  .product-store,
-  .product-unit {
-    font-size: 10px;
-    line-height: 1.4;
-  }
-
-  .product-bottom {
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  .product-price {
-    min-width: 0;
-    font-size: 12px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .add-button {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
-    border-radius: 10px;
-  }
-
-  /* Promosi penjual */
-  .seller-promo {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 28px;
-    padding: 18px 16px;
-  }
-
-  .promo-icon {
-    width: 42px;
-    height: 42px;
-    flex: 0 0 42px;
-    font-size: 20px;
-  }
-
-  .promo-copy {
-    min-width: 0;
-    flex: 1 1 calc(100% - 54px);
-  }
-
-  .promo-copy h2 {
-    font-size: 17px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .promo-copy p {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-
-  .seller-promo > .button {
-    width: 100%;
-  }
-
-  /* Footer */
-  .footer-inner {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 14px;
-    padding-block: 22px;
-  }
-
-  .footer-inner > .brand {
-    flex: 1 1 100%;
-  }
-
-  .footer-inner > p {
-    flex: 1 1 100%;
-    order: initial;
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  .footer-inner > small {
-    font-size: 10px;
-  }
-
-  /* Keranjang */
-  .overlay {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .cart-panel {
-    width: 100%;
-    max-width: 100%;
-    height: 90vh;
-    height: 90dvh;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    border-radius: 20px 20px 0 0;
-    animation: none;
-  }
-
-  .panel-heading,
-  .cart-items,
-  .cart-footer {
-    padding-inline: 16px;
-  }
-
-  .panel-heading {
-    gap: 10px;
-    padding-block: 16px;
-  }
-
-  .panel-heading h2 {
-    font-size: 18px;
-    overflow-wrap: anywhere;
-  }
-
-  .cart-item {
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .cart-item-emoji {
-    width: 38px;
-    height: 38px;
-  }
-
-  .cart-item > div:nth-child(2) {
-    min-width: 0;
-  }
-
-  .quantity-control {
-    grid-column: 2;
-    justify-self: start;
-  }
-
-  .total-row {
-    gap: 8px;
-  }
-
-  .total-row strong {
-    font-size: 18px;
-    overflow-wrap: anywhere;
-  }
-
-  /* Dashboard layout */
-  .dashboard-shell {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .dashboard-main {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .sidebar {
-    width: min(280px, 86vw);
-    max-width: 100%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
-  .dashboard-topbar {
-    display: flex;
-    min-width: 0;
-    min-height: 70px;
-    gap: 10px;
-    padding: 12px 14px;
-  }
-
-  .mobile-menu {
-    display: grid;
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-  }
-
-  .dashboard-topbar > div {
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  .dashboard-topbar h1 {
-    font-size: 16px;
-    line-height: 1.3;
-    overflow-wrap: anywhere;
-  }
-
-  .dashboard-topbar .muted {
-    font-size: 10px;
-    line-height: 1.4;
-  }
-
-  .dashboard-topbar > .button {
-    max-width: 108px;
-    min-height: 36px;
-    flex: 0 1 auto;
-    padding: 8px;
-    font-size: 10px;
-    line-height: 1.3;
-    text-align: center;
-    white-space: normal;
-  }
-
-  .dashboard-content {
-    width: 100%;
-    min-width: 0;
-    padding: 20px 14px 32px;
-  }
-
-  .welcome-row {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .welcome-row > div {
-    min-width: 0;
-  }
-
-  .welcome-row h2 {
-    font-size: 19px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .welcome-row p {
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  /* Dashboard statistics */
-  .stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .stat-card {
-    min-width: 0;
-    padding: 12px;
-  }
-
-  .stat-top {
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .stat-top > span:first-child {
-    min-width: 0;
-    font-size: 11px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-  }
-
-  .stat-icon {
-    flex: 0 0 28px;
-    width: 28px;
-    height: 28px;
-  }
-
-  .stat-card > strong {
-    display: block;
-    font-size: 22px;
-    overflow-wrap: anywhere;
-  }
-
-  .stat-card .status-value {
-    font-size: 18px;
-  }
-
-  .stat-caption {
-    display: block;
-    font-size: 10px;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-  }
-
-  /* Dashboard cards and forms */
-  .dashboard-card {
-    width: 100%;
-    min-width: 0;
-    margin-bottom: 14px;
-  }
-
-  .store-control {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
-    padding: 16px;
-  }
-
-  .store-control > div {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .store-control h3,
-  .card-heading h3 {
-    font-size: 16px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-  }
-
-  .store-control p,
-  .card-heading p {
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  .switch-label {
-    width: 100%;
-    min-width: 0;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 12px;
-  }
-
-  .card-heading {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 15px;
-  }
-
-  .card-heading > div {
-    min-width: 0;
-    flex: 1 1 100%;
-  }
-
-  .table-caption {
-    max-width: 100%;
-    font-size: 10px;
-    overflow-wrap: anywhere;
-  }
-
-  .product-form,
-  .store-settings-form {
-    min-width: 0;
-    padding: 14px;
-  }
-
-  .product-form-heading h4 {
-    font-size: 15px;
-    line-height: 1.4;
-  }
-
-  .product-form-heading p {
-    font-size: 11px;
-    line-height: 1.5;
-  }
-
-  .product-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .form-field {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .form-field input,
-  .form-field select,
-  .form-field textarea,
-  .store-settings-form .form-field textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 16px;
-  }
-
-  .store-description-field {
-    grid-column: auto;
-  }
-
-  .product-form-actions {
-    display: flex;
-    align-items: stretch;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .product-form-actions .button {
-    width: 100%;
-  }
-
-  .form-checkbox {
-    align-items: flex-start;
-    gap: 9px;
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  /* Tabel pesanan tetap bisa digeser secara horizontal */
-  .table-wrap {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .data-table {
-    width: 100%;
-    min-width: 650px;
-    border-collapse: collapse;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 11px 12px;
-    font-size: 11px;
-    white-space: nowrap;
-  }
-
-  /* Daftar pengelolaan produk */
-  .manage-row {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 10px;
-    min-width: 0;
-    padding: 12px;
-  }
-
-  .manage-product {
-    min-width: 0;
-    flex: 1 1 100%;
-  }
-
-  .manage-product > div {
-    min-width: 0;
-  }
-
-  .manage-product strong,
-  .manage-product small {
-    overflow-wrap: anywhere;
-  }
-
-  .availability-control {
-    max-width: 100%;
-    flex-wrap: wrap;
-    font-size: 11px;
-  }
-
-  .dashboard-note {
-    font-size: 11px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-  }
-}
-
-/* =========================================
-   24. Extra narrow phones
-========================================= */
-
-@media (max-width: 380px) {
-  .container {
-    width: calc(100% - 24px);
-  }
-
-  .header-inner {
-    gap: 6px;
-  }
-
-  .brand {
-    gap: 6px;
-  }
-
-  .brand-mark {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    font-size: 18px;
-  }
-
-  .brand-text strong {
-    font-size: 11px;
-  }
-
-  .header-actions {
-    gap: 6px;
-  }
-
-  .header-actions .text-link,
-  .header-actions .dashboard-link {
-    max-width: 72px;
-    font-size: 9px;
-  }
-
-  .cart-trigger {
-    flex-basis: 36px;
-    width: 36px;
-    min-width: 36px;
-    height: 36px;
-    min-height: 36px;
-  }
-
-  .hero-layout {
-    padding: 18px 13px;
-  }
-
-  .search-bar {
-    gap: 5px;
-  }
-
-  .search-bar .button {
-    padding-inline: 8px;
-    font-size: 10px;
-  }
-
-  .category-grid {
-    gap: 6px;
-  }
-
-  .category-card {
-    min-height: 82px;
-    font-size: 9px;
-  }
-
-  .product-grid {
-    gap: 8px;
-  }
-
-  .product-info {
-    padding: 8px;
-  }
-
-  .product-price {
-    font-size: 11px;
-  }
-
-  .add-button {
-    width: 29px;
-    height: 29px;
-    flex-basis: 29px;
-  }
-
-  .dashboard-topbar {
-    gap: 7px;
-    padding-inline: 10px;
-  }
-
-  .dashboard-topbar h1 {
-    font-size: 14px;
-  }
-
-  .dashboard-topbar > .button {
-    max-width: 88px;
-    padding: 7px;
-    font-size: 9px;
-  }
-
-  .dashboard-content {
-    padding-inline: 12px;
-  }
-
-  .stat-grid {
-    gap: 8px;
-  }
-
-  .stat-card {
-    padding: 10px;
-  }
-
-  .stat-card > strong {
-    font-size: 20px;
-  }
-}
-
-
-/* Final responsive polish */
-
-.container {
-  width: min(var(--container-width), calc(100% - 40px));
-  margin-inline: auto;
-}
-
-.product-grid,
+/* =========================================================
+   PESAN AJAH — RESPONSIVE STYLES
+   File: assets/css/responsive.css
+
+   Tanggung jawab:
+   1. Layout responsif marketplace
+   2. Header dan navigasi mobile
+   3. Hero dan pencarian
+   4. Kategori dan katalog produk
+   5. Promosi penjual dan footer
+   6. Kompatibilitas layout keranjang lama
+   7. Dashboard warung
+   8. Formulir dan tabel responsif
+   9. Aksesibilitas dan reduced motion
+
+   Pembagian stylesheet:
+   - base.css        : reset, token, tipografi, elemen dasar
+   - layout.css      : layout dasar marketplace
+   - components.css  : komponen umum
+   - cart.css        : keranjang dan checkout
+   - dashboard.css   : komponen dashboard warung
+   - products.css    : halaman pengelolaan produk
+   - responsive.css  : penyesuaian lintas ukuran layar
+
+   Catatan:
+   - Jangan menambahkan ulang aturan dasar komponen di sini.
+   - Aturan khusus keranjang modern tetap berada di cart.css.
+   - Aturan khusus halaman produk tetap berada di products.css.
+   ========================================================= */
+
+
+/* =========================================================
+   1. GLOBAL RESPONSIVE SAFETY
+   ========================================================= */
+
+/*
+ * Mencegah elemen flex/grid mendorong layout keluar layar.
+ * Tidak mengubah ukuran font, warna, atau desain komponen.
+ */
+
+.container,
+.header-inner,
+.header-actions,
+.hero-layout,
+.hero-copy,
+.section-heading,
 .category-grid,
+.product-grid,
+.seller-promo,
+.footer-inner,
+.dashboard-shell,
+.dashboard-main,
+.dashboard-content,
+.dashboard-topbar,
 .stat-grid {
-  min-width: 0;
+    min-width: 0;
 }
 
-.product-grid > *,
-.category-grid > *,
-.stat-grid > * {
-  min-width: 0;
-}
+
+/* Elemen media tidak boleh melampaui parent */
 
 img,
-input,
-select,
-textarea {
-  max-width: 100%;
+video,
+iframe {
+    max-width: 100%;
 }
+
+
+/* Elemen interaktif lebih nyaman pada layar sentuh */
 
 button,
 a {
-  touch-action: manipulation;
+    touch-action: manipulation;
 }
+
+
+/* Fokus keyboard yang konsisten */
+
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid rgb(18 107 70 / 25%);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   2. ANIMATIONS
+   ========================================================= */
+
+@keyframes slide-in {
+    from {
+        transform: translateX(20px);
+        opacity: 0.7;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   3. TABLET
+   Breakpoint: <= 1000px
+   ========================================================= */
 
 @media (max-width: 1000px) {
-  .product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
+
+    /* Hero */
+
+    .hero-layout {
+        gap: 26px;
+        padding: 30px;
+    }
+
+
+    /* Kategori */
+
+    .category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+
+    /* Katalog */
+
+    .product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+
+    /* Dashboard */
+
+    .dashboard-shell {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .dashboard-content {
+        padding-inline: 22px;
+    }
+
+    .dashboard-topbar {
+        padding-inline: 22px;
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
 }
+
+
+/* =========================================================
+   4. MOBILE
+   Breakpoint: <= 700px
+   ========================================================= */
 
 @media (max-width: 700px) {
-  .container {
-    width: calc(100% - 32px);
-  }
 
-  .header-inner {
-    min-height: 64px;
-    gap: 10px;
-  }
+    /* -----------------------------------------------------
+       4.1 GLOBAL
+       ----------------------------------------------------- */
 
-  .header-actions {
-    gap: 8px;
-  }
+    html {
+        scroll-padding-top: 72px;
+    }
 
-  .hero-layout {
-    gap: 20px;
-    padding: 24px 20px;
-    border-radius: var(--radius-lg);
-  }
+    html,
+    body {
+        max-width: 100%;
+    }
 
-  .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
+    /*
+     * overflow-x: clip digunakan untuk mencegah scroll
+     * horizontal akibat elemen yang melebar.
+     */
 
-  .product-image {
-    min-height: 120px;
-  }
+    body {
+        overflow-x: clip;
+    }
 
-  .product-emoji {
-    width: 64px;
-    height: 64px;
-    border-radius: 18px;
-    font-size: 34px;
-  }
+    .container {
+        width: calc(100% - 32px);
+        max-width: 100%;
+        margin-inline: auto;
+    }
 
-  .product-info {
-    padding: 11px;
-  }
 
-  .product-name {
-    font-size: 13px;
-  }
+    /* -----------------------------------------------------
+       4.2 MARKETPLACE HEADER
+       ----------------------------------------------------- */
 
-  .product-price {
-    font-size: 12px;
-  }
+    .header-inner {
+        display: flex;
+        min-height: 64px;
+        gap: 10px;
+    }
 
-  .category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
+    .brand {
+        min-width: 0;
+        gap: 8px;
+    }
 
-  .dashboard-shell {
-    grid-template-columns: minmax(0, 1fr);
-  }
+    /*
+     * Logo menggunakan komponen terbaru.
+     * Tidak mengatur ulang desain atau bentuk logo.
+     */
 
-  .dashboard-content {
-    min-width: 0;
-    padding: 16px;
-  }
+    .brand-logo {
+        flex: 0 0 auto;
+    }
 
-  .dashboard-topbar {
-    gap: 12px;
-    padding: 14px 16px;
-  }
+    .brand-text {
+        min-width: 0;
+    }
 
-  .table-wrap {
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+    .brand-text strong {
+        min-width: 0;
+        font-size: 12px;
+        white-space: nowrap;
+    }
 
-  .data-table {
-    min-width: 620px;
-  }
+    .brand-text small {
+        max-width: 100%;
+        overflow: hidden;
+        font-size: 9px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .location {
+        display: none;
+    }
+
+    .header-actions {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .header-actions .text-link,
+    .header-actions .dashboard-link {
+        max-width: 90px;
+        font-size: 10px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .cart-trigger {
+        flex: 0 0 40px;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .cart-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.3 HERO
+       ----------------------------------------------------- */
+
+    .hero {
+        padding-block: 16px 8px;
+    }
+
+    .hero-layout {
+        display: grid;
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+        padding: 22px 16px;
+        border-radius: var(--radius-lg);
+    }
+
+    .hero-copy {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .hero h1 {
+        max-width: 100%;
+        font-size: clamp(28px, 8vw, 38px);
+        line-height: 1.12;
+        letter-spacing: -1px;
+        overflow-wrap: anywhere;
+    }
+
+    .hero-copy > p {
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .hero-points {
+        gap: 9px 12px;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .hero-card {
+        width: 100%;
+        min-width: 0;
+        min-height: 205px;
+    }
+
+    .hero-circle {
+        width: 165px;
+        height: 165px;
+    }
+
+    .grocery-bag {
+        width: 105px;
+        height: 120px;
+    }
+
+    .grocery-bag strong {
+        font-size: 34px;
+    }
+
+    .mini-receipt {
+        top: 12px;
+        left: 8px;
+        width: 105px;
+        padding: 10px;
+    }
+
+    .floating-label {
+        right: 8px;
+        bottom: 8px;
+        max-width: 155px;
+        gap: 7px;
+        padding: 8px;
+    }
+
+    .floating-label b {
+        font-size: 9px;
+    }
+
+    .floating-label small {
+        font-size: 8px;
+    }
+
+    .check-mark {
+        width: 27px;
+        height: 27px;
+        flex: 0 0 27px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.4 SEARCH
+       ----------------------------------------------------- */
+
+    .search-bar {
+        width: 100%;
+        min-width: 0;
+        gap: 8px;
+        padding: 6px;
+    }
+
+    .search-bar > span {
+        flex: 0 0 auto;
+        font-size: 19px;
+    }
+
+    .search-bar input {
+        flex: 1 1 auto;
+        width: 0;
+        min-width: 0;
+        font-size: 12px;
+    }
+
+    .search-bar .button {
+        flex: 0 0 auto;
+        min-height: 38px;
+        padding: 9px 11px;
+        font-size: 11px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.5 SECTION HEADING
+       ----------------------------------------------------- */
+
+    .section {
+        padding-block: 24px;
+    }
+
+    .section-heading {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .section-heading > div {
+        min-width: 0;
+    }
+
+    .section-heading h2 {
+        font-size: 20px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .section-heading p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .section-heading > .muted {
+        max-width: 110px;
+        flex-shrink: 0;
+        padding-top: 3px;
+        font-size: 10px;
+        line-height: 1.4;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+
+    /* -----------------------------------------------------
+       4.6 CATEGORY GRID
+       ----------------------------------------------------- */
+
+    .category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .category-card {
+        min-width: 0;
+        min-height: 88px;
+        gap: 8px;
+        padding: 10px 4px;
+        border-radius: var(--radius-md);
+        font-size: 10px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .category-card > span {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        font-size: 19px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.7 PRODUCT CATALOGUE
+       ----------------------------------------------------- */
+
+    .products-section {
+        padding-top: 12px;
+        padding-bottom: 28px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .product-grid > * {
+        min-width: 0;
+    }
+
+    .product-card {
+        width: 100%;
+        min-width: 0;
+        border-radius: var(--radius-md);
+    }
+
+    .product-card:hover {
+        transform: none;
+    }
+
+    .product-image {
+        width: 100%;
+        min-width: 0;
+        aspect-ratio: 1 / 0.9;
+    }
+
+    .product-emoji {
+        width: 58px;
+        height: 58px;
+        font-size: 30px;
+    }
+
+    .product-tag {
+        top: 7px;
+        left: 7px;
+        max-width: calc(100% - 14px);
+        padding: 4px 6px;
+        font-size: 8px;
+    }
+
+    .product-info {
+        min-width: 0;
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .product-name {
+        min-width: 0;
+        min-height: 0;
+        font-size: 12px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .product-store,
+    .product-unit {
+        min-width: 0;
+        font-size: 10px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .product-bottom {
+        min-width: 0;
+        align-items: center;
+        gap: 6px;
+        margin-top: auto;
+        padding-top: 8px;
+    }
+
+    .product-price {
+        min-width: 0;
+        font-size: 12px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .add-button {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        flex: 0 0 32px;
+        border-radius: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.8 SELLER PROMOTION
+       ----------------------------------------------------- */
+
+    .seller-promo {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 28px;
+        padding: 18px 16px;
+        border-radius: var(--radius-lg);
+    }
+
+    .promo-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        flex: 0 0 42px;
+        font-size: 20px;
+    }
+
+    .promo-copy {
+        min-width: 0;
+        flex: 1 1 calc(100% - 54px);
+    }
+
+    .promo-copy h2 {
+        font-size: 17px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .promo-copy p {
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .seller-promo > .button {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       4.9 FOOTER
+       ----------------------------------------------------- */
+
+    .footer-inner {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-block: 22px;
+    }
+
+    .footer-inner > .brand {
+        flex: 1 1 100%;
+    }
+
+    .footer-inner > p {
+        flex: 1 1 100%;
+        order: initial;
+        font-size: 11px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .footer-inner > small {
+        font-size: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.10 LEGACY CART LAYOUT
+       ----------------------------------------------------- */
+
+    /*
+     * Aturan ini hanya untuk markup keranjang lama
+     * yang menggunakan .overlay dan .cart-panel.
+     *
+     * Keranjang modern dengan #cart-overlay dikelola
+     * oleh cart.css.
+     */
+
+    .overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .cart-panel {
+        width: 100%;
+        max-width: 100%;
+        height: 90vh;
+        height: 90dvh;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-radius: 20px 20px 0 0;
+        animation: none;
+    }
+
+    .panel-heading,
+    .cart-items,
+    .cart-footer {
+        padding-inline: 16px;
+    }
+
+    .panel-heading {
+        gap: 10px;
+        padding-block: 16px;
+    }
+
+    .panel-heading h2 {
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
+
+    .cart-item {
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .cart-item-emoji {
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+    }
+
+    .cart-item > div:nth-child(2) {
+        min-width: 0;
+    }
+
+    .quantity-control {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .quantity-control button {
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .total-row {
+        gap: 8px;
+    }
+
+    .total-row strong {
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
+
+
+    /* -----------------------------------------------------
+       4.11 TOAST
+       ----------------------------------------------------- */
+
+    .toast {
+        right: 12px;
+        bottom: 12px;
+        max-width: calc(100% - 24px);
+    }
+
+
+    /* -----------------------------------------------------
+       4.12 DASHBOARD SHELL
+       ----------------------------------------------------- */
+
+    .dashboard-shell {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .dashboard-main {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* -----------------------------------------------------
+       4.13 MOBILE SIDEBAR
+       ----------------------------------------------------- */
+
+    .sidebar {
+        position: fixed;
+        z-index: 80;
+        top: 0;
+        bottom: 0;
+        left: 0;
+
+        width: min(280px, 86vw);
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+
+        box-shadow: 12px 0 32px rgb(0 0 0 / 10%);
+
+        transform: translateX(-110%);
+
+        transition: transform 200ms ease;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-label {
+        margin-top: 26px;
+    }
+
+
+    /* -----------------------------------------------------
+       4.14 DASHBOARD TOPBAR
+       ----------------------------------------------------- */
+
+    .dashboard-topbar {
+        display: flex;
+        min-width: 0;
+        min-height: 70px;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 12px 14px;
+    }
+
+    .mobile-menu {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+    }
+
+    .dashboard-topbar > div {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .dashboard-topbar h1 {
+        font-size: 16px;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-topbar .muted {
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .dashboard-topbar > .button {
+        max-width: 108px;
+        min-height: 36px;
+        flex: 0 1 auto;
+        padding: 8px;
+        font-size: 10px;
+        line-height: 1.3;
+        text-align: center;
+        white-space: normal;
+    }
+
+
+    /* -----------------------------------------------------
+       4.15 DASHBOARD CONTENT
+       ----------------------------------------------------- */
+
+    .dashboard-content {
+        width: 100%;
+        min-width: 0;
+        padding: 20px 14px 32px;
+    }
+
+    .welcome-row {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .welcome-row > div {
+        min-width: 0;
+    }
+
+    .welcome-row h2 {
+        font-size: 19px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .welcome-row p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       4.16 DASHBOARD STATISTICS
+       ----------------------------------------------------- */
+
+    .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .stat-grid > * {
+        min-width: 0;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 12px;
+    }
+
+    .stat-top {
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .stat-top > span:first-child {
+        min-width: 0;
+        font-size: 11px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+    }
+
+    .stat-card > strong {
+        display: block;
+        font-size: 22px;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-card .status-value {
+        font-size: 18px;
+    }
+
+    .stat-caption {
+        display: block;
+        font-size: 10px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+
+    /* -----------------------------------------------------
+       4.17 DASHBOARD CARDS
+       ----------------------------------------------------- */
+
+    .dashboard-card {
+        width: 100%;
+        min-width: 0;
+        margin-bottom: 14px;
+    }
+
+    .store-control {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .store-control > div {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .store-control h3,
+    .card-heading h3 {
+        font-size: 16px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .store-control p,
+    .card-heading p {
+        font-size: 11px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .switch-label {
+        width: 100%;
+        min-width: 0;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .card-heading > div {
+        min-width: 0;
+        flex: 1 1 100%;
+    }
+
+    .table-caption {
+        max-width: 100%;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+
+    /* -----------------------------------------------------
+       4.18 DASHBOARD FORMS
+       ----------------------------------------------------- */
+
+    .product-form,
+    .store-settings-form {
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .product-form-heading h4 {
+        font-size: 15px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .product-form-heading p {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .product-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .form-field {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea,
+    .store-settings-form .form-field textarea {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        font-size: 16px;
+    }
+
+    .store-description-field {
+        grid-column: auto;
+    }
+
+    .product-form-actions {
+        display: flex;
+        align-items: stretch;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    .product-form-actions .button {
+        width: 100%;
+    }
+
+    .form-checkbox {
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+    /* -----------------------------------------------------
+       4.19 RESPONSIVE TABLES
+       ----------------------------------------------------- */
+
+    /*
+     * Tabel tidak dipaksa mengecil sampai sulit dibaca.
+     * Pengguna dapat menggeser tabel secara horizontal.
+     */
+
+    .table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 11px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+
+    /* -----------------------------------------------------
+       4.20 PRODUCT MANAGEMENT LIST
+       ----------------------------------------------------- */
+
+    .manage-row {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .manage-product {
+        min-width: 0;
+        flex: 1 1 100%;
+    }
+
+    .manage-product > div {
+        min-width: 0;
+    }
+
+    .manage-product strong,
+    .manage-product small {
+        overflow-wrap: anywhere;
+    }
+
+    .availability-control {
+        max-width: 100%;
+        flex-wrap: wrap;
+        font-size: 11px;
+    }
+
+    .dashboard-note {
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
 }
 
+
+/* =========================================================
+   5. SMALL MOBILE
+   Breakpoint: <= 380px
+   ========================================================= */
+
 @media (max-width: 380px) {
-  .container {
-    width: calc(100% - 24px);
-  }
 
-  .product-grid {
-    gap: 8px;
-  }
+    /* -----------------------------------------------------
+       5.1 GLOBAL SPACING
+       ----------------------------------------------------- */
 
-  .product-image {
-    min-height: 100px;
-  }
+    .container {
+        width: calc(100% - 24px);
+    }
 
-  .product-info {
-    padding: 9px;
-  }
 
-  .product-bottom {
-    gap: 5px;
-  }
+    /* -----------------------------------------------------
+       5.2 HEADER
+       ----------------------------------------------------- */
 
-  .product-price {
-    font-size: 11px;
-  }
+    .header-inner {
+        gap: 6px;
+    }
 
-  .add-button {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
-  }
+    .brand {
+        gap: 6px;
+    }
 
-  .category-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    .brand-text strong {
+        font-size: 11px;
+    }
 
-  .dashboard-content {
-    padding: 12px;
-  }
+    .brand-text small {
+        display: none;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .header-actions .text-link,
+    .header-actions .dashboard-link {
+        max-width: 72px;
+        font-size: 9px;
+    }
+
+    .cart-trigger {
+        flex-basis: 36px;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        min-height: 36px;
+    }
+
+
+    /* -----------------------------------------------------
+       5.3 HERO AND SEARCH
+       ----------------------------------------------------- */
+
+    .hero-layout {
+        padding: 18px 13px;
+    }
+
+    .search-bar {
+        gap: 5px;
+    }
+
+    .search-bar .button {
+        padding-inline: 8px;
+        font-size: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       5.4 CATEGORY GRID
+       ----------------------------------------------------- */
+
+    .category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .category-card {
+        min-height: 82px;
+        padding-inline: 3px;
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       5.5 PRODUCT GRID
+       ----------------------------------------------------- */
+
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .product-info {
+        padding: 8px;
+    }
+
+    .product-name {
+        font-size: 11px;
+    }
+
+    .product-price {
+        font-size: 11px;
+    }
+
+    .product-bottom {
+        gap: 5px;
+    }
+
+    .add-button {
+        width: 29px;
+        height: 29px;
+        min-width: 29px;
+        flex-basis: 29px;
+    }
+
+
+    /* -----------------------------------------------------
+       5.6 DASHBOARD TOPBAR
+       ----------------------------------------------------- */
+
+    .dashboard-topbar {
+        gap: 7px;
+        padding-inline: 10px;
+    }
+
+    .dashboard-topbar h1 {
+        font-size: 14px;
+    }
+
+    .dashboard-topbar > .button {
+        max-width: 88px;
+        padding: 7px;
+        font-size: 9px;
+    }
+
+
+    /* -----------------------------------------------------
+       5.7 DASHBOARD CONTENT
+       ----------------------------------------------------- */
+
+    .dashboard-content {
+        padding: 16px 12px 28px;
+    }
+
+    .stat-grid {
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 10px;
+    }
+
+    .stat-card > strong {
+        font-size: 20px;
+    }
+
+}
+
+
+/* =========================================================
+   6. DESKTOP REFINEMENT
+   Breakpoint: >= 1001px
+   ========================================================= */
+
+@media (min-width: 1001px) {
+
+    .container {
+        width: min(var(--container-width), calc(100% - 48px));
+        margin-inline: auto;
+    }
+
+    .hero-layout {
+        padding: 48px;
+    }
+
+    .dashboard-content {
+        padding-top: 34px;
+    }
+
+}
+
+
+/* =========================================================
+   7. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
 }
