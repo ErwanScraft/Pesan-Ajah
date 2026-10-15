@@ -1,3 +1,5 @@
+import { resolveImageUrl, setImageSource } from "./modules/image.js";
+
 const $ = (selector) => document.querySelector(selector);
 
 const page = document.body.dataset.page;
@@ -182,15 +184,26 @@ function renderProductImagePreview(imageUrl = null) {
     return;
   }
 
-  if (imageUrl) {
-    productImagePreview.src = imageUrl;
-    productImagePreview.hidden = false;
-    productImagePlaceholder.hidden = true;
-  } else {
+  const source = resolveImageUrl(imageUrl);
+
+  if (!source) {
     productImagePreview.removeAttribute("src");
     productImagePreview.hidden = true;
     productImagePlaceholder.hidden = false;
+
+    return;
   }
+
+  productImagePreview.hidden = false;
+  productImagePlaceholder.hidden = true;
+
+  productImagePreview.onerror = () => {
+    productImagePreview.removeAttribute("src");
+    productImagePreview.hidden = true;
+    productImagePlaceholder.hidden = false;
+  };
+
+  productImagePreview.src = source;
 }
 
 function resetProductImageState() {
@@ -359,7 +372,51 @@ function renderProducts() {
     info.className = "manage-product";
     
     const thumbnail = document.createElement("div");
+
     thumbnail.className = "manage-product-thumbnail";
+    
+    const imagePlaceholder = document.createElement("span");
+    
+    imagePlaceholder.textContent = "Tanpa foto";
+    
+    const image = document.createElement("img");
+    
+    image.alt = product.name
+      ? `Foto ${product.name}`
+      : "Foto produk";
+    
+    image.loading = "lazy";
+    image.decoding = "async";
+    
+    const showPlaceholder = () => {
+      image.hidden = true;
+      imagePlaceholder.hidden = false;
+    };
+    
+    const imageLoaded = setImageSource(
+      image,
+      product.image,
+      showPlaceholder,
+    );
+    
+    if (imageLoaded) {
+      imagePlaceholder.hidden = true;
+      thumbnail.append(image);
+    } else {
+      image.hidden = true;
+      imagePlaceholder.hidden = false;
+    }
+    
+    image.addEventListener(
+      "load",
+      () => {
+        image.hidden = false;
+        imagePlaceholder.hidden = true;
+      },
+      { once: true },
+    );
+    
+    thumbnail.append(imagePlaceholder);
     
     if (product.image) {
       const image = document.createElement("img");

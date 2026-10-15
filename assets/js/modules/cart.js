@@ -1,4 +1,5 @@
 import { formatRupiah } from "./format.js";
+import { setImageSource } from "./image.js";
 
 export function createCart(products) {
   const items = new Map();
@@ -95,40 +96,53 @@ export function createCart(products) {
 
   function createCartImage(product) {
     const container = document.createElement("div");
-
+  
     container.className = "cart-item-image";
-
+  
+    const placeholder = document.createElement("span");
+  
+    placeholder.className = "cart-item-image-placeholder";
+    placeholder.textContent = "Foto tidak tersedia";
+  
+    const image = document.createElement("img");
+  
+    image.alt = product.name || "Foto produk";
+    image.loading = "lazy";
+    image.decoding = "async";
+  
+    image.addEventListener(
+      "error",
+      () => {
+        image.hidden = true;
+        placeholder.hidden = false;
+      },
+      { once: true },
+    );
+  
     if (product.image) {
-      const image = document.createElement("img");
-
-      image.src = product.image;
-      image.alt = product.name;
-      image.loading = "lazy";
-      image.decoding = "async";
-
-      image.addEventListener(
-        "error",
+      placeholder.hidden = true;
+  
+      const validSource = setImageSource(
+        image,
+        product.image,
         () => {
-          const placeholder = document.createElement("span");
-
-          placeholder.className = "cart-item-image-placeholder";
-          placeholder.textContent = "Foto tidak tersedia";
-
-          container.replaceChildren(placeholder);
+          image.hidden = true;
+          placeholder.hidden = false;
         },
-        { once: true },
       );
-
-      container.append(image);
+  
+      if (validSource) {
+        container.append(image);
+      } else {
+        placeholder.hidden = false;
+      }
     } else {
-      const placeholder = document.createElement("span");
-
-      placeholder.className = "cart-item-image-placeholder";
-      placeholder.textContent = "Foto tidak tersedia";
-
-      container.append(placeholder);
+      image.hidden = true;
+      placeholder.hidden = false;
     }
-
+  
+    container.append(placeholder);
+  
     return container;
   }
 

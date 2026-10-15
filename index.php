@@ -154,6 +154,50 @@ $productStmt->execute([
 ]);
 
 $products = $productStmt->fetchAll();
+
+/**
+ * Normalisasi URL foto produk untuk halaman publik warung.
+ */
+function store_product_image_url(mixed $image): ?string
+{
+    if (!is_string($image)) {
+        return null;
+    }
+
+    $image = trim($image);
+
+    if ($image === '') {
+        return null;
+    }
+
+    /*
+     * URL absolut dipertahankan.
+     */
+    if (preg_match('~^https?://~i', $image)) {
+        return $image;
+    }
+
+    /*
+     * Tolak skema selain HTTP/HTTPS untuk mencegah
+     * penggunaan skema URL yang tidak diperlukan.
+     */
+    if (preg_match('/^[a-z][a-z0-9+.-]*:/i', $image)) {
+        return null;
+    }
+
+    $image = str_replace('\\', '/', $image);
+    $image = preg_replace('~^(?:\./)+~', '', $image);
+    $image = ltrim($image, '/');
+
+    if (
+        $image === ''
+        || in_array('..', explode('/', $image), true)
+    ) {
+        return null;
+    }
+
+    return '/' . $image;
+}
 ?>
 <!doctype html>
 <html lang="id">
@@ -228,15 +272,48 @@ $products = $productStmt->fetchAll();
             background: white;
         }
 
-        .store-product img {
+        .store-product-image {
+            display: grid;
             width: 100%;
             aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background: #f3f5f3;
+            overflow: hidden;
+            place-items: center;
+            background: #f5f7f2;
         }
-
+        
+        .store-product-image img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        .store-product-image img[hidden] {
+            display: none !important;
+        }
+        
+        .store-product-image-placeholder {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            min-height: 120px;
+            padding: 12px;
+            place-items: center;
+            color: #707970;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        
+        .store-product-image-placeholder[hidden] {
+            display: none !important;
+        }
+        
         .store-product-body {
+            min-width: 0;
             padding: 14px;
+            overflow-wrap: anywhere;
         }
 
         .store-product h3 {
@@ -343,13 +420,30 @@ $products = $productStmt->fetchAll();
             <div class="store-product-grid">
                 <?php foreach ($products as $product): ?>
                     <article class="store-product">
-                        <?php if (!empty($product['image'])): ?>
-                            <img
-                                src="<?= e($product['image']) ?>"
-                                alt="<?= e($product['name']) ?>"
-                                loading="lazy"
-                            >
-                        <?php endif; ?>
+                        <?php
+                        $productImageUrl = store_product_image_url(
+                            $product['image'] ?? null
+                        );
+                        ?>
+                        
+                        <div class="store-product-image">
+                            <?php if ($productImageUrl !== null): ?>
+                                <img
+                                    src="<?= e($productImageUrl) ?>"
+                                    alt="<?= e($product['name']) ?>"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                        
+                                <span class="store-product-image-placeholder" hidden>
+                                    Foto tidak tersedia
+                                </span>
+                            <?php else: ?>
+                                <span class="store-product-image-placeholder">
+                                    Foto tidak tersedia
+                                </span>
+                            <?php endif; ?>
+                        </div>
 
                         <div class="store-product-body">
                             <h3><?= e($product['name']) ?></h3>
@@ -384,5 +478,26 @@ $products = $productStmt->fetchAll();
             <?php endif; ?>
         </section>
     </main>
+    <script>
+      document
+        .querySelectorAll(".store-product-image img")
+        .forEach((image) => {
+          image.addEventListener(
+            "error",
+            () => {
+              image.hidden = true;
+    
+              const placeholder = image
+                .closest(".store-product-image")
+                ?.querySelector(".store-product-image-placeholder");
+    
+              if (placeholder) {
+                placeholder.hidden = false;
+              }
+            },
+            { once: true },
+          );
+        });
+    </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 import { formatRupiah } from "./format.js";
+import { setImageSource } from "./image.js";
 
 export function createCatalog({
   products,
@@ -44,50 +45,63 @@ export function createCatalog({
 
   function createProductImage(product) {
     const container = document.createElement("div");
-
+  
     container.className = "product-image";
-
+  
+    const placeholder = document.createElement("span");
+  
+    placeholder.className = "product-image-placeholder";
+    placeholder.textContent = "Foto belum tersedia";
+  
+    const image = document.createElement("img");
+  
+    image.className = "product-photo";
+    image.alt = product.name || "Foto produk";
+    image.loading = "lazy";
+    image.decoding = "async";
+  
+    image.addEventListener(
+      "error",
+      () => {
+        image.hidden = true;
+        placeholder.hidden = false;
+      },
+      { once: true },
+    );
+  
     if (product.image) {
-      const image = document.createElement("img");
-
-      image.className = "product-photo";
-      image.src = product.image;
-      image.alt = product.name;
-      image.loading = "lazy";
-      image.decoding = "async";
-
-      image.addEventListener(
-        "error",
+      placeholder.hidden = true;
+  
+      const validSource = setImageSource(
+        image,
+        product.image,
         () => {
-          const placeholder = document.createElement("span");
-
-          placeholder.className = "product-image-placeholder";
-          placeholder.textContent = "Foto belum tersedia";
-
-          container.replaceChildren(placeholder);
+          image.hidden = true;
+          placeholder.hidden = false;
         },
-        { once: true },
       );
-
-      container.append(image);
+  
+      if (validSource) {
+        container.append(image);
+      } else {
+        placeholder.hidden = false;
+      }
     } else {
-      const placeholder = document.createElement("span");
-
-      placeholder.className = "product-image-placeholder";
-      placeholder.textContent = "Foto belum tersedia";
-
-      container.append(placeholder);
+      image.hidden = true;
+      placeholder.hidden = false;
     }
-
+  
+    container.append(placeholder);
+  
     if (product.tag) {
       const tag = document.createElement("span");
-
+  
       tag.className = "product-tag";
       tag.textContent = product.tag;
-
+  
       container.append(tag);
     }
-
+  
     return container;
   }
 
