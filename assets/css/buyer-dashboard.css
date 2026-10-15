@@ -2,27 +2,28 @@
    PESAN AJAH — BUYER DASHBOARD
    File: assets/css/buyer-dashboard.css
 
-   Scope:
-   - Header Dashboard Buyer
-   - Intro halaman
-   - Daftar dan kartu pesanan
+   Cakupan:
+   - Layout Dashboard Buyer
+   - Header dan judul halaman
+   - Kartu pesanan
    - Status transaksi
-   - Detail produk dan pembayaran
-   - Alamat pengantaran
+   - Rincian produk
+   - Ringkasan pembayaran
+   - Alamat pengantaran dan Google Maps
+   - Tombol hapus riwayat
    - Empty state dan notifikasi
-   - Responsive layout
+   - Responsive mobile-first
 
-   Prinsip:
-   - Mobile-first
-   - Tidak mengubah CSS keranjang
-   - Tidak mengubah dashboard warung
-   - Tidak mengubah komponen global
-   ========================================================= */
+   Tidak mengubah:
+   - CSS keranjang
+   - Dashboard Warung
+   - Komponen produk
+========================================================= */
 
 
 /* =========================================================
    1. PAGE LAYOUT
-   ========================================================= */
+========================================================= */
 
 .buyer-page {
     width: 100%;
@@ -34,8 +35,8 @@
 
 .buyer-container {
     width: min(100% - 40px, 860px);
-    margin-inline: auto;
     min-width: 0;
+    margin-inline: auto;
 }
 
 .buyer-page *,
@@ -48,11 +49,6 @@
     display: none !important;
 }
 
-.buyer-page img,
-.buyer-page svg {
-    max-width: 100%;
-}
-
 .buyer-page button,
 .buyer-page input,
 .buyer-page select,
@@ -60,10 +56,15 @@
     font: inherit;
 }
 
+.buyer-page img,
+.buyer-page svg {
+    max-width: 100%;
+}
+
 
 /* =========================================================
    2. HEADER
-   ========================================================= */
+========================================================= */
 
 .buyer-site-header {
     position: sticky;
@@ -80,13 +81,13 @@
     min-width: 0;
 }
 
-.buyer-site-header .brand {
-    min-width: 0;
-    flex-shrink: 1;
-}
-
+.buyer-site-header .brand,
 .buyer-site-header .brand-text {
     min-width: 0;
+}
+
+.buyer-site-header .brand {
+    flex-shrink: 1;
 }
 
 .buyer-site-header .brand-text small {
@@ -109,6 +110,7 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 1.4;
+
     text-decoration: none;
     white-space: nowrap;
 
@@ -120,9 +122,9 @@
 
 .buyer-back-button svg {
     display: block;
+    flex: 0 0 17px;
     width: 17px;
     height: 17px;
-    flex: 0 0 17px;
 }
 
 .buyer-back-button:active {
@@ -132,11 +134,11 @@
 
 /* =========================================================
    3. PAGE INTRODUCTION
-   ========================================================= */
+========================================================= */
 
 .buyer-intro {
     min-width: 0;
-    margin: 0 0 26px;
+    margin: 0 0 24px;
 }
 
 .buyer-intro .eyebrow {
@@ -145,6 +147,7 @@
     gap: 7px;
 
     margin: 0;
+
     color: var(--muted);
     font-size: 11px;
     font-weight: 700;
@@ -157,7 +160,7 @@
     color: var(--text);
     font-size: clamp(27px, 4vw, 34px);
     font-weight: 800;
-    letter-spacing: -0.9px;
+    letter-spacing: -0.8px;
     line-height: 1.25;
 
     overflow-wrap: anywhere;
@@ -174,14 +177,14 @@
 
 
 /* =========================================================
-   4. LOADING AND FEEDBACK
-   ========================================================= */
+   4. NOTIFICATION
+========================================================= */
 
 .buyer-message {
     width: 100%;
     min-width: 0;
-    margin: 0 0 18px;
-    padding: 13px 15px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
 
     border: 1px solid var(--border);
     border-radius: var(--radius-md, 10px);
@@ -199,16 +202,28 @@
     display: block;
 }
 
+.buyer-page .buyer-message.is-success {
+    border-color: #b9dfc4;
+    background: #f0faf3;
+    color: #176b45;
+}
+
+.buyer-page .buyer-message.is-error {
+    border-color: #f0cccc;
+    background: #fff4f4;
+    color: #b42318;
+}
+
 
 /* =========================================================
    5. ORDER LIST
-   ========================================================= */
+========================================================= */
 
 .buyer-orders {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    gap: 16px;
+    gap: 14px;
 
     width: 100%;
     min-width: 0;
@@ -221,7 +236,7 @@
 
 /* =========================================================
    6. ORDER CARD
-   ========================================================= */
+========================================================= */
 
 .buyer-order-card {
     display: flex;
@@ -232,7 +247,7 @@
     overflow: hidden;
 
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg, 16px);
+    border-radius: 14px;
 
     background: var(--white, #fff);
     box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 4%));
@@ -250,16 +265,16 @@
 
 /* =========================================================
    7. ORDER HEADER
-   ========================================================= */
+========================================================= */
 
 .buyer-order-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
 
     min-width: 0;
-    padding: 19px 20px;
+    padding: 16px 18px;
 
     border-bottom: 1px solid var(--border);
 }
@@ -269,42 +284,41 @@
     min-width: 0;
 }
 
-.buyer-order-label {
-    display: block;
-    margin: 0 0 5px;
+.buyer-order-store {
+    margin: 0 0 4px;
 
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 500;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 750;
     line-height: 1.5;
+
+    overflow-wrap: anywhere;
 }
 
 .buyer-order-number {
-    margin: 0 0 5px;
+    margin: 0;
 
-    color: var(--text);
-    font-size: 16px;
-    font-weight: 800;
-    line-height: 1.5;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.6;
 
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-.buyer-order-store {
-    margin: 0;
+.buyer-order-date {
+    margin: 4px 0 0;
 
     color: var(--muted);
-    font-size: 12px;
-    line-height: 1.7;
-
-    overflow-wrap: anywhere;
+    font-size: 11px;
+    line-height: 1.5;
 }
 
 
 /* =========================================================
    8. ORDER STATUS
-   ========================================================= */
+========================================================= */
 
 .buyer-status {
     display: inline-flex;
@@ -312,7 +326,7 @@
     align-items: center;
     justify-content: center;
 
-    max-width: 210px;
+    max-width: 190px;
     min-height: 28px;
     padding: 6px 10px;
 
@@ -327,15 +341,11 @@
     overflow-wrap: anywhere;
 }
 
-/* Menunggu konfirmasi */
-
 .buyer-status-pending {
     border-color: #f0dfb4;
     background: #fff8e8;
     color: #8a5a00;
 }
-
-/* Dikonfirmasi */
 
 .buyer-status-confirmed {
     border-color: #d0def9;
@@ -343,23 +353,17 @@
     color: #2456a6;
 }
 
-/* Sedang diproses */
-
 .buyer-status-processing {
     border-color: #cbe5d2;
     background: #edf8f0;
     color: #176b45;
 }
 
-/* Selesai */
-
 .buyer-status-completed {
     border-color: #bde3c7;
     background: #e7f6eb;
     color: #126b46;
 }
-
-/* Dibatalkan */
 
 .buyer-status-cancelled {
     border-color: #f0cccc;
@@ -369,73 +373,19 @@
 
 
 /* =========================================================
-   9. ORDER DETAILS
-   ========================================================= */
-
-.buyer-order-details {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 24px;
-
-    min-width: 0;
-    padding: 4px 20px;
-}
-
-.buyer-detail-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-
-    min-width: 0;
-    padding: 11px 0;
-
-    border-bottom: 1px solid #edf0eb;
-}
-
-.buyer-detail-label {
-    flex: 0 1 auto;
-    min-width: 0;
-
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.65;
-
-    overflow-wrap: anywhere;
-}
-
-.buyer-detail-value {
-    flex: 0 1 auto;
-    min-width: 0;
-
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1.65;
-    text-align: right;
-
-    overflow-wrap: anywhere;
-    word-break: break-word;
-}
-
-
-/* =========================================================
-   10. PRODUCT DETAILS
-   ========================================================= */
+   9. ORDER ITEMS
+========================================================= */
 
 .buyer-order-items {
     min-width: 0;
-    padding: 17px 20px;
-
-    border-top: 1px solid var(--border);
+    padding: 16px 18px;
 }
 
-.buyer-order-items h3 {
-    margin: 0 0 13px;
+.buyer-section-title {
+    margin: 0 0 12px;
 
     color: var(--text);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
     line-height: 1.5;
 }
@@ -454,7 +404,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
 
     min-width: 0;
 }
@@ -462,8 +412,6 @@
 .buyer-item-name {
     flex: 1 1 auto;
     min-width: 0;
-
-    margin: 0;
 
     color: var(--muted);
     font-size: 12px;
@@ -477,69 +425,208 @@
     flex: 0 1 auto;
     min-width: 0;
 
-    margin: 0;
-
     color: var(--text);
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 1.7;
     text-align: right;
 
     overflow-wrap: anywhere;
 }
 
-
-/* =========================================================
-   11. DELIVERY ADDRESS
-   ========================================================= */
-
-.buyer-address-section {
-    min-width: 0;
-    padding: 17px 20px;
-
-    border-top: 1px solid var(--border);
-    background: #fbfcfa;
+.buyer-item-empty {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
 }
 
-.buyer-address-section h3 {
-    margin: 0 0 8px;
 
+/* =========================================================
+   10. PAYMENT SUMMARY
+========================================================= */
+
+.buyer-order-payment {
+    display: grid;
+    gap: 10px;
+
+    padding: 14px 18px;
+
+    border-top: 1px solid var(--border);
+    background: var(--surface, #fafbf9);
+}
+
+.buyer-payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    min-width: 0;
+
+    font-size: 12px;
+}
+
+.buyer-payment-label {
+    min-width: 0;
+
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.buyer-payment-value {
+    min-width: 0;
+
+    color: var(--text);
+    font-weight: 650;
+    line-height: 1.6;
+    text-align: right;
+
+    overflow-wrap: anywhere;
+}
+
+.buyer-payment-total {
+    margin-top: 2px;
+    padding-top: 12px;
+
+    border-top: 1px dashed var(--border);
+}
+
+.buyer-payment-total .buyer-payment-label,
+.buyer-payment-total .buyer-payment-value {
     color: var(--text);
     font-size: 13px;
     font-weight: 800;
+}
+
+
+/* =========================================================
+   11. DELIVERY ADDRESS
+========================================================= */
+
+.buyer-order-address {
+    display: grid;
+    gap: 7px;
+
+    min-width: 0;
+    padding: 15px 18px;
+
+    border-top: 1px solid var(--border);
+}
+
+.buyer-address-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
     line-height: 1.5;
 }
 
 .buyer-address {
-    margin: 0 0 13px;
+    margin: 0;
 
-    color: var(--muted);
+    color: var(--text);
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.75;
 
     overflow-wrap: anywhere;
     word-break: break-word;
 }
 
-.buyer-map-button {
+.buyer-order-map {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
 
+    width: fit-content;
     max-width: 100%;
-    min-height: 38px;
-    padding: 9px 12px;
+    min-height: 35px;
+    margin-top: 2px;
+    padding: 8px 11px;
 
-    border-radius: var(--radius-md, 10px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
 
-    font-size: 12px;
+    color: var(--text);
+    font-size: 11px;
     font-weight: 700;
     line-height: 1.5;
-    text-align: center;
+
     text-decoration: none;
+    overflow-wrap: anywhere;
+
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease;
+}
+
+.buyer-order-map:hover {
+    border-color: #d4e1d5;
+    background: var(--surface, #f7f8f6);
+}
+
+
+/* =========================================================
+   12. ORDER FOOTER
+========================================================= */
+
+.buyer-order-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    min-width: 0;
+    padding: 13px 18px;
+
+    border-top: 1px solid var(--border);
+    background: #f8faf7;
+}
+
+.buyer-order-method,
+.buyer-order-updated {
+    min-width: 0;
+
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.6;
 
     overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   13. DELETE ORDER BUTTON
+========================================================= */
+
+.buyer-order-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.buyer-order-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 38px;
+    padding: 8px 13px;
+
+    border: 1px solid #efcaca;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #b42318;
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    cursor: pointer;
 
     transition:
         background-color 160ms ease,
@@ -547,45 +634,24 @@
         color 160ms ease;
 }
 
-.buyer-map-button svg {
-    flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+.buyer-order-delete:hover {
+    border-color: #e4a7a7;
+    background: #fff4f4;
+}
+
+.buyer-order-delete:active {
+    transform: translateY(1px);
+}
+
+.buyer-order-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 
 /* =========================================================
-   12. ORDER FOOTER
-   ========================================================= */
-
-.buyer-order-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-
-    min-width: 0;
-    padding: 12px 20px;
-
-    border-top: 1px solid var(--border);
-    background: #f8faf7;
-}
-
-.buyer-order-updated {
-    min-width: 0;
-    margin: 0;
-
-    color: var(--muted);
-    font-size: 10px;
-    line-height: 1.7;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* =========================================================
-   13. EMPTY STATE
-   ========================================================= */
+   14. EMPTY STATE
+========================================================= */
 
 .buyer-empty {
     width: 100%;
@@ -593,9 +659,10 @@
     padding: 36px 20px;
 
     border: 1px dashed #d4dfd3;
-    border-radius: var(--radius-lg, 16px);
+    border-radius: 14px;
 
     background: var(--white, #fff);
+
     text-align: center;
 }
 
@@ -648,8 +715,8 @@
 
 
 /* =========================================================
-   14. PRIVACY NOTE
-   ========================================================= */
+   15. SECURITY NOTE
+========================================================= */
 
 .buyer-security-note {
     margin: 18px 0 0;
@@ -669,8 +736,8 @@
 
 
 /* =========================================================
-   15. FOOTER
-   ========================================================= */
+   16. FOOTER
+========================================================= */
 
 .buyer-site-footer {
     width: 100%;
@@ -692,27 +759,21 @@
 
 
 /* =========================================================
-   16. ACCESSIBILITY
-   ========================================================= */
+   17. ACCESSIBILITY
+========================================================= */
 
 .buyer-page a:focus-visible,
+.buyer-page button:focus-visible,
 .buyer-site-header a:focus-visible,
-.buyer-site-footer a:focus-visible,
-.buyer-page button:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 25%);
-    outline-offset: 3px;
-}
-
-.buyer-map-button:focus-visible,
-.buyer-back-button:focus-visible {
+.buyer-site-footer a:focus-visible {
     outline: 3px solid rgb(23 107 69 / 25%);
     outline-offset: 3px;
 }
 
 
 /* =========================================================
-   17. TABLET
-   ========================================================= */
+   18. TABLET
+========================================================= */
 
 @media (max-width: 760px) {
     .buyer-page {
@@ -725,395 +786,156 @@
         max-width: 620px;
     }
 
-    .buyer-order-header {
-        padding: 17px;
-    }
-
-    .buyer-order-details {
-        column-gap: 18px;
-        padding-right: 17px;
-        padding-left: 17px;
-    }
-
+    .buyer-order-header,
     .buyer-order-items,
-    .buyer-address-section {
-        padding-right: 17px;
-        padding-left: 17px;
+    .buyer-order-address,
+    .buyer-order-footer {
+        padding-inline: 16px;
     }
 
-    .buyer-order-footer {
-        padding-right: 17px;
-        padding-left: 17px;
+    .buyer-order-payment {
+        padding-inline: 16px;
     }
 }
 
 
 /* =========================================================
-   18. MOBILE
-   ========================================================= */
+   19. MOBILE
+========================================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 520px) {
     .buyer-page {
-        padding-top: 24px;
-        padding-bottom: 34px;
+        padding-top: 22px;
+        padding-bottom: 32px;
     }
 
     .buyer-container {
-        width: calc(100% - 28px);
+        width: calc(100% - 24px);
         max-width: none;
     }
 
     .buyer-site-header .header-inner {
-        gap: 10px;
+        gap: 8px;
     }
 
     .buyer-back-button {
-        min-height: 38px;
+        min-height: 36px;
         gap: 5px;
-        padding: 8px 10px;
+        padding: 7px 9px;
 
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .buyer-back-button svg {
+        flex-basis: 15px;
         width: 15px;
         height: 15px;
-        flex-basis: 15px;
     }
 
     .buyer-intro {
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
     .buyer-intro h1 {
-        margin-top: 7px;
-        font-size: 27px;
-        letter-spacing: -0.7px;
+        font-size: 26px;
+        letter-spacing: -0.6px;
     }
 
     .buyer-intro p {
         font-size: 12px;
-        line-height: 1.8;
     }
 
     .buyer-message {
-        margin-bottom: 14px;
-        padding: 12px;
+        padding: 11px 12px;
     }
 
     .buyer-orders {
-        gap: 13px;
-    }
-
-    .buyer-order-card {
-        border-radius: 14px;
-    }
-
-    .buyer-order-card:hover {
-        box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 4%));
-    }
-
-    .buyer-order-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 11px;
-
-        padding: 15px;
-    }
-
-    .buyer-order-number {
-        font-size: 15px;
-    }
-
-    .buyer-order-store {
-        font-size: 12px;
-    }
-
-/* =========================================================
-   BUYER DASHBOARD — SIMPLIFIED ORDER UI
-========================================================= */
-
-.buyer-page .buyer-orders {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-}
-
-.buyer-page .buyer-order-card {
-    gap: 0;
-    border-radius: 14px;
-    box-shadow: none;
-}
-
-.buyer-page .buyer-order-header {
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-}
-
-.buyer-page .buyer-order-heading {
-    min-width: 0;
-}
-
-.buyer-page .buyer-order-store {
-    margin: 0 0 4px;
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 750;
-    line-height: 1.5;
-}
-
-.buyer-page .buyer-order-number {
-    margin: 0;
-    font-size: 12px;
-    font-weight: 650;
-    line-height: 1.6;
-}
-
-.buyer-page .buyer-order-date {
-    margin: 4px 0 0;
-    color: var(--muted);
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-.buyer-page .buyer-status {
-    flex-shrink: 0;
-    max-width: 145px;
-    padding: 6px 9px;
-    font-size: 10px;
-}
-
-.buyer-page .buyer-order-items {
-    padding: 15px 16px;
-}
-
-.buyer-page .buyer-section-title {
-    margin: 0 0 12px;
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 750;
-}
-
-.buyer-page .buyer-item-list {
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.buyer-page .buyer-item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.buyer-page .buyer-item-name {
-    min-width: 0;
-    font-size: 12px;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-}
-
-.buyer-page .buyer-item-total {
-    flex-shrink: 0;
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 650;
-    text-align: right;
-}
-
-.buyer-page .buyer-item-empty {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.buyer-page .buyer-order-payment {
-    display: grid;
-    gap: 10px;
-    padding: 14px 16px;
-    border-top: 1px solid var(--border);
-    background: var(--surface, #fafbf9);
-}
-
-.buyer-page .buyer-payment-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 12px;
-}
-
-.buyer-page .buyer-payment-label {
-    color: var(--muted);
-    line-height: 1.6;
-}
-
-.buyer-page .buyer-payment-value {
-    color: var(--text);
-    font-weight: 650;
-    text-align: right;
-    overflow-wrap: anywhere;
-}
-
-.buyer-page .buyer-payment-total {
-    margin-top: 2px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border);
-}
-
-.buyer-page .buyer-payment-total .buyer-payment-label,
-.buyer-page .buyer-payment-total .buyer-payment-value {
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.buyer-page .buyer-order-address {
-    display: grid;
-    gap: 6px;
-    padding: 14px 16px;
-    border-top: 1px solid var(--border);
-}
-
-.buyer-page .buyer-address-label {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 650;
-}
-
-.buyer-page .buyer-address {
-    margin: 0;
-    color: var(--text);
-    font-size: 12px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-}
-
-.buyer-page .buyer-order-map {
-    display: inline-flex;
-    width: fit-content;
-    align-items: center;
-    justify-content: center;
-    min-height: 34px;
-    margin-top: 4px;
-    padding: 7px 11px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.buyer-page .buyer-order-map:hover {
-    background: var(--surface, #f7f8f6);
-}
-
-.buyer-page .buyer-order-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 13px 16px;
-    border-top: 1px solid var(--border);
-}
-
-.buyer-page .buyer-order-method,
-.buyer-page .buyer-order-updated {
-    color: var(--muted);
-    font-size: 10px;
-    line-height: 1.6;
-}
-
-.buyer-page .buyer-order-actions {
-    display: flex;
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.buyer-page .buyer-order-delete {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 36px;
-    padding: 8px 12px;
-    border: 1px solid #efcaca;
-    border-radius: 9px;
-    background: #fff;
-    color: #b42318;
-    font: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.buyer-page .buyer-order-delete:hover {
-    background: #fff4f4;
-}
-
-.buyer-page .buyer-order-delete:focus-visible {
-    outline: 2px solid #b42318;
-    outline-offset: 3px;
-}
-
-.buyer-page .buyer-message.is-success {
-    border-color: #b9dfc4;
-    background: #f0faf3;
-    color: #176b45;
-}
-
-.buyer-page .buyer-message.is-error {
-    border-color: #f0cccc;
-    background: #fff4f4;
-    color: #b42318;
-}
-
-/* Mobile */
-
-@media (max-width: 520px) {
-    .buyer-page .buyer-container {
-        width: min(100% - 24px, 860px);
-    }
-
-    .buyer-page .buyer-orders {
         gap: 12px;
     }
 
-    .buyer-page .buyer-order-header {
+    .buyer-order-card {
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+    .buyer-order-card:hover {
+        box-shadow: none;
+    }
+
+    .buyer-order-header {
         align-items: flex-start;
         flex-direction: column;
         gap: 10px;
         padding: 14px;
     }
 
-    .buyer-page .buyer-status {
+    .buyer-order-store {
+        font-size: 13px;
+    }
+
+    .buyer-order-number {
+        font-size: 11px;
+    }
+
+    .buyer-status {
         max-width: 100%;
+        min-height: 26px;
+        padding: 5px 9px;
+        font-size: 10px;
     }
 
-    .buyer-page .buyer-order-items,
-    .buyer-page .buyer-order-address {
-        padding-inline: 14px;
+    .buyer-order-items,
+    .buyer-order-address {
+        padding: 14px;
     }
 
-    .buyer-page .buyer-order-payment {
-        padding-inline: 14px;
+    .buyer-order-payment {
+        padding: 13px 14px;
     }
 
-    .buyer-page .buyer-order-footer {
+    .buyer-order-footer {
         align-items: flex-start;
         flex-direction: column;
-        padding-inline: 14px;
+        padding: 12px 14px;
     }
 
-    .buyer-page .buyer-order-actions {
+    .buyer-order-actions {
         justify-content: stretch;
     }
 
-    .buyer-page .buyer-order-delete {
+    .buyer-order-delete {
         width: 100%;
+        min-height: 40px;
+    }
+
+    .buyer-empty {
+        padding: 30px 16px;
+    }
+
+    .buyer-security-note {
+        padding: 11px 12px;
+        font-size: 10px;
+    }
+
+    .buyer-site-footer .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+
+/* =========================================================
+   20. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .buyer-page *,
+    .buyer-site-header *,
+    .buyer-site-footer * {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
     }
 }

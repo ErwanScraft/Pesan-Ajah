@@ -3,656 +3,860 @@
    File: assets/js/buyer-dashboard.js
 
    Fitur:
-   - Menampilkan pesanan dari database
-   - Menampilkan status terbaru
-   - Ringkasan produk dan pembayaran
-   - Hapus pesanan selesai dari riwayat browser
-   - Mobile friendly
+   - Memuat pesanan berdasarkan token pelacakan.
+   - Menampilkan status terbaru pesanan.
+   - Menampilkan produk dan ringkasan pembayaran.
+   - Menampilkan alamat pengantaran dan lokasi Maps.
+   - Menghapus pesanan selesai atau dibatalkan dari riwayat
+     lokal pembeli tanpa menghapus data transaksi di database.
+   - Tampilan loading, empty state, dan error.
 ========================================================= */
 
-const $ = (selector) => document.querySelector(selector);
-
-const storageKey = "pesan_ajah_order_tokens";
-
-const messageElement = $("#buyer-message");
-const ordersElement = $("#buyer-orders");
-const emptyElement = $("#buyer-empty");
-
-let currentOrders = [];
-
-/* =========================================================
-   FORMAT
-========================================================= */
-
-function formatRupiah(value) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value) || 0);
-}
-
-function formatDate(value) {
-  if (!value) {
-    return "-";
-  }
-
-  const date = new Date(
-    String(value).replace(" ", "T"),
-  );
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
-
-function statusLabel(status) {
-  const labels = {
-    pending: "Menunggu konfirmasi",
-    confirmed: "Dikonfirmasi",
-    processing: "Sedang diproses",
-    completed: "Selesai",
-    cancelled: "Dibatalkan",
-  };
-
-  return labels[status] || "Status tidak diketahui";
-}
-
-function statusClass(status) {
-  const allowed = [
-    "pending",
-    "confirmed",
-    "processing",
-    "completed",
-    "cancelled",
-  ];
-
-  return allowed.includes(status) ? status : "pending";
-}
-
-/* =========================================================
-   ELEMENT
-========================================================= */
-
-function makeElement(tag, className = "", text = "") {
-  const element = document.createElement(tag);
-
-  if (className) {
-    element.className = className;
-  }
-
-  if (text !== "") {
-    element.textContent = String(text);
-  }
-
-  return element;
-}
-
-function validMapsUrl(value) {
-  if (!value) {
-    return false;
-  }
-
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-
-    return (
-      url.protocol === "https:" &&
-      (
-        host === "google.com" ||
-        host === "www.google.com" ||
-        host === "maps.google.com" ||
-        host === "maps.app.goo.gl" ||
-        host === "goo.gl" ||
-        host.endsWith(".google.com")
-      )
-    );
-  } catch {
-    return false;
-  }
-}
-
-function makeMapsLink(url) {
-  const link = makeElement(
-    "a",
-    "buyer-order-map",
-    "Lihat lokasi",
-  );
-
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-
-  return link;
-}
-
-/* =========================================================
-   STATUS PESANAN
-========================================================= */
-
-function createStatus(statusValue) {
-  return makeElement(
-    "span",
-    `buyer-status buyer-status-${statusClass(statusValue)}`,
-    statusLabel(statusValue),
-  );
-}
-
-/* =========================================================
-   HAPUS RIWAYAT BUYER
-========================================================= */
-
-/*
- * Menghapus token dari browser pembeli.
- *
- * Data pesanan di database dan Dashboard Warung
- * tidak ikut dihapus.
- */
-
-function removeBuyerOrder(order) {
-  if (order.status !== "completed") {
-    return;
-  }
-
-  const confirmed = window.confirm(
-    `Hapus pesanan ${order.order_number} dari riwayat Dashboard Buyer?\n\n` +
-    "Data pesanan di warung tetap tersimpan.",
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  try {
-    const savedOrders = getSavedOrders();
-
-    const updatedOrders = savedOrders.filter(
-      (item) => item?.order_number !== order.order_number,
-    );
-
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify(updatedOrders),
-    );
-
-    currentOrders = currentOrders.filter(
-      (item) => item.order_number !== order.order_number,
-    );
-
-    renderOrders();
-
-    showBuyerMessage(
-      "Pesanan dihapus dari riwayat Dashboard Buyer.",
-      "success",
-    );
-  } catch (error) {
-    console.error(error);
-
-    showBuyerMessage(
-      "Riwayat gagal dihapus. Periksa penyimpanan browser.",
-      "error",
-    );
-  }
-}
-
-/* =========================================================
-   KARTU PESANAN
-========================================================= */
-
-function createOrderCard(order) {
-  const card = makeElement(
-    "article",
-    "buyer-order-card",
-  );
-
-  /*
-   * Header: warung, nomor pesanan, status.
-   */
-
-  const header = makeElement(
-    "div",
-    "buyer-order-header",
-  );
-
-  const identity = makeElement(
-    "div",
-    "buyer-order-heading",
-  );
-
-  identity.append(
-    makeElement(
-      "p",
-      "buyer-order-store",
-      order.store_name || "Warung",
-    ),
-    makeElement(
-      "h2",
-      "buyer-order-number",
-      order.order_number,
-    ),
-    makeElement(
-      "p",
-      "buyer-order-date",
-      formatDate(order.created_at),
-    ),
-  );
-
-  header.append(
-    identity,
-    createStatus(order.status),
-  );
-
-  /*
-   * Daftar produk.
-   */
-
-  const productSection = makeElement(
-    "div",
-    "buyer-order-items",
-  );
-
-  const productList = makeElement(
-    "ul",
-    "buyer-item-list",
-  );
-
-  const items = Array.isArray(order.items)
-    ? order.items
-    : [];
-
-  for (const item of items) {
-    const row = makeElement(
-      "li",
-      "buyer-item",
-    );
-
-    const name = makeElement(
-      "span",
-      "buyer-item-name",
-      `${item.product_name} × ${item.quantity}`,
-    );
-
-    const subtotal = makeElement(
-      "strong",
-      "buyer-item-total",
-      formatRupiah(item.subtotal),
-    );
-
-    row.append(name, subtotal);
-    productList.append(row);
-  }
-
-  if (items.length === 0) {
-    productList.append(
-      makeElement(
-        "li",
-        "buyer-item-empty",
-        "Rincian produk tidak tersedia.",
-      ),
-    );
-  }
-
-  productSection.append(
-    makeElement(
-      "h3",
-      "buyer-section-title",
-      "Produk pesanan",
-    ),
-    productList,
-  );
-
-  /*
-   * Ringkasan pembayaran.
-   */
-
-  const payment = makeElement(
-    "div",
-    "buyer-order-payment",
-  );
-
-  const addPaymentRow = (
-    label,
-    value,
-    className = "",
-  ) => {
-    const row = makeElement(
-      "div",
-      `buyer-payment-row ${className}`.trim(),
-    );
-
-    row.append(
-      makeElement(
-        "span",
-        "buyer-payment-label",
-        label,
-      ),
-      makeElement(
-        "strong",
-        "buyer-payment-value",
-        value,
-      ),
-    );
-
-    payment.append(row);
-  };
-
-  addPaymentRow(
-    "Subtotal",
-    formatRupiah(order.subtotal),
-  );
-
-  addPaymentRow(
-    "Ongkir",
-    formatRupiah(order.delivery_fee),
-  );
-
-  addPaymentRow(
-    "Total pembayaran",
-    formatRupiah(order.total),
-    "buyer-payment-total",
-  );
-
-  /*
-   * Informasi pengantaran.
-   */
-
-  let addressSection = null;
-
-  if (order.delivery_method === "delivery") {
-    addressSection = makeElement(
-      "div",
-      "buyer-order-address",
-    );
-
-    addressSection.append(
-      makeElement(
-        "span",
-        "buyer-address-label",
-        "Alamat pengantaran",
-      ),
-      makeElement(
-        "p",
-        "buyer-address",
-        order.delivery_address || "Alamat tidak tersedia.",
-      ),
-    );
-
-    let mapsUrl = order.delivery_maps_url || "";
-
-    if (
-      !mapsUrl &&
-      order.delivery_latitude !== null &&
-      order.delivery_longitude !== null
-    ) {
-      mapsUrl =
-        "https://maps.google.com/?q=" +
-        encodeURIComponent(
-          `${order.delivery_latitude},${order.delivery_longitude}`,
+(() => {
+    "use strict";
+
+    const STORAGE_KEY = "pesan_ajah_order_tokens";
+    const API_URL = "/api/orders.php";
+
+    const DELETABLE_STATUSES = new Set([
+        "completed",
+        "cancelled"
+    ]);
+
+    const STATUS_LABELS = {
+        pending: "Menunggu konfirmasi",
+        confirmed: "Dikonfirmasi",
+        processing: "Sedang diproses",
+        completed: "Selesai",
+        cancelled: "Dibatalkan"
+    };
+
+    const STATUS_CLASSES = {
+        pending: "buyer-status-pending",
+        confirmed: "buyer-status-confirmed",
+        processing: "buyer-status-processing",
+        completed: "buyer-status-completed",
+        cancelled: "buyer-status-cancelled"
+    };
+
+    const STATUS_DELETE_LABELS = {
+        completed: "Hapus dari riwayat",
+        cancelled: "Hapus dari riwayat"
+    };
+
+    const elements = {
+        message: document.getElementById("buyer-message"),
+        orders: document.getElementById("buyer-orders"),
+        empty: document.getElementById("buyer-empty"),
+        currentYear: document.getElementById("buyer-current-year")
+    };
+
+    let currentOrders = [];
+    let isLoading = false;
+
+    /*
+     * Format mata uang rupiah.
+     */
+    function formatRupiah(value) {
+        const amount = Number(value) || 0;
+
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+
+    /*
+     * Format tanggal dan waktu.
+     */
+    function formatDate(value) {
+        if (!value) {
+            return "Tanggal tidak tersedia";
+        }
+
+        const normalized = String(value).includes("T")
+            ? String(value)
+            : String(value).replace(" ", "T");
+
+        const date = new Date(normalized);
+
+        if (Number.isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        return new Intl.DateTimeFormat("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }).format(date);
+    }
+
+    /*
+     * Membuat elemen HTML dengan aman.
+     * Data API dimasukkan melalui textContent, bukan innerHTML.
+     */
+    function createElement(tag, className, text) {
+        const element = document.createElement(tag);
+
+        if (className) {
+            element.className = className;
+        }
+
+        if (text !== undefined && text !== null) {
+            element.textContent = String(text);
+        }
+
+        return element;
+    }
+
+    /*
+     * Membaca token pelacakan dari localStorage.
+     *
+     * Format yang didukung:
+     * [
+     *   {
+     *     token: "...",
+     *     order_number: "...",
+     *     created_at: "..."
+     *   }
+     * ]
+     */
+    function getSavedOrders() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+
+            if (!raw) {
+                return [];
+            }
+
+            const parsed = JSON.parse(raw);
+
+            if (!Array.isArray(parsed)) {
+                return [];
+            }
+
+            return parsed.filter((item) => {
+                return (
+                    item &&
+                    typeof item === "object" &&
+                    typeof item.token === "string" &&
+                    item.token.trim() !== ""
+                );
+            });
+        } catch (error) {
+            console.error(
+                "[Buyer Dashboard] Gagal membaca riwayat:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+    /*
+     * Menyimpan token pelacakan kembali ke localStorage.
+     */
+    function saveOrders(items) {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(items)
+            );
+
+            return true;
+        } catch (error) {
+            console.error(
+                "[Buyer Dashboard] Gagal menyimpan riwayat:",
+                error
+            );
+
+            return false;
+        }
+    }
+
+    /*
+     * Menampilkan notifikasi.
+     */
+    function showMessage(message, type = "") {
+        if (!elements.message) {
+            return;
+        }
+
+        elements.message.textContent = message;
+        elements.message.classList.remove(
+            "is-success",
+            "is-error"
+        );
+
+        if (type === "success") {
+            elements.message.classList.add("is-success");
+        }
+
+        if (type === "error") {
+            elements.message.classList.add("is-error");
+        }
+
+        elements.message.hidden = false;
+    }
+
+    /*
+     * Menyembunyikan notifikasi.
+     */
+    function hideMessage() {
+        if (!elements.message) {
+            return;
+        }
+
+        elements.message.textContent = "";
+        elements.message.classList.remove(
+            "is-success",
+            "is-error"
+        );
+
+        elements.message.hidden = true;
+    }
+
+    /*
+     * Menampilkan atau menyembunyikan empty state.
+     */
+    function updateEmptyState() {
+        const hasOrders = currentOrders.length > 0;
+
+        if (elements.orders) {
+            elements.orders.hidden = !hasOrders;
+        }
+
+        if (elements.empty) {
+            elements.empty.hidden = hasOrders;
+        }
+    }
+
+    /*
+     * Memastikan tautan Maps menggunakan HTTPS
+     * dan berasal dari domain Google Maps yang diizinkan.
+     */
+    function getSafeMapsUrl(value) {
+        if (!value || typeof value !== "string") {
+            return null;
+        }
+
+        try {
+            const url = new URL(value);
+
+            if (url.protocol !== "https:") {
+                return null;
+            }
+
+            const hostname = url.hostname.toLowerCase();
+
+            const allowedHosts = [
+                "google.com",
+                "www.google.com",
+                "maps.google.com",
+                "maps.app.goo.gl",
+                "goo.gl"
+            ];
+
+            const isAllowed = allowedHosts.includes(hostname) ||
+                hostname.endsWith(".google.com");
+
+            return isAllowed ? url.href : null;
+        } catch {
+            return null;
+        }
+    }
+
+    /*
+     * Membuat satu baris pembayaran.
+     */
+    function createPaymentRow(label, value, isTotal = false) {
+        const row = createElement(
+            "div",
+            isTotal
+                ? "buyer-payment-row buyer-payment-total"
+                : "buyer-payment-row"
+        );
+
+        const labelElement = createElement(
+            "span",
+            "buyer-payment-label",
+            label
+        );
+
+        const valueElement = createElement(
+            "span",
+            "buyer-payment-value",
+            value
+        );
+
+        row.append(labelElement, valueElement);
+
+        return row;
+    }
+
+    /*
+     * Membuat bagian daftar produk.
+     */
+    function createItemsSection(order) {
+        const section = createElement(
+            "section",
+            "buyer-order-items"
+        );
+
+        section.appendChild(
+            createElement(
+                "h3",
+                "buyer-section-title",
+                "Produk pesanan"
+            )
+        );
+
+        const list = createElement("ul", "buyer-item-list");
+
+        const items = Array.isArray(order.items)
+            ? order.items
+            : [];
+
+        if (items.length === 0) {
+            list.appendChild(
+                createElement(
+                    "li",
+                    "buyer-item-empty",
+                    "Rincian produk tidak tersedia."
+                )
+            );
+        } else {
+            items.forEach((item) => {
+                const row = createElement("li", "buyer-item");
+
+                const name = String(
+                    item.product_name ||
+                    item.name ||
+                    "Produk"
+                );
+
+                const quantity = Math.max(
+                    0,
+                    Number(item.quantity) || 0
+                );
+
+                const subtotal = Number(
+                    item.subtotal ??
+                    (
+                        Number(item.price || 0) *
+                        quantity
+                    )
+                ) || 0;
+
+                const nameElement = createElement(
+                    "div",
+                    "buyer-item-name"
+                );
+
+                nameElement.textContent =
+                    `${name} × ${quantity}`;
+
+                const totalElement = createElement(
+                    "div",
+                    "buyer-item-total",
+                    formatRupiah(subtotal)
+                );
+
+                row.append(nameElement, totalElement);
+                list.appendChild(row);
+            });
+        }
+
+        section.appendChild(list);
+
+        return section;
+    }
+
+    /*
+     * Membuat ringkasan pembayaran.
+     */
+    function createPaymentSection(order) {
+        const section = createElement(
+            "section",
+            "buyer-order-payment"
+        );
+
+        const subtotal = Number(order.subtotal) || 0;
+        const deliveryFee = Number(order.delivery_fee) || 0;
+        const total = Number(order.total) || 0;
+
+        section.appendChild(
+            createPaymentRow(
+                "Subtotal",
+                formatRupiah(subtotal)
+            )
+        );
+
+        if (order.delivery_method === "delivery") {
+            section.appendChild(
+                createPaymentRow(
+                    "Ongkos kirim",
+                    deliveryFee > 0
+                        ? formatRupiah(deliveryFee)
+                        : "Rp0"
+                )
+            );
+        }
+
+        section.appendChild(
+            createPaymentRow(
+                "Total pembayaran",
+                formatRupiah(total),
+                true
+            )
+        );
+
+        return section;
+    }
+
+    /*
+     * Membuat bagian alamat pengantaran.
+     * Bagian ini tidak ditampilkan untuk ambil sendiri.
+     */
+    function createAddressSection(order) {
+        if (order.delivery_method !== "delivery") {
+            return null;
+        }
+
+        const address = String(
+            order.delivery_address || ""
+        ).trim();
+
+        const mapsUrl = getSafeMapsUrl(
+            order.delivery_maps_url
+        );
+
+        if (!address && !mapsUrl) {
+            return null;
+        }
+
+        const section = createElement(
+            "section",
+            "buyer-order-address"
+        );
+
+        section.appendChild(
+            createElement(
+                "span",
+                "buyer-address-label",
+                "Alamat pengantaran"
+            )
+        );
+
+        if (address) {
+            section.appendChild(
+                createElement(
+                    "p",
+                    "buyer-address",
+                    address
+                )
+            );
+        }
+
+        if (mapsUrl) {
+            const link = createElement(
+                "a",
+                "buyer-order-map",
+                "Lihat lokasi di Google Maps"
+            );
+
+            link.href = mapsUrl;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+
+            section.appendChild(link);
+        }
+
+        return section;
+    }
+
+    /*
+     * Menghapus token pesanan dari browser pembeli.
+     *
+     * Tidak menghapus data pada tabel orders atau order_items.
+     * Pesanan tetap tersedia di Dashboard Warung.
+     */
+    function removeBuyerOrder(order) {
+        if (!DELETABLE_STATUSES.has(order.status)) {
+            return;
+        }
+
+        const orderNumber = String(
+            order.order_number || ""
+        );
+
+        if (!orderNumber) {
+            showMessage(
+                "Nomor pesanan tidak ditemukan. Riwayat tidak dapat dihapus.",
+                "error"
+            );
+
+            return;
+        }
+
+        const confirmation =
+            order.status === "completed"
+                ? `Hapus pesanan ${orderNumber} dari riwayat Buyer?`
+                : `Hapus pesanan ${orderNumber} yang dibatalkan dari riwayat Buyer?`;
+
+        if (!window.confirm(confirmation)) {
+            return;
+        }
+
+        const savedOrders = getSavedOrders();
+
+        const updatedOrders = savedOrders.filter((item) => {
+            return String(item.order_number || "") !== orderNumber;
+        });
+
+        if (!saveOrders(updatedOrders)) {
+            showMessage(
+                "Riwayat gagal diperbarui. Coba lagi.",
+                "error"
+            );
+
+            return;
+        }
+
+        currentOrders = currentOrders.filter((item) => {
+            return String(item.order_number || "") !== orderNumber;
+        });
+
+        renderOrders();
+
+        showMessage(
+            "Pesanan berhasil dihapus dari riwayat Buyer.",
+            "success"
         );
     }
 
-    if (validMapsUrl(mapsUrl)) {
-      addressSection.append(
-        makeMapsLink(mapsUrl),
-      );
-    }
-  }
+    /*
+     * Membuat footer kartu pesanan.
+     */
+    function createOrderFooter(order) {
+        const footer = createElement(
+            "footer",
+            "buyer-order-footer"
+        );
 
-  /*
-   * Footer.
-   */
+        const methodLabel =
+            order.delivery_method === "pickup"
+                ? "Ambil sendiri"
+                : "Diantar";
 
-  const footer = makeElement(
-    "div",
-    "buyer-order-footer",
-  );
+        footer.appendChild(
+            createElement(
+                "span",
+                "buyer-order-method",
+                `Metode: ${methodLabel}`
+            )
+        );
 
-  const methodLabel =
-    order.delivery_method === "delivery"
-      ? "Diantar"
-      : "Ambil sendiri";
+        const updatedAt =
+            order.updated_at ||
+            order.created_at;
 
-  footer.append(
-    makeElement(
-      "span",
-      "buyer-order-method",
-      methodLabel,
-    ),
-    makeElement(
-      "span",
-      "buyer-order-updated",
-      `Diperbarui ${formatDate(order.updated_at)}`,
-    ),
-  );
+        footer.appendChild(
+            createElement(
+                "span",
+                "buyer-order-updated",
+                `Diperbarui: ${formatDate(updatedAt)}`
+            )
+        );
 
-  /*
-   * Tombol hapus hanya tersedia jika selesai.
-   */
+        /*
+         * Tombol hapus hanya muncul pada status:
+         * completed atau cancelled.
+         */
+        if (DELETABLE_STATUSES.has(order.status)) {
+            const actions = createElement(
+                "div",
+                "buyer-order-actions"
+            );
 
-  if (order.status === "completed") {
-    const actions = makeElement(
-      "div",
-      "buyer-order-actions",
-    );
+            const deleteButton = createElement(
+                "button",
+                "buyer-order-delete",
+                STATUS_DELETE_LABELS[order.status]
+            );
 
-    const deleteButton = makeElement(
-      "button",
-      "buyer-order-delete",
-      "Hapus dari riwayat",
-    );
+            deleteButton.type = "button";
 
-    deleteButton.type = "button";
+            deleteButton.addEventListener("click", () => {
+                removeBuyerOrder(order);
+            });
 
-    deleteButton.addEventListener("click", () => {
-      removeBuyerOrder(order);
-    });
+            actions.appendChild(deleteButton);
+            footer.appendChild(actions);
+        }
 
-    actions.append(deleteButton);
-    footer.append(actions);
-  }
-
-  card.append(
-    header,
-    productSection,
-    payment,
-  );
-
-  if (addressSection) {
-    card.append(addressSection);
-  }
-
-  card.append(footer);
-
-  return card;
-}
-
-/* =========================================================
-   LOCAL STORAGE
-========================================================= */
-
-function getSavedOrders() {
-  try {
-    const parsed = JSON.parse(
-      localStorage.getItem(storageKey) || "[]",
-    );
-
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-/* =========================================================
-   FEEDBACK
-========================================================= */
-
-function showBuyerMessage(message, type = "") {
-  if (!messageElement) {
-    return;
-  }
-
-  messageElement.hidden = false;
-  messageElement.textContent = message;
-
-  messageElement.classList.remove(
-    "is-success",
-    "is-error",
-  );
-
-  if (type === "success") {
-    messageElement.classList.add("is-success");
-  }
-
-  if (type === "error") {
-    messageElement.classList.add("is-error");
-  }
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function renderOrders() {
-  if (!ordersElement || !emptyElement) {
-    return;
-  }
-
-  ordersElement.replaceChildren();
-
-  if (currentOrders.length === 0) {
-    emptyElement.hidden = false;
-    return;
-  }
-
-  emptyElement.hidden = true;
-
-  for (const order of currentOrders) {
-    ordersElement.append(
-      createOrderCard(order),
-    );
-  }
-}
-
-/* =========================================================
-   LOAD PESANAN DARI DATABASE
-========================================================= */
-
-async function loadOrders() {
-  if (!messageElement || !ordersElement || !emptyElement) {
-    return;
-  }
-
-  const savedOrders = getSavedOrders();
-
-  const tokens = savedOrders
-    .map((item) => item?.token)
-    .filter(
-      (token) =>
-        typeof token === "string" &&
-        /^[a-f0-9]{64}$/i.test(token),
-    )
-    .slice(0, 50);
-
-  if (tokens.length === 0) {
-    currentOrders = [];
-
-    ordersElement.replaceChildren();
-    messageElement.hidden = true;
-    emptyElement.hidden = false;
-
-    return;
-  }
-
-  showBuyerMessage("Memuat pesanan...");
-
-  try {
-    const response = await fetch(
-      "/api/orders.php",
-      {
-        method: "POST",
-        credentials: "same-origin",
-        cache: "no-store",
-
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({ tokens }),
-      },
-    );
-
-    const contentType =
-      response.headers.get("content-type") || "";
-
-    const responseText = await response.text();
-
-    if (!contentType.toLowerCase().includes("application/json")) {
-      throw new Error(
-        response.status === 404
-          ? "API pesanan tidak ditemukan."
-          : "Server tidak mengembalikan data pesanan yang valid.",
-      );
+        return footer;
     }
 
-    let result;
+    /*
+     * Membuat kartu satu pesanan.
+     */
+    function createOrderCard(order) {
+        const card = createElement(
+            "article",
+            "buyer-order-card"
+        );
 
-    try {
-      result = JSON.parse(responseText);
-    } catch {
-      throw new Error(
-        "Data pesanan dari server tidak dapat dibaca.",
-      );
+        const header = createElement(
+            "header",
+            "buyer-order-header"
+        );
+
+        const heading = createElement(
+            "div",
+            "buyer-order-heading"
+        );
+
+        heading.appendChild(
+            createElement(
+                "p",
+                "buyer-order-store",
+                order.store_name ||
+                order.store ||
+                "Warung"
+            )
+        );
+
+        heading.appendChild(
+            createElement(
+                "p",
+                "buyer-order-number",
+                `No. Pesanan: ${order.order_number || "-"}`
+            )
+        );
+
+        heading.appendChild(
+            createElement(
+                "p",
+                "buyer-order-date",
+                formatDate(order.created_at)
+            )
+        );
+
+        const status = String(
+            order.status || "pending"
+        ).toLowerCase();
+
+        const statusBadge = createElement(
+            "span",
+            [
+                "buyer-status",
+                STATUS_CLASSES[status] || "buyer-status-pending"
+            ].join(" "),
+            STATUS_LABELS[status] || "Menunggu konfirmasi"
+        );
+
+        header.append(heading, statusBadge);
+        card.appendChild(header);
+
+        card.appendChild(createItemsSection(order));
+        card.appendChild(createPaymentSection(order));
+
+        const addressSection = createAddressSection(order);
+
+        if (addressSection) {
+            card.appendChild(addressSection);
+        }
+
+        card.appendChild(createOrderFooter(order));
+
+        return card;
     }
 
-    if (!response.ok || !result.success) {
-      throw new Error(
-        result.message || "Pesanan gagal dimuat.",
-      );
+    /*
+     * Merender seluruh kartu pesanan.
+     */
+    function renderOrders() {
+        if (!elements.orders) {
+            return;
+        }
+
+        elements.orders.replaceChildren();
+
+        currentOrders.forEach((order) => {
+            elements.orders.appendChild(
+                createOrderCard(order)
+            );
+        });
+
+        updateEmptyState();
     }
 
-    currentOrders = Array.isArray(result.orders)
-      ? result.orders
-      : [];
+    /*
+     * Memuat data pesanan dari API.
+     */
+    async function loadOrders() {
+        if (isLoading) {
+            return;
+        }
 
-    messageElement.hidden = true;
+        isLoading = true;
 
-    renderOrders();
-  } catch (error) {
-    console.error(
-      "[Pesan Ajah] Dashboard Buyer:",
-      error,
-    );
+        hideMessage();
 
-    showBuyerMessage(
-      error instanceof Error
-        ? error.message
-        : "Terjadi kesalahan saat memuat pesanan.",
-      "error",
-    );
-  }
-}
+        if (!elements.orders) {
+            isLoading = false;
+            return;
+        }
 
-/* =========================================================
-   TAHUN FOOTER
-========================================================= */
+        const savedOrders = getSavedOrders();
 
-const currentYear = $("#buyer-current-year");
+        if (savedOrders.length === 0) {
+            currentOrders = [];
+            renderOrders();
+            isLoading = false;
+            return;
+        }
 
-if (currentYear) {
-  currentYear.textContent = String(
-    new Date().getFullYear(),
-  );
-}
+        elements.orders.hidden = false;
+        elements.orders.replaceChildren();
 
-/* =========================================================
-   INIT
-========================================================= */
+        elements.orders.appendChild(
+            createElement(
+                "div",
+                "buyer-message",
+                "Memuat riwayat pesanan..."
+            )
+        );
 
-loadOrders();
+        try {
+            const tokens = savedOrders.map((item) => item.token);
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ tokens })
+            });
+
+            let result;
+
+            try {
+                result = await response.json();
+            } catch {
+                throw new Error(
+                    "Server mengembalikan respons yang tidak valid."
+                );
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message ||
+                    "Gagal memuat riwayat pesanan."
+                );
+            }
+
+            if (result.success === false) {
+                throw new Error(
+                    result.message ||
+                    "Gagal memuat riwayat pesanan."
+                );
+            }
+
+            const orders = Array.isArray(result.orders)
+                ? result.orders
+                : [];
+
+            /*
+             * Menggabungkan nomor pesanan dari API dengan
+             * metadata lokal jika API tidak mengirimkannya.
+             */
+            currentOrders = orders.map((order) => {
+                const localOrder = savedOrders.find((item) => {
+                    return (
+                        String(item.order_number || "") ===
+                        String(order.order_number || "")
+                    );
+                });
+
+                return {
+                    ...order,
+                    order_number:
+                        order.order_number ||
+                        localOrder?.order_number ||
+                        "",
+                    created_at:
+                        order.created_at ||
+                        localOrder?.created_at ||
+                        ""
+                };
+            });
+
+            /*
+             * Urutkan dari pesanan terbaru.
+             */
+            currentOrders.sort((a, b) => {
+                const dateA = new Date(
+                    String(a.created_at || "").replace(" ", "T")
+                ).getTime() || 0;
+
+                const dateB = new Date(
+                    String(b.created_at || "").replace(" ", "T")
+                ).getTime() || 0;
+
+                return dateB - dateA;
+            });
+
+            renderOrders();
+        } catch (error) {
+            console.error(
+                "[Buyer Dashboard] Gagal memuat pesanan:",
+                error
+            );
+
+            currentOrders = [];
+            renderOrders();
+
+            showMessage(
+                error.message ||
+                "Tidak dapat memuat pesanan. Periksa koneksi lalu coba lagi.",
+                "error"
+            );
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    /*
+     * Inisialisasi Dashboard Buyer.
+     */
+    function init() {
+        if (elements.currentYear) {
+            elements.currentYear.textContent =
+                String(new Date().getFullYear());
+        }
+
+        if (!elements.orders) {
+            return;
+        }
+
+        loadOrders();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            init,
+            { once: true }
+        );
+    } else {
+        init();
+    }
+})();
