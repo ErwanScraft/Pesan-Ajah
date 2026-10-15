@@ -354,6 +354,10 @@ function renderProducts() {
     count.textContent = `${products.length} produk`;
   }
 
+  /* -------------------------------------------------------
+     PRODUK KOSONG
+  ------------------------------------------------------- */
+
   if (products.length === 0) {
     const empty = document.createElement("p");
 
@@ -364,80 +368,261 @@ function renderProducts() {
     return;
   }
 
-  for (const product of products) {
-    const row = document.createElement("div");
-    row.className = "manage-row";
+  /* -------------------------------------------------------
+     URUTAN KATEGORI
+  ------------------------------------------------------- */
 
-    const info = document.createElement("div");
-    info.className = "manage-product";
-    
-    // Thumbnail produk
+  const categoryOrder = [
+    "Sembako",
+    "Makanan",
+    "Minuman",
+    "Kebutuhan Rumah",
+    "Lainnya",
+  ];
+
+  const categoryMap = new Map();
+
+  for (const product of products) {
+    const category =
+      String(product.category || "").trim() || "Lainnya";
+
+    if (!categoryMap.has(category)) {
+      categoryMap.set(category, []);
+    }
+
+    categoryMap.get(category).push(product);
+  }
+
+  const sortedCategories = [
+    ...categoryOrder.filter((category) =>
+      categoryMap.has(category),
+    ),
+
+    ...[...categoryMap.keys()]
+      .filter(
+        (category) => !categoryOrder.includes(category),
+      )
+      .sort((a, b) => a.localeCompare(b, "id")),
+  ];
+
+  /* -------------------------------------------------------
+     HELPER: THUMBNAIL PRODUK
+  ------------------------------------------------------- */
+
+  function createProductThumbnail(product) {
     const thumbnail = document.createElement("div");
-    
+
     thumbnail.className = "manage-product-thumbnail";
-    
-    const imagePlaceholder = document.createElement("span");
-    
-    imagePlaceholder.className = "manage-product-image-placeholder";
-    imagePlaceholder.textContent = "Tanpa foto";
-    
+
+    const placeholder = document.createElement("span");
+
+    placeholder.className = "manage-product-image-placeholder";
+    placeholder.textContent = "Tanpa foto";
+
     const image = document.createElement("img");
-    
+
     image.alt = product.name
       ? `Foto ${product.name}`
       : "Foto produk";
-    
+
     image.loading = "lazy";
     image.decoding = "async";
     image.hidden = true;
-    
-    thumbnail.append(image, imagePlaceholder);
-    
-    const showImagePlaceholder = () => {
+
+    thumbnail.append(image, placeholder);
+
+    function showPlaceholder() {
       image.hidden = true;
       image.removeAttribute("src");
-      imagePlaceholder.hidden = false;
-    };
-    
-    const imageUrl = resolveImageUrl(product.image);
-    
-    if (imageUrl) {
-      image.addEventListener(
-        "load",
-        () => {
-          image.hidden = false;
-          imagePlaceholder.hidden = true;
-        },
-        { once: true },
-      );
-    
-      image.addEventListener(
-        "error",
-        showImagePlaceholder,
-        { once: true },
-      );
-    
-      image.src = imageUrl;
-    } else {
-      showImagePlaceholder();
+      placeholder.hidden = false;
     }
 
+    const imageUrl = resolveImageUrl(product.image);
+
+    if (!imageUrl) {
+      showPlaceholder();
+      return thumbnail;
+    }
+
+    image.addEventListener(
+      "load",
+      () => {
+        image.hidden = false;
+        placeholder.hidden = true;
+      },
+      { once: true },
+    );
+
+    image.addEventListener(
+      "error",
+      showPlaceholder,
+      { once: true },
+    );
+
+    image.src = imageUrl;
+
+    return thumbnail;
+  }
+
+  /* -------------------------------------------------------
+     HELPER: INFORMASI PRODUK
+  ------------------------------------------------------- */
+
+  function createProductInfo(product) {
+    const info = document.createElement("div");
+
+    info.className = "manage-product";
+
     const details = document.createElement("span");
+
     const name = document.createElement("strong");
+
+    name.textContent = product.name || "Produk tanpa nama";
+
     const metadata = document.createElement("small");
 
-    name.textContent = product.name;
-
     metadata.textContent =
-      `${product.unit} · ${formatRupiah(product.price)}`;
+      `${product.unit || "-"} · ${formatRupiah(product.price)}`;
 
-    details.append(name, metadata);
-    info.append(thumbnail, details);
+    const status = document.createElement("small");
+
+    status.className = product.available
+      ? "product-stock-status is-available"
+      : "product-stock-status is-unavailable";
+
+    status.textContent = product.available
+      ? "Stok tersedia"
+      : "Stok habis";
+
+    details.append(name, metadata, status);
+
+    info.append(
+      createProductThumbnail(product),
+      details,
+    );
+
+    return info;
+  }
+
+  /* -------------------------------------------------------
+     HELPER: TOGGLE KETERSEDIAAN
+  ------------------------------------------------------- */
+
+  async function updateAvailability(
+    product,
+    checkbox,
+    statusText,
+    availabilityText,
+  ) {
+    const previousValue = product.available;
+    const nextValue = checkbox.checked;
+
+    if (previousValue === nextValue) {
+      return;
+    }
+
+    checkbox.disabled = true;
+
+    availabilityText.textContent = "Menyimpan...";
+
+    try {
+      /*
+       * Gunakan POST JSON.
+       *
+       * Endpoint products.php menganggap POST dengan ID
+       * sebagai operasi pembaruan produk.
+       *
+       * Ini juga menghindari masalah server/cPanel yang
+       * membatasi HTTP PUT.
+       */
+      await postJSON(API.products, {
+        id: product.id,
+        name: product.name,
+        category: product.category || "Lainnya",
+        description: product.description || "",
+        price: product.price,
+        unit: product.unit,
+        available: nextValue,
+      });
+
+      /*
+       * Jangan menganggap status tersimpan sebelum server
+       * mengembalikan respons berhasil.
+       */
+      product.available = nextValue;
+
+      availabilityText.textContent = nextValue
+        ? "Tersedia"
+        : "Habis";
+
+      statusText.textContent = nextValue
+        ? "Stok tersedia"
+        : "Stok habis";
+
+      statusText.classList.toggle(
+        "is-available",
+        nextValue,
+      );
+
+      statusText.classList.toggle(
+        "is-unavailable",
+        !nextValue,
+      );
+
+      notify(
+        nextValue
+          ? "Produk berhasil diaktifkan."
+          : "Produk ditandai habis.",
+      );
+
+      /*
+       * Muat ulang dari database untuk memastikan status
+       * yang tampil sesuai dengan data server.
+       */
+      await loadProducts();
+    } catch (error) {
+      /*
+       * Kembalikan checkbox ke status sebelumnya apabila
+       * permintaan gagal.
+       */
+      checkbox.checked = previousValue;
+
+      availabilityText.textContent = previousValue
+        ? "Tersedia"
+        : "Habis";
+
+      notify(
+        error instanceof Error
+          ? error.message
+          : "Status produk gagal diperbarui.",
+      );
+    } finally {
+      checkbox.disabled = false;
+    }
+  }
+
+  /* -------------------------------------------------------
+     HELPER: CARD PRODUK
+  ------------------------------------------------------- */
+
+  function createProductRow(product) {
+    const row = document.createElement("article");
+
+    row.className = "manage-row";
+
+    row.dataset.productId = String(product.id);
+
+    const info = createProductInfo(product);
 
     const actions = document.createElement("div");
+
     actions.className = "manage-actions";
 
+    /*
+     * Toggle ketersediaan.
+     */
     const availabilityLabel = document.createElement("label");
+
     availabilityLabel.className = "availability-control";
 
     const checkbox = document.createElement("input");
@@ -445,35 +630,28 @@ function renderProducts() {
     checkbox.type = "checkbox";
     checkbox.checked = product.available;
 
+    checkbox.setAttribute(
+      "aria-label",
+      `Ubah ketersediaan ${product.name}`,
+    );
+
     const availabilityText = document.createElement("span");
 
     availabilityText.textContent = product.available
       ? "Tersedia"
       : "Habis";
 
-    checkbox.addEventListener("change", async () => {
-      try {
-        await postJSON(
-          API.products,
-          {
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            description: product.description || "",
-            price: product.price,
-            unit: product.unit,
-            available: checkbox.checked,
-          },
-          "PUT",
-        );
+    const statusText = info.querySelector(
+      ".product-stock-status",
+    );
 
-        await loadProducts();
-
-        notify("Ketersediaan produk diperbarui.");
-      } catch (error) {
-        checkbox.checked = product.available;
-        notify(error.message);
-      }
+    checkbox.addEventListener("change", () => {
+      updateAvailability(
+        product,
+        checkbox,
+        statusText,
+        availabilityText,
+      );
     });
 
     availabilityLabel.append(
@@ -481,10 +659,17 @@ function renderProducts() {
       availabilityText,
     );
 
-    const editButton = createButton("Edit", () => {
-      editProduct(product.id);
-    });
+    /*
+     * Tombol edit.
+     */
+    const editButton = createButton(
+      "Edit",
+      () => editProduct(product.id),
+    );
 
+    /*
+     * Tombol hapus.
+     */
     const deleteButton = createButton(
       "Hapus",
       () => deleteProduct(product.id),
@@ -499,7 +684,66 @@ function renderProducts() {
 
     row.append(info, actions);
 
-    productList.append(row);
+    return row;
+  }
+
+  /* -------------------------------------------------------
+     RENDER KATEGORI
+  ------------------------------------------------------- */
+
+  for (const category of sortedCategories) {
+    const categoryProducts = categoryMap.get(category);
+
+    if (!categoryProducts?.length) {
+      continue;
+    }
+
+    /*
+     * Satu kategori = satu section.
+     */
+    const section = document.createElement("section");
+
+    section.className = "product-category-group";
+
+    section.setAttribute(
+      "aria-label",
+      `Kategori ${category}`,
+    );
+
+    /*
+     * Header kategori.
+     */
+    const header = document.createElement("header");
+
+    header.className = "product-category-heading";
+
+    const title = document.createElement("h4");
+
+    title.textContent = category;
+
+    const categoryCount = document.createElement("span");
+
+    categoryCount.className = "product-category-count";
+
+    categoryCount.textContent =
+      `${categoryProducts.length} produk`;
+
+    header.append(title, categoryCount);
+
+    /*
+     * Card daftar produk dalam kategori.
+     */
+    const card = document.createElement("div");
+
+    card.className = "product-category-card";
+
+    for (const product of categoryProducts) {
+      card.append(createProductRow(product));
+    }
+
+    section.append(header, card);
+
+    productList.append(section);
   }
 }
 

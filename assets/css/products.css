@@ -756,3 +756,250 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================
+   PRODUCT CATEGORY GROUPS
+========================================================= */
+
+/* Daftar seluruh kategori */
+
+.products-page .product-manage-list {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 20px 20px;
+  border-top: 0;
+}
+
+/* Satu grup kategori */
+
+.products-page .product-category-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header kategori */
+
+.products-page .product-category-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+}
+
+.products-page .product-category-heading h4 {
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Jumlah produk per kategori */
+
+.products-page .product-category-count {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* Card kategori */
+
+.products-page .product-category-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--white);
+}
+
+/* Item produk di dalam card */
+
+.products-page .product-category-card .manage-row {
+  display: flex;
+  min-width: 0;
+  min-height: 82px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--white);
+  box-shadow: none;
+}
+
+.products-page .product-category-card .manage-row:last-child {
+  border-bottom: 0;
+}
+
+.products-page .product-category-card .manage-row:hover {
+  background: #fafbf9;
+}
+
+/* Informasi stok */
+
+.products-page .product-stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.products-page .product-stock-status.is-available {
+  color: var(--green);
+}
+
+.products-page .product-stock-status.is-unavailable {
+  color: var(--danger);
+}
+
+/* Checkbox ketika status sedang disimpan */
+
+.products-page .availability-control input:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.products-page .availability-control:has(input:disabled) {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+/* Tombol aksi */
+
+.products-page .manage-actions {
+  display: flex;
+  min-width: 0;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.products-page .manage-actions .table-action {
+  min-height: 36px;
+}
+
+/* ---------------------------------------------------------
+   TABLET
+--------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .products-page .product-manage-list {
+    gap: 18px;
+    padding: 0 14px 14px;
+  }
+
+  .products-page .product-category-heading {
+    gap: 8px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    width: 100%;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .products-page .product-category-card .availability-control {
+    margin-right: auto;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .products-page .product-manage-list {
+    gap: 16px;
+    padding: 0 10px 10px;
+  }
+
+  .products-page .product-category-group {
+    gap: 8px;
+  }
+
+  .products-page .product-category-heading h4 {
+    font-size: 12px;
+  }
+
+  .products-page .product-category-count {
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .products-page .product-category-card {
+    border-radius: 11px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    gap: 12px;
+    padding: 13px 12px;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    gap: 7px;
+  }
+
+  .products-page .product-category-card .manage-actions .table-action {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .products-page .product-category-card .manage-product-thumbnail {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    flex-basis: 48px;
+  }
+}
+
+/* ---------------------------------------------------------
+   LAYAR SEMPIT
+--------------------------------------------------------- */
+
+@media (max-width: 360px) {
+  .products-page .product-manage-list {
+    padding-inline: 8px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    padding: 12px 10px;
+  }
+
+  .products-page .product-category-card .manage-actions .table-action {
+    padding-inline: 8px;
+  }
+}
