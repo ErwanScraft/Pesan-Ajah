@@ -40,7 +40,7 @@ header('Cache-Control: no-store, private');
 </head>
 
 <body>
-    <header class="site-header">
+    <header class="site-header buyer-site-header">
         <div class="container header-inner">
             <a
                 class="brand"
@@ -61,8 +61,24 @@ header('Cache-Control: no-store, private');
                 </span>
             </a>
     
-            <a class="button button-outline" href="/">
-                <span aria-hidden="true">←</span>
+            <a
+                class="button button-outline buyer-back-button"
+                href="/"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M19 12H5M12 19l-7-7 7-7"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+    
                 <span>Kembali belanja</span>
             </a>
         </div>
@@ -72,14 +88,13 @@ header('Cache-Control: no-store, private');
         <div class="container buyer-container">
             <section class="buyer-intro">
                 <span class="eyebrow eyebrow-plain">
-                    DASHBOARD PEMBELI
+                    AKUN PEMBELI
                 </span>
-
-                <h1>Pesanan Saya</h1>
-
+            
+                <h1>Pesanan saya</h1>
+            
                 <p>
-                    Pantau status pesanan yang pernah kamu buat
-                    di Pesan Ajah.
+                    Pantau status dan rincian pesananmu di satu tempat.
                 </p>
             </section>
 
@@ -91,13 +106,13 @@ header('Cache-Control: no-store, private');
             >
                 Memuat pesanan...
             </div>
-
+            
             <section
                 class="buyer-orders"
                 id="buyer-orders"
                 aria-live="polite"
             ></section>
-
+            
             <section
                 class="buyer-empty"
                 id="buyer-empty"
@@ -106,29 +121,28 @@ header('Cache-Control: no-store, private');
                 <div class="buyer-empty-icon" aria-hidden="true">
                     PA
                 </div>
-
-                <h2>Belum ada pesanan tersimpan</h2>
-
+            
+                <h2>Belum ada pesanan</h2>
+            
                 <p>
                     Pesanan yang kamu buat melalui browser ini
-                    akan muncul di sini.
+                    akan muncul di halaman ini.
                 </p>
-
+            
                 <a class="button button-primary" href="/">
                     Mulai belanja
                 </a>
             </section>
-
+            
             <p class="buyer-security-note">
-                Riwayat pesanan pada halaman ini bergantung pada token
-                yang tersimpan di browser. Jika data browser dihapus
-                atau kamu berpindah perangkat, pesanan mungkin tidak
-                muncul lagi di halaman ini.
+                Riwayat pesanan menggunakan token yang tersimpan
+                di browser ini. Jika data browser dihapus atau kamu
+                berganti perangkat, pesanan mungkin tidak muncul lagi.
             </p>
         </div>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer buyer-site-footer">
         <div class="container footer-inner">
             <p>Marketplace warung lokal Banyukuning.</p>
 

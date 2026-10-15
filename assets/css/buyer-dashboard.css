@@ -1,605 +1,700 @@
 /* =========================================================
-   Pesan Ajah — Buyer Dashboard
+   PESAN AJAH — BUYER DASHBOARD
+   File: assets/css/buyer-dashboard.css
+
+   Scope:
+   - Header Dashboard Buyer
+   - Ringkasan halaman
+   - Kartu pesanan
+   - Status pesanan
+   - Rincian transaksi
+   - Alamat dan Google Maps
+   - Loading, empty state, dan notifikasi
+   - Responsif mobile
+
+   Tidak mengubah dashboard warung atau keranjang.
    ========================================================= */
 
-/* Page layout
-   --------------------------------------------------------- */
+
+/* =========================================================
+   1. PAGE LAYOUT
+   ========================================================= */
 
 .buyer-page {
-  min-height: 70vh;
-  padding-block: 40px 64px;
+    min-height: 70vh;
+    padding-block: 32px 56px;
 }
 
 .buyer-container {
-  width: 100%;
-  max-width: 900px;
-  margin-inline: auto;
+    width: min(100% - 40px, 860px);
+    margin-inline: auto;
 }
 
+.buyer-page [hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   2. HEADER
+   ========================================================= */
+
+.buyer-site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.buyer-site-header .header-inner {
+    gap: 16px;
+}
+
+.buyer-back-button {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.buyer-back-button svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+}
+
+
+/* =========================================================
+   3. PAGE INTRODUCTION
+   ========================================================= */
+
 .buyer-intro {
-  margin-bottom: 28px;
+    margin-bottom: 26px;
 }
 
 .buyer-intro .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
 }
 
 .buyer-intro h1 {
-  margin: 10px 0 8px;
-  font-size: clamp(28px, 4vw, 38px);
-  font-weight: 800;
-  letter-spacing: -1.1px;
-  line-height: 1.2;
+    margin: 8px 0 6px;
+    color: var(--text);
+    font-size: clamp(27px, 4vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    line-height: 1.25;
 }
 
 .buyer-intro p {
-  max-width: 560px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.75;
+    max-width: 540px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.75;
 }
 
-/* Loading and notification
-   --------------------------------------------------------- */
+
+/* =========================================================
+   4. LOADING AND FEEDBACK
+   ========================================================= */
 
 .buyer-message {
-  margin-bottom: 20px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--white);
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
+    margin-bottom: 18px;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
 }
 
-.buyer-message[hidden] {
-  display: none;
+.buyer-message:not([hidden]) {
+    display: block;
 }
 
-/* Order list
-   --------------------------------------------------------- */
+
+/* =========================================================
+   5. ORDER LIST
+   ========================================================= */
 
 .buyer-orders {
-  display: grid;
-  gap: 18px;
+    display: grid;
+    gap: 16px;
+    min-width: 0;
 }
 
+
+/* =========================================================
+   6. ORDER CARD
+   ========================================================= */
+
 .buyer-order-card {
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
 }
 
 .buyer-order-card:hover {
-  border-color: #d2dfd4;
-  box-shadow: 0 8px 28px rgb(24 48 32 / 6%);
+    border-color: #d4e1d5;
+    box-shadow: var(--shadow-md);
 }
 
-/* Order heading
-   --------------------------------------------------------- */
+
+/* =========================================================
+   7. ORDER HEADER
+   ========================================================= */
 
 .buyer-order-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 22px;
-  border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 19px 20px;
+    border-bottom: 1px solid var(--border);
 }
 
 .buyer-order-heading {
-  min-width: 0;
+    min-width: 0;
 }
 
 .buyer-order-label {
-  display: block;
-  margin-bottom: 7px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
 }
 
 .buyer-order-number {
-  margin: 0 0 7px;
-  overflow-wrap: anywhere;
-  color: var(--text);
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.45;
+    margin: 0 0 5px;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .buyer-order-store {
-  margin: 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
-/* Order status
-   --------------------------------------------------------- */
+
+/* =========================================================
+   8. ORDER STATUS
+   ========================================================= */
 
 .buyer-status {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  min-height: 30px;
-  max-width: 190px;
-  padding: 7px 11px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 750;
-  line-height: 1.4;
-  text-align: center;
+    display: inline-flex;
+    flex: 0 0 auto;
+    max-width: 210px;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .buyer-status-pending {
-  border-color: #f2dfab;
-  background: #fff8e6;
-  color: #8a5a00;
+    border-color: #f0dfb4;
+    background: #fff8e8;
+    color: #8a5a00;
 }
 
 .buyer-status-confirmed {
-  border-color: #c9dcff;
-  background: #edf4ff;
-  color: #174ea6;
+    border-color: #d0def9;
+    background: #eff4ff;
+    color: #2456a6;
 }
 
 .buyer-status-processing {
-  border-color: #c5e6d1;
-  background: #edf8f0;
-  color: #176b45;
+    border-color: #cbe5d2;
+    background: #edf8f0;
+    color: #176b45;
 }
 
 .buyer-status-completed {
-  border-color: #bce5c8;
-  background: #e5f7e9;
-  color: #126b46;
+    border-color: #bde3c7;
+    background: #e7f6eb;
+    color: #126b46;
 }
 
 .buyer-status-cancelled {
-  border-color: #f2c9c7;
-  background: #fff0ef;
-  color: #b42318;
+    border-color: #f0cccc;
+    background: #fff1f1;
+    color: #b42318;
 }
 
-/* Order details
-   --------------------------------------------------------- */
+
+/* =========================================================
+   9. ORDER SUMMARY
+   ========================================================= */
 
 .buyer-order-details {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 28px;
-  padding: 12px 22px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    padding: 4px 20px;
 }
 
 .buyer-detail-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-  padding-block: 12px;
-  border-bottom: 1px solid #edf0eb;
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 11px;
+    border-bottom: 1px solid #edf0eb;
 }
 
 .buyer-detail-label {
-  flex-shrink: 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 .buyer-detail-value {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.6;
-  text-align: right;
+    min-width: 0;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: right;
+    overflow-wrap: anywhere;
 }
 
-/* Product details
-   --------------------------------------------------------- */
+
+/* =========================================================
+   10. PRODUCT DETAILS
+   ========================================================= */
 
 .buyer-order-items {
-  padding: 20px 22px;
-  border-top: 1px solid var(--border);
+    padding: 17px 20px;
+    border-top: 1px solid var(--border);
 }
 
 .buyer-order-items h3 {
-  margin: 0 0 15px;
-  font-size: 13px;
-  font-weight: 800;
+    margin: 0 0 13px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
 }
 
 .buyer-item-list {
-  display: grid;
-  gap: 13px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+    display: grid;
+    gap: 11px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .buyer-item {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .buyer-item-name {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
+    min-width: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
 .buyer-item-total {
-  flex-shrink: 0;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 750;
-  line-height: 1.7;
-  text-align: right;
+    flex: 0 0 auto;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.7;
+    text-align: right;
+    overflow-wrap: anywhere;
 }
 
-/* Delivery address
-   --------------------------------------------------------- */
+
+/* =========================================================
+   11. DELIVERY ADDRESS
+   ========================================================= */
 
 .buyer-address-section {
-  padding: 20px 22px;
-  border-top: 1px solid var(--border);
-  background: #fcfdfb;
+    padding: 17px 20px;
+    border-top: 1px solid var(--border);
+    background: #fbfcfa;
 }
 
 .buyer-address-section h3 {
-  margin: 0 0 10px;
-  font-size: 13px;
-  font-weight: 800;
+    margin: 0 0 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
 }
 
 .buyer-address {
-  margin: 0 0 15px;
-  overflow-wrap: anywhere;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.8;
+    margin: 0 0 13px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
 }
 
 .buyer-map-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 10px 14px;
-  border-radius: 11px;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
 }
 
-.buyer-map-button:focus-visible {
-  outline: 3px solid rgb(23 107 69 / 20%);
-  outline-offset: 3px;
-}
 
-/* Card footer
-   --------------------------------------------------------- */
+/* =========================================================
+   12. ORDER FOOTER
+   ========================================================= */
 
 .buyer-order-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 22px;
-  border-top: 1px solid var(--border);
-  background: #f8faf7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: #f8faf7;
 }
 
 .buyer-order-updated {
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.6;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
-/* Empty state
-   --------------------------------------------------------- */
+
+/* =========================================================
+   13. EMPTY STATE
+   ========================================================= */
 
 .buyer-empty {
-  padding: 44px 24px;
-  border: 1px dashed var(--border);
-  border-radius: 18px;
-  background: var(--white);
-  text-align: center;
-}
-
-.buyer-empty[hidden] {
-  display: none;
+    padding: 36px 20px;
+    border: 1px dashed #d4dfd3;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    text-align: center;
 }
 
 .buyer-empty-icon {
-  display: grid;
-  width: 60px;
-  height: 60px;
-  place-items: center;
-  margin: 0 auto 18px;
-  border: 1px solid #dce9de;
-  border-radius: 18px;
-  background: var(--green-light);
-  color: var(--green);
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    margin: 0 auto 14px;
+    border: 1px solid #dce9de;
+    border-radius: 15px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 800;
 }
 
 .buyer-empty h2 {
-  margin: 0 0 9px;
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 1.4;
+    margin: 0 0 8px;
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.5;
 }
 
 .buyer-empty p {
-  max-width: 380px;
-  margin: 0 auto 22px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.8;
+    max-width: 370px;
+    margin: 0 auto 19px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
 }
 
 .buyer-empty .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Privacy note
-   --------------------------------------------------------- */
+
+/* =========================================================
+   14. PRIVACY NOTE
+   ========================================================= */
 
 .buyer-security-note {
-  margin: 22px 0 0;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #f8faf7;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.8;
+    margin: 18px 0 0;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #f8faf7;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.8;
 }
 
-/* Keyboard accessibility
-   --------------------------------------------------------- */
 
-.buyer-page a:focus-visible {
-  outline: 3px solid rgb(23 107 69 / 22%);
-  outline-offset: 3px;
+/* =========================================================
+   15. FOOTER
+   ========================================================= */
+
+.buyer-site-footer .footer-inner {
+    gap: 12px;
 }
 
-/* Tablet
-   --------------------------------------------------------- */
+
+/* =========================================================
+   16. ACCESSIBILITY
+   ========================================================= */
+
+.buyer-page a:focus-visible,
+.buyer-site-header a:focus-visible {
+    outline: 3px solid rgb(23 107 69 / 25%);
+    outline-offset: 3px;
+}
+
+.buyer-map-button:focus-visible {
+    outline: 3px solid rgb(23 107 69 / 25%);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   17. TABLET
+   ========================================================= */
 
 @media (max-width: 760px) {
-  .buyer-page {
-    padding-block: 32px 48px;
-  }
+    .buyer-page {
+        padding-block: 28px 44px;
+    }
 
-  .buyer-container {
-    max-width: 100%;
-  }
+    .buyer-container {
+        width: min(100% - 32px, 620px);
+    }
 
-  .buyer-intro {
-    margin-bottom: 24px;
-  }
+    .buyer-order-header {
+        padding: 17px;
+    }
 
-  .buyer-order-header {
-    padding: 20px;
-  }
+    .buyer-order-details {
+        column-gap: 18px;
+        padding-inline: 17px;
+    }
 
-  .buyer-order-details {
-    gap: 0 18px;
-    padding-inline: 20px;
-  }
+    .buyer-order-items,
+    .buyer-address-section {
+        padding-inline: 17px;
+    }
 
-  .buyer-order-items,
-  .buyer-address-section {
-    padding-inline: 20px;
-  }
-
-  .buyer-order-footer {
-    padding-inline: 20px;
-  }
+    .buyer-order-footer {
+        padding-inline: 17px;
+    }
 }
 
-/* Mobile
-   --------------------------------------------------------- */
+
+/* =========================================================
+   18. MOBILE
+   ========================================================= */
 
 @media (max-width: 600px) {
-  .buyer-page {
-    padding-block: 26px 38px;
-  }
+    .buyer-page {
+        padding-block: 24px 34px;
+    }
 
-  .buyer-intro {
-    margin-bottom: 20px;
-  }
+    .buyer-container {
+        width: calc(100% - 28px);
+    }
 
-  .buyer-intro h1 {
-    margin-top: 9px;
-    font-size: 29px;
-    letter-spacing: -0.8px;
-  }
+    .buyer-site-header .header-inner {
+        gap: 10px;
+    }
 
-  .buyer-intro p {
-    font-size: 13px;
-    line-height: 1.8;
-  }
+    .buyer-back-button {
+        min-height: 38px;
+        gap: 5px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
 
-  .buyer-message {
-    margin-bottom: 16px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 12px;
-  }
+    .buyer-back-button svg {
+        width: 15px;
+        height: 15px;
+        flex-basis: 15px;
+    }
 
-  .buyer-orders {
-    gap: 14px;
-  }
+    .buyer-intro {
+        margin-bottom: 20px;
+    }
 
-  .buyer-order-card {
-    border-radius: 15px;
-  }
+    .buyer-intro h1 {
+        font-size: 27px;
+        letter-spacing: -0.7px;
+    }
 
-  .buyer-order-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 17px;
-  }
+    .buyer-intro p {
+        font-size: 12px;
+    }
 
-  .buyer-order-number {
-    font-size: 16px;
-  }
+    .buyer-orders {
+        gap: 13px;
+    }
 
-  .buyer-status {
-    max-width: 100%;
-    min-height: 28px;
-    padding: 6px 10px;
-    font-size: 10px;
-  }
+    .buyer-order-card {
+        border-radius: 14px;
+    }
 
-  .buyer-order-details {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 8px 17px;
-  }
+    .buyer-order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+    }
 
-  .buyer-detail-row {
-    gap: 14px;
-    padding-block: 11px;
-  }
+    .buyer-order-number {
+        font-size: 15px;
+    }
 
-  .buyer-detail-label,
-  .buyer-detail-value {
-    font-size: 12px;
-  }
+    .buyer-status {
+        max-width: 100%;
+        min-height: 27px;
+        font-size: 10px;
+    }
 
-  .buyer-order-items {
-    padding: 17px;
-  }
+    .buyer-order-details {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 4px 15px;
+    }
 
-  .buyer-order-items h3 {
-    margin-bottom: 13px;
-  }
+    .buyer-detail-row {
+        gap: 14px;
+        padding-block: 10px;
+    }
 
-  .buyer-item-list {
-    gap: 12px;
-  }
+    .buyer-order-items,
+    .buyer-address-section {
+        padding: 15px;
+    }
 
-  .buyer-item {
-    gap: 12px;
-  }
+    .buyer-item {
+        gap: 12px;
+    }
 
-  .buyer-item-name,
-  .buyer-item-total {
-    font-size: 12px;
-  }
+    .buyer-map-button {
+        display: flex;
+        width: 100%;
+        min-height: 42px;
+    }
 
-  .buyer-address-section {
-    padding: 17px;
-  }
+    .buyer-order-footer {
+        padding: 11px 15px;
+    }
 
-  .buyer-address {
-    font-size: 12px;
-  }
+    .buyer-empty {
+        padding: 30px 16px;
+        border-radius: 14px;
+    }
 
-  .buyer-map-button {
-    width: 100%;
-    min-height: 44px;
-  }
+    .buyer-empty h2 {
+        font-size: 16px;
+    }
 
-  .buyer-order-footer {
-    padding: 12px 17px;
-  }
-
-  .buyer-order-updated {
-    font-size: 10px;
-  }
-
-  .buyer-empty {
-    padding: 34px 18px;
-    border-radius: 15px;
-  }
-
-  .buyer-empty h2 {
-    font-size: 17px;
-  }
-
-  .buyer-empty p {
-    font-size: 12px;
-  }
-
-  .buyer-security-note {
-    margin-top: 18px;
-    padding: 12px 14px;
-    font-size: 10px;
-  }
+    .buyer-security-note {
+        margin-top: 15px;
+        padding: 11px 12px;
+        font-size: 10px;
+    }
 }
 
-/* Very small devices
-   --------------------------------------------------------- */
 
-@media (max-width: 360px) {
-  .buyer-intro h1 {
-    font-size: 26px;
-  }
+/* =========================================================
+   19. VERY SMALL DEVICES
+   ========================================================= */
 
-  .buyer-order-header {
-    padding: 15px;
-  }
+@media (max-width: 380px) {
+    .buyer-container {
+        width: calc(100% - 24px);
+    }
 
-  .buyer-order-details {
-    padding-inline: 15px;
-  }
+    .buyer-site-header .brand-text small {
+        font-size: 9px;
+    }
 
-  .buyer-order-items,
-  .buyer-address-section {
-    padding: 15px;
-  }
+    .buyer-back-button {
+        padding-inline: 8px;
+        font-size: 10px;
+    }
 
-  .buyer-order-footer {
-    padding-inline: 15px;
-  }
+    .buyer-back-button svg {
+        width: 14px;
+        height: 14px;
+        flex-basis: 14px;
+    }
 
-  .buyer-detail-row {
-    gap: 8px;
-  }
+    .buyer-order-header {
+        padding: 13px;
+    }
 
-  .buyer-detail-label,
-  .buyer-detail-value {
-    font-size: 11px;
-  }
+    .buyer-order-details {
+        padding-inline: 13px;
+    }
+
+    .buyer-order-items,
+    .buyer-address-section {
+        padding: 13px;
+    }
+
+    .buyer-order-footer {
+        padding-inline: 13px;
+    }
+
+    .buyer-detail-row {
+        gap: 8px;
+    }
+
+    .buyer-detail-label,
+    .buyer-detail-value {
+        font-size: 11px;
+    }
 }
 
-/* Reduced motion
-   --------------------------------------------------------- */
+
+/* =========================================================
+   20. REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .buyer-order-card {
-    transition: none;
-  }
+    .buyer-order-card {
+        transition: none;
+    }
 }
