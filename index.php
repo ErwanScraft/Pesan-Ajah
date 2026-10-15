@@ -340,6 +340,221 @@ function store_product_image_url(mixed $image): ?string
                 gap: 10px;
             }
         }
+        
+        /* =========================================================
+           PESAN AJAH — PUBLIC STORE CATALOG
+           Scope: halaman publik /warung/{slug}
+           ========================================================= */
+        
+        .store-page .products-section {
+            min-width: 0;
+        }
+        
+        .store-page #product-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 24px;
+            min-width: 0;
+        }
+        
+        /* Grup kategori yang dibuat catalog.js */
+        .store-page .store-category-section {
+            min-width: 0;
+            scroll-margin-top: 100px;
+        }
+        
+        .store-page .store-category-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        
+        .store-page .store-category-heading h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        
+        .store-page .store-category-count {
+            flex-shrink: 0;
+            color: #68736b;
+            font-size: 12px;
+        }
+        
+        /* Grid produk dalam setiap kategori */
+        .store-page .store-category-products {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            min-width: 0;
+        }
+        
+        /* Kartu produk yang dibuat JavaScript */
+        .store-page .store-category-products .product-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid #e3e9e5;
+            border-radius: 14px;
+            background: #fff;
+        }
+        
+        /* Gambar produk */
+        .store-page .store-category-products .product-image {
+            position: relative;
+            display: grid;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            place-items: center;
+            background: #f5f7f2;
+        }
+        
+        .store-page .store-category-products .product-photo {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        .store-page .store-category-products .product-image-placeholder {
+            padding: 12px;
+            color: #707970;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        /* Informasi produk */
+        .store-page .store-category-products .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+            padding: 12px;
+        }
+        
+        .store-page .store-category-products .product-store {
+            overflow-wrap: anywhere;
+            color: #68736b;
+            font-size: 12px;
+        }
+        
+        .store-page .store-category-products .product-name {
+            margin: 0;
+            overflow-wrap: anywhere;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        
+        .store-page .store-category-products .product-unit {
+            color: #68736b;
+            font-size: 12px;
+        }
+        
+        .store-page .store-category-products .product-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .store-page .store-category-products .product-price {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            color: #176b45;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .store-page .store-category-products .add-button {
+            display: inline-grid;
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border: 0;
+            border-radius: 10px;
+            background: #176b45;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .store-page .store-category-products .add-button:disabled {
+            background: #e7ebe8;
+            color: #858d87;
+            cursor: not-allowed;
+        }
+        
+        /* Kategori */
+        .store-page .store-category-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 6px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+        
+        .store-page .store-category-nav a {
+            flex-shrink: 0;
+            padding: 9px 14px;
+            border: 1px solid #e3e9e5;
+            border-radius: 24px;
+            background: #fff;
+            color: #39443c;
+            font-size: 13px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .store-page .store-category-nav a.active {
+            border-color: #176b45;
+            background: #176b45;
+            color: #fff;
+        }
+        
+        /* Tampilan tablet */
+        @media (max-width: 900px) {
+            .store-page .store-category-products {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+            }
+        }
+        
+        /* Tampilan mobile */
+        @media (max-width: 600px) {
+            .store-page {
+                width: min(100% - 24px, 1120px);
+            }
+        
+            .store-page .store-category-products {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+        
+            .store-page .store-category-products .product-info {
+                padding: 10px;
+            }
+        
+            .store-page .store-category-products .product-name {
+                font-size: 13px;
+            }
+        
+            .store-page .store-category-products .product-price {
+                font-size: 13px;
+            }
+        
+            .store-page .store-category-products .add-button {
+                width: 34px;
+                height: 34px;
+            }
+        }
     </style>
 </head>
 
@@ -741,6 +956,7 @@ function store_product_image_url(mixed $image): ?string
           );
         });
     </script>
+    <?php require __DIR__ . '/partials/cart.php'; ?>
     <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>

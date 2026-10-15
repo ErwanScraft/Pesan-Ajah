@@ -300,30 +300,44 @@ export function createCatalog({
   }
 
   categoryList.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-category]");
+      const button = event.target.closest("[data-category]");
   
-    if (!button || !categoryList.contains(button)) {
-      return;
-    }
+      if (!button || !categoryList.contains(button)) {
+          return;
+      }
   
-    if (groupedMode) {
-      const category = button.dataset.category;
+      // Mencegah tautan href="#" mengembalikan halaman ke atas.
+      event.preventDefault();
   
-      const section = [
-        ...grid.querySelectorAll("[data-category-name]"),
-      ].find(
-        (item) => item.dataset.categoryName === category,
-      );
+      if (groupedMode) {
+          const category = button.dataset.category;
   
-      section?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+          const section = [
+              ...grid.querySelectorAll("[data-category-name]"),
+          ].find(
+              (item) => item.dataset.categoryName === category,
+          );
   
-      return;
-    }
+          if (section) {
+              section.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+              });
+          }
   
-    setCategory(button.dataset.category);
+          categoryList
+              .querySelectorAll("[data-category]")
+              .forEach((item) => {
+                  item.classList.toggle(
+                      "active",
+                      item === button,
+                  );
+              });
+  
+          return;
+      }
+  
+      setCategory(button.dataset.category);
   });
 
   searchInput.addEventListener("input", () => {
