@@ -1,174 +1,270 @@
 /* =========================================================
-   PESAN AJAH
-   Marketplace warung lokal Banyukuning
+   PESAN AJAH — BASE
+   File: assets/css/base.css
+
+   Tanggung jawab:
+   - Design tokens
+   - Reset
+   - Tipografi
+   - Elemen HTML dasar
+   - Accessibility
+   - Utility dasar
    ========================================================= */
 
-/* 1. Design tokens */
 
+/* =========================================================
+   1. DESIGN TOKENS
+   ========================================================= */
 
 :root {
-  color-scheme: light;
+    color-scheme: light;
 
-  /* Brand */
-  --green: #176b45;
-  --green-dark: #105538;
-  --green-light: #eaf4ed;
+    /* Brand */
+    --green: #176b45;
+    --green-dark: #105538;
+    --green-light: #eaf4ed;
 
-  /* Surfaces */
-  --cream: #f8faf7;
-  --white: #ffffff;
-  --surface: #f1f5f1;
-  --border: #e3e9e2;
+    /* Surfaces */
+    --cream: #f8faf7;
+    --white: #ffffff;
+    --surface: #f1f5f1;
+    --border: #e3e9e2;
 
-  /* Typography */
-  --text: #202820;
-  --muted: #707970;
-  --danger: #c93e43;
-  --amber: #946200;
-  --blue: #2456a6;
+    /* Typography */
+    --text: #202820;
+    --muted: #707970;
 
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+    /* Status */
+    --danger: #c93e43;
+    --amber: #946200;
+    --blue: #2456a6;
 
-  /* Elevation */
-  --shadow-sm: 0 2px 6px rgb(22 45 29 / 4%);
-  --shadow-md: 0 8px 24px rgb(22 45 29 / 7%);
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
 
-  /* Layout */
-  --container-width: 1120px;
-  --transition: 180ms ease;
+    /* Elevation */
+    --shadow-sm: 0 2px 6px rgb(22 45 29 / 4%);
+    --shadow-md: 0 8px 24px rgb(22 45 29 / 7%);
+
+    /* Layout */
+    --container-width: 1120px;
+    --page-gutter: 20px;
+
+    /* Motion */
+    --transition: 180ms ease;
 }
 
 
-/* 2. Reset and base */
+/* =========================================================
+   2. BOX MODEL RESET
+   ========================================================= */
 
-* {
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
+
+
+/* =========================================================
+   3. DOCUMENT
+   ========================================================= */
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 88px;
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-width: 320px;
-  margin: 0;
-  background: var(--cream);
-  color: var(--text);
-  font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+    min-width: 320px;
+    margin: 0;
+
+    background: var(--cream);
+    color: var(--text);
+
+    font-family:
+        "DM Sans",
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-body.no-scroll {
-  overflow: hidden;
-}
+
+/* =========================================================
+   4. FORM ELEMENTS
+   ========================================================= */
 
 button,
 input,
 select,
 textarea {
-  font: inherit;
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
 }
 
 button,
 a {
-  -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
 }
 
-button {
-  cursor: pointer;
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+input,
+select,
+textarea {
+    max-width: 100%;
 }
+
+textarea {
+    resize: vertical;
+}
+
+
+/* =========================================================
+   5. LINKS
+   ========================================================= */
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
+
+/* =========================================================
+   6. MEDIA ELEMENTS
+   ========================================================= */
+
 img,
-svg {
-  display: block;
-  max-width: 100%;
+svg,
+video,
+canvas {
+    display: block;
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+
+/* =========================================================
+   7. TYPOGRAPHY
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin-top: 0;
 }
 
 h1,
 h2,
 h3,
-p {
-  margin-top: 0;
-}
-
-h1,
-h2,
-h3 {
-  color: var(--text);
-  line-height: 1.25;
+h4,
+h5,
+h6 {
+    color: var(--text);
+    line-height: 1.25;
 }
 
 p {
-  color: var(--muted);
+    color: var(--muted);
 }
 
-[hidden] {
-  display: none !important;
-}
 
-:focus-visible {
-  outline: 3px solid rgb(18 107 70 / 35%);
-  outline-offset: 3px;
+/* =========================================================
+   8. ACCESSIBILITY
+   ========================================================= */
+
+:where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    [tabindex]
+):focus-visible {
+    outline: 3px solid rgb(23 107 69 / 28%);
+    outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--green-light);
-  color: var(--green-dark);
+    background: #dceee1;
+    color: var(--green-dark);
+}
+
+
+/* =========================================================
+   9. GLOBAL UTILITIES
+   ========================================================= */
+
+[hidden] {
+    display: none !important;
 }
 
 .container {
-  width: min(var(--container-width), calc(100% - 40px));
-  margin-inline: auto;
+    width: min(
+        var(--container-width),
+        calc(100% - (var(--page-gutter) * 2))
+    );
+
+    margin-inline: auto;
 }
 
 .muted {
-  color: var(--muted);
+    color: var(--muted);
 }
 
 .small {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 
-:where(a, button, input, select, textarea):focus-visible {
-  outline: 3px solid rgb(23 107 69 / 24%);
-  outline-offset: 3px;
+/* =========================================================
+   10. SCROLL LOCK
+   ========================================================= */
+
+body.no-scroll {
+    overflow: hidden;
 }
 
-::selection {
-  background: #dceee1;
-  color: var(--green-dark);
-}
 
-[hidden] {
-  display: none !important;
-}
+/* =========================================================
+   11. REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

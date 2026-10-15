@@ -1,9 +1,49 @@
-/* Pesan Ajah — CSS entry point */
+/* =========================================================
+   PESAN AJAH — GLOBAL CSS ENTRY POINT
 
+   File:
+   assets/css/style.css
+
+   Scope:
+   - Base styles
+   - General layout
+   - Shared components
+   - Cart
+   - Seller dashboard
+   - Responsive rules
+
+   CSS halaman khusus dimuat oleh halaman masing-masing.
+   ========================================================= */
+
+/*
+ * 1. Fondasi
+ */
 @import url("./base.css");
+
+/*
+ * 2. Layout umum
+ */
 @import url("./layout.css");
+
+/*
+ * 3. Komponen umum
+ */
 @import url("./components.css");
+
+/*
+ * 4. Keranjang dan checkout
+ */
 @import url("./cart.css");
+
+/*
+ * 5. Dashboard warung
+ */
 @import url("./dashboard.css");
+
+/*
+ * 6. Responsif
+ *
+ * Diletakkan setelah CSS umum agar aturan responsif
+ * dapat menyesuaikan komponen yang sudah didefinisikan.
+ */
 @import url("./responsive.css");
-@import url("./store.css");
