@@ -1,3 +1,15 @@
+/* =========================================================
+   PESAN AJAH — BUYER DASHBOARD
+   File: assets/js/buyer-dashboard.js
+
+   Fitur:
+   - Menampilkan pesanan dari database
+   - Menampilkan status terbaru
+   - Ringkasan produk dan pembayaran
+   - Hapus pesanan selesai dari riwayat browser
+   - Mobile friendly
+========================================================= */
+
 const $ = (selector) => document.querySelector(selector);
 
 const storageKey = "pesan_ajah_order_tokens";
@@ -5,6 +17,12 @@ const storageKey = "pesan_ajah_order_tokens";
 const messageElement = $("#buyer-message");
 const ordersElement = $("#buyer-orders");
 const emptyElement = $("#buyer-empty");
+
+let currentOrders = [];
+
+/* =========================================================
+   FORMAT
+========================================================= */
 
 function formatRupiah(value) {
   return new Intl.NumberFormat("id-ID", {
@@ -19,7 +37,9 @@ function formatDate(value) {
     return "-";
   }
 
-  const date = new Date(value.replace(" ", "T"));
+  const date = new Date(
+    String(value).replace(" ", "T"),
+  );
 
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -40,7 +60,7 @@ function statusLabel(status) {
     cancelled: "Dibatalkan",
   };
 
-  return labels[status] || status;
+  return labels[status] || "Status tidak diketahui";
 }
 
 function statusClass(status) {
@@ -55,31 +75,22 @@ function statusClass(status) {
   return allowed.includes(status) ? status : "pending";
 }
 
-function makeElement(tag, className, text) {
+/* =========================================================
+   ELEMENT
+========================================================= */
+
+function makeElement(tag, className = "", text = "") {
   const element = document.createElement(tag);
 
   if (className) {
     element.className = className;
   }
 
-  if (text !== undefined) {
+  if (text !== "") {
     element.textContent = String(text);
   }
 
   return element;
-}
-
-function makeLink(href, text, className = "") {
-  const link = document.createElement("a");
-
-  link.href = href;
-  link.textContent = text;
-  link.className = className;
-
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-
-  return link;
 }
 
 function validMapsUrl(value) {
@@ -91,18 +102,14 @@ function validMapsUrl(value) {
     const url = new URL(value);
     const host = url.hostname.toLowerCase();
 
-    const allowedHosts = [
-      "google.com",
-      "www.google.com",
-      "maps.google.com",
-      "maps.app.goo.gl",
-      "goo.gl",
-    ];
-
     return (
       url.protocol === "https:" &&
       (
-        allowedHosts.includes(host) ||
+        host === "google.com" ||
+        host === "www.google.com" ||
+        host === "maps.google.com" ||
+        host === "maps.app.goo.gl" ||
+        host === "goo.gl" ||
         host.endsWith(".google.com")
       )
     );
@@ -111,106 +118,264 @@ function validMapsUrl(value) {
   }
 }
 
-function createOrderCard(order) {
-  const card = makeElement("article", "buyer-order-card");
-
-  const header = makeElement("div", "buyer-order-header");
-
-  const heading = makeElement("div", "buyer-order-heading");
-
-  heading.append(
-    makeElement("span", "buyer-order-label", "Nomor pesanan"),
-    makeElement("h2", "buyer-order-number", order.order_number),
-    makeElement("p", "buyer-order-store", order.store_name),
+function makeMapsLink(url) {
+  const link = makeElement(
+    "a",
+    "buyer-order-map",
+    "Lihat lokasi",
   );
 
-  const status = makeElement(
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+
+  return link;
+}
+
+/* =========================================================
+   STATUS PESANAN
+========================================================= */
+
+function createStatus(statusValue) {
+  return makeElement(
     "span",
-    `buyer-status buyer-status-${statusClass(order.status)}`,
-    statusLabel(order.status),
+    `buyer-status buyer-status-${statusClass(statusValue)}`,
+    statusLabel(statusValue),
+  );
+}
+
+/* =========================================================
+   HAPUS RIWAYAT BUYER
+========================================================= */
+
+/*
+ * Menghapus token dari browser pembeli.
+ *
+ * Data pesanan di database dan Dashboard Warung
+ * tidak ikut dihapus.
+ */
+
+function removeBuyerOrder(order) {
+  if (order.status !== "completed") {
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Hapus pesanan ${order.order_number} dari riwayat Dashboard Buyer?\n\n` +
+    "Data pesanan di warung tetap tersimpan.",
   );
 
-  header.append(heading, status);
+  if (!confirmed) {
+    return;
+  }
 
-  const details = makeElement("div", "buyer-order-details");
+  try {
+    const savedOrders = getSavedOrders();
 
-  const addDetail = (label, value) => {
-    const row = makeElement("div", "buyer-detail-row");
-
-    row.append(
-      makeElement("span", "buyer-detail-label", label),
-      makeElement("strong", "buyer-detail-value", value),
+    const updatedOrders = savedOrders.filter(
+      (item) => item?.order_number !== order.order_number,
     );
 
-    details.append(row);
-  };
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify(updatedOrders),
+    );
 
-  addDetail(
-    "Tanggal",
-    formatDate(order.created_at),
+    currentOrders = currentOrders.filter(
+      (item) => item.order_number !== order.order_number,
+    );
+
+    renderOrders();
+
+    showBuyerMessage(
+      "Pesanan dihapus dari riwayat Dashboard Buyer.",
+      "success",
+    );
+  } catch (error) {
+    console.error(error);
+
+    showBuyerMessage(
+      "Riwayat gagal dihapus. Periksa penyimpanan browser.",
+      "error",
+    );
+  }
+}
+
+/* =========================================================
+   KARTU PESANAN
+========================================================= */
+
+function createOrderCard(order) {
+  const card = makeElement(
+    "article",
+    "buyer-order-card",
   );
 
-  addDetail(
-    "Metode",
-    order.delivery_method === "delivery"
-      ? "Delivery"
-      : "Ambil sendiri",
+  /*
+   * Header: warung, nomor pesanan, status.
+   */
+
+  const header = makeElement(
+    "div",
+    "buyer-order-header",
   );
 
-  addDetail(
-    "Subtotal",
-    formatRupiah(order.subtotal),
+  const identity = makeElement(
+    "div",
+    "buyer-order-heading",
   );
 
-  addDetail(
-    "Ongkir",
-    formatRupiah(order.delivery_fee),
+  identity.append(
+    makeElement(
+      "p",
+      "buyer-order-store",
+      order.store_name || "Warung",
+    ),
+    makeElement(
+      "h2",
+      "buyer-order-number",
+      order.order_number,
+    ),
+    makeElement(
+      "p",
+      "buyer-order-date",
+      formatDate(order.created_at),
+    ),
   );
 
-  addDetail(
-    "Total",
-    formatRupiah(order.total),
+  header.append(
+    identity,
+    createStatus(order.status),
   );
 
-  const itemSection = makeElement("div", "buyer-order-items");
+  /*
+   * Daftar produk.
+   */
 
-  itemSection.append(
-    makeElement("h3", "", "Rincian produk"),
+  const productSection = makeElement(
+    "div",
+    "buyer-order-items",
   );
 
-  const itemList = makeElement("ul", "buyer-item-list");
+  const productList = makeElement(
+    "ul",
+    "buyer-item-list",
+  );
 
-  for (const item of order.items || []) {
-    const row = makeElement("li", "buyer-item");
+  const items = Array.isArray(order.items)
+    ? order.items
+    : [];
+
+  for (const item of items) {
+    const row = makeElement(
+      "li",
+      "buyer-item",
+    );
+
+    const name = makeElement(
+      "span",
+      "buyer-item-name",
+      `${item.product_name} × ${item.quantity}`,
+    );
+
+    const subtotal = makeElement(
+      "strong",
+      "buyer-item-total",
+      formatRupiah(item.subtotal),
+    );
+
+    row.append(name, subtotal);
+    productList.append(row);
+  }
+
+  if (items.length === 0) {
+    productList.append(
+      makeElement(
+        "li",
+        "buyer-item-empty",
+        "Rincian produk tidak tersedia.",
+      ),
+    );
+  }
+
+  productSection.append(
+    makeElement(
+      "h3",
+      "buyer-section-title",
+      "Produk pesanan",
+    ),
+    productList,
+  );
+
+  /*
+   * Ringkasan pembayaran.
+   */
+
+  const payment = makeElement(
+    "div",
+    "buyer-order-payment",
+  );
+
+  const addPaymentRow = (
+    label,
+    value,
+    className = "",
+  ) => {
+    const row = makeElement(
+      "div",
+      `buyer-payment-row ${className}`.trim(),
+    );
 
     row.append(
       makeElement(
         "span",
-        "buyer-item-name",
-        `${item.product_name} × ${item.quantity}`,
+        "buyer-payment-label",
+        label,
       ),
       makeElement(
         "strong",
-        "buyer-item-total",
-        formatRupiah(item.subtotal),
+        "buyer-payment-value",
+        value,
       ),
     );
 
-    itemList.append(row);
-  }
+    payment.append(row);
+  };
 
-  itemSection.append(itemList);
+  addPaymentRow(
+    "Subtotal",
+    formatRupiah(order.subtotal),
+  );
 
-  card.append(header, details, itemSection);
+  addPaymentRow(
+    "Ongkir",
+    formatRupiah(order.delivery_fee),
+  );
+
+  addPaymentRow(
+    "Total pembayaran",
+    formatRupiah(order.total),
+    "buyer-payment-total",
+  );
+
+  /*
+   * Informasi pengantaran.
+   */
+
+  let addressSection = null;
 
   if (order.delivery_method === "delivery") {
-    const addressSection = makeElement(
+    addressSection = makeElement(
       "div",
-      "buyer-address-section",
+      "buyer-order-address",
     );
 
     addressSection.append(
-      makeElement("h3", "", "Alamat pengantaran"),
+      makeElement(
+        "span",
+        "buyer-address-label",
+        "Alamat pengantaran",
+      ),
       makeElement(
         "p",
         "buyer-address",
@@ -234,46 +399,156 @@ function createOrderCard(order) {
 
     if (validMapsUrl(mapsUrl)) {
       addressSection.append(
-        makeLink(
-          mapsUrl,
-          "Buka lokasi di Google Maps",
-          "button button-outline buyer-map-button",
-        ),
+        makeMapsLink(mapsUrl),
       );
     }
-
-    card.append(addressSection);
   }
 
-  const footer = makeElement("div", "buyer-order-footer");
+  /*
+   * Footer.
+   */
+
+  const footer = makeElement(
+    "div",
+    "buyer-order-footer",
+  );
+
+  const methodLabel =
+    order.delivery_method === "delivery"
+      ? "Diantar"
+      : "Ambil sendiri";
 
   footer.append(
     makeElement(
       "span",
+      "buyer-order-method",
+      methodLabel,
+    ),
+    makeElement(
+      "span",
       "buyer-order-updated",
-      `Pembaruan terakhir: ${formatDate(order.updated_at)}`,
+      `Diperbarui ${formatDate(order.updated_at)}`,
     ),
   );
+
+  /*
+   * Tombol hapus hanya tersedia jika selesai.
+   */
+
+  if (order.status === "completed") {
+    const actions = makeElement(
+      "div",
+      "buyer-order-actions",
+    );
+
+    const deleteButton = makeElement(
+      "button",
+      "buyer-order-delete",
+      "Hapus dari riwayat",
+    );
+
+    deleteButton.type = "button";
+
+    deleteButton.addEventListener("click", () => {
+      removeBuyerOrder(order);
+    });
+
+    actions.append(deleteButton);
+    footer.append(actions);
+  }
+
+  card.append(
+    header,
+    productSection,
+    payment,
+  );
+
+  if (addressSection) {
+    card.append(addressSection);
+  }
 
   card.append(footer);
 
   return card;
 }
 
-async function loadOrders() {
-  let savedOrders = [];
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
 
+function getSavedOrders() {
   try {
     const parsed = JSON.parse(
       localStorage.getItem(storageKey) || "[]",
     );
 
-    if (Array.isArray(parsed)) {
-      savedOrders = parsed;
-    }
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    savedOrders = [];
+    return [];
   }
+}
+
+/* =========================================================
+   FEEDBACK
+========================================================= */
+
+function showBuyerMessage(message, type = "") {
+  if (!messageElement) {
+    return;
+  }
+
+  messageElement.hidden = false;
+  messageElement.textContent = message;
+
+  messageElement.classList.remove(
+    "is-success",
+    "is-error",
+  );
+
+  if (type === "success") {
+    messageElement.classList.add("is-success");
+  }
+
+  if (type === "error") {
+    messageElement.classList.add("is-error");
+  }
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderOrders() {
+  if (!ordersElement || !emptyElement) {
+    return;
+  }
+
+  ordersElement.replaceChildren();
+
+  if (currentOrders.length === 0) {
+    emptyElement.hidden = false;
+    return;
+  }
+
+  emptyElement.hidden = true;
+
+  for (const order of currentOrders) {
+    ordersElement.append(
+      createOrderCard(order),
+    );
+  }
+}
+
+/* =========================================================
+   LOAD PESANAN DARI DATABASE
+========================================================= */
+
+async function loadOrders() {
+  if (!messageElement || !ordersElement || !emptyElement) {
+    return;
+  }
+
+  const savedOrders = getSavedOrders();
 
   const tokens = savedOrders
     .map((item) => item?.token)
@@ -285,87 +560,88 @@ async function loadOrders() {
     .slice(0, 50);
 
   if (tokens.length === 0) {
-    messageElement.hidden = true;
+    currentOrders = [];
+
     ordersElement.replaceChildren();
+    messageElement.hidden = true;
     emptyElement.hidden = false;
+
     return;
   }
 
-  messageElement.hidden = false;
-  messageElement.textContent = "Memuat pesanan...";
+  showBuyerMessage("Memuat pesanan...");
 
   try {
-    const response = await fetch("/api/orders.php", {
-      method: "POST",
-      credentials: "same-origin",
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "/api/orders.php",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({ tokens }),
       },
-      body: JSON.stringify({ tokens }),
-    });
-    
-    const contentType = response.headers.get("content-type") || "";
+    );
+
+    const contentType =
+      response.headers.get("content-type") || "";
+
     const responseText = await response.text();
-    
+
     if (!contentType.toLowerCase().includes("application/json")) {
-      console.error(
-        "Dashboard Buyer menerima respons non-JSON:",
-        response.status,
-        responseText.slice(0, 300),
-      );
-    
       throw new Error(
         response.status === 404
-          ? "API pesanan tidak ditemukan. Periksa lokasi file api/orders.php."
+          ? "API pesanan tidak ditemukan."
           : "Server tidak mengembalikan data pesanan yang valid.",
       );
     }
-    
+
     let result;
-    
+
     try {
       result = JSON.parse(responseText);
-    } catch (error) {
-      console.error("Respons JSON tidak valid:", error);
-    
-      throw new Error("Data pesanan dari server tidak dapat dibaca.");
-    }
-    
-    if (!response.ok || !result.success) {
+    } catch {
       throw new Error(
-        result.message || "Pesanan gagal dimuat. Silakan coba lagi.",
+        "Data pesanan dari server tidak dapat dibaca.",
       );
     }
-    
-    const orders = Array.isArray(result.orders)
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.message || "Pesanan gagal dimuat.",
+      );
+    }
+
+    currentOrders = Array.isArray(result.orders)
       ? result.orders
       : [];
-    
-    ordersElement.replaceChildren();
-    
-    if (orders.length === 0) {
-      messageElement.hidden = true;
-      emptyElement.hidden = false;
-      return;
-    }
-    
-    emptyElement.hidden = true;
-    messageElement.hidden = true;
-    
-    for (const order of orders) {
-      ordersElement.append(createOrderCard(order));
-    }
-  } catch (error) {
-    messageElement.hidden = false;
 
-    messageElement.textContent =
+    messageElement.hidden = true;
+
+    renderOrders();
+  } catch (error) {
+    console.error(
+      "[Pesan Ajah] Dashboard Buyer:",
+      error,
+    );
+
+    showBuyerMessage(
       error instanceof Error
         ? error.message
-        : "Terjadi kesalahan saat memuat pesanan.";
+        : "Terjadi kesalahan saat memuat pesanan.",
+      "error",
+    );
   }
 }
+
+/* =========================================================
+   TAHUN FOOTER
+========================================================= */
 
 const currentYear = $("#buyer-current-year");
 
@@ -374,5 +650,9 @@ if (currentYear) {
     new Date().getFullYear(),
   );
 }
+
+/* =========================================================
+   INIT
+========================================================= */
 
 loadOrders();
