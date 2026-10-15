@@ -341,7 +341,6 @@ function store_product_image_url(mixed $image): ?string
             }
         }
     </style>
-    <script type="module" src="/assets/js/main.js"></script>
 </head>
 
 <body
@@ -742,5 +741,6 @@ function store_product_image_url(mixed $image): ?string
           );
         });
     </script>
+    <script type="module" src="/assets/js/main.js"></script>
 </body>
 </html>
