@@ -373,37 +373,35 @@ function renderProducts() {
     
     // Thumbnail produk
     const thumbnail = document.createElement("div");
-
+    
     thumbnail.className = "manage-product-thumbnail";
-
+    
     const imagePlaceholder = document.createElement("span");
-
+    
     imagePlaceholder.className = "manage-product-image-placeholder";
     imagePlaceholder.textContent = "Tanpa foto";
-
+    
     const image = document.createElement("img");
-
+    
     image.alt = product.name
       ? `Foto ${product.name}`
       : "Foto produk";
-
+    
     image.loading = "lazy";
     image.decoding = "async";
     image.hidden = true;
-
+    
     thumbnail.append(image, imagePlaceholder);
-
+    
     const showImagePlaceholder = () => {
       image.hidden = true;
       image.removeAttribute("src");
       imagePlaceholder.hidden = false;
     };
-
+    
     const imageUrl = resolveImageUrl(product.image);
-
+    
     if (imageUrl) {
-      imagePlaceholder.hidden = true;
-
       image.addEventListener(
         "load",
         () => {
@@ -412,13 +410,13 @@ function renderProducts() {
         },
         { once: true },
       );
-
+    
       image.addEventListener(
         "error",
         showImagePlaceholder,
         { once: true },
       );
-
+    
       image.src = imageUrl;
     } else {
       showImagePlaceholder();

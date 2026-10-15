@@ -56,6 +56,13 @@ $storeInitial = function_exists('mb_substr')
         rel="stylesheet"
         href="<?= e(url('assets/css/style.css')) ?>"
     >
+    
+    <?php if (($pageKey ?? '') === 'products'): ?>
+        <link
+            rel="stylesheet"
+            href="<?= e(url('assets/css/products.css')) ?>"
+        >
+    <?php endif; ?>
 
     <script
         type="module"

@@ -1,7 +1,27 @@
-/* 12. Dashboard layout */
+/* =========================================================
+   PESAN AJAH — SHARED WARUNG DASHBOARD
+   File: assets/css/dashboard.css
+
+   Berisi:
+   - Layout dashboard
+   - Sidebar dan navigasi
+   - Topbar
+   - Statistik
+   - Kartu dashboard
+   - Tabel
+   - Komponen formulir bersama
+   - Pengaturan warung
+
+   CSS khusus halaman Produk berada di products.css.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. LAYOUT DASHBOARD
+--------------------------------------------------------- */
 
 .dashboard-page {
-  background: #f6f8f4;
+  min-width: 0;
+  background: #f7f8f6;
 }
 
 .dashboard-shell {
@@ -10,13 +30,30 @@
   grid-template-columns: 250px minmax(0, 1fr);
 }
 
+.dashboard-main {
+  min-width: 0;
+}
+
+.dashboard-content {
+  width: min(100%, 1320px);
+  min-width: 0;
+  margin-inline: auto;
+  padding: 30px 34px 48px;
+}
+
+/* ---------------------------------------------------------
+   2. SIDEBAR
+--------------------------------------------------------- */
+
 .sidebar {
   position: sticky;
   top: 0;
   display: flex;
   height: 100vh;
+  min-width: 0;
   flex-direction: column;
   padding: 24px 16px 16px;
+  overflow-y: auto;
   border-right: 1px solid var(--border);
   background: var(--white);
 }
@@ -35,12 +72,14 @@
 
 .side-nav {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 5px;
 }
 
 .side-link {
   display: flex;
+  min-width: 0;
   min-height: 44px;
   align-items: center;
   gap: 12px;
@@ -56,8 +95,9 @@
 
 .side-link > span:first-child {
   width: 22px;
-  text-align: center;
+  flex: 0 0 22px;
   font-size: 17px;
+  text-align: center;
 }
 
 .side-link:hover,
@@ -70,6 +110,7 @@
   display: grid;
   min-width: 21px;
   height: 21px;
+  flex: 0 0 auto;
   place-items: center;
   margin-left: auto;
   padding-inline: 5px;
@@ -80,8 +121,13 @@
   font-weight: 800;
 }
 
+/* ---------------------------------------------------------
+   3. IDENTITAS WARUNG DI SIDEBAR
+--------------------------------------------------------- */
+
 .sidebar-bottom {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 10px;
   margin-top: auto;
@@ -93,7 +139,7 @@
   display: grid;
   width: 38px;
   height: 38px;
-  flex-shrink: 0;
+  flex: 0 0 38px;
   place-items: center;
   border-radius: 12px;
   background: var(--green-light);
@@ -122,16 +168,26 @@
 }
 
 .sidebar-bottom > a {
+  flex: 0 0 auto;
   color: var(--muted);
   font-size: 18px;
 }
 
-.dashboard-main {
-  min-width: 0;
+.sidebar-logout {
+  margin-top: 14px;
 }
+
+.sidebar-logout .button {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------
+   4. TOPBAR
+--------------------------------------------------------- */
 
 .dashboard-topbar {
   display: flex;
+  min-width: 0;
   min-height: 92px;
   align-items: center;
   justify-content: space-between;
@@ -141,11 +197,16 @@
   background: var(--white);
 }
 
+.dashboard-topbar > div {
+  min-width: 0;
+}
+
 .dashboard-topbar h1 {
   margin-bottom: 0;
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.6px;
+  overflow-wrap: anywhere;
 }
 
 .dashboard-topbar .muted {
@@ -153,22 +214,29 @@
   margin-bottom: 4px;
 }
 
+.dashboard-topbar > .button {
+  flex: 0 0 auto;
+}
+
 .mobile-menu {
   display: none;
 }
 
-.dashboard-content {
-  width: min(100%, 1320px);
-  margin-inline: auto;
-  padding: 30px 34px 48px;
-}
+/* ---------------------------------------------------------
+   5. HEADER KONTEN
+--------------------------------------------------------- */
 
 .welcome-row {
   display: flex;
+  min-width: 0;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 24px;
+}
+
+.welcome-row > div {
+  min-width: 0;
 }
 
 .welcome-row h2 {
@@ -180,6 +248,7 @@
 .welcome-row p {
   margin-bottom: 0;
   font-size: 12px;
+  line-height: 1.6;
 }
 
 .demo-badge {
@@ -200,10 +269,13 @@
   background: #d9a52d;
 }
 
-/* 13. Dashboard stats */
+/* ---------------------------------------------------------
+   6. STATISTIK
+--------------------------------------------------------- */
 
 .stat-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 22px;
@@ -220,6 +292,7 @@
 
 .stat-top {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -227,6 +300,7 @@
 }
 
 .stat-top > span:first-child {
+  min-width: 0;
   color: var(--muted);
   font-size: 11px;
   font-weight: 650;
@@ -236,7 +310,7 @@
   display: grid;
   width: 34px;
   height: 34px;
-  flex-shrink: 0;
+  flex: 0 0 34px;
   place-items: center;
   border-radius: 11px;
   font-size: 17px;
@@ -263,6 +337,7 @@
   font-size: 27px;
   font-weight: 800;
   letter-spacing: -0.7px;
+  overflow-wrap: anywhere;
 }
 
 .stat-card .status-value {
@@ -273,11 +348,16 @@
 .stat-caption {
   color: var(--muted);
   font-size: 10px;
+  line-height: 1.5;
 }
 
-/* 14. Dashboard cards and store controls */
+/* ---------------------------------------------------------
+   7. KARTU DASHBOARD UMUM
+--------------------------------------------------------- */
 
 .dashboard-card {
+  width: 100%;
+  min-width: 0;
   margin-bottom: 20px;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -286,12 +366,21 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* ---------------------------------------------------------
+   8. KONTROL STATUS WARUNG
+--------------------------------------------------------- */
+
 .store-control {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   padding: 22px;
+}
+
+.store-control > div {
+  min-width: 0;
 }
 
 .store-control .eyebrow {
@@ -303,16 +392,19 @@
   margin-bottom: 5px;
   font-size: 15px;
   font-weight: 800;
+  line-height: 1.4;
 }
 
 .store-control p,
 .card-heading p {
   margin-bottom: 0;
   font-size: 11px;
+  line-height: 1.6;
 }
 
 .switch-label {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 12px;
   color: var(--text);
@@ -335,7 +427,7 @@
   position: relative;
   width: 44px;
   height: 25px;
-  flex-shrink: 0;
+  flex: 0 0 44px;
   border-radius: 999px;
   background: #c9cec7;
   transition: background var(--transition);
@@ -367,8 +459,13 @@
   outline-offset: 3px;
 }
 
+/* ---------------------------------------------------------
+   9. HEADING KARTU
+--------------------------------------------------------- */
+
 .card-heading {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -376,20 +473,33 @@
   border-bottom: 1px solid var(--border);
 }
 
+.card-heading > div {
+  min-width: 0;
+}
+
 .table-caption {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
   padding: 6px 9px;
   border-radius: 8px;
   background: var(--surface);
   color: var(--muted);
   font-size: 10px;
   font-weight: 700;
+  line-height: 1.4;
 }
 
-/* 15. Dashboard orders table */
+/* ---------------------------------------------------------
+   10. TABEL PESANAN
+--------------------------------------------------------- */
 
 .table-wrap {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
@@ -407,7 +517,7 @@
 }
 
 .data-table th {
-  background: #fafbf8;
+  background: #f8f9f7;
   color: var(--muted);
   font-size: 9px;
   font-weight: 800;
@@ -453,6 +563,10 @@
 }
 
 .table-action {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
   padding: 7px 10px;
   border: 1px solid #d7e8d8;
   border-radius: 8px;
@@ -460,6 +574,7 @@
   color: var(--green-dark);
   font-size: 10px;
   font-weight: 750;
+  cursor: pointer;
 }
 
 .table-action:hover:not(:disabled) {
@@ -471,6 +586,7 @@
   border-color: var(--border);
   background: var(--surface);
   color: var(--muted);
+  cursor: not-allowed;
 }
 
 .empty-table-cell {
@@ -479,122 +595,14 @@
   text-align: center;
 }
 
-/* 16. Product management */
-
-.product-manage-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.manage-row {
-  display: flex;
-  min-height: 70px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 13px 22px;
-  border-bottom: 1px solid var(--border);
-}
-
-.manage-row:last-child {
-  border-bottom: 0;
-}
-
-.manage-product {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 12px;
-}
-
-.manage-emoji {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--surface);
-  font-size: 21px;
-}
-
-.manage-product > span:last-child {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-}
-
-.manage-product strong {
-  overflow: hidden;
-  font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.manage-product small {
-  color: var(--muted);
-  font-size: 10px;
-}
-
-.availability-control {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 7px;
-  font-size: 10px;
-  font-weight: 750;
-  cursor: pointer;
-}
-
-.availability-control input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--green);
-}
-
-.availability-yes {
-  color: var(--green);
-}
-
-.availability-no {
-  color: var(--danger);
-}
-
-.dashboard-note {
-  padding: 14px 16px;
-  border: 1px solid #eadfbe;
-  border-radius: var(--radius-md);
-  background: #fff9e9;
-  color: #765d25;
-  font-size: 11px;
-  line-height: 1.7;
-}
-
-/* Product form */
-
-.product-form {
-  padding: 22px;
-  border-bottom: 1px solid var(--border);
-  background: #fcfdfb;
-}
-
-.product-form-heading {
-  margin-bottom: 18px;
-}
-
-.product-form-heading h4 {
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.product-form-heading p {
-  margin-bottom: 0;
-  font-size: 11px;
-}
+/* ---------------------------------------------------------
+   11. KOMPONEN FORMULIR BERSAMA
+   Dipakai oleh formulir dashboard selain halaman Produk.
+--------------------------------------------------------- */
 
 .product-form-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
 }
@@ -613,8 +621,11 @@
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 42px;
   padding: 10px 12px;
   border: 1px solid var(--border);
@@ -626,96 +637,53 @@
 }
 
 .form-field input:focus,
-.form-field select:focus {
+.form-field select:focus,
+.form-field textarea:focus {
   border-color: var(--green);
   outline: 3px solid rgb(18 107 70 / 12%);
 }
 
 .form-checkbox {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 9px;
   margin-top: 17px;
   color: var(--text);
   font-size: 11px;
   font-weight: 650;
+  line-height: 1.5;
 }
 
-.form-checkbox input {
+.form-checkbox input[type="checkbox"] {
   width: 16px;
   height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
   accent-color: var(--green);
 }
 
 .product-form-actions {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
   margin-top: 18px;
 }
 
 .product-form-actions [hidden] {
-  display: none;
+  display: none !important;
 }
 
-.manage-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.danger-action {
-  border-color: #f0d4d1;
-  background: #fff7f6;
-  color: var(--danger);
-}
-
-.danger-action:hover {
-  border-color: var(--danger);
-  background: #ffefed;
-}
-
-.product-empty {
-  padding: 28px 22px;
-  color: var(--muted);
-  font-size: 12px;
-  text-align: center;
-}
-
-@media (max-width: 680px) {
-  .product-form {
-    padding: 17px;
-  }
-
-  .product-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .manage-row {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-    padding: 15px 17px;
-  }
-
-  .manage-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .availability-control {
-    margin-right: auto;
-  }
-}
-
-
-/* Pengaturan profil warung */
+/* ---------------------------------------------------------
+   12. PENGATURAN PROFIL WARUNG
+--------------------------------------------------------- */
 
 .store-settings-form {
+  min-width: 0;
   padding: 22px;
-  background: #fcfdfb;
+  background: var(--white);
 }
 
 .store-settings-form .product-form-grid {
@@ -723,14 +691,7 @@
 }
 
 .store-settings-form .form-field textarea {
-  width: 100%;
   min-height: 100px;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--white);
-  color: var(--text);
-  font: inherit;
   font-size: 12px;
   line-height: 1.6;
   resize: vertical;
@@ -755,13 +716,239 @@
   align-items: center;
 }
 
-@media (max-width: 680px) {
+/* ---------------------------------------------------------
+   13. CATATAN DASHBOARD
+--------------------------------------------------------- */
+
+.dashboard-note {
+  padding: 14px 16px;
+  border: 1px solid #eadfbe;
+  border-radius: var(--radius-md);
+  background: #fff9e9;
+  color: #765d25;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------
+   14. RESPONSIVE TABLET
+--------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .dashboard-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .dashboard-topbar {
+    padding-inline: 24px;
+  }
+
+  .dashboard-content {
+    padding-inline: 24px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------------------------------------------------------
+   15. RESPONSIVE MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .dashboard-shell {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .dashboard-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sidebar {
+    width: min(280px, 86vw);
+    max-width: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .dashboard-topbar {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .mobile-menu {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+  }
+
+  .dashboard-topbar > div {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .dashboard-topbar h1 {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .dashboard-topbar .muted {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .dashboard-topbar > .button {
+    max-width: 108px;
+    min-height: 36px;
+    flex: 0 1 auto;
+    padding: 8px;
+    font-size: 10px;
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .dashboard-content {
+    width: 100%;
+    min-width: 0;
+    padding: 20px 14px 32px;
+  }
+
+  .welcome-row {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .welcome-row h2 {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .welcome-row p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    padding: 12px;
+    box-shadow: none;
+  }
+
+  .stat-top {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .stat-top > span:first-child {
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .stat-card > strong {
+    font-size: 22px;
+  }
+
+  .stat-card .status-value {
+    font-size: 18px;
+  }
+
+  .stat-caption {
+    display: block;
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .dashboard-card {
+    margin-bottom: 14px;
+  }
+
+  .store-control {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .store-control > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .store-control h3,
+  .card-heading h3 {
+    font-size: 16px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .store-control p,
+  .card-heading p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .switch-label {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .card-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .card-heading > div {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .table-caption {
+    max-width: 100%;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
   .store-settings-form {
-    padding: 17px;
+    padding: 14px;
   }
 
   .store-settings-form .product-form-grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .store-settings-form .form-field input,
+  .store-settings-form .form-field select,
+  .store-settings-form .form-field textarea {
+    font-size: 16px;
   }
 
   .store-description-field {
@@ -769,993 +956,105 @@
   }
 
   .store-settings-form .product-form-actions {
-    flex-direction: column;
     align-items: stretch;
+    flex-direction: column;
   }
 
   .store-settings-form .product-form-actions .button {
     width: 100%;
   }
-}
 
-/* =========================================
-   Product image management
-========================================= */
-
-.product-image-editor {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.product-image-preview {
-  position: relative;
-  display: grid;
-  width: 180px;
-  aspect-ratio: 1 / 1;
-  place-items: center;
-  overflow: hidden;
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-  background: #f6f8f4;
-  color: var(--muted);
-  text-align: center;
-}
-
-.product-image-preview > span {
-  padding: 12px;
-  font-size: 11px;
-}
-
-.product-image-preview > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.product-image-preview > img[hidden] {
-  display: none;
-}
-
-.product-image-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.product-image-picker {
-  cursor: pointer;
-}
-
-.product-image-picker:hover {
-  border-color: var(--green);
-  background: var(--green-light);
-  color: var(--green-dark);
-}
-
-.form-help {
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-.product-remove-image-option {
-  margin-top: 4px;
-}
-
-.product-remove-image-option[hidden] {
-  display: none;
-}
-
-/* Thumbnail foto pada daftar produk */
-
-.manage-product-thumbnail {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #f5f7f2;
-  color: var(--muted);
-  text-align: center;
-}
-
-.manage-product-thumbnail img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.manage-product-thumbnail span {
-  padding: 3px;
-  font-size: 8px;
-  line-height: 1.3;
-}
-
-.manage-product {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 12px;
-}
-
-.manage-product > span {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-}
-
-.manage-product strong,
-.manage-product small {
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 700px) {
-  .product-image-preview {
-    width: min(180px, 100%);
-  }
-
-  .manage-product-thumbnail {
-    width: 44px;
-    height: 44px;
-    flex-basis: 44px;
-  }
-
-  .manage-product {
-    gap: 9px;
-  }
-}
-
-/* =========================================================
-   WARUNG DASHBOARD — PRODUCT IMAGES
-   ========================================================= */
-
-/* Daftar produk */
-
-.manage-product-thumbnail {
-  display: grid;
-  width: 56px;
-  height: 56px;
-  min-width: 0;
-  flex: 0 0 56px;
-  overflow: hidden;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #f5f7f2;
-}
-
-.manage-product-thumbnail img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.manage-product-thumbnail img[hidden] {
-  display: none !important;
-}
-
-.manage-product-thumbnail span {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 4px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.3;
-  text-align: center;
-}
-
-/* Pratinjau gambar pada form produk */
-
-.product-image-preview {
-  position: relative;
-  display: grid;
-  width: min(100%, 220px);
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  place-items: center;
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-  background: #f5f7f2;
-}
-
-.product-image-preview > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.product-image-preview > img[hidden] {
-  display: none !important;
-}
-
-.product-image-preview > span {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 12px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.product-image-preview > span[hidden] {
-  display: none !important;
-}
-
-@media (max-width: 480px) {
-  .manage-product-thumbnail {
-    width: 48px;
-    height: 48px;
-    flex-basis: 48px;
-  }
-
-  .product-image-preview {
-    width: min(100%, 180px);
-  }
-}
-
-/* =========================================================
-   WARUNG PRODUCTS — IMAGE DISPLAY
-   ========================================================= */
-
-/* Editor foto produk */
-
-.product-image-editor {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.product-image-preview {
-  position: relative;
-  display: grid;
-  width: min(220px, 100%);
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  place-items: center;
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-  background: #f5f7f2;
-}
-
-.product-image-preview > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.product-image-preview > img[hidden] {
-  display: none !important;
-}
-
-.product-image-preview > span {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 14px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.product-image-preview > span[hidden] {
-  display: none !important;
-}
-
-.product-image-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.product-image-picker {
-  cursor: pointer;
-}
-
-/* Thumbnail produk di daftar */
-
-.manage-product-thumbnail {
-  display: grid;
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
-  flex: 0 0 60px;
-  overflow: hidden;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #f5f7f2;
-}
-
-.manage-product-thumbnail > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.manage-product-thumbnail > img[hidden] {
-  display: none !important;
-}
-
-.manage-product-image-placeholder {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 5px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.4;
-  text-align: center;
-}
-
-.manage-product-image-placeholder[hidden] {
-  display: none !important;
-}
-
-.manage-product {
-  min-width: 0;
-}
-
-.manage-product > span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 700px) {
-  .product-image-preview {
-    width: min(180px, 100%);
-  }
-
-  .manage-product-thumbnail {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    flex-basis: 48px;
-  }
-}
-
-/* =========================================================
-   PESAN AJAH — PRODUCT MANAGEMENT
-   Scope: warung/produk.php
-========================================================= */
-
-/* Halaman */
-
-.products-page {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.products-page,
-.products-page * {
-  box-sizing: border-box;
-}
-
-/* Header halaman */
-
-.products-page-heading {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.products-page-heading h2 {
-  margin: 0;
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.35;
-  letter-spacing: -0.4px;
-}
-
-.products-page-heading .table-caption {
-  flex-shrink: 0;
-  padding: 7px 10px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--white);
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-/* Kartu utama */
-
-.products-card {
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg, 16px);
-  background: var(--white);
-}
-
-/* Form */
-
-.products-page .product-form {
-  padding: 24px;
-  border: 0;
-  background: var(--white);
-}
-
-.products-page .product-form-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 22px;
-}
-
-.products-page .product-form-heading h3 {
-  margin: 0;
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: -0.2px;
-}
-
-/* Grid input */
-
-.products-page .product-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px 18px;
-}
-
-.products-page .form-field {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.products-page .form-field > span {
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.products-page .form-field > span small {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 400;
-}
-
-/* Input dan select */
-
-.products-page .form-field input:not([type="checkbox"]):not([type="file"]),
-.products-page .form-field select,
-.products-page .form-field textarea {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  margin: 0;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  outline: none;
-  background: var(--white);
-  color: var(--text);
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.5;
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.products-page .form-field textarea {
-  min-height: 94px;
-  resize: vertical;
-}
-
-.products-page .form-field input::placeholder,
-.products-page .form-field textarea::placeholder {
-  color: #9aa39b;
-  opacity: 1;
-}
-
-.products-page .form-field input:focus,
-.products-page .form-field select:focus,
-.products-page .form-field textarea:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgb(18 107 70 / 10%);
-}
-
-.products-page .form-field input:focus-visible,
-.products-page .form-field select:focus-visible,
-.products-page .form-field textarea:focus-visible {
-  outline: none;
-}
-
-/* Deskripsi */
-
-.products-page .product-description-field {
-  grid-column: 1 / -1;
-}
-
-/* Foto produk */
-
-.products-page .product-image-field {
-  min-width: 0;
-}
-
-.products-page .product-image-editor {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.products-page .product-image-preview {
-  position: relative;
-  display: grid;
-  width: 180px;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  place-items: center;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  background: #f7f9f6;
-  color: var(--muted);
-}
-
-.products-page .product-image-preview > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.products-page .product-image-preview > img[hidden] {
-  display: none !important;
-}
-
-.products-page .product-image-preview > span {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 12px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.products-page .product-image-preview > span[hidden] {
-  display: none !important;
-}
-
-/* Tombol foto */
-
-.products-page .product-image-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.products-page .product-image-picker {
-  display: inline-flex;
-  min-height: 38px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.products-page .product-image-picker:hover {
-  border-color: var(--green);
-}
-
-.products-page .product-image-actions button[hidden],
-.products-page .product-form-actions [hidden],
-.products-page .product-remove-image-option[hidden] {
-  display: none !important;
-}
-
-/* Bantuan input */
-
-.products-page .form-help {
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-/* Checkbox */
-
-.products-page .form-checkbox {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 9px;
-  margin: 0;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.5;
-  cursor: pointer;
-}
-
-.products-page .form-checkbox input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  flex: 0 0 17px;
-  margin: 0;
-  accent-color: var(--green);
-  cursor: pointer;
-}
-
-.products-page .product-availability {
-  margin-top: 20px;
-}
-
-.products-page .product-remove-image-option {
-  margin-top: 2px;
-}
-
-/* Tombol form */
-
-.products-page .product-form-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px solid var(--border);
-}
-
-.products-page .product-form-actions .button {
-  display: inline-flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 17px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 750;
-}
-
-/* Pemisah daftar produk */
-
-.products-page .products-list-heading {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 24px;
-  border-top: 1px solid var(--border);
-  background: var(--white);
-}
-
-.products-page .products-list-heading h3 {
-  margin: 0;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-/* Daftar */
-
-.products-page .product-manage-list {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  border-top: 1px solid var(--border);
-}
-
-.products-page .manage-row {
-  display: flex;
-  min-width: 0;
-  min-height: 82px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 15px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--white);
-  transition: background 150ms ease;
-}
-
-.products-page .manage-row:last-child {
-  border-bottom: 0;
-}
-
-.products-page .manage-row:hover {
-  background: #fbfcfa;
-}
-
-/* Informasi produk */
-
-.products-page .manage-product {
-  display: flex;
-  min-width: 0;
-  flex: 1 1 auto;
-  align-items: center;
-  gap: 13px;
-}
-
-.products-page .manage-product-thumbnail {
-  display: grid;
-  width: 58px;
-  height: 58px;
-  min-width: 58px;
-  flex: 0 0 58px;
-  overflow: hidden;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  background: #f7f9f6;
-  color: var(--muted);
-}
-
-.products-page .manage-product-thumbnail > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-
-.products-page .manage-product-thumbnail > img[hidden] {
-  display: none !important;
-}
-
-.products-page .manage-product-thumbnail > span {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  padding: 5px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.4;
-  text-align: center;
-}
-
-.products-page .manage-product-thumbnail > span[hidden] {
-  display: none !important;
-}
-
-.products-page .manage-product > span:last-child {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.products-page .manage-product strong {
-  overflow: hidden;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 750;
-  line-height: 1.45;
-  text-overflow: ellipsis;
-  overflow-wrap: anywhere;
-}
-
-.products-page .manage-product small {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
-/* Aksi produk */
-
-.products-page .manage-actions {
-  display: flex;
-  flex: 0 0 auto;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.products-page .availability-control {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-right: 3px;
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 650;
-  cursor: pointer;
-}
-
-.products-page .availability-control input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--green);
-}
-
-.products-page .manage-actions .table-action {
-  min-height: 34px;
-  padding: 7px 11px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--white);
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
-}
-
-.products-page .manage-actions .table-action:hover {
-  border-color: var(--green);
-  background: #f1f8f2;
-}
-
-.products-page .manage-actions .danger-action {
-  border-color: #f0d9d6;
-  background: #fffafa;
-  color: var(--danger);
-}
-
-.products-page .manage-actions .danger-action:hover {
-  border-color: var(--danger);
-  background: #fff1ef;
-}
-
-/* Daftar kosong */
-
-.products-page .product-empty {
-  margin: 0;
-  padding: 34px 20px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-  text-align: center;
-}
-
-/* Fokus keyboard */
-
-.products-page button:focus-visible,
-.products-page label:focus-within {
-  outline-color: var(--green);
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 760px) {
-  .products-page {
-    gap: 14px;
-  }
-
-  .products-page .product-form {
-    padding: 20px;
-  }
-
-  .products-page .product-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 17px;
-  }
-
-  .products-page .product-description-field {
-    grid-column: auto;
-  }
-
-  .products-page .products-list-heading {
-    padding: 17px 20px;
-  }
-
-  .products-page .manage-row {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 13px;
-    padding: 16px 20px;
-  }
-
-  .products-page .manage-product {
+  .table-wrap {
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .products-page .manage-actions {
+  .data-table {
     width: 100%;
-    justify-content: flex-start;
+    min-width: 650px;
   }
 
-  .products-page .availability-control {
-    margin-right: auto;
+  .data-table th,
+  .data-table td {
+    padding: 11px 12px;
+    font-size: 11px;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .dashboard-note {
+    font-size: 11px;
+    line-height: 1.6;
   }
 }
 
-@media (max-width: 420px) {
-  .products-page-heading h2 {
-    font-size: 18px;
-  }
+/* ---------------------------------------------------------
+   16. MOBILE SEMPIT
+--------------------------------------------------------- */
 
-  .products-page .product-form {
-    padding: 16px;
-  }
-
-  .products-page .product-form-heading {
-    margin-bottom: 18px;
-  }
-
-  .products-page .product-image-preview {
-    width: min(100%, 160px);
-  }
-
-  .products-page .products-list-heading {
-    padding: 16px;
-  }
-
-  .products-page .manage-row {
-    padding: 15px 16px;
-  }
-
-  .products-page .manage-product-thumbnail {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    flex-basis: 50px;
-  }
-
-  .products-page .manage-product {
-    gap: 10px;
-  }
-
-  .products-page .manage-actions {
+@media (max-width: 380px) {
+  .dashboard-topbar {
     gap: 7px;
+    padding-inline: 10px;
   }
 
-  .products-page .manage-actions .table-action {
-    padding: 8px 10px;
+  .dashboard-topbar h1 {
+    font-size: 14px;
   }
 
-  .products-page .product-form-actions {
-    flex-direction: column;
-    align-items: stretch;
+  .dashboard-topbar > .button {
+    max-width: 88px;
+    padding: 7px;
+    font-size: 9px;
   }
 
-  .products-page .product-form-actions .button {
-    width: 100%;
+  .dashboard-content {
+    padding-inline: 12px;
+  }
+
+  .stat-grid {
+    gap: 8px;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-card > strong {
+    font-size: 20px;
+  }
+}
+
+/* ---------------------------------------------------------
+   17. AKSESIBILITAS
+--------------------------------------------------------- */
+
+.dashboard-page :where(
+  a,
+  button,
+  input,
+  select,
+  textarea
+):focus-visible {
+  outline: 3px solid rgb(18 107 70 / 25%);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page *,
+  .dashboard-page *::before,
+  .dashboard-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
