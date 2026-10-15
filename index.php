@@ -341,6 +341,7 @@ function store_product_image_url(mixed $image): ?string
             }
         }
     </style>
+    <script type="module" src="/assets/js/main.js"></script>
 </head>
 
 <body
@@ -418,66 +419,203 @@ function store_product_image_url(mixed $image): ?string
     </header>
 
     <main class="store-page">
-        <section class="store-profile">
+        <section
+            class="store-profile"
+            aria-labelledby="store-profile-name"
+        >
             <?php
             $storeIconUrl = store_product_image_url(
                 $store['icon_image'] ?? null
             );
+        
+            $storeName = trim((string) ($store['name'] ?? 'Warung'));
+            $storeOwner = trim((string) ($store['owner'] ?? ''));
+            $storeDescription = trim(
+                (string) ($store['description'] ?? '')
+            );
+            $storeAddress = trim((string) ($store['address'] ?? ''));
+            $storePhone = trim((string) ($store['phone'] ?? ''));
+        
+            $isStoreOpen = (bool) $store['is_open'];
+            $hasFreeDelivery = (bool) $store['free_delivery'];
             ?>
         
-            <?php if ($storeIconUrl !== null): ?>
-                <img
-                    class="store-profile-icon"
-                    src="<?= e($storeIconUrl) ?>"
-                    alt="Ikon <?= e($store['name']) ?>"
-                    width="88"
-                    height="88"
-                >
-            <?php endif; ?>
-        
-            <div class="store-profile-content">
-                <span class="eyebrow eyebrow-plain">
-                    WARUNG LOKAL BANYUKUNING
-                </span>
-        
-                <h1><?= e($store['name']) ?></h1>
-        
-                <p class="store-profile-description muted">
-                    <?= e(
-                        $store['description']
-                        ?: 'Selamat datang di ' . $store['name'] . '.'
-                    ) ?>
-                </p>
-        
-                <div class="store-meta">
-                    <span
-                        class="store-chip <?= $store['is_open']
-                            ? 'is-open'
-                            : 'is-closed' ?>"
+            <!-- Ikon toko -->
+            <div class="store-profile-brand">
+                <?php if ($storeIconUrl !== null): ?>
+                    <img
+                        class="store-profile-icon"
+                        src="<?= e($storeIconUrl) ?>"
+                        alt="Logo <?= e($storeName) ?>"
+                        width="88"
+                        height="88"
                     >
-                        <?= $store['is_open']
-                            ? 'Warung buka'
-                            : 'Warung tutup' ?>
+                <?php else: ?>
+                    <div
+                        class="store-profile-icon store-profile-icon-placeholder"
+                        aria-hidden="true"
+                    >
+                        <span>
+                            <?= e(
+                                function_exists('mb_substr')
+                                    ? mb_strtoupper(
+                                        mb_substr($storeName, 0, 1, 'UTF-8'),
+                                        'UTF-8'
+                                    )
+                                    : strtoupper(substr($storeName, 0, 1))
+                            ) ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
+            </div>
+        
+            <!-- Informasi utama warung -->
+            <div class="store-profile-content">
+        
+                <div class="store-profile-heading">
+                    <span class="store-profile-label">
+                        WARUNG LOKAL
                     </span>
         
-                    <?php if ($store['free_delivery']): ?>
-                        <span class="store-chip">
+                    <h1 id="store-profile-name">
+                        <?= e($storeName) ?>
+                    </h1>
+        
+                    <?php if ($storeOwner !== ''): ?>
+                        <div class="store-owner">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M20 21a8 8 0 0 0-16 0"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linecap="round"
+                                />
+                                <circle
+                                    cx="12"
+                                    cy="7"
+                                    r="4"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                            </svg>
+        
+                            <span>
+                                Pemilik:
+                                <strong><?= e($storeOwner) ?></strong>
+                            </span>
+                        </div>
+                    <?php endif; ?>
+                </div>
+        
+                <?php if ($storeDescription !== ''): ?>
+                    <p class="store-profile-description">
+                        <?= e($storeDescription) ?>
+                    </p>
+                <?php else: ?>
+                    <p class="store-profile-description store-profile-description-muted">
+                        Temukan produk pilihan dari <?= e($storeName) ?>.
+                    </p>
+                <?php endif; ?>
+        
+                <!-- Status dan informasi toko -->
+                <div class="store-meta">
+        
+                    <span class="store-chip <?= $isStoreOpen
+                        ? 'is-open'
+                        : 'is-closed' ?>">
+        
+                        <span
+                            class="store-status-dot"
+                            aria-hidden="true"
+                        ></span>
+        
+                        <?= $isStoreOpen ? 'Sedang buka' : 'Sedang tutup' ?>
+                    </span>
+        
+                    <?php if ($hasFreeDelivery): ?>
+                        <span class="store-chip store-chip-delivery">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M3 7h11v11H3z"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linejoin="round"
+                                />
+                                <path
+                                    d="M14 11h4l3 3v4h-7z"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                    stroke-linejoin="round"
+                                />
+                                <circle
+                                    cx="7.5"
+                                    cy="18"
+                                    r="2"
+                                    fill="white"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                                <circle
+                                    cx="17.5"
+                                    cy="18"
+                                    r="2"
+                                    fill="white"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                            </svg>
+        
                             Gratis ongkir
                         </span>
                     <?php endif; ?>
         
-                    <?php if (!empty($store['address'])): ?>
-                        <span class="store-chip">
-                            <?= e($store['address']) ?>
+                    <?php if ($storeAddress !== ''): ?>
+                        <span class="store-chip store-chip-address">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                                <circle
+                                    cx="12"
+                                    cy="10"
+                                    r="2.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                            </svg>
+        
+                            <span><?= e($storeAddress) ?></span>
                         </span>
                     <?php endif; ?>
+        
                 </div>
         
-                <?php if (!empty($store['phone'])): ?>
-                    <p class="store-contact">
-                        Kontak: <?= e($store['phone']) ?>
-                    </p>
+                <?php if ($storePhone !== ''): ?>
+                    <div class="store-profile-contact">
+                        <span class="store-contact-label">
+                            Kontak warung
+                        </span>
+        
+                        <span class="store-contact-value">
+                            <?= e($storePhone) ?>
+                        </span>
+                    </div>
                 <?php endif; ?>
+        
             </div>
         </section>
 
