@@ -295,42 +295,65 @@ async function loadOrders() {
   messageElement.textContent = "Memuat pesanan...";
 
   try {
-    const response = await fetch("/user/api/orders.php", {
+    const response = await fetch("/api/orders.php", {
       method: "POST",
       credentials: "same-origin",
       cache: "no-store",
-
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({ tokens }),
     });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
+    
+    const contentType = response.headers.get("content-type") || "";
+    const responseText = await response.text();
+    
+    if (!contentType.toLowerCase().includes("application/json")) {
+      console.error(
+        "Dashboard Buyer menerima respons non-JSON:",
+        response.status,
+        responseText.slice(0, 300),
+      );
+    
       throw new Error(
-        result.message || "Pesanan gagal dimuat.",
+        response.status === 404
+          ? "API pesanan tidak ditemukan. Periksa lokasi file api/orders.php."
+          : "Server tidak mengembalikan data pesanan yang valid.",
       );
     }
-
+    
+    let result;
+    
+    try {
+      result = JSON.parse(responseText);
+    } catch (error) {
+      console.error("Respons JSON tidak valid:", error);
+    
+      throw new Error("Data pesanan dari server tidak dapat dibaca.");
+    }
+    
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.message || "Pesanan gagal dimuat. Silakan coba lagi.",
+      );
+    }
+    
     const orders = Array.isArray(result.orders)
       ? result.orders
       : [];
-
+    
     ordersElement.replaceChildren();
-
+    
     if (orders.length === 0) {
       messageElement.hidden = true;
       emptyElement.hidden = false;
       return;
     }
-
+    
     emptyElement.hidden = true;
     messageElement.hidden = true;
-
+    
     for (const order of orders) {
       ordersElement.append(createOrderCard(order));
     }

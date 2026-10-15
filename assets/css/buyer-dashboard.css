@@ -4,15 +4,19 @@
 
    Scope:
    - Header Dashboard Buyer
-   - Ringkasan halaman
-   - Kartu pesanan
-   - Status pesanan
-   - Rincian transaksi
-   - Alamat dan Google Maps
-   - Loading, empty state, dan notifikasi
-   - Responsif mobile
+   - Intro halaman
+   - Daftar dan kartu pesanan
+   - Status transaksi
+   - Detail produk dan pembayaran
+   - Alamat pengantaran
+   - Empty state dan notifikasi
+   - Responsive layout
 
-   Tidak mengubah dashboard warung atau keranjang.
+   Prinsip:
+   - Mobile-first
+   - Tidak mengubah CSS keranjang
+   - Tidak mengubah dashboard warung
+   - Tidak mengubah komponen global
    ========================================================= */
 
 
@@ -21,17 +25,39 @@
    ========================================================= */
 
 .buyer-page {
+    width: 100%;
+    min-width: 0;
     min-height: 70vh;
-    padding-block: 32px 56px;
+    padding: 32px 0 56px;
+    overflow-wrap: anywhere;
 }
 
 .buyer-container {
     width: min(100% - 40px, 860px);
     margin-inline: auto;
+    min-width: 0;
+}
+
+.buyer-page *,
+.buyer-site-header *,
+.buyer-site-footer * {
+    box-sizing: border-box;
 }
 
 .buyer-page [hidden] {
     display: none !important;
+}
+
+.buyer-page img,
+.buyer-page svg {
+    max-width: 100%;
+}
+
+.buyer-page button,
+.buyer-page input,
+.buyer-page select,
+.buyer-page textarea {
+    font: inherit;
 }
 
 
@@ -43,29 +69,64 @@
     position: sticky;
     top: 0;
     z-index: 20;
+    width: 100%;
 }
 
 .buyer-site-header .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 16px;
+    min-width: 0;
+}
+
+.buyer-site-header .brand {
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.buyer-site-header .brand-text {
+    min-width: 0;
+}
+
+.buyer-site-header .brand-text small {
+    display: block;
+    overflow-wrap: anywhere;
 }
 
 .buyer-back-button {
     display: inline-flex;
-    min-height: 40px;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
     gap: 8px;
+
+    min-height: 40px;
     padding: 9px 13px;
-    border-radius: var(--radius-md);
+
+    border-radius: var(--radius-md, 10px);
+
     font-size: 12px;
     font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
     white-space: nowrap;
+
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
 }
 
 .buyer-back-button svg {
+    display: block;
     width: 17px;
     height: 17px;
     flex: 0 0 17px;
+}
+
+.buyer-back-button:active {
+    transform: translateY(1px);
 }
 
 
@@ -74,27 +135,38 @@
    ========================================================= */
 
 .buyer-intro {
-    margin-bottom: 26px;
+    min-width: 0;
+    margin: 0 0 26px;
 }
 
 .buyer-intro .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 7px;
+
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
 }
 
 .buyer-intro h1 {
-    margin: 8px 0 6px;
+    margin: 8px 0 7px;
+
     color: var(--text);
     font-size: clamp(27px, 4vw, 34px);
     font-weight: 800;
     letter-spacing: -0.9px;
     line-height: 1.25;
+
+    overflow-wrap: anywhere;
 }
 
 .buyer-intro p {
     max-width: 540px;
     margin: 0;
+
     color: var(--muted);
     font-size: 13px;
     line-height: 1.75;
@@ -106,14 +178,21 @@
    ========================================================= */
 
 .buyer-message {
-    margin-bottom: 18px;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 18px;
     padding: 13px 15px;
+
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--white);
+    border-radius: var(--radius-md, 10px);
+
+    background: var(--white, #fff);
     color: var(--muted);
+
     font-size: 12px;
     line-height: 1.7;
+
+    overflow-wrap: anywhere;
 }
 
 .buyer-message:not([hidden]) {
@@ -127,7 +206,15 @@
 
 .buyer-orders {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
     gap: 16px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.buyer-orders > * {
     min-width: 0;
 }
 
@@ -137,20 +224,27 @@
    ========================================================= */
 
 .buyer-order-card {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
     min-width: 0;
     overflow: hidden;
+
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: var(--white);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg, 16px);
+
+    background: var(--white, #fff);
+    box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 4%));
+
     transition:
-        border-color var(--transition),
-        box-shadow var(--transition);
+        border-color 160ms ease,
+        box-shadow 160ms ease;
 }
 
 .buyer-order-card:hover {
     border-color: #d4e1d5;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md, 0 5px 18px rgb(0 0 0 / 6%));
 }
 
 
@@ -163,36 +257,47 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
+
+    min-width: 0;
     padding: 19px 20px;
+
     border-bottom: 1px solid var(--border);
 }
 
 .buyer-order-heading {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
 .buyer-order-label {
     display: block;
-    margin-bottom: 4px;
+    margin: 0 0 5px;
+
     color: var(--muted);
     font-size: 11px;
     font-weight: 500;
+    line-height: 1.5;
 }
 
 .buyer-order-number {
     margin: 0 0 5px;
+
     color: var(--text);
     font-size: 16px;
     font-weight: 800;
     line-height: 1.5;
+
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .buyer-order-store {
     margin: 0;
+
     color: var(--muted);
     font-size: 12px;
-    line-height: 1.6;
+    line-height: 1.7;
+
     overflow-wrap: anywhere;
 }
 
@@ -204,18 +309,25 @@
 .buyer-status {
     display: inline-flex;
     flex: 0 0 auto;
-    max-width: 210px;
-    min-height: 28px;
     align-items: center;
     justify-content: center;
+
+    max-width: 210px;
+    min-height: 28px;
     padding: 6px 10px;
+
     border: 1px solid transparent;
     border-radius: 999px;
+
     font-size: 10px;
     font-weight: 750;
     line-height: 1.4;
     text-align: center;
+
+    overflow-wrap: anywhere;
 }
+
+/* Menunggu konfirmasi */
 
 .buyer-status-pending {
     border-color: #f0dfb4;
@@ -223,11 +335,15 @@
     color: #8a5a00;
 }
 
+/* Dikonfirmasi */
+
 .buyer-status-confirmed {
     border-color: #d0def9;
     background: #eff4ff;
     color: #2456a6;
 }
+
+/* Sedang diproses */
 
 .buyer-status-processing {
     border-color: #cbe5d2;
@@ -235,11 +351,15 @@
     color: #176b45;
 }
 
+/* Selesai */
+
 .buyer-status-completed {
     border-color: #bde3c7;
     background: #e7f6eb;
     color: #126b46;
 }
+
+/* Dibatalkan */
 
 .buyer-status-cancelled {
     border-color: #f0cccc;
@@ -249,41 +369,54 @@
 
 
 /* =========================================================
-   9. ORDER SUMMARY
+   9. ORDER DETAILS
    ========================================================= */
 
 .buyer-order-details {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 24px;
+
+    min-width: 0;
     padding: 4px 20px;
 }
 
 .buyer-detail-row {
     display: flex;
-    min-width: 0;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    padding-block: 11px;
+
+    min-width: 0;
+    padding: 11px 0;
+
     border-bottom: 1px solid #edf0eb;
 }
 
 .buyer-detail-label {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    min-width: 0;
+
     color: var(--muted);
     font-size: 12px;
-    line-height: 1.6;
+    font-weight: 400;
+    line-height: 1.65;
+
+    overflow-wrap: anywhere;
 }
 
 .buyer-detail-value {
+    flex: 0 1 auto;
     min-width: 0;
+
     color: var(--text);
     font-size: 12px;
     font-weight: 700;
-    line-height: 1.6;
+    line-height: 1.65;
     text-align: right;
+
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 
@@ -292,48 +425,66 @@
    ========================================================= */
 
 .buyer-order-items {
+    min-width: 0;
     padding: 17px 20px;
+
     border-top: 1px solid var(--border);
 }
 
 .buyer-order-items h3 {
     margin: 0 0 13px;
+
     color: var(--text);
     font-size: 13px;
     font-weight: 800;
+    line-height: 1.5;
 }
 
 .buyer-item-list {
     display: grid;
     gap: 11px;
+
     margin: 0;
     padding: 0;
+
     list-style: none;
 }
 
 .buyer-item {
     display: flex;
-    min-width: 0;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
+
+    min-width: 0;
 }
 
 .buyer-item-name {
+    flex: 1 1 auto;
     min-width: 0;
+
+    margin: 0;
+
     color: var(--muted);
     font-size: 12px;
     line-height: 1.7;
+
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .buyer-item-total {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    min-width: 0;
+
+    margin: 0;
+
     color: var(--text);
     font-size: 12px;
     font-weight: 750;
     line-height: 1.7;
     text-align: right;
+
     overflow-wrap: anywhere;
 }
 
@@ -343,37 +494,63 @@
    ========================================================= */
 
 .buyer-address-section {
+    min-width: 0;
     padding: 17px 20px;
+
     border-top: 1px solid var(--border);
     background: #fbfcfa;
 }
 
 .buyer-address-section h3 {
     margin: 0 0 8px;
+
     color: var(--text);
     font-size: 13px;
     font-weight: 800;
+    line-height: 1.5;
 }
 
 .buyer-address {
     margin: 0 0 13px;
+
     color: var(--muted);
     font-size: 12px;
     line-height: 1.8;
+
     overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .buyer-map-button {
     display: inline-flex;
-    min-height: 38px;
     align-items: center;
     justify-content: center;
     gap: 8px;
+
+    max-width: 100%;
+    min-height: 38px;
     padding: 9px 12px;
-    border-radius: var(--radius-md);
+
+    border-radius: var(--radius-md, 10px);
+
     font-size: 12px;
     font-weight: 700;
+    line-height: 1.5;
     text-align: center;
+    text-decoration: none;
+
+    overflow-wrap: anywhere;
+
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+}
+
+.buyer-map-button svg {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
 }
 
 
@@ -386,15 +563,22 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+
+    min-width: 0;
     padding: 12px 20px;
+
     border-top: 1px solid var(--border);
     background: #f8faf7;
 }
 
 .buyer-order-updated {
+    min-width: 0;
+    margin: 0;
+
     color: var(--muted);
     font-size: 10px;
-    line-height: 1.6;
+    line-height: 1.7;
+
     overflow-wrap: anywhere;
 }
 
@@ -404,38 +588,50 @@
    ========================================================= */
 
 .buyer-empty {
+    width: 100%;
+    min-width: 0;
     padding: 36px 20px;
+
     border: 1px dashed #d4dfd3;
-    border-radius: var(--radius-lg);
-    background: var(--white);
+    border-radius: var(--radius-lg, 16px);
+
+    background: var(--white, #fff);
     text-align: center;
 }
 
 .buyer-empty-icon {
     display: grid;
+    place-items: center;
+
     width: 52px;
     height: 52px;
-    place-items: center;
     margin: 0 auto 14px;
+
     border: 1px solid #dce9de;
     border-radius: 15px;
-    background: var(--green-light);
-    color: var(--green);
+
+    background: var(--green-light, #edf8f0);
+    color: var(--green, #176b45);
+
     font-size: 14px;
     font-weight: 800;
 }
 
 .buyer-empty h2 {
     margin: 0 0 8px;
+
     color: var(--text);
     font-size: 17px;
     font-weight: 800;
     line-height: 1.5;
+
+    overflow-wrap: anywhere;
 }
 
 .buyer-empty p {
     max-width: 370px;
     margin: 0 auto 19px;
+
     color: var(--muted);
     font-size: 12px;
     line-height: 1.8;
@@ -443,9 +639,11 @@
 
 .buyer-empty .button {
     display: inline-flex;
-    min-height: 42px;
     align-items: center;
     justify-content: center;
+
+    max-width: 100%;
+    min-height: 42px;
 }
 
 
@@ -456,12 +654,17 @@
 .buyer-security-note {
     margin: 18px 0 0;
     padding: 12px 14px;
+
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 10px);
+
     background: #f8faf7;
     color: var(--muted);
+
     font-size: 11px;
     line-height: 1.8;
+
+    overflow-wrap: anywhere;
 }
 
 
@@ -469,8 +672,22 @@
    15. FOOTER
    ========================================================= */
 
+.buyer-site-footer {
+    width: 100%;
+    min-width: 0;
+}
+
 .buyer-site-footer .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
+
+    min-width: 0;
+}
+
+.buyer-site-footer .footer-inner > * {
+    min-width: 0;
 }
 
 
@@ -479,12 +696,15 @@
    ========================================================= */
 
 .buyer-page a:focus-visible,
-.buyer-site-header a:focus-visible {
+.buyer-site-header a:focus-visible,
+.buyer-site-footer a:focus-visible,
+.buyer-page button:focus-visible {
     outline: 3px solid rgb(23 107 69 / 25%);
     outline-offset: 3px;
 }
 
-.buyer-map-button:focus-visible {
+.buyer-map-button:focus-visible,
+.buyer-back-button:focus-visible {
     outline: 3px solid rgb(23 107 69 / 25%);
     outline-offset: 3px;
 }
@@ -496,11 +716,13 @@
 
 @media (max-width: 760px) {
     .buyer-page {
-        padding-block: 28px 44px;
+        padding-top: 28px;
+        padding-bottom: 44px;
     }
 
     .buyer-container {
-        width: min(100% - 32px, 620px);
+        width: calc(100% - 32px);
+        max-width: 620px;
     }
 
     .buyer-order-header {
@@ -509,16 +731,19 @@
 
     .buyer-order-details {
         column-gap: 18px;
-        padding-inline: 17px;
+        padding-right: 17px;
+        padding-left: 17px;
     }
 
     .buyer-order-items,
     .buyer-address-section {
-        padding-inline: 17px;
+        padding-right: 17px;
+        padding-left: 17px;
     }
 
     .buyer-order-footer {
-        padding-inline: 17px;
+        padding-right: 17px;
+        padding-left: 17px;
     }
 }
 
@@ -529,11 +754,13 @@
 
 @media (max-width: 600px) {
     .buyer-page {
-        padding-block: 24px 34px;
+        padding-top: 24px;
+        padding-bottom: 34px;
     }
 
     .buyer-container {
         width: calc(100% - 28px);
+        max-width: none;
     }
 
     .buyer-site-header .header-inner {
@@ -544,6 +771,7 @@
         min-height: 38px;
         gap: 5px;
         padding: 8px 10px;
+
         font-size: 11px;
     }
 
@@ -558,12 +786,19 @@
     }
 
     .buyer-intro h1 {
+        margin-top: 7px;
         font-size: 27px;
         letter-spacing: -0.7px;
     }
 
     .buyer-intro p {
         font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .buyer-message {
+        margin-bottom: 14px;
+        padding: 12px;
     }
 
     .buyer-orders {
@@ -574,10 +809,15 @@
         border-radius: 14px;
     }
 
+    .buyer-order-card:hover {
+        box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 4%));
+    }
+
     .buyer-order-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        align-items: stretch;
+        gap: 11px;
+
         padding: 15px;
     }
 
@@ -585,116 +825,6 @@
         font-size: 15px;
     }
 
-    .buyer-status {
-        max-width: 100%;
-        min-height: 27px;
-        font-size: 10px;
+    .buyer-order-store {
+        font-size: 12px;
     }
-
-    .buyer-order-details {
-        grid-template-columns: minmax(0, 1fr);
-        padding: 4px 15px;
-    }
-
-    .buyer-detail-row {
-        gap: 14px;
-        padding-block: 10px;
-    }
-
-    .buyer-order-items,
-    .buyer-address-section {
-        padding: 15px;
-    }
-
-    .buyer-item {
-        gap: 12px;
-    }
-
-    .buyer-map-button {
-        display: flex;
-        width: 100%;
-        min-height: 42px;
-    }
-
-    .buyer-order-footer {
-        padding: 11px 15px;
-    }
-
-    .buyer-empty {
-        padding: 30px 16px;
-        border-radius: 14px;
-    }
-
-    .buyer-empty h2 {
-        font-size: 16px;
-    }
-
-    .buyer-security-note {
-        margin-top: 15px;
-        padding: 11px 12px;
-        font-size: 10px;
-    }
-}
-
-
-/* =========================================================
-   19. VERY SMALL DEVICES
-   ========================================================= */
-
-@media (max-width: 380px) {
-    .buyer-container {
-        width: calc(100% - 24px);
-    }
-
-    .buyer-site-header .brand-text small {
-        font-size: 9px;
-    }
-
-    .buyer-back-button {
-        padding-inline: 8px;
-        font-size: 10px;
-    }
-
-    .buyer-back-button svg {
-        width: 14px;
-        height: 14px;
-        flex-basis: 14px;
-    }
-
-    .buyer-order-header {
-        padding: 13px;
-    }
-
-    .buyer-order-details {
-        padding-inline: 13px;
-    }
-
-    .buyer-order-items,
-    .buyer-address-section {
-        padding: 13px;
-    }
-
-    .buyer-order-footer {
-        padding-inline: 13px;
-    }
-
-    .buyer-detail-row {
-        gap: 8px;
-    }
-
-    .buyer-detail-label,
-    .buyer-detail-value {
-        font-size: 11px;
-    }
-}
-
-
-/* =========================================================
-   20. REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-    .buyer-order-card {
-        transition: none;
-    }
-}
