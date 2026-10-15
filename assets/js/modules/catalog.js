@@ -1,5 +1,4 @@
 import { formatRupiah } from "./format.js";
-import { getStoreSettings } from "../data/store.js";
 
 export function createCatalog({
   products,
@@ -15,9 +14,9 @@ export function createCatalog({
   let query = "";
 
   function filteredProducts() {
-    const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
-    const storeSettings = getStoreSettings();
-    const storeName = storeSettings.name || "";
+    const normalizedQuery = query
+    .trim()
+    .toLocaleLowerCase("id-ID");
   
     return products.filter((product) => {
       if (product.archived) {
@@ -32,7 +31,6 @@ export function createCatalog({
         product.name,
         product.category,
         product.store,
-        storeName,
       ]
         .join(" ")
         .toLocaleLowerCase("id-ID");
@@ -68,9 +66,9 @@ export function createCatalog({
     info.className = "product-info";
 
     const store = document.createElement("div");
+    
     store.className = "product-store";
-    store.textContent =
-      getStoreSettings().name || product.store;
+    store.textContent = product.store || "Warung";
 
     const name = document.createElement("h3");
     name.className = "product-name";

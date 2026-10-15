@@ -8,89 +8,179 @@ require_method('GET');
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
-$storeId = filter_input(
-    INPUT_GET,
-    'store_id',
-    FILTER_VALIDATE_INT,
-    ['options' => ['min_range' => 1]]
-);
+try {
+    $db = database();
 
-if ($storeId === false || $storeId === null) {
-    http_response_code(422);
+    /*
+     * Ambil seluruh warung aktif yang dimiliki
+     * akun warung aktif.
+     */
+    $storeStmt = $db->query(
+        "SELECT
+            s.id,
+            s.name,
+            s.slug,
+            s.phone,
+            s.is_open,
+            s.free_delivery
+
+        FROM stores s
+
+        INNER JOIN users u
+            ON u.id = s.user_id
+
+        WHERE s.is_active = 1
+          AND u.is_active = 1
+          AND u.role = 'warung'
+
+        ORDER BY s.name ASC"
+    );
+
+    $stores = $storeStmt->fetchAll();
+
+    /*
+     * Jika parameter store_id disediakan,
+     * tampilkan produk warung tersebut saja.
+     *
+     * Tanpa store_id, tampilkan katalog marketplace.
+     */
+    $storeId = null;
+
+    if (isset($_GET['store_id'])) {
+        $validatedStoreId = filter_var(
+            $_GET['store_id'],
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+
+        if ($validatedStoreId === false) {
+            http_response_code(422);
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID warung tidak valid.',
+            ]);
+
+            exit;
+        }
+
+        $storeId = (int) $validatedStoreId;
+    }
+
+    $sql = "
+        SELECT
+            p.id,
+            p.store_id,
+            p.name,
+            p.description,
+            p.category,
+            p.price,
+            p.unit,
+            p.image,
+            p.is_available,
+
+            s.name AS store_name,
+            s.slug AS store_slug,
+            s.phone AS store_phone,
+            s.is_open AS store_is_open,
+            s.free_delivery AS store_free_delivery
+
+        FROM products p
+
+        INNER JOIN stores s
+            ON s.id = p.store_id
+
+        INNER JOIN users u
+            ON u.id = s.user_id
+
+        WHERE s.is_active = 1
+          AND u.is_active = 1
+          AND u.role = 'warung'
+
+          AND p.is_available = 1
+    ";
+
+    $params = [];
+
+    if ($storeId !== null) {
+        $sql .= ' AND s.id = :store_id';
+
+        $params['store_id'] = $storeId;
+    }
+
+    $sql .= '
+        ORDER BY
+            s.name ASC,
+            p.name ASC
+    ';
+
+    $productStmt = $db->prepare($sql);
+    $productStmt->execute($params);
+
+    $products = $productStmt->fetchAll();
+
+    /*
+     * Normalisasi tipe data agar JavaScript
+     * tidak salah membaca angka sebagai string.
+     */
+    foreach ($products as &$product) {
+        $product['id'] = (int) $product['id'];
+        $product['store_id'] = (int) $product['store_id'];
+
+        $product['price'] = (float) $product['price'];
+
+        $product['is_available'] =
+            (bool) $product['is_available'];
+
+        $product['store_is_open'] =
+            (bool) $product['store_is_open'];
+
+        $product['store_free_delivery'] =
+            (bool) $product['store_free_delivery'];
+
+        /*
+         * Properti yang digunakan oleh frontend.
+         */
+        $product['store'] = $product['store_name'];
+
+        $product['available'] =
+            $product['is_available']
+            && $product['store_is_open'];
+
+        $product['emoji'] = '📦';
+
+        $product['tag'] = '';
+    }
+
+    unset($product);
+
+    foreach ($stores as &$store) {
+        $store['id'] = (int) $store['id'];
+        $store['is_open'] = (bool) $store['is_open'];
+
+        $store['free_delivery'] =
+            (bool) $store['free_delivery'];
+    }
+
+    unset($store);
+
+    echo json_encode([
+        'success' => true,
+        'stores' => $stores,
+        'products' => $products,
+    ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+} catch (Throwable $exception) {
+    error_log(
+        '[Pesan Ajah] Gagal memuat katalog: '
+        . $exception->getMessage()
+    );
+
+    http_response_code(500);
 
     echo json_encode([
         'success' => false,
-        'message' => 'ID warung tidak valid.',
-    ]);
-
-    exit;
+        'message' => 'Katalog belum dapat dimuat.',
+    ], JSON_UNESCAPED_UNICODE);
 }
-
-$storeStmt = database()->prepare(
-    'SELECT
-        s.id,
-        s.name,
-        s.slug,
-        s.is_open,
-        s.free_delivery
-
-    FROM stores s
-
-    INNER JOIN users u
-        ON u.id = s.user_id
-
-    WHERE s.id = :store_id
-      AND s.is_active = 1
-      AND u.is_active = 1
-      AND u.role = :role
-
-    LIMIT 1'
-);
-
-$storeStmt->execute([
-    'store_id' => $storeId,
-    'role' => 'warung',
-]);
-
-$store = $storeStmt->fetch();
-
-if (!$store) {
-    http_response_code(404);
-
-    echo json_encode([
-        'success' => false,
-        'message' => 'Warung tidak ditemukan.',
-    ]);
-
-    exit;
-}
-
-$productStmt = database()->prepare(
-    'SELECT
-        id,
-        name,
-        description,
-        category,
-        price,
-        unit,
-        image,
-        is_available
-
-    FROM products
-
-    WHERE store_id = :store_id
-      AND is_available = 1
-
-    ORDER BY name ASC'
-);
-
-$productStmt->execute([
-    'store_id' => $storeId,
-]);
-
-echo json_encode([
-    'success' => true,
-    'store' => $store,
-    'products' => $productStmt->fetchAll(),
-], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);

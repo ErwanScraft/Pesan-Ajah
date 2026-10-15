@@ -7,25 +7,101 @@ require_once dirname(__DIR__) . '/app/bootstrap.php';
 require_method('POST');
 
 header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
+header('Cache-Control: no-store, private');
+header('X-Content-Type-Options: nosniff');
 
-function checkout_json(array $data, int $status = 200): never
-{
+/**
+ * Respons JSON dan hentikan proses.
+ */
+function checkout_json(
+    array $data,
+    int $status = 200
+): never {
     http_response_code($status);
 
     echo json_encode(
         $data,
         JSON_UNESCAPED_UNICODE
         | JSON_INVALID_UTF8_SUBSTITUTE
+        | JSON_UNESCAPED_SLASHES
     );
 
     exit;
 }
 
-$input = json_decode(
-    file_get_contents('php://input') ?: '',
-    true
-);
+/**
+ * Normalisasi nomor WhatsApp Indonesia.
+ *
+ * Contoh:
+ * 08123456789  -> 628123456789
+ * +62812345678 -> 62812345678
+ * 62812345678  -> 62812345678
+ */
+function checkout_whatsapp_number(
+    mixed $phone
+): ?string {
+    if (!is_string($phone)) {
+        return null;
+    }
+
+    $number = preg_replace('/\D+/', '', $phone);
+
+    if (!is_string($number) || $number === '') {
+        return null;
+    }
+
+    if (str_starts_with($number, '0')) {
+        $number = '62' . substr($number, 1);
+    } elseif (str_starts_with($number, '8')) {
+        $number = '62' . $number;
+    }
+
+    /*
+     * Nomor harus menggunakan kode negara Indonesia
+     * dan panjangnya harus masuk akal.
+     */
+    if (
+        !str_starts_with($number, '62')
+        || strlen($number) < 10
+        || strlen($number) > 16
+    ) {
+        return null;
+    }
+
+    return $number;
+}
+
+/**
+ * Format Rupiah untuk teks WhatsApp.
+ */
+function checkout_rupiah(float $amount): string
+{
+    return 'Rp' . number_format(
+        $amount,
+        0,
+        ',',
+        '.'
+    );
+}
+
+/**
+ * Baca input JSON.
+ */
+$rawInput = file_get_contents('php://input');
+
+try {
+    $input = json_decode(
+        $rawInput ?: '',
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+    );
+} catch (JsonException) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Format data checkout tidak valid.',
+    ], 400);
+}
 
 if (!is_array($input)) {
     checkout_json([
@@ -33,6 +109,12 @@ if (!is_array($input)) {
         'message' => 'Data checkout tidak valid.',
     ], 400);
 }
+
+/*
+|--------------------------------------------------------------------------
+| Validasi CSRF
+|--------------------------------------------------------------------------
+*/
 
 $csrf = $input['_token'] ?? '';
 $storedToken = $_SESSION['_csrf_token'] ?? '';
@@ -48,6 +130,12 @@ if (
         'message' => 'Sesi checkout tidak valid. Muat ulang halaman.',
     ], 419);
 }
+
+/*
+|--------------------------------------------------------------------------
+| Validasi data pembeli
+|--------------------------------------------------------------------------
+*/
 
 $storeId = filter_var(
     $input['store_id'] ?? null,
@@ -83,7 +171,11 @@ if (
     || mb_strlen($buyerName, 'UTF-8') > 100
     || $buyerPhone === ''
     || mb_strlen($buyerPhone, 'UTF-8') > 25
-    || !in_array($deliveryMethod, ['delivery', 'pickup'], true)
+    || !in_array(
+        $deliveryMethod,
+        ['delivery', 'pickup'],
+        true
+    )
     || !is_array($items)
     || count($items) < 1
     || count($items) > 50
@@ -96,55 +188,27 @@ if (
 
 if (
     $deliveryMethod === 'delivery'
-    && $deliveryAddress === ''
+    && (
+        $deliveryAddress === ''
+        || mb_strlen($deliveryAddress, 'UTF-8') > 255
+    )
 ) {
     checkout_json([
         'success' => false,
-        'message' => 'Alamat pengantaran wajib diisi.',
+        'message' => 'Alamat pengantaran wajib diisi dan maksimal 255 karakter.',
     ], 422);
 }
 
 /*
- * Verifikasi warung aktif dan sedang buka.
- */
-$storeStmt = database()->prepare(
-    'SELECT
-        id,
-        is_open,
-        free_delivery,
-        is_active
+|--------------------------------------------------------------------------
+| Normalisasi keranjang
+|--------------------------------------------------------------------------
+|
+| Server hanya menerima ID dan jumlah produk.
+| Harga, subtotal, dan total dari browser tidak dipercaya.
+|--------------------------------------------------------------------------
+*/
 
-    FROM stores
-
-    WHERE id = :id
-
-    LIMIT 1'
-);
-
-$storeStmt->execute([
-    'id' => $storeId,
-]);
-
-$store = $storeStmt->fetch();
-
-if (!$store || !(bool) $store['is_active']) {
-    checkout_json([
-        'success' => false,
-        'message' => 'Warung tidak tersedia.',
-    ], 404);
-}
-
-if (!(bool) $store['is_open']) {
-    checkout_json([
-        'success' => false,
-        'message' => 'Warung sedang tutup.',
-    ], 409);
-}
-
-/*
- * Gabungkan ID duplikat agar satu produk tidak diproses
- * berkali-kali secara terpisah.
- */
 $quantities = [];
 
 foreach ($items as $item) {
@@ -164,15 +228,26 @@ foreach ($items as $item) {
     $quantity = filter_var(
         $item['quantity'] ?? null,
         FILTER_VALIDATE_INT,
-        ['options' => ['min_range' => 1, 'max_range' => 99]]
+        [
+            'options' => [
+                'min_range' => 1,
+                'max_range' => 99,
+            ],
+        ]
     );
 
-    if ($productId === false || $quantity === false) {
+    if (
+        $productId === false
+        || $quantity === false
+    ) {
         checkout_json([
             'success' => false,
             'message' => 'ID atau jumlah produk tidak valid.',
         ], 422);
     }
+
+    $productId = (int) $productId;
+    $quantity = (int) $quantity;
 
     $quantities[$productId] =
         ($quantities[$productId] ?? 0) + $quantity;
@@ -185,52 +260,110 @@ foreach ($items as $item) {
     }
 }
 
+if (count($quantities) === 0) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Keranjang masih kosong.',
+    ], 422);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Mulai transaksi database
+|--------------------------------------------------------------------------
+*/
+
 $db = database();
 
 try {
     $db->beginTransaction();
 
     /*
-     * Kunci data warung selama validasi checkout.
+     * Kunci baris warung selama checkout.
      */
-    $lockStore = $db->prepare(
-        'SELECT
-            id,
-            is_open,
-            free_delivery,
-            is_active
+    $storeStmt = $db->prepare(
+        "SELECT
+            s.id,
+            s.name,
+            s.slug,
+            s.phone,
+            s.address,
+            s.is_open,
+            s.free_delivery,
+            s.is_active,
 
-        FROM stores
+            u.is_active AS user_is_active
 
-        WHERE id = :id
+        FROM stores s
 
-        FOR UPDATE'
+        INNER JOIN users u
+            ON u.id = s.user_id
+
+        WHERE s.id = :store_id
+          AND u.role = 'warung'
+
+        LIMIT 1
+
+        FOR UPDATE"
     );
 
-    $lockStore->execute([
-        'id' => $storeId,
+    $storeStmt->execute([
+        'store_id' => (int) $storeId,
     ]);
 
-    $lockedStore = $lockStore->fetch();
+    $store = $storeStmt->fetch();
 
     if (
-        !$lockedStore
-        || !(bool) $lockedStore['is_active']
-        || !(bool) $lockedStore['is_open']
+        !$store
+        || !(bool) $store['is_active']
+        || !(bool) $store['user_is_active']
     ) {
         $db->rollBack();
 
         checkout_json([
             'success' => false,
-            'message' => 'Warung tidak menerima pesanan saat ini.',
+            'message' => 'Warung tidak tersedia.',
+        ], 404);
+    }
+
+    if (!(bool) $store['is_open']) {
+        $db->rollBack();
+
+        checkout_json([
+            'success' => false,
+            'message' => 'Warung sedang tutup dan tidak menerima pesanan.',
         ], 409);
     }
 
+    /*
+     * Nomor WhatsApp seller harus tersedia.
+     * Pesanan tidak dibuat jika nomor tidak valid.
+     */
+    $sellerPhone = checkout_whatsapp_number(
+        $store['phone'] ?? null
+    );
+
+    if ($sellerPhone === null) {
+        $db->rollBack();
+
+        checkout_json([
+            'success' => false,
+            'message' => 'Nomor WhatsApp warung belum valid. Hubungi admin warung.',
+        ], 422);
+    }
+
+    /*
+     * Ambil produk berdasarkan ID DAN store_id.
+     * Dengan demikian, pembeli tidak bisa memasukkan
+     * produk milik warung lain ke pesanan ini.
+     */
     $productStmt = $db->prepare(
         'SELECT
             id,
+            store_id,
             name,
             price,
+            unit,
             is_available
 
         FROM products
@@ -238,33 +371,48 @@ try {
         WHERE id = :id
           AND store_id = :store_id
 
+        LIMIT 1
+
         FOR UPDATE'
     );
 
-    $subtotal = 0.0;
     $orderItems = [];
+    $subtotal = 0.0;
 
     foreach ($quantities as $productId => $quantity) {
         $productStmt->execute([
             'id' => $productId,
-            'store_id' => $storeId,
+            'store_id' => (int) $storeId,
         ]);
 
         $product = $productStmt->fetch();
 
-        if (!$product || !(bool) $product['is_available']) {
+        if (
+            !$product
+            || !(bool) $product['is_available']
+        ) {
             $db->rollBack();
 
             checkout_json([
                 'success' => false,
-                'message' => 'Salah satu produk tidak tersedia.',
+                'message' => 'Salah satu produk sudah tidak tersedia. Periksa keranjang kembali.',
             ], 409);
         }
 
+        /*
+         * Harga selalu diambil dari database.
+         */
         $price = (float) $product['price'];
-        $lineSubtotal = round($price * $quantity, 2);
 
-        $subtotal += $lineSubtotal;
+        $lineSubtotal = round(
+            $price * $quantity,
+            2
+        );
+
+        $subtotal = round(
+            $subtotal + $lineSubtotal,
+            2
+        );
 
         $orderItems[] = [
             'product_id' => (int) $product['id'],
@@ -275,22 +423,38 @@ try {
         ];
     }
 
+    /*
+     * Ongkir:
+     * Delivery = Rp1.000.
+     * Gratis ongkir warung = Rp0.
+     * Ambil sendiri = Rp0.
+     */
     $deliveryFee = 0.0;
 
     if ($deliveryMethod === 'delivery') {
-        $deliveryFee = (bool) $lockedStore['free_delivery']
+        $deliveryFee = (bool) $store['free_delivery']
             ? 0.0
             : 1000.0;
     }
 
-    $total = round($subtotal + $deliveryFee, 2);
+    $total = round(
+        $subtotal + $deliveryFee,
+        2
+    );
 
+    /*
+     * Nomor pesanan acak untuk mengurangi kemungkinan
+     * terjadi duplikasi.
+     */
     $orderNumber = 'PA'
         . date('ymd')
         . strtoupper(bin2hex(random_bytes(4)));
 
+    /*
+     * Simpan pesanan sebagai pending.
+     */
     $insertOrder = $db->prepare(
-        'INSERT INTO orders (
+        "INSERT INTO orders (
             store_id,
             order_number,
             buyer_name,
@@ -311,12 +475,12 @@ try {
             :delivery_fee,
             :subtotal,
             :total,
-            :status
-        )'
+            'pending'
+        )"
     );
 
     $insertOrder->execute([
-        'store_id' => $storeId,
+        'store_id' => (int) $storeId,
         'order_number' => $orderNumber,
         'buyer_name' => $buyerName,
         'buyer_phone' => $buyerPhone,
@@ -327,11 +491,16 @@ try {
         'delivery_fee' => $deliveryFee,
         'subtotal' => $subtotal,
         'total' => $total,
-        'status' => 'pending',
     ]);
 
     $orderId = (int) $db->lastInsertId();
 
+    /*
+     * Simpan snapshot produk ke order_items.
+     *
+     * Snapshot menjaga nama dan harga saat pesanan dibuat,
+     * meskipun produk diedit kemudian.
+     */
     $insertItem = $db->prepare(
         'INSERT INTO order_items (
             order_id,
@@ -361,13 +530,85 @@ try {
         ]);
     }
 
+    /*
+     * Commit terlebih dahulu.
+     *
+     * Setelah commit berhasil, pesanan sudah tersimpan
+     * walaupun pembeli tidak mengirim pesan WhatsApp.
+     */
     $db->commit();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Susun teks WhatsApp
+    |--------------------------------------------------------------------------
+    */
+
+    $lines = [];
+
+    $lines[] = '*PESANAN BARU - PESAN AJAH*';
+    $lines[] = '';
+    $lines[] = 'Nomor pesanan: ' . $orderNumber;
+    $lines[] = 'Status website: PENDING';
+    $lines[] = 'Warung: ' . $store['name'];
+    $lines[] = '';
+    $lines[] = '*Data pembeli*';
+    $lines[] = 'Nama: ' . $buyerName;
+    $lines[] = 'No. HP: ' . $buyerPhone;
+    $lines[] = '';
+
+    $lines[] = '*Rincian pesanan*';
+
+    foreach ($orderItems as $item) {
+        $lines[] = sprintf(
+            '%s x%d — %s',
+            $item['product_name'],
+            $item['quantity'],
+            checkout_rupiah($item['subtotal'])
+        );
+    }
+
+    $lines[] = '';
+    $lines[] = 'Subtotal: ' . checkout_rupiah($subtotal);
+
+    if ($deliveryMethod === 'delivery') {
+        $lines[] = 'Metode: Delivery';
+
+        $lines[] = 'Alamat: ' . $deliveryAddress;
+
+        if ($deliveryFee === 0.0) {
+            $lines[] = 'Ongkir: Rp0';
+        } else {
+            $lines[] = 'Ongkir: ' . checkout_rupiah($deliveryFee);
+        }
+    } else {
+        $lines[] = 'Metode: Ambil sendiri';
+        $lines[] = 'Ongkir: Rp0';
+    }
+
+    $lines[] = '';
+    $lines[] = '*TOTAL: ' . checkout_rupiah($total) . '*';
+    $lines[] = '';
+    $lines[] = 'Pesanan ini sudah tercatat di dashboard Pesan Ajah.';
+    $lines[] = 'Mohon konfirmasi pesanan melalui WhatsApp.';
+
+    $whatsappText = implode("\n", $lines);
+
+    $whatsappUrl = 'https://wa.me/'
+        . $sellerPhone
+        . '?text='
+        . rawurlencode($whatsappText);
 
     checkout_json([
         'success' => true,
-        'message' => 'Pesanan berhasil dibuat.',
+        'message' => 'Pesanan berhasil disimpan.',
+        'order_id' => $orderId,
         'order_number' => $orderNumber,
+        'status' => 'pending',
+        'subtotal' => $subtotal,
+        'delivery_fee' => $deliveryFee,
         'total' => $total,
+        'whatsapp_url' => $whatsappUrl,
     ], 201);
 } catch (Throwable $exception) {
     if ($db->inTransaction()) {
