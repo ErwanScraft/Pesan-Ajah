@@ -1,23 +1,21 @@
 /* =========================================================
-   PESAN AJAH
-   Module: Shopping Cart & Checkout
+   PESAN AJAH — CART
    File: assets/css/cart.css
 
    Scope:
-   - Cart overlay
-   - Product list
+   - Cart overlay and drawer
    - Buyer information
-   - Delivery location
+   - Selected products
    - Fulfillment method
    - Payment summary
-   - Checkout button
+   - Checkout actions
 
-   All component styles are scoped to #cart-overlay.
+   All cart styles are scoped to #cart-overlay.
    ========================================================= */
 
 
 /* =========================================================
-   1. LOCAL DESIGN TOKENS
+   1. CART VARIABLES
    ========================================================= */
 
 #cart-overlay {
@@ -35,101 +33,98 @@
     --cart-white: #ffffff;
 
     --cart-danger: #b42318;
-    --cart-danger-light: #fef3f2;
+    --cart-danger-light: #fff1f0;
 
     --cart-radius-sm: 8px;
     --cart-radius-md: 12px;
     --cart-radius-lg: 15px;
 
-    --cart-transition: 160ms ease;
+    --cart-shadow:
+        0 12px 40px rgb(20 35 25 / 12%);
 
+    --cart-transition:
+        180ms ease;
+}
+
+
+/* =========================================================
+   2. OVERLAY
+   ========================================================= */
+
+#cart-overlay {
     position: fixed;
-    z-index: 1000;
     inset: 0;
+    z-index: 1000;
 
     display: flex;
     justify-content: flex-end;
+    align-items: stretch;
 
-    overflow: hidden;
+    padding: 0;
 
-    background: rgb(18 30 21 / 48%);
+    background: rgb(17 24 19 / 45%);
 
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 
-    animation: pesan-ajah-cart-overlay-in 180ms ease;
-}
-
-
-/* =========================================================
-   2. VISIBILITY
-   ========================================================= */
-
-#cart-overlay[hidden],
-#cart-overlay [hidden] {
-    display: none !important;
+    transition:
+        opacity 220ms ease,
+        visibility 220ms ease;
 }
 
 /*
- * body.no-scroll digunakan JavaScript saat keranjang terbuka.
- * Selector ini sengaja menjadi satu-satunya aturan global.
+ * Supports common open-state class names.
+ * Keep the class used by your existing JavaScript.
  */
 
-body.no-scroll {
-    overflow: hidden;
-    overscroll-behavior: none;
+#cart-overlay.active,
+#cart-overlay.open,
+#cart-overlay.is-open,
+#cart-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 
 /* =========================================================
-   3. CART PANEL
+   3. CART DRAWER
    ========================================================= */
 
-#cart-overlay .cart-panel {
-    box-sizing: border-box;
+#cart-overlay .cart-drawer {
+    position: relative;
 
     display: flex;
     flex-direction: column;
 
     width: min(100%, 480px);
     height: 100%;
-    height: 100dvh;
-    min-height: 0;
+    max-height: 100dvh;
 
-    overflow-x: hidden;
-    overflow-y: auto;
+    margin: 0;
+    padding: 0;
 
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: #cfd7ce transparent;
+    overflow: hidden;
 
     background: var(--cart-white);
+    color: var(--cart-text);
 
-    box-shadow: -12px 0 40px rgb(0 0 0 / 12%);
+    box-shadow: var(--cart-shadow);
 
-    animation: pesan-ajah-cart-panel-in 220ms ease;
+    transform: translateX(24px);
+
+    transition:
+        transform 240ms ease;
+
+    isolation: isolate;
 }
 
-#cart-overlay .cart-panel::-webkit-scrollbar {
-    width: 5px;
-}
-
-#cart-overlay .cart-panel::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#cart-overlay .cart-panel::-webkit-scrollbar-thumb {
-    background: #cfd7ce;
-    border-radius: 999px;
-}
-
-
-/* Keep box sizing inside the cart module */
-
-#cart-overlay *,
-#cart-overlay *::before,
-#cart-overlay *::after {
-    box-sizing: border-box;
+#cart-overlay.active .cart-drawer,
+#cart-overlay.open .cart-drawer,
+#cart-overlay.is-open .cart-drawer,
+#cart-overlay.show .cart-drawer {
+    transform: translateX(0);
 }
 
 
@@ -137,353 +132,141 @@ body.no-scroll {
    4. CART HEADER
    ========================================================= */
 
-#cart-overlay .panel-heading {
-    position: sticky;
-    z-index: 5;
-    top: 0;
+#cart-overlay .cart-header {
+    position: relative;
+    z-index: 2;
 
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-
     gap: 16px;
 
     flex-shrink: 0;
 
-    padding: 20px 22px;
+    min-height: 82px;
 
-    border-bottom: 1px solid var(--cart-border);
+    padding: 18px 24px;
 
     background: var(--cart-white);
+
+    border-bottom: 1px solid var(--cart-border);
 }
 
-#cart-overlay .panel-heading > div,
-#cart-overlay .cart-heading-content {
+#cart-overlay .cart-header-content {
     min-width: 0;
 }
 
-#cart-overlay .panel-heading .eyebrow {
-    display: inline-block;
-
-    margin-bottom: 7px;
-}
-
-#cart-overlay .panel-heading h2,
-#cart-overlay .cart-heading-content h2 {
+#cart-overlay #cart-title {
     margin: 0;
 
     color: var(--cart-text);
 
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    line-height: 1.35;
+    font-size: 21px;
+    font-weight: 750;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
 }
 
-#cart-overlay .cart-heading-description {
-    margin: 6px 0 0;
+#cart-overlay .cart-header-content p {
+    margin: 5px 0 0;
 
     color: var(--cart-muted);
 
-    font-size: 12px;
-    line-height: 1.7;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
+#cart-overlay #cart-count {
+    color: var(--cart-primary);
+    font-weight: 700;
+}
 
-/* =========================================================
-   5. CLOSE BUTTON
-   ========================================================= */
+#cart-overlay .cart-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-#cart-overlay .icon-button {
-    display: grid;
-    place-items: center;
+    flex-shrink: 0;
 
     width: 40px;
     height: 40px;
 
-    flex-shrink: 0;
-
     padding: 0;
 
     color: var(--cart-text);
-    background: var(--cart-white);
+    background: var(--cart-surface);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-md);
-
-    font-family: inherit;
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 1;
+    border-radius: 50%;
 
     cursor: pointer;
 
     transition:
+        background var(--cart-transition),
         color var(--cart-transition),
-        background-color var(--cart-transition),
-        border-color var(--cart-transition);
+        border-color var(--cart-transition),
+        transform var(--cart-transition);
 }
 
-#cart-overlay .icon-button:hover {
+#cart-overlay .cart-close:hover {
     color: var(--cart-primary);
     background: var(--cart-primary-light);
-    border-color: #b7d9c0;
+    border-color: #c8e1d0;
 }
 
-#cart-overlay .icon-button svg {
-    display: block;
-
-    width: 18px;
-    height: 18px;
+#cart-overlay .cart-close:active {
+    transform: scale(0.96);
 }
 
-#cart-overlay .icon-button:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 20%);
-    outline-offset: 2px;
+#cart-overlay .cart-close:focus-visible {
+    outline: 3px solid rgb(23 107 69 / 22%);
+    outline-offset: 3px;
 }
 
 
 /* =========================================================
-   6. CART CONTENT
+   5. SCROLLABLE CART CONTENT
    ========================================================= */
 
 #cart-overlay .cart-content {
-    display: flex;
-    flex-direction: column;
+    position: relative;
 
-    flex: 1;
+    flex: 1 1 auto;
+
     min-height: 0;
 
-    padding: 0 22px 22px;
+    padding: 20px 24px 28px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5cc transparent;
 }
 
-#cart-overlay .cart-products-section {
-    display: block;
-
-    width: 100%;
-    min-width: 0;
+#cart-overlay .cart-content::-webkit-scrollbar {
+    width: 5px;
 }
 
-#cart-overlay .cart-section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    margin: 0;
-    padding: 20px 0 12px;
+#cart-overlay .cart-content::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-#cart-overlay .cart-section-heading h3 {
-    margin: 0;
-
-    color: var(--cart-text);
-
-    font-size: 14px;
-    font-weight: 800;
-    line-height: 1.5;
+#cart-overlay .cart-content::-webkit-scrollbar-thumb {
+    background: #cbd5cc;
+    border-radius: 999px;
 }
 
-#cart-overlay .cart-item-count {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 4px;
-
-    flex-shrink: 0;
-
-    color: var(--cart-muted);
-
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.5;
+#cart-overlay .cart-content::-webkit-scrollbar-thumb:hover {
+    background: #aab8ad;
 }
 
 
 /* =========================================================
-   7. CART PRODUCT LIST
-   ========================================================= */
-
-#cart-overlay .cart-items {
-    display: flex;
-    flex-direction: column;
-
-    gap: 0;
-
-    width: 100%;
-    min-width: 0;
-}
-
-#cart-overlay .cart-item {
-    display: grid;
-
-    grid-template-columns: 54px minmax(0, 1fr) auto;
-
-    align-items: center;
-
-    gap: 12px;
-
-    width: 100%;
-    min-width: 0;
-
-    padding: 15px 0;
-
-    border-bottom: 1px solid var(--cart-border-light);
-}
-
-#cart-overlay .cart-item:first-child {
-    padding-top: 4px;
-}
-
-#cart-overlay .cart-item:last-child {
-    border-bottom: 0;
-}
-
-#cart-overlay .cart-item > div {
-    min-width: 0;
-}
-
-
-/* Product image / emoji */
-
-#cart-overlay .cart-item-emoji {
-    display: grid;
-    place-items: center;
-
-    width: 54px;
-    height: 54px;
-
-    flex-shrink: 0;
-
-    overflow: hidden;
-
-    background: var(--cart-surface);
-
-    border: 1px solid var(--cart-border-light);
-    border-radius: var(--cart-radius-md);
-
-    font-size: 25px;
-    line-height: 1;
-}
-
-#cart-overlay .cart-item-emoji img {
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-
-/* Product name */
-
-#cart-overlay .cart-item-name {
-    margin: 0 0 5px;
-
-    color: var(--cart-text);
-
-    font-size: 13px;
-    font-weight: 750;
-    line-height: 1.5;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* Product price */
-
-#cart-overlay .cart-item-price {
-    display: block;
-
-    color: var(--cart-primary);
-
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.6;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* =========================================================
-   8. QUANTITY CONTROL
-   ========================================================= */
-
-#cart-overlay .quantity-control {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    gap: 6px;
-
-    min-width: 0;
-}
-
-#cart-overlay .quantity-control button {
-    display: grid;
-    place-items: center;
-
-    width: 31px;
-    height: 32px;
-
-    flex-shrink: 0;
-
-    padding: 0;
-
-    color: var(--cart-text);
-    background: var(--cart-white);
-
-    border: 1px solid var(--cart-border);
-    border-radius: 9px;
-
-    font-family: inherit;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        color var(--cart-transition),
-        background-color var(--cart-transition),
-        border-color var(--cart-transition);
-}
-
-#cart-overlay .quantity-control button:hover:not(:disabled) {
-    color: var(--cart-primary);
-    background: var(--cart-primary-light);
-    border-color: var(--cart-primary);
-}
-
-#cart-overlay .quantity-control button:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 18%);
-    outline-offset: 2px;
-}
-
-#cart-overlay .quantity-control button:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-#cart-overlay .quantity-control span {
-    display: inline-block;
-
-    min-width: 18px;
-
-    color: var(--cart-text);
-
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1;
-
-    text-align: center;
-}
-
-
-/* =========================================================
-   9. EMPTY CART
+   6. EMPTY CART
    ========================================================= */
 
 #cart-overlay .cart-empty {
@@ -492,34 +275,37 @@ body.no-scroll {
     align-items: center;
     justify-content: center;
 
-    min-height: 240px;
+    min-height: 300px;
 
-    padding: 30px 18px;
+    padding: 36px 20px;
 
     text-align: center;
 }
 
+#cart-overlay .cart-empty[hidden] {
+    display: none !important;
+}
+
 #cart-overlay .cart-empty-icon {
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    width: 68px;
-    height: 68px;
+    width: 76px;
+    height: 76px;
 
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 
-    color: var(--cart-muted);
-    background: var(--cart-surface);
+    color: var(--cart-primary);
 
-    border: 1px solid var(--cart-border);
-    border-radius: 20px;
+    background: var(--cart-primary-light);
+
+    border-radius: 50%;
 }
 
 #cart-overlay .cart-empty-icon svg {
-    display: block;
-
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
 }
 
 #cart-overlay .cart-empty h3 {
@@ -527,97 +313,137 @@ body.no-scroll {
 
     color: var(--cart-text);
 
-    font-size: 15px;
-    font-weight: 800;
-    line-height: 1.5;
+    font-size: 19px;
+    font-weight: 750;
+    line-height: 1.4;
 }
 
 #cart-overlay .cart-empty p {
-    max-width: 260px;
+    max-width: 270px;
 
-    margin: 7px 0 0;
+    margin: 9px 0 0;
 
     color: var(--cart-muted);
 
-    font-size: 12px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 
 /* =========================================================
-   10. CART FOOTER
+   7. CHECKOUT CONTENT LAYOUT
    ========================================================= */
 
 #cart-overlay .cart-footer {
-    display: grid;
-    gap: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 
-    flex-shrink: 0;
-
-    width: 100%;
     min-width: 0;
+    width: 100%;
 
-    padding: 0 22px 22px;
+    margin: 0;
+    padding: 0;
 
-    border-top: 1px solid var(--cart-border);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
 
-    background: var(--cart-white);
+#cart-overlay .cart-footer[hidden] {
+    display: none !important;
 }
 
 
 /* =========================================================
-   11. CHECKOUT FORM
+   8. SECTION HEADINGS
    ========================================================= */
 
-#cart-overlay .checkout-form {
-    display: grid;
+#cart-overlay .cart-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
 
-    gap: 16px;
-
-    width: 100%;
-    min-width: 0;
-
-    padding: 22px 0;
-
-    border-bottom: 1px solid var(--cart-border);
+    margin: 0 0 16px;
 }
 
-#cart-overlay .checkout-form > h3 {
+#cart-overlay .cart-section-heading > div {
+    min-width: 0;
+}
+
+#cart-overlay .cart-section-heading h3 {
     margin: 0;
 
     color: var(--cart-text);
 
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 750;
+    line-height: 1.4;
     letter-spacing: -0.2px;
-    line-height: 1.5;
 }
 
-#cart-overlay .checkout-form > h4 {
-    margin: 0;
+#cart-overlay .cart-section-heading p {
+    margin: 4px 0 0;
 
-    color: var(--cart-text);
+    color: var(--cart-muted);
 
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+#cart-overlay .cart-item-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    min-height: 27px;
+
+    padding: 4px 10px;
+
+    color: var(--cart-primary);
+
+    background: var(--cart-primary-light);
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
 }
 
 
 /* =========================================================
-   12. FORM FIELDS
+   9. BUYER INFORMATION
    ========================================================= */
 
-#cart-overlay .form-field {
-    display: grid;
-
-    gap: 7px;
-
-    width: 100%;
+#cart-overlay .checkout-form {
     min-width: 0;
+    padding: 0;
+    margin: 0;
 }
 
-#cart-overlay .form-field label {
+#cart-overlay .checkout-form .cart-section-heading {
+    margin-bottom: 17px;
+}
+
+#cart-overlay .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-width: 0;
+
+    margin: 0 0 15px;
+}
+
+#cart-overlay .form-field:last-child {
+    margin-bottom: 0;
+}
+
+#cart-overlay .form-field > label {
     display: block;
 
     margin: 0;
@@ -625,17 +451,18 @@ body.no-scroll {
     color: var(--cart-text);
 
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 1.5;
 }
 
-#cart-overlay .form-field input:not([type="hidden"]),
-#cart-overlay .form-field textarea {
+#cart-overlay .form-field input,
+#cart-overlay .form-field textarea,
+#cart-overlay .form-field select {
     display: block;
 
     width: 100%;
     min-width: 0;
-    max-width: 100%;
+    min-height: 46px;
 
     margin: 0;
     padding: 12px 13px;
@@ -644,383 +471,492 @@ body.no-scroll {
     background: var(--cart-white);
 
     border: 1px solid var(--cart-border);
-    border-radius: 11px;
+    border-radius: var(--cart-radius-sm);
+
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
 
     outline: none;
 
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.6;
-
     transition:
         border-color var(--cart-transition),
-        box-shadow var(--cart-transition);
-}
-
-#cart-overlay .form-field input:not([type="hidden"]) {
-    min-height: 46px;
-}
-
-#cart-overlay .form-field textarea {
-    min-height: 92px;
-
-    resize: vertical;
-
-    overflow-wrap: anywhere;
+        box-shadow var(--cart-transition),
+        background var(--cart-transition);
 }
 
 #cart-overlay .form-field input::placeholder,
 #cart-overlay .form-field textarea::placeholder {
-    color: #969e96;
+    color: #9aa39b;
     opacity: 1;
 }
 
 #cart-overlay .form-field input:hover,
-#cart-overlay .form-field textarea:hover {
-    border-color: #cbdaca;
+#cart-overlay .form-field textarea:hover,
+#cart-overlay .form-field select:hover {
+    border-color: #c7d2c9;
 }
 
 #cart-overlay .form-field input:focus,
-#cart-overlay .form-field textarea:focus {
+#cart-overlay .form-field textarea:focus,
+#cart-overlay .form-field select:focus {
     border-color: var(--cart-primary);
 
-    box-shadow: 0 0 0 3px rgb(23 107 69 / 10%);
-}
-
-#cart-overlay .form-field input:focus-visible,
-#cart-overlay .form-field textarea:focus-visible {
-    outline: none;
+    box-shadow:
+        0 0 0 3px rgb(23 107 69 / 10%);
 }
 
 #cart-overlay .form-field input:disabled,
-#cart-overlay .form-field textarea:disabled {
+#cart-overlay .form-field textarea:disabled,
+#cart-overlay .form-field select:disabled {
     color: var(--cart-muted);
     background: var(--cart-surface);
 
     cursor: not-allowed;
 }
 
-#cart-overlay .form-field small {
-    color: var(--cart-muted);
+#cart-overlay .form-field textarea {
+    min-height: 88px;
 
-    font-size: 11px;
-    line-height: 1.7;
+    resize: vertical;
+}
+
+#cart-overlay .form-field input[aria-invalid="true"],
+#cart-overlay .form-field textarea[aria-invalid="true"] {
+    border-color: var(--cart-danger);
+
+    box-shadow:
+        0 0 0 3px rgb(180 35 24 / 8%);
 }
 
 
 /* =========================================================
-   13. DELIVERY ADDRESS
+   10. DELIVERY ADDRESS AND MAP
    ========================================================= */
 
 #cart-overlay .delivery-address-section {
-    display: grid;
-    gap: 15px;
-
-    width: 100%;
     min-width: 0;
+    margin-top: 2px;
 }
 
-#cart-overlay .checkout-divider {
-    width: 100%;
-    height: 1px;
-
-    margin: 2px 0;
-
-    background: var(--cart-border-light);
+#cart-overlay .delivery-address-section[hidden] {
+    display: none !important;
 }
-
-
-/* =========================================================
-   14. GOOGLE MAPS LOCATION PICKER
-   ========================================================= */
 
 #cart-overlay .location-picker {
-    display: grid;
-
-    gap: 13px;
-
-    width: 100%;
-    min-width: 0;
-
-    margin-top: 0;
-    padding: 14px;
-
-    background: var(--cart-surface);
-
-    border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-lg);
-}
-
-#cart-overlay .location-picker-heading {
     display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    min-width: 0;
-}
-
-#cart-overlay .location-picker-icon {
-    display: grid;
-    place-items: center;
-
-    width: 38px;
-    height: 38px;
-
-    flex-shrink: 0;
-
-    color: var(--cart-primary);
-    background: var(--cart-primary-light);
-
-    border-radius: 11px;
-}
-
-#cart-overlay .location-picker-icon svg {
-    display: block;
-
-    width: 20px;
-    height: 20px;
-}
-
-#cart-overlay .location-picker-title {
-    display: grid;
-
-    flex: 1;
-    gap: 3px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
 
     min-width: 0;
+    margin-top: 10px;
 }
 
-#cart-overlay .location-picker-title strong {
-    color: var(--cart-text);
-
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.5;
-}
-
-#cart-overlay .location-picker-title small {
-    color: var(--cart-muted);
-
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-#cart-overlay .optional-label {
+#cart-overlay .location-picker .location-button {
     display: inline-flex;
     align-items: center;
-
-    flex-shrink: 0;
-
-    padding: 4px 8px;
-
-    color: var(--cart-muted);
-    background: var(--cart-white);
-
-    border: 1px solid var(--cart-border);
-    border-radius: 999px;
-
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.5;
-}
-
-
-/* Location button
- *
- * Only the cart location button is styled here.
- * The global .button component remains controlled by style.css.
- */
-
-#cart-overlay #use-location-button {
-    display: flex;
-    align-items: center;
     justify-content: center;
-
     gap: 8px;
 
     width: 100%;
-    min-width: 0;
-    min-height: 44px;
+    min-height: 43px;
 
-    padding: 11px 13px;
+    padding: 10px 14px;
 
     color: var(--cart-primary);
     background: var(--cart-white);
 
-    border: 1px solid #b9d9c1;
-    border-radius: 10px;
+    border: 1px solid #cbded0;
+    border-radius: var(--cart-radius-sm);
 
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 750;
+    font-size: 13px;
+    font-weight: 700;
     line-height: 1.5;
-
-    text-align: center;
 
     cursor: pointer;
 
     transition:
         color var(--cart-transition),
-        background-color var(--cart-transition),
+        background var(--cart-transition),
         border-color var(--cart-transition);
 }
 
-#cart-overlay #use-location-button:hover {
+#cart-overlay .location-picker .location-button:hover {
     color: var(--cart-primary-hover);
     background: var(--cart-primary-light);
-    border-color: var(--cart-primary);
+    border-color: #a8cfb4;
 }
 
-#cart-overlay #use-location-button:disabled {
-    opacity: 0.55;
+#cart-overlay .location-picker .location-button:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
-#cart-overlay #use-location-button svg {
-    display: block;
+#cart-overlay .location-status {
+    margin: 0;
 
-    width: 17px;
-    height: 17px;
+    color: var(--cart-muted);
 
-    flex-shrink: 0;
+    font-size: 12px;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+#cart-overlay .location-status:empty {
+    display: none;
+}
+
+#cart-overlay .preview-location-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    width: fit-content;
+    max-width: 100%;
+
+    padding: 3px 0;
+
+    color: var(--cart-primary);
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+#cart-overlay .preview-location-link:hover {
+    color: var(--cart-primary-hover);
+    text-decoration: underline;
+}
+
+#cart-overlay .preview-location-link[hidden] {
+    display: none !important;
 }
 
 
-/* Location status */
+/* =========================================================
+   11. SELECTED PRODUCTS
+   ========================================================= */
 
-#cart-overlay .location-status {
+#cart-overlay .cart-products-section {
     min-width: 0;
+    padding: 0;
+    margin: 0;
+}
 
+#cart-overlay .cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+ * Product styles are intentionally scoped to common cart-item
+ * structures to avoid affecting product cards elsewhere.
+ */
+
+#cart-overlay .cart-items > *,
+#cart-overlay .cart-item {
+    min-width: 0;
+}
+
+#cart-overlay .cart-items > .cart-item,
+#cart-overlay .cart-item {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: start;
+    gap: 13px;
+
+    padding: 13px;
+
+    background: var(--cart-white);
+
+    border: 1px solid var(--cart-border);
+    border-radius: var(--cart-radius-md);
+
+    transition:
+        border-color var(--cart-transition),
+        background var(--cart-transition);
+}
+
+#cart-overlay .cart-items > .cart-item:hover,
+#cart-overlay .cart-item:hover {
+    border-color: #d3dfd5;
+}
+
+#cart-overlay .cart-item-image {
+    display: block;
+
+    width: 76px;
+    height: 76px;
+
+    object-fit: cover;
+    object-position: center;
+
+    background: var(--cart-surface);
+
+    border-radius: var(--cart-radius-sm);
+}
+
+#cart-overlay .cart-item img {
+    max-width: 100%;
+}
+
+#cart-overlay .cart-item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+#cart-overlay .cart-item-name {
+    margin: 0;
+
+    color: var(--cart-text);
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+#cart-overlay .cart-item-price {
+    margin: 0;
+
+    color: var(--cart-primary);
+
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+#cart-overlay .cart-item-description {
     margin: 0;
 
     color: var(--cart-muted);
 
     font-size: 11px;
-    line-height: 1.8;
-
-    overflow-wrap: anywhere;
+    line-height: 1.5;
 }
 
-#cart-overlay .location-status.is-success {
-    color: var(--cart-primary);
-}
-
-#cart-overlay .location-status.is-error {
-    color: var(--cart-danger);
-}
-
-
-/* Location preview link */
-
-#cart-overlay .location-preview-link {
-    display: inline-flex;
+#cart-overlay .cart-item-controls {
+    display: flex;
     align-items: center;
-
-    gap: 5px;
-
-    width: fit-content;
-    max-width: 100%;
-
-    color: var(--cart-primary);
-
-    font-size: 12px;
-    font-weight: 750;
-    line-height: 1.7;
-
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-
-    overflow-wrap: anywhere;
-}
-
-#cart-overlay .location-preview-link:hover {
-    color: var(--cart-primary-hover);
-}
-
-
-/* =========================================================
-   15. FULFILLMENT OPTIONS
-   ========================================================= */
-
-#cart-overlay .fulfillment-options {
-    display: grid;
-
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 10px;
 
     width: 100%;
     min-width: 0;
 
-    margin: 0;
-    padding: 19px 0;
-
-    border: 0;
-    border-bottom: 1px solid var(--cart-border);
+    margin-top: 7px;
 }
 
-#cart-overlay .fulfillment-options legend {
-    float: none;
-
-    width: 100%;
-
-    margin: 0 0 12px;
-    padding: 0;
-
-    color: var(--cart-text);
-
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.5;
-}
-
-#cart-overlay .fulfillment-option {
-    display: flex;
+#cart-overlay .quantity-control {
+    display: inline-flex;
     align-items: center;
+    gap: 0;
 
-    gap: 11px;
+    min-height: 32px;
 
-    width: 100%;
-    min-width: 0;
+    overflow: hidden;
 
-    padding: 13px;
+    background: var(--cart-white);
+
+    border: 1px solid var(--cart-border);
+    border-radius: var(--cart-radius-sm);
+}
+
+#cart-overlay .quantity-control button,
+#cart-overlay .quantity-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+
+    padding: 0;
 
     color: var(--cart-text);
     background: var(--cart-white);
 
+    border: 0;
+    border-radius: 0;
+
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color var(--cart-transition),
+        background var(--cart-transition);
+}
+
+#cart-overlay .quantity-control button:hover,
+#cart-overlay .quantity-button:hover {
+    color: var(--cart-primary);
+    background: var(--cart-primary-light);
+}
+
+#cart-overlay .quantity-control button:disabled,
+#cart-overlay .quantity-button:disabled {
+    color: #aab2ab;
+    background: var(--cart-surface);
+
+    cursor: not-allowed;
+}
+
+#cart-overlay .quantity-value,
+#cart-overlay .quantity-control input {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    min-width: 34px;
+    height: 32px;
+
+    margin: 0;
+    padding: 0;
+
+    color: var(--cart-text);
+    background: var(--cart-white);
+
+    border: 0;
+    border-radius: 0;
+
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+#cart-overlay .quantity-control input:focus {
+    box-shadow: none;
+}
+
+#cart-overlay .cart-item-remove,
+#cart-overlay .remove-cart-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-height: 32px;
+
+    padding: 5px 7px;
+
+    color: var(--cart-danger);
+    background: transparent;
+
+    border: 0;
+    border-radius: var(--cart-radius-sm);
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    cursor: pointer;
+
+    transition:
+        background var(--cart-transition),
+        color var(--cart-transition);
+}
+
+#cart-overlay .cart-item-remove:hover,
+#cart-overlay .remove-cart-item:hover {
+    color: #8f1d14;
+    background: var(--cart-danger-light);
+}
+
+
+/* =========================================================
+   12. FULFILLMENT METHOD
+   ========================================================= */
+
+#cart-overlay .fulfillment-section {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+#cart-overlay .fulfillment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+}
+
+#cart-overlay .fulfillment-options legend {
+    padding: 0;
+}
+
+#cart-overlay .fulfillment-option {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 20px 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 11px;
+
+    min-width: 0;
+    min-height: 72px;
+
+    margin: 0;
+    padding: 13px;
+
+    background: var(--cart-white);
+
     border: 1px solid var(--cart-border);
-    border-radius: 13px;
+    border-radius: var(--cart-radius-md);
 
     cursor: pointer;
 
     transition:
         border-color var(--cart-transition),
-        background-color var(--cart-transition),
+        background var(--cart-transition),
         box-shadow var(--cart-transition);
 }
 
 #cart-overlay .fulfillment-option:hover {
-    border-color: #cbdaca;
+    border-color: #cbdacD;
 }
 
-#cart-overlay .fulfillment-option:has(input:checked) {
+#cart-overlay .fulfillment-option:has(
+    input[type="radio"]:checked
+) {
     background: var(--cart-primary-light);
     border-color: var(--cart-primary);
 
-    box-shadow: 0 0 0 1px rgb(23 107 69 / 5%);
+    box-shadow:
+        0 0 0 1px rgb(23 107 69 / 5%);
 }
 
-#cart-overlay .fulfillment-option:has(input:focus-visible) {
-    outline: 3px solid rgb(23 107 69 / 18%);
-    outline-offset: 2px;
-}
-
-#cart-overlay .fulfillment-option input {
-    width: 18px;
-    height: 18px;
-
-    flex-shrink: 0;
+#cart-overlay .fulfillment-option input[type="radio"] {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
 
     margin: 0;
 
@@ -1029,11 +965,30 @@ body.no-scroll {
     cursor: pointer;
 }
 
-#cart-overlay .fulfillment-copy {
-    display: grid;
+#cart-overlay .fulfillment-option-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    flex: 1;
-    gap: 4px;
+    width: 38px;
+    height: 38px;
+
+    color: var(--cart-primary);
+    background: var(--cart-white);
+
+    border: 1px solid var(--cart-border-light);
+    border-radius: var(--cart-radius-sm);
+}
+
+#cart-overlay .fulfillment-option-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+#cart-overlay .fulfillment-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 
     min-width: 0;
 }
@@ -1041,74 +996,76 @@ body.no-scroll {
 #cart-overlay .fulfillment-copy strong {
     color: var(--cart-text);
 
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.5;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.4;
 }
 
 #cart-overlay .fulfillment-copy small {
     color: var(--cart-muted);
 
     font-size: 11px;
-    line-height: 1.6;
+    font-weight: 400;
+    line-height: 1.5;
 }
 
 #cart-overlay .fulfillment-price {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
+    max-width: 100%;
 
-    gap: 6px;
-
-    flex-shrink: 0;
-
-    min-width: 0;
-
-    color: var(--cart-primary);
+    color: var(--cart-text);
 
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 750;
     line-height: 1.5;
 
     text-align: right;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
-#cart-overlay .delivery-price-original {
-    color: var(--cart-muted);
-
-    font-size: 11px;
-    font-weight: 500;
-
-    text-decoration: line-through;
+#cart-overlay .fulfillment-option:has(
+    input[type="radio"]:checked
+) .fulfillment-price {
+    color: var(--cart-primary);
 }
 
 
 /* =========================================================
-   16. ORDER SUMMARY
+   13. PAYMENT SUMMARY
    ========================================================= */
 
 #cart-overlay .order-summary {
-    display: grid;
-
-    gap: 12px;
-
-    width: 100%;
     min-width: 0;
 
-    padding-top: 19px;
+    margin: 0;
+    padding: 18px;
+
+    background: var(--cart-surface);
+
+    border: 1px solid var(--cart-border);
+    border-radius: var(--cart-radius-md);
 }
 
-#cart-overlay .summary-row,
-#cart-overlay .total-row {
+#cart-overlay .order-summary h3 {
+    margin: 0 0 16px;
+
+    color: var(--cart-text);
+
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+#cart-overlay .summary-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 16px;
 
-    gap: 14px;
+    margin: 0 0 12px;
+}
 
-    width: 100%;
-    min-width: 0;
+#cart-overlay .summary-row:last-of-type {
+    margin-bottom: 0;
 }
 
 #cart-overlay .summary-row > span {
@@ -1126,85 +1083,94 @@ body.no-scroll {
     color: var(--cart-text);
 
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 650;
     line-height: 1.6;
 
     text-align: right;
-    overflow-wrap: anywhere;
 }
 
-
-/* Total */
-
 #cart-overlay .total-row {
-    margin-top: 2px;
-    padding-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
 
-    border-top: 1px dashed var(--cart-border);
+    margin-top: 17px;
+    padding-top: 16px;
+
+    border-top: 1px dashed #d6ded6;
 }
 
 #cart-overlay .total-row > span {
     color: var(--cart-text);
 
     font-size: 13px;
-    font-weight: 750;
-    line-height: 1.6;
+    font-weight: 700;
+    line-height: 1.5;
 }
 
 #cart-overlay .total-row > strong {
     color: var(--cart-primary);
 
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
-    letter-spacing: -0.5px;
     line-height: 1.4;
+    letter-spacing: -0.4px;
 
     text-align: right;
     overflow-wrap: anywhere;
 }
 
-
-/* =========================================================
-   17. FULFILLMENT NOTE
-   ========================================================= */
-
-#cart-overlay .cart-footer > .muted {
-    margin: 13px 0 16px;
+#cart-overlay .fulfillment-note {
+    margin: 12px 0 0;
 
     color: var(--cart-muted);
 
     font-size: 11px;
-    line-height: 1.8;
+    line-height: 1.7;
+}
+
+#cart-overlay .fulfillment-note:empty {
+    display: none;
+}
+
+#cart-overlay .muted {
+    color: var(--cart-muted);
 }
 
 
 /* =========================================================
-   18. CHECKOUT BUTTON
+   14. CHECKOUT ACTIONS
    ========================================================= */
 
-#cart-overlay #checkout-button {
+#cart-overlay .checkout-actions {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+}
+
+#cart-overlay .checkout-actions button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    gap: 8px;
+    gap: 9px;
 
     width: 100%;
-    min-width: 0;
     min-height: 49px;
 
     margin: 0;
-    padding: 13px 16px;
+    padding: 13px 18px;
 
-    color: #ffffff;
-    background: var(--cart-primary);
+    border-radius: var(--cart-radius-sm);
 
-    border: 1px solid var(--cart-primary);
-    border-radius: 13px;
-
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 800;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 750;
     line-height: 1.5;
 
     text-align: center;
@@ -1213,905 +1179,306 @@ body.no-scroll {
 
     transition:
         color var(--cart-transition),
-        background-color var(--cart-transition),
+        background var(--cart-transition),
         border-color var(--cart-transition),
         box-shadow var(--cart-transition),
-        opacity var(--cart-transition);
+        transform var(--cart-transition);
 }
 
-#cart-overlay #checkout-button:hover:not(:disabled) {
-    color: #ffffff;
+#cart-overlay .checkout-actions .button-primary,
+#cart-overlay #checkout-button {
+    color: var(--cart-white);
+    background: var(--cart-primary);
+
+    border: 1px solid var(--cart-primary);
+
+    box-shadow:
+        0 3px 8px rgb(23 107 69 / 12%);
+}
+
+#cart-overlay .checkout-actions .button-primary:hover,
+#cart-overlay #checkout-button:hover {
+    color: var(--cart-white);
     background: var(--cart-primary-hover);
+
     border-color: var(--cart-primary-hover);
 
-    box-shadow: 0 4px 12px rgb(23 107 69 / 15%);
+    box-shadow:
+        0 5px 12px rgb(23 107 69 / 18%);
 }
 
+#cart-overlay .checkout-actions button:active {
+    transform: translateY(1px);
+}
+
+#cart-overlay .checkout-actions button:disabled,
+#cart-overlay #checkout-button:disabled {
+    color: #f5f6f5;
+    background: #9aa79e;
+
+    border-color: #9aa79e;
+    box-shadow: none;
+
+    cursor: not-allowed;
+    transform: none;
+}
+
+#cart-overlay .checkout-actions button:focus-visible,
 #cart-overlay #checkout-button:focus-visible {
     outline: 3px solid rgb(23 107 69 / 22%);
     outline-offset: 3px;
 }
 
-#cart-overlay #checkout-button:disabled {
-    opacity: 0.55;
+
+/* =========================================================
+   15. SHARED ACCESSIBILITY
+   ========================================================= */
+
+#cart-overlay .visually-hidden {
+    position: absolute !important;
+
+    width: 1px !important;
+    height: 1px !important;
+
+    padding: 0 !important;
+    margin: -1px !important;
+
+    overflow: hidden !important;
+
+    clip: rect(0, 0, 0, 0) !important;
+
+    white-space: nowrap !important;
+
+    border: 0 !important;
+}
+
+#cart-overlay button:focus-visible,
+#cart-overlay a:focus-visible {
+    outline: 3px solid rgb(23 107 69 / 22%);
+    outline-offset: 3px;
+}
+
+#cart-overlay button:disabled {
     cursor: not-allowed;
 }
 
 
 /* =========================================================
-   19. CART FOOTER VISIBILITY
+   16. TABLET AND SMALL DESKTOP
    ========================================================= */
 
-#cart-overlay #cart-footer[hidden],
-#cart-overlay #cart-empty[hidden] {
-    display: none !important;
-}
-
-
-/* =========================================================
-   20. RESPONSIVE — TABLET
-   ========================================================= */
-
-@media (max-width: 600px) {
-    #cart-overlay .cart-panel {
-        width: 100%;
-        max-width: none;
-
-        height: 100%;
-        height: 100dvh;
-
-        border-radius: 0;
+@media (max-width: 768px) {
+    #cart-overlay .cart-drawer {
+        width: min(100%, 460px);
     }
 
-    #cart-overlay .panel-heading {
-        padding: 16px;
-    }
-
-    #cart-overlay .panel-heading h2,
-    #cart-overlay .cart-heading-content h2 {
-        font-size: 18px;
+    #cart-overlay .cart-header {
+        min-height: 76px;
+        padding: 16px 20px;
     }
 
     #cart-overlay .cart-content {
-        padding-right: 16px;
-        padding-bottom: 18px;
-        padding-left: 16px;
-    }
-
-    #cart-overlay .cart-section-heading {
-        padding-top: 17px;
-    }
-
-    #cart-overlay .cart-item {
-        grid-template-columns: 48px minmax(0, 1fr) auto;
-
-        gap: 10px;
-
-        padding: 13px 0;
-    }
-
-    #cart-overlay .cart-item-emoji {
-        width: 48px;
-        height: 48px;
-
-        border-radius: 12px;
-
-        font-size: 22px;
-    }
-
-    #cart-overlay .cart-item-name {
-        font-size: 12px;
-    }
-
-    #cart-overlay .cart-item-price {
-        font-size: 11px;
-    }
-
-    #cart-overlay .quantity-control {
-        gap: 5px;
-    }
-
-    #cart-overlay .quantity-control button {
-        width: 29px;
-        height: 31px;
+        padding: 18px 20px 24px;
     }
 
     #cart-overlay .cart-footer {
-        padding: 0 16px 18px;
-    }
-
-    #cart-overlay .checkout-form {
-        gap: 15px;
-        padding: 19px 0;
-    }
-
-    #cart-overlay .checkout-form > h3 {
-        font-size: 15px;
-    }
-
-    #cart-overlay .form-field input:not([type="hidden"]),
-    #cart-overlay .form-field textarea {
-        padding: 12px;
-        font-size: 16px;
-    }
-
-    #cart-overlay .location-picker {
-        gap: 12px;
-        padding: 12px;
-    }
-
-    #cart-overlay .fulfillment-options {
-        gap: 9px;
-        padding: 16px 0;
-    }
-
-    #cart-overlay .fulfillment-option {
-        gap: 9px;
-        padding: 11px;
-        border-radius: 12px;
-    }
-
-    #cart-overlay .fulfillment-copy strong,
-    #cart-overlay .fulfillment-price {
-        font-size: 11px;
-    }
-
-    #cart-overlay .fulfillment-copy small {
-        font-size: 10px;
+        gap: 22px;
     }
 
     #cart-overlay .order-summary {
-        gap: 11px;
-        padding-top: 16px;
-    }
-
-    #cart-overlay .total-row {
-        padding-top: 13px;
-    }
-
-    #cart-overlay .total-row > strong {
-        font-size: 20px;
-    }
-
-    #cart-overlay #checkout-button {
-        min-height: 48px;
-        border-radius: 12px;
+        padding: 16px;
     }
 }
 
 
 /* =========================================================
-   21. RESPONSIVE — SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 360px) {
-    #cart-overlay .panel-heading {
-        padding: 14px 13px;
-    }
-
-    #cart-overlay .cart-content {
-        padding-right: 13px;
-        padding-left: 13px;
-    }
-
-    #cart-overlay .cart-footer {
-        padding-right: 13px;
-        padding-left: 13px;
-    }
-
-    #cart-overlay .cart-item {
-        grid-template-columns: 42px minmax(0, 1fr);
-
-        gap: 9px;
-    }
-
-    #cart-overlay .cart-item-emoji {
-        width: 42px;
-        height: 42px;
-
-        font-size: 20px;
-    }
-
-    #cart-overlay .cart-item .quantity-control {
-        grid-column: 2;
-
-        justify-content: flex-start;
-
-        margin-top: 5px;
-    }
-
-    #cart-overlay .quantity-control button {
-        width: 28px;
-        height: 29px;
-    }
-
-    #cart-overlay .fulfillment-option {
-        gap: 7px;
-        padding: 10px;
-    }
-
-    #cart-overlay .fulfillment-price {
-        gap: 4px;
-        font-size: 10px;
-    }
-
-    #cart-overlay .delivery-price-original {
-        font-size: 10px;
-    }
-
-    #cart-overlay .total-row > span {
-        font-size: 12px;
-    }
-
-    #cart-overlay .total-row > strong {
-        font-size: 18px;
-    }
-}
-
-
-/* =========================================================
-   22. ACCESSIBILITY
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-    #cart-overlay,
-    #cart-overlay .cart-panel {
-        animation: none;
-    }
-
-    #cart-overlay .icon-button,
-    #cart-overlay .quantity-control button,
-    #cart-overlay .fulfillment-option,
-    #cart-overlay .form-field input,
-    #cart-overlay .form-field textarea,
-    #cart-overlay #use-location-button,
-    #cart-overlay #checkout-button {
-        transition: none;
-    }
-}
-
-
-/* =========================================================
-   23. ANIMATIONS
-   ========================================================= */
-
-@keyframes pesan-ajah-cart-overlay-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes pesan-ajah-cart-panel-in {
-    from {
-        opacity: 0.85;
-        transform: translateX(24px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* =========================================================
-   24. MOBILE CART POLISH
-   Optimized mobile cart and checkout experience.
-   All styles remain scoped to #cart-overlay.
-   ========================================================= */
-
-/* Prevent width overflow inside the cart. */
-
-#cart-overlay {
-    isolation: isolate;
-}
-
-#cart-overlay .cart-panel {
-    box-sizing: border-box;
-    width: min(100%, 480px);
-    min-width: 0;
-    min-height: 0;
-}
-
-#cart-overlay .cart-panel,
-#cart-overlay .cart-panel *,
-#cart-overlay .cart-panel *::before,
-#cart-overlay .cart-panel *::after {
-    box-sizing: border-box;
-}
-
-#cart-overlay .cart-content,
-#cart-overlay .cart-footer,
-#cart-overlay .checkout-form,
-#cart-overlay .delivery-address-section,
-#cart-overlay .location-picker,
-#cart-overlay .order-summary {
-    min-width: 0;
-    max-width: 100%;
-}
-
-#cart-overlay .cart-content {
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* =========================================================
-   25. MOBILE HEADER
+   17. MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
     #cart-overlay {
-        justify-content: center;
-        padding: 0;
+        align-items: stretch;
     }
 
-    #cart-overlay .cart-panel {
+    #cart-overlay .cart-drawer {
         width: 100%;
-        max-width: 100%;
+        max-width: none;
         height: 100%;
-        height: 100dvh;
+        max-height: 100dvh;
+
         border-radius: 0;
+
+        transform: translateX(16px);
     }
 
-    #cart-overlay .panel-heading {
-        position: sticky;
-        top: 0;
-        z-index: 5;
+    #cart-overlay.active .cart-drawer,
+    #cart-overlay.open .cart-drawer,
+    #cart-overlay.is-open .cart-drawer,
+    #cart-overlay.show .cart-drawer {
+        transform: translateX(0);
+    }
 
-        align-items: center;
+    #cart-overlay .cart-header {
+        min-height: 72px;
+
+        padding:
+            max(14px, env(safe-area-inset-top))
+            18px
+            14px;
+
         gap: 12px;
-
-        padding: 14px 16px;
-
-        background: var(--cart-white);
     }
 
-    #cart-overlay .panel-heading h2,
-    #cart-overlay .cart-heading-content h2 {
+    #cart-overlay #cart-title {
         font-size: 19px;
-        line-height: 1.35;
-        letter-spacing: -0.35px;
     }
 
-    #cart-overlay .cart-heading-description {
-        margin-top: 4px;
+    #cart-overlay .cart-header-content p {
+        margin-top: 3px;
         font-size: 12px;
-        line-height: 1.5;
     }
 
-    #cart-overlay .icon-button {
-        width: 40px;
-        height: 40px;
-        flex: 0 0 40px;
-        border-radius: 11px;
+    #cart-overlay .cart-close {
+        width: 38px;
+        height: 38px;
     }
-
-    /* =====================================================
-       CART CONTENT
-       ===================================================== */
 
     #cart-overlay .cart-content {
-        flex: 1 1 auto;
-        min-height: 0;
+        padding: 18px 18px 26px;
+    }
 
-        padding: 0 16px 20px;
+    #cart-overlay .cart-footer {
+        gap: 22px;
     }
 
     #cart-overlay .cart-section-heading {
-        align-items: center;
-        gap: 10px;
-
-        padding: 18px 0 12px;
+        margin-bottom: 14px;
     }
 
     #cart-overlay .cart-section-heading h3 {
-        font-size: 14px;
-        line-height: 1.5;
-    }
-
-    #cart-overlay .cart-item-count {
-        font-size: 11px;
-    }
-
-    /* =====================================================
-       PRODUCT ITEMS
-       ===================================================== */
-
-    #cart-overlay .cart-item {
-        grid-template-columns: 52px minmax(0, 1fr) auto;
-        align-items: center;
-
-        gap: 10px;
-
-        padding: 13px 0;
-    }
-
-    #cart-overlay .cart-item-emoji {
-        width: 52px;
-        height: 52px;
-
-        border-radius: 12px;
-
-        font-size: 23px;
-    }
-
-    #cart-overlay .cart-item-name {
-        margin-bottom: 4px;
-
-        font-size: 12px;
-        line-height: 1.5;
-
-        overflow-wrap: anywhere;
-    }
-
-    #cart-overlay .cart-item-price {
-        font-size: 12px;
-        line-height: 1.5;
-
-        overflow-wrap: anywhere;
-    }
-
-    /* =====================================================
-       QUANTITY CONTROL
-       ===================================================== */
-
-    #cart-overlay .quantity-control {
-        justify-content: flex-end;
-        gap: 5px;
-    }
-
-    #cart-overlay .quantity-control button {
-        width: 30px;
-        height: 32px;
-
-        border-radius: 9px;
-    }
-
-    #cart-overlay .quantity-control span {
-        min-width: 17px;
-        font-size: 12px;
-    }
-
-    /* =====================================================
-       CHECKOUT FORM
-       ===================================================== */
-
-    #cart-overlay .checkout-form {
-        gap: 15px;
-
-        padding: 18px 0;
-    }
-
-    #cart-overlay .checkout-form > h3 {
         font-size: 15px;
-        line-height: 1.5;
-    }
-
-    #cart-overlay .checkout-form > h4 {
-        font-size: 13px;
     }
 
     #cart-overlay .form-field {
-        gap: 7px;
-    }
-
-    #cart-overlay .form-field label {
-        font-size: 12px;
+        margin-bottom: 13px;
     }
 
     /*
-     * Font size 16px prevents unwanted automatic zoom
-     * when focusing form fields on iOS Safari.
+     * Prevents automatic zoom when focusing form fields
+     * on mobile Safari and similar mobile browsers.
      */
 
-    #cart-overlay .form-field input:not([type="hidden"]),
-    #cart-overlay .form-field textarea {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-
-        padding: 12px;
-
+    #cart-overlay .form-field input,
+    #cart-overlay .form-field textarea,
+    #cart-overlay .form-field select {
+        min-height: 46px;
         font-size: 16px;
-        line-height: 1.5;
-
-        border-radius: 11px;
-    }
-
-    #cart-overlay .form-field input:not([type="hidden"]) {
-        min-height: 48px;
     }
 
     #cart-overlay .form-field textarea {
         min-height: 84px;
     }
 
-    #cart-overlay .form-field small {
-        font-size: 11px;
-        line-height: 1.6;
-    }
-
-    /* =====================================================
-       DELIVERY ADDRESS
-       ===================================================== */
-
-    #cart-overlay .delivery-address-section {
-        gap: 13px;
-    }
-
-    #cart-overlay .checkout-divider {
-        margin: 0;
-    }
-
-    #cart-overlay .location-picker {
-        gap: 12px;
-        padding: 12px;
-
-        border-radius: 13px;
-    }
-
-    #cart-overlay .location-picker-heading {
-        align-items: center;
-        gap: 9px;
-    }
-
-    #cart-overlay .location-picker-icon {
-        width: 36px;
-        height: 36px;
-
-        border-radius: 10px;
-    }
-
-    #cart-overlay .location-picker-title {
-        gap: 3px;
-    }
-
-    #cart-overlay .location-picker-title strong {
-        font-size: 12px;
-        line-height: 1.5;
-    }
-
-    #cart-overlay .location-picker-title small {
-        font-size: 11px;
-        line-height: 1.5;
-    }
-
-    #cart-overlay .optional-label {
-        padding: 4px 7px;
-        font-size: 10px;
-    }
-
-    #cart-overlay #use-location-button {
-        min-height: 46px;
-        padding: 11px;
-
-        font-size: 13px;
-        line-height: 1.5;
-    }
-
-    #cart-overlay .location-status {
-        font-size: 11px;
-        line-height: 1.7;
-        overflow-wrap: anywhere;
-    }
-
-    #cart-overlay .location-preview-link {
-        max-width: 100%;
-        font-size: 12px;
-        overflow-wrap: anywhere;
-    }
-
-    /* =====================================================
-       FULFILLMENT OPTIONS
-       ===================================================== */
-
-    #cart-overlay .fulfillment-options {
-        gap: 9px;
-        padding: 16px 0;
-    }
-
-    #cart-overlay .fulfillment-options legend {
-        margin-bottom: 10px;
-        font-size: 13px;
-    }
-
     #cart-overlay .fulfillment-option {
-        display: flex;
-        align-items: center;
-
+        grid-template-columns: 18px 36px minmax(0, 1fr) auto;
         gap: 9px;
 
-        min-width: 0;
-        padding: 12px 10px;
+        min-height: 68px;
 
-        border-radius: 12px;
-    }
-
-    #cart-overlay .fulfillment-option input {
-        width: 18px;
-        height: 18px;
-
-        flex: 0 0 18px;
+        padding: 11px;
     }
 
     #cart-overlay .fulfillment-option-icon {
         width: 36px;
         height: 36px;
-
-        flex: 0 0 36px;
-
-        border-radius: 10px;
-    }
-
-    #cart-overlay .fulfillment-option-icon svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    #cart-overlay .fulfillment-copy {
-        flex: 1 1 auto;
-        min-width: 0;
-        gap: 3px;
     }
 
     #cart-overlay .fulfillment-copy strong {
         font-size: 12px;
-        line-height: 1.45;
     }
 
     #cart-overlay .fulfillment-copy small {
-        font-size: 11px;
-        line-height: 1.45;
-
-        overflow-wrap: anywhere;
-    }
-
-    #cart-overlay .fulfillment-price {
-        flex: 0 0 auto;
-        max-width: 100%;
-
-        font-size: 11px;
-        line-height: 1.5;
-
-        white-space: normal;
-        overflow-wrap: anywhere;
-    }
-
-    #cart-overlay .delivery-price-original {
         font-size: 10px;
     }
 
-    /* =====================================================
-       PAYMENT SUMMARY
-       ===================================================== */
+    #cart-overlay .fulfillment-price {
+        font-size: 11px;
+    }
 
     #cart-overlay .order-summary {
-        gap: 12px;
-        padding-top: 17px;
-    }
-
-    #cart-overlay .summary-row,
-    #cart-overlay .total-row {
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    #cart-overlay .summary-row > span {
-        min-width: 0;
-
-        font-size: 12px;
-        line-height: 1.6;
-    }
-
-    #cart-overlay .summary-row > strong {
-        flex: 0 0 auto;
-        max-width: 60%;
-
-        font-size: 12px;
-        line-height: 1.5;
-
-        overflow-wrap: anywhere;
-    }
-
-    #cart-overlay .total-row {
-        align-items: center;
-
-        margin-top: 1px;
-        padding-top: 14px;
-    }
-
-    #cart-overlay .total-row > span {
-        font-size: 13px;
-        line-height: 1.5;
+        padding: 16px;
     }
 
     #cart-overlay .total-row > strong {
-        max-width: 65%;
-
-        font-size: 20px;
-        line-height: 1.35;
-
-        overflow-wrap: anywhere;
+        font-size: 19px;
     }
 
-    #cart-overlay .cart-footer > .muted {
-        margin: 12px 0;
-
-        font-size: 11px;
-        line-height: 1.7;
-
-        overflow-wrap: anywhere;
-    }
-
-    /* =====================================================
-       CHECKOUT BUTTON
-       ===================================================== */
-
-    #cart-overlay #checkout-button {
-        min-height: 50px;
-        padding: 13px 14px;
-
-        gap: 9px;
-
-        border-radius: 12px;
-
-        font-size: 14px;
+    #cart-overlay .checkout-actions {
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
     }
 }
 
+
 /* =========================================================
-   26. EXTRA SMALL MOBILE
+   18. SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 380px) {
-    #cart-overlay .panel-heading {
-        padding-right: 13px;
-        padding-left: 13px;
+    #cart-overlay .cart-header {
+        padding-right: 14px;
+        padding-left: 14px;
     }
 
     #cart-overlay .cart-content {
-        padding-right: 13px;
-        padding-left: 13px;
+        padding-right: 14px;
+        padding-left: 14px;
     }
 
     #cart-overlay .cart-footer {
-        padding-right: 13px;
-        padding-left: 13px;
+        gap: 20px;
     }
 
+    #cart-overlay .cart-items {
+        gap: 10px;
+    }
+
+    #cart-overlay .cart-items > .cart-item,
     #cart-overlay .cart-item {
-        grid-template-columns: 44px minmax(0, 1fr);
-        gap: 9px;
-    }
+        grid-template-columns: 62px minmax(0, 1fr);
+        gap: 10px;
 
-    #cart-overlay .cart-item-emoji {
-        width: 44px;
-        height: 44px;
-
-        font-size: 21px;
-    }
-
-    /*
-     * Move quantity controls below product information
-     * when horizontal space is limited.
-     */
-
-    #cart-overlay .cart-item .quantity-control {
-        grid-column: 2;
-
-        justify-content: flex-start;
-
-        margin-top: 4px;
-    }
-
-    #cart-overlay .quantity-control button {
-        width: 30px;
-        height: 30px;
-    }
-
-    #cart-overlay .fulfillment-option {
-        gap: 7px;
-        padding: 10px 8px;
-    }
-
-    #cart-overlay .fulfillment-option-icon {
-        width: 32px;
-        height: 32px;
-        flex-basis: 32px;
-    }
-
-    #cart-overlay .fulfillment-copy {
-        flex: 1 1 80px;
-    }
-
-    #cart-overlay .fulfillment-copy strong {
-        font-size: 11px;
-    }
-
-    #cart-overlay .fulfillment-copy small {
-        font-size: 10px;
-    }
-
-    #cart-overlay .fulfillment-price {
-        font-size: 10px;
-    }
-
-    #cart-overlay .summary-row,
-    #cart-overlay .total-row {
-        gap: 8px;
-    }
-
-    #cart-overlay .summary-row > strong {
-        max-width: 58%;
-    }
-
-    #cart-overlay .total-row > strong {
-        font-size: 18px;
-    }
-
-    #cart-overlay #checkout-button {
-        font-size: 13px;
-    }
-}
-
-/* =========================================================
-   27. SHORT MOBILE VIEWPORT
-   ========================================================= */
-
-@media (max-width: 600px) and (max-height: 600px) {
-    #cart-overlay .panel-heading {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    #cart-overlay .cart-content {
-        padding-bottom: 12px;
-    }
-
-    #cart-overlay .checkout-form {
-        gap: 12px;
-        padding-top: 14px;
-        padding-bottom: 14px;
-    }
-
-    #cart-overlay .location-picker {
-        gap: 9px;
         padding: 10px;
     }
 
-    #cart-overlay .fulfillment-options {
-        padding-top: 12px;
-        padding-bottom: 12px;
+    #cart-overlay .cart-item-image {
+        width: 62px;
+        height: 62px;
     }
 
-    #cart-overlay .order-summary {
-        gap: 9px;
-        padding-top: 12px;
-    }
-}
-
-/* =========================================================
-   28. ACCESSIBILITY
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-    #cart-overlay,
-    #cart-overlay .cart-panel {
-        animation: none;
+    #cart-overlay .cart-item-name {
+        font-size: 12px;
     }
 
-    #cart-overlay .icon-button,
+    #cart-overlay .cart-item-price {
+        font-size: 12px;
+    }
+
+    #cart-overlay .cart-item-controls {
+        gap: 6px;
+    }
+
     #cart-overlay .quantity-control button,
-    #cart-overlay .fulfillment-option,
-    #cart-overlay .form-field input,
-    #cart-overlay .form-field textarea,
-    #cart-overlay #use-location-button,
-    #cart-overlay #checkout-button {
-        transition: none;
+    #cart-overlay .quantity-button {
+        width: 29px;
+        min-width: 29px;
+        height: 30px;
     }
-}
+
+    #cart-overlay .quantity-value,
+    #cart-overlay .quantity-control input {
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+    }
+
+    #cart
