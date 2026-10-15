@@ -267,24 +267,36 @@ require_once __DIR__ . '/app/bootstrap.php';
             </div>
         </section>
 
-        <!-- =================================================
-             KATEGORI
-             ================================================= -->
-
-        <section class="container section">
-
+        <!-- =====================================================
+             KATEGORI BELANJA
+             ===================================================== -->
+        
+        <section
+            class="container section"
+            id="categories"
+            aria-labelledby="category-title"
+        >
             <div class="section-heading">
                 <div>
                     <span class="eyebrow eyebrow-plain">
                         MULAI DARI SINI
                     </span>
-
-                    <h2>Kategori belanja</h2>
+        
+                    <h2 id="category-title">
+                        Kategori belanja
+                    </h2>
                 </div>
-
-                <p>Pilih kategori yang kamu butuhkan.</p>
+        
+                <p>
+                    Pilih kategori yang kamu butuhkan.
+                </p>
             </div>
-
+        
+            <!--
+                Kategori dibuat secara dinamis oleh catalog.js.
+                Jangan menambahkan tombol kategori statis di luar
+                container ini agar tidak terjadi duplikasi.
+            -->
             <div
                 class="category-grid"
                 id="category-list"
@@ -299,68 +311,6 @@ require_once __DIR__ . '/app/bootstrap.php';
                     <span aria-hidden="true">⌂</span>
                     Semua
                 </button>
-            </div>
-
-                <button
-                    class="category-card active"
-                    type="button"
-                    data-category="Semua"
-                    aria-pressed="true"
-                >
-                    <span>⌂</span>
-                    Semua
-                </button>
-
-                <button
-                    class="category-card"
-                    type="button"
-                    data-category="Sembako"
-                    aria-pressed="false"
-                >
-                    <span>🌾</span>
-                    Sembako
-                </button>
-
-                <button
-                    class="category-card"
-                    type="button"
-                    data-category="Minuman"
-                    aria-pressed="false"
-                >
-                    <span>🥤</span>
-                    Minuman
-                </button>
-
-                <button
-                    class="category-card"
-                    type="button"
-                    data-category="Makanan"
-                    aria-pressed="false"
-                >
-                    <span>🍜</span>
-                    Makanan
-                </button>
-
-                <button
-                    class="category-card"
-                    type="button"
-                    data-category="Kebutuhan Rumah"
-                    aria-pressed="false"
-                >
-                    <span>🧹</span>
-                    Kebutuhan rumah
-                </button>
-
-                <button
-                    class="category-card"
-                    type="button"
-                    data-category="Lainnya"
-                    aria-pressed="false"
-                >
-                    <span>🛍️</span>
-                    Lainnya
-                </button>
-
             </div>
         </section>
 
