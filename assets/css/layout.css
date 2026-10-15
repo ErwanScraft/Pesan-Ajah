@@ -422,53 +422,146 @@
   font-size: 12px;
 }
 
+/* =========================================================
+   MARKETPLACE — CATEGORY CARDS
+   File: assets/css/layout.css
+   ========================================================= */
+
 .category-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .category-card {
   display: flex;
+
   min-width: 0;
-  min-height: 112px;
+  min-height: 82px;
+
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 14px 8px;
+
+  gap: 7px;
+  padding: 10px 6px;
+
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 14px;
+
   background: var(--white);
   color: var(--text);
+
+  font-family: inherit;
   font-size: 11px;
-  font-weight: 750;
+  font-weight: 700;
+  line-height: 1.35;
+
   text-align: center;
+  overflow-wrap: anywhere;
+
+  cursor: pointer;
+
   transition:
     transform var(--transition),
     border-color var(--transition),
-    background var(--transition);
+    background-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .category-card > span {
   display: grid;
-  width: 44px;
-  height: 44px;
+
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+
   place-items: center;
-  border-radius: 14px;
+
+  border-radius: 11px;
+
   background: var(--green-light);
-  font-size: 22px;
+  color: var(--green-dark);
+
+  font-size: 19px;
+  line-height: 1;
 }
 
-.category-card:hover,
-.category-card.active {
-  transform: translateY(-2px);
+.category-card:hover {
   border-color: #b7d9c0;
   background: #f5faf2;
 }
 
 .category-card.active {
-  box-shadow: inset 0 0 0 1px #b7d9c0;
+  border-color: var(--green);
+  background: #edf7ef;
+
+  color: var(--green-dark);
+
+  box-shadow: inset 0 0 0 1px var(--green);
+  transform: translateY(-1px);
+}
+
+.category-card.active > span {
+  background: var(--green);
+  color: var(--white);
+}
+
+.category-card:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1000px) {
+  .category-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+@media (max-width: 700px) {
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .category-card {
+    min-height: 72px;
+    gap: 5px;
+    padding: 8px 4px;
+
+    border-radius: 12px;
+
+    font-size: 10px;
+  }
+
+  .category-card > span {
+    width: 29px;
+    height: 29px;
+    flex-basis: 29px;
+
+    border-radius: 9px;
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 380px) {
+  .category-grid {
+    gap: 6px;
+  }
+
+  .category-card {
+    min-height: 66px;
+    padding: 7px 3px;
+    font-size: 9px;
+  }
+
+  .category-card > span {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+    font-size: 15px;
+  }
 }
 
 /* 9. Footer */

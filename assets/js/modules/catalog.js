@@ -45,7 +45,7 @@ export function createCatalog({
     if (!categoryList) {
       return;
     }
-
+  
     const categories = [
       ...new Set(
         products
@@ -53,63 +53,85 @@ export function createCatalog({
           .map((product) => normalizeCategory(product.category)),
       ),
     ].sort((a, b) => a.localeCompare(b, "id-ID"));
-
+  
     const fragment = document.createDocumentFragment();
-
+  
     const allButton = document.createElement(
       groupedMode ? "a" : "button",
     );
-
+  
     allButton.className = groupedMode
-      ? "active"
-      : "category-card active";
-
+      ? ""
+      : "category-card";
+  
     allButton.dataset.category = "Semua";
-    allButton.setAttribute("aria-pressed", "true");
-
+    allButton.setAttribute(
+      "aria-pressed",
+      String(selectedCategory === "Semua"),
+    );
+  
     if (groupedMode) {
       allButton.href = "#";
+  
+      if (selectedCategory === "Semua") {
+        allButton.classList.add("active");
+      }
+  
       allButton.textContent = "Semua";
     } else {
       allButton.type = "button";
-
+  
       const icon = document.createElement("span");
+  
       icon.setAttribute("aria-hidden", "true");
       icon.textContent = "⌂";
-
-      allButton.append(icon, document.createTextNode(" Semua"));
+  
+      allButton.append(
+        icon,
+        document.createTextNode(" Semua"),
+      );
     }
-
+  
+    allButton.classList.toggle(
+      "active",
+      selectedCategory === "Semua",
+    );
+  
     fragment.append(allButton);
-
+  
     for (const category of categories) {
       const button = document.createElement(
         groupedMode ? "a" : "button",
       );
-
+  
+      const isActive = selectedCategory === category;
+  
       button.dataset.category = category;
-      button.setAttribute("aria-pressed", "false");
-
+      button.setAttribute("aria-pressed", String(isActive));
+  
       if (groupedMode) {
         button.href = "#";
         button.textContent = category;
       } else {
         button.type = "button";
         button.className = "category-card";
-
+  
         const icon = document.createElement("span");
+  
         icon.setAttribute("aria-hidden", "true");
         icon.textContent = "▦";
-
+  
         button.append(
           icon,
           document.createTextNode(` ${category}`),
         );
       }
-
+  
+      button.classList.toggle("active", isActive);
+  
       fragment.append(button);
     }
-
+  
     categoryList.replaceChildren(fragment);
   }
 
