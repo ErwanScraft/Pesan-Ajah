@@ -903,22 +903,42 @@ catalog.render();
 renderCart();
 
 async function initializeMarketplace() {
-  try {
-    await Promise.all([
-      loadCsrfToken(),
-      loadCatalog(),
-    ]);
-  } catch (error) {
+  const results = await Promise.allSettled([
+    loadCsrfToken(),
+    loadCatalog(),
+  ]);
+
+  const csrfResult = results[0];
+  const catalogResult = results[1];
+
+  /*
+   * Katalog gagal dimuat.
+   */
+  if (catalogResult.status === "rejected") {
     console.error(
-      "[Pesan Ajah] Gagal menginisialisasi marketplace:",
-      error,
+      "[Pesan Ajah] Katalog gagal dimuat:",
+      catalogResult.reason,
     );
 
     showToast(
       toast,
-      error instanceof Error
-        ? error.message
-        : "Marketplace gagal dimuat.",
+      catalogResult.reason instanceof Error
+        ? catalogResult.reason.message
+        : "Produk belum dapat dimuat. Silakan muat ulang halaman.",
+    );
+  }
+
+  /*
+   * Token CSRF gagal dimuat.
+   *
+   * Katalog tetap bisa ditampilkan, tetapi checkout
+   * akan mencoba memuat ulang token sebelum mengirim
+   * pesanan.
+   */
+  if (csrfResult.status === "rejected") {
+    console.error(
+      "[Pesan Ajah] Token CSRF gagal dimuat:",
+      csrfResult.reason,
     );
   }
 }

@@ -76,6 +76,11 @@ require_once __DIR__ . '/app/bootstrap.php';
         rel="stylesheet"
         href="/assets/css/style.css"
     >
+    
+    <link
+        rel="stylesheet"
+        href="/assets/css/store.css"
+    >
 
     <script
         type="module"
@@ -280,7 +285,21 @@ require_once __DIR__ . '/app/bootstrap.php';
                 <p>Pilih kategori yang kamu butuhkan.</p>
             </div>
 
-            <div class="category-grid" id="category-list">
+            <div
+                class="category-grid"
+                id="category-list"
+                aria-label="Kategori produk"
+            >
+                <button
+                    class="category-card active"
+                    type="button"
+                    data-category="Semua"
+                    aria-pressed="true"
+                >
+                    <span aria-hidden="true">⌂</span>
+                    Semua
+                </button>
+            </div>
 
                 <button
                     class="category-card active"
