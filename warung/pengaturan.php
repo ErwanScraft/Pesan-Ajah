@@ -151,6 +151,68 @@ require __DIR__ . '/_header.php';
                     required
                 >
             </label>
+            
+            <div class="store-icon-field">
+                <span class="store-icon-label">
+                    Ikon toko
+                </span>
+            
+                <div class="store-icon-preview">
+                    <img
+                        id="store-icon-preview"
+                        src="<?= !empty($store['icon_image'])
+                            ? e(url($store['icon_image']))
+                            : '' ?>"
+                        alt="Pratinjau ikon toko"
+                        <?= empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+            
+                    <div
+                        id="store-icon-placeholder"
+                        <?= !empty($store['icon_image'])
+                            ? 'hidden'
+                            : '' ?>
+                    >
+                        Ikon toko
+                    </div>
+                </div>
+            
+                <label
+                    class="button button-outline"
+                    for="store-icon-input"
+                >
+                    Pilih gambar
+                </label>
+            
+                <input
+                    type="file"
+                    id="store-icon-input"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                >
+            
+                <small class="muted">
+                    Format JPG, PNG, atau WebP. Maksimal 2 MB.
+                </small>
+            
+                <button
+                    class="button button-primary"
+                    id="save-store-icon"
+                    type="button"
+                    disabled
+                >
+                    Simpan ikon toko
+                </button>
+            
+                <p
+                    id="store-icon-feedback"
+                    class="muted"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+            </div>
 
             <label class="form-field">
                 <span>Nama pemilik</span>

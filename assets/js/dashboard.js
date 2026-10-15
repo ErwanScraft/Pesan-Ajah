@@ -1276,6 +1276,157 @@ freeDeliveryToggle?.addEventListener("change", () => {
 });
 
 /* =========================================================
+   IKON TOKO
+========================================================= */
+
+const storeIconInput = $("#store-icon-input");
+const storeIconPreview = $("#store-icon-preview");
+const storeIconPlaceholder = $("#store-icon-placeholder");
+const saveStoreIconButton = $("#save-store-icon");
+const storeIconFeedback = $("#store-icon-feedback");
+
+let selectedStoreIcon = null;
+
+storeIconInput?.addEventListener("change", () => {
+  const file = storeIconInput.files?.[0];
+
+  selectedStoreIcon = null;
+
+  if (saveStoreIconButton) {
+    saveStoreIconButton.disabled = true;
+  }
+
+  if (!file) {
+    return;
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    storeIconFeedback.textContent =
+      "Gunakan gambar JPG, PNG, atau WebP.";
+
+    storeIconInput.value = "";
+
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    storeIconFeedback.textContent =
+      "Ukuran gambar maksimal 2 MB.";
+
+    storeIconInput.value = "";
+
+    return;
+  }
+
+  const imageUrl = URL.createObjectURL(file);
+  const image = new Image();
+
+  image.onload = () => {
+    URL.revokeObjectURL(imageUrl);
+
+    if (image.width > 4096 || image.height > 4096) {
+      storeIconFeedback.textContent =
+        "Dimensi gambar maksimal 4096 × 4096 piksel.";
+
+      storeIconInput.value = "";
+
+      return;
+    }
+
+    selectedStoreIcon = file;
+
+    storeIconPreview.src = URL.createObjectURL(file);
+    storeIconPreview.hidden = false;
+    storeIconPlaceholder.hidden = true;
+
+    saveStoreIconButton.disabled = false;
+
+    storeIconFeedback.textContent =
+      "Gambar siap disimpan.";
+  };
+
+  image.onerror = () => {
+    URL.revokeObjectURL(imageUrl);
+
+    storeIconFeedback.textContent =
+      "Gambar tidak dapat dibaca.";
+
+    storeIconInput.value = "";
+  };
+
+  image.src = imageUrl;
+});
+
+saveStoreIconButton?.addEventListener("click", async () => {
+  if (!selectedStoreIcon) {
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.set("image", selectedStoreIcon);
+  formData.set("_token", csrfToken);
+
+  saveStoreIconButton.disabled = true;
+  saveStoreIconButton.textContent = "Menyimpan...";
+
+  try {
+    const response = await fetch(
+      "/warung/api/store-icon.php",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+
+        headers: {
+          Accept: "application/json",
+          "X-CSRF-Token": csrfToken,
+        },
+
+        body: formData,
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.message || "Ikon toko gagal disimpan.",
+      );
+    }
+
+    storeIconFeedback.textContent = result.message;
+
+    selectedStoreIcon = null;
+    storeIconInput.value = "";
+
+    storeIconPreview.src =
+      `/${result.icon_image}?v=${Date.now()}`;
+
+    saveStoreIconButton.disabled = true;
+
+    notify(result.message);
+  } catch (error) {
+    storeIconFeedback.textContent =
+      error instanceof Error
+        ? error.message
+        : "Ikon toko gagal disimpan.";
+  } finally {
+    saveStoreIconButton.textContent = "Simpan ikon toko";
+
+    if (selectedStoreIcon) {
+      saveStoreIconButton.disabled = false;
+    }
+  }
+});
+
+/* =========================================================
    NAVIGASI
 ========================================================= */
 

@@ -103,6 +103,7 @@ $storeStmt = database()->prepare(
         s.phone,
         s.address,
         s.description,
+        s.icon_image,
         s.is_open,
         s.free_delivery
     FROM stores s
@@ -371,7 +372,17 @@ function store_product_image_url(mixed $image): ?string
             <span class="eyebrow eyebrow-plain">
                 WARUNG LOKAL BANYUKUNING
             </span>
-
+            
+            <?php if (!empty($store['icon_image'])): ?>
+                <img
+                    class="store-profile-icon"
+                    src="/<?= e($store['icon_image']) ?>"
+                    alt="Ikon <?= e($store['name']) ?>"
+                    width="88"
+                    height="88"
+                >
+            <?php endif; ?>
+            
             <h1><?= e($store['name']) ?></h1>
 
             <p class="muted">

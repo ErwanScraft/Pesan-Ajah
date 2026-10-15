@@ -402,6 +402,73 @@
   line-height: 1.6;
 }
 
+/* Ikon toko — Pengaturan Warung */
+
+.store-icon-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.store-icon-label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.store-icon-preview {
+    display: grid;
+    width: 104px;
+    height: 104px;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.store-icon-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.store-icon-preview img[hidden],
+.store-icon-preview div[hidden] {
+    display: none;
+}
+
+.store-icon-field > small {
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.store-icon-field #save-store-icon {
+    min-width: 160px;
+}
+
+#store-icon-feedback {
+    margin: 0;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    .store-icon-preview {
+        width: 88px;
+        height: 88px;
+        border-radius: 15px;
+    }
+
+    .store-icon-field #save-store-icon {
+        width: 100%;
+    }
+}
+
 .switch-label {
   display: flex;
   min-width: 0;
@@ -716,6 +783,24 @@
   align-items: center;
 }
 
+.store-profile-icon {
+    display: block;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 18px;
+    border: 1px solid #e3e9e5;
+    border-radius: 20px;
+    background: #f5f7f2;
+    object-fit: cover;
+}
+
+@media (max-width: 480px) {
+    .store-profile-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+    }
+}
 /* ---------------------------------------------------------
    13. CATATAN DASHBOARD
 --------------------------------------------------------- */
