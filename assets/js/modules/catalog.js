@@ -313,6 +313,101 @@ export function createCatalog({
 
     return card;
   }
+  
+  /*
+  |--------------------------------------------------------------------------
+  | HEADER WARUNG PADA KATALOG MARKETPLACE
+  |--------------------------------------------------------------------------
+  */
+  
+  function createMarketplaceStoreHeader(product) {
+    const link = document.createElement("a");
+  
+    link.className = "marketplace-store-profile";
+  
+    link.href = product.store_slug
+      ? `/warung/${encodeURIComponent(product.store_slug)}`
+      : "#";
+  
+    if (!product.store_slug) {
+      link.setAttribute("aria-disabled", "true");
+      link.removeAttribute("href");
+    }
+  
+    const avatar = document.createElement("span");
+  
+    avatar.className = "marketplace-store-avatar";
+    avatar.setAttribute("aria-hidden", "true");
+  
+    const initial = String(product.store || "W")
+      .trim()
+      .charAt(0)
+      .toLocaleUpperCase("id-ID") || "W";
+  
+    const fallback = document.createElement("span");
+  
+    fallback.className = "marketplace-store-initial";
+    fallback.textContent = initial;
+  
+    avatar.append(fallback);
+  
+    if (product.store_icon_image) {
+      const image = document.createElement("img");
+  
+      image.className = "marketplace-store-icon";
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+  
+      image.addEventListener("error", () => {
+        image.hidden = true;
+        fallback.hidden = false;
+      }, { once: true });
+  
+      const validSource = setImageSource(
+        image,
+        product.store_icon_image,
+        () => {
+          image.hidden = true;
+          fallback.hidden = false;
+        },
+      );
+  
+      if (validSource) {
+        image.hidden = false;
+        fallback.hidden = true;
+        avatar.append(image);
+      }
+    }
+  
+    const identity = document.createElement("span");
+  
+    identity.className = "marketplace-store-identity";
+  
+    const name = document.createElement("strong");
+  
+    name.className = "marketplace-store-name";
+    name.textContent = product.store || "Warung";
+  
+    const owner = document.createElement("small");
+  
+    owner.className = "marketplace-store-owner";
+  
+    owner.textContent = product.store_owner
+      ? `(${product.store_owner})`
+      : "(Pemilik warung)";
+  
+    const arrow = document.createElement("span");
+  
+    arrow.className = "marketplace-store-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "→";
+  
+    identity.append(name, owner);
+    link.append(avatar, identity, arrow);
+  
+    return link;
+  }
 
   /*
   |--------------------------------------------------------------------------
@@ -390,25 +485,84 @@ export function createCatalog({
 
   /*
   |--------------------------------------------------------------------------
-  | RENDER KATALOG BERANDA
+  | RENDER KATALOG MARKETPLACE BERDASARKAN WARUNG
   |--------------------------------------------------------------------------
   */
-
+  
   function renderMarketplaceProducts(result) {
-    const fragment = document.createDocumentFragment();
-
+    const groups = new Map();
+  
+    /*
+     * Kelompokkan produk berdasarkan ID warung.
+     * Urutan warung mengikuti kemunculan pertama pada katalog.
+     */
+  
     for (const product of result) {
-      fragment.append(createProductCard(product));
+      const storeId = String(product.store_id);
+  
+      if (!groups.has(storeId)) {
+        groups.set(storeId, []);
+      }
+  
+      groups.get(storeId).push(product);
     }
-
+  
+    const fragment = document.createDocumentFragment();
+  
+    for (const [, storeProducts] of groups) {
+      if (storeProducts.length === 0) {
+        continue;
+      }
+  
+      const firstProduct = storeProducts[0];
+  
+      const section = document.createElement("section");
+  
+      section.className = "marketplace-store-section";
+  
+      section.dataset.storeId = String(firstProduct.store_id);
+  
+      /*
+       * Header profil warung.
+       */
+  
+      const header = document.createElement("div");
+  
+      header.className = "marketplace-store-header";
+  
+      header.append(
+        createMarketplaceStoreHeader(firstProduct),
+      );
+  
+      /*
+       * Daftar produk horizontal.
+       */
+  
+      const list = document.createElement("div");
+  
+      list.className = "marketplace-store-products";
+  
+      list.setAttribute("aria-label", "Produk " + (
+        firstProduct.store || "warung"
+      ));
+  
+      for (const product of storeProducts) {
+        list.append(createProductCard(product));
+      }
+  
+      section.append(header, list);
+  
+      fragment.append(section);
+    }
+  
     grid.replaceChildren(fragment);
-
+  
     grid.hidden = result.length === 0;
-
+  
     if (empty) {
       empty.hidden = result.length !== 0;
     }
-
+  
     if (total) {
       total.textContent = `${result.length} produk`;
     }

@@ -1,0 +1,397 @@
+/* =========================================================
+   PESAN AJAH — MARKETPLACE STORE LIST
+   File: assets/css/marketplace.css
+
+   Scope:
+   - Daftar warung pada beranda
+   - Header profil warung
+   - Ikon dan nama pemilik
+   - Produk horizontal per warung
+   ========================================================= */
+
+
+/* =========================================================
+   1. DAFTAR WARUNG
+   ========================================================= */
+
+#product-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+
+    min-width: 0;
+}
+
+#product-grid[hidden] {
+    display: none !important;
+}
+
+.marketplace-store-section {
+    min-width: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   2. HEADER WARUNG
+   ========================================================= */
+
+.marketplace-store-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-width: 0;
+    margin-bottom: 14px;
+}
+
+.marketplace-store-profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
+    color: var(--text);
+    text-decoration: none;
+}
+
+.marketplace-store-profile:hover {
+    color: var(--green-dark);
+}
+
+.marketplace-store-profile:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 4px;
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   3. IKON WARUNG
+   ========================================================= */
+
+.marketplace-store-avatar {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: #edf6e9;
+    color: var(--green-dark);
+}
+
+.marketplace-store-icon {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+.marketplace-store-icon[hidden] {
+    display: none !important;
+}
+
+.marketplace-store-initial {
+    display: grid;
+    place-items: center;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   4. NAMA WARUNG DAN PEMILIK
+   ========================================================= */
+
+.marketplace-store-identity {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.marketplace-store-name {
+    display: block;
+
+    overflow: hidden;
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.marketplace-store-owner {
+    display: block;
+
+    overflow: hidden;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.marketplace-store-arrow {
+    display: grid;
+    place-items: center;
+
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+
+    margin-left: auto;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    color: var(--green);
+    background: var(--white);
+
+    font-size: 18px;
+    line-height: 1;
+
+    transition:
+        color 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+}
+
+.marketplace-store-profile:hover .marketplace-store-arrow {
+    border-color: var(--green);
+    background: var(--green);
+    color: var(--white);
+
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   5. PRODUK HORIZONTAL
+   ========================================================= */
+
+.marketplace-store-products {
+    display: grid;
+
+    grid-auto-columns: 176px;
+    grid-auto-flow: column;
+    grid-template-rows: 1fr;
+
+    gap: 13px;
+
+    min-width: 0;
+    width: 100%;
+
+    padding: 2px 2px 12px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 2px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd8cb transparent;
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+.marketplace-store-products::-webkit-scrollbar {
+    height: 4px;
+}
+
+.marketplace-store-products::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.marketplace-store-products::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cbd8cb;
+}
+
+.marketplace-store-products > .product-card {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+
+    scroll-snap-align: start;
+
+    border-radius: 13px;
+    box-shadow: 0 2px 8px rgb(25 45 28 / 4%);
+
+    transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.marketplace-store-products > .product-card:hover {
+    border-color: #cbdccf;
+    box-shadow: 0 5px 14px rgb(25 45 28 / 8%);
+
+    transform: none;
+}
+
+.marketplace-store-products .product-image {
+    aspect-ratio: 4 / 3;
+}
+
+.marketplace-store-products .product-info {
+    gap: 6px;
+    padding: 11px;
+}
+
+.marketplace-store-products .product-name {
+    min-height: 2.8em;
+    font-size: 12px;
+}
+
+.marketplace-store-products .product-store {
+    font-size: 10px;
+}
+
+.marketplace-store-products .product-unit {
+    font-size: 11px;
+}
+
+.marketplace-store-products .product-price {
+    font-size: 12px;
+}
+
+.marketplace-store-products .add-button {
+    width: 33px;
+    height: 33px;
+    min-width: 33px;
+    flex-basis: 33px;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   6. TABLET
+   ========================================================= */
+
+@media (min-width: 701px) {
+    .marketplace-store-products {
+        grid-auto-columns: 190px;
+        gap: 15px;
+    }
+}
+
+
+/* =========================================================
+   7. MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+    #product-grid {
+        gap: 23px;
+    }
+
+    .marketplace-store-header {
+        margin-bottom: 11px;
+    }
+
+    .marketplace-store-avatar {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+
+        border-radius: 12px;
+    }
+
+    .marketplace-store-name {
+        font-size: 13px;
+    }
+
+    .marketplace-store-owner {
+        font-size: 10px;
+    }
+
+    .marketplace-store-arrow {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+    }
+
+    .marketplace-store-products {
+        grid-auto-columns: 150px;
+        gap: 10px;
+
+        padding-bottom: 10px;
+    }
+
+    .marketplace-store-products .product-info {
+        padding: 9px;
+    }
+
+    .marketplace-store-products .product-price {
+        font-size: 11px;
+    }
+
+    .marketplace-store-products .add-button {
+        width: 31px;
+        height: 31px;
+        min-width: 31px;
+        flex-basis: 31px;
+    }
+}
+
+
+/* =========================================================
+   8. LAYAR SANGAT KECIL
+   ========================================================= */
+
+@media (max-width: 360px) {
+    .marketplace-store-products {
+        grid-auto-columns: 138px;
+        gap: 9px;
+    }
+
+    .marketplace-store-products .product-info {
+        padding: 8px;
+    }
+}
+
+
+/* =========================================================
+   9. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .marketplace-store-arrow,
+    .marketplace-store-products > .product-card {
+        transition: none;
+    }
+}

@@ -618,3 +618,101 @@
   color: var(--muted);
   font-size: 10px;
 }
+
+/* =========================================================
+   PESAN AJAH — MARKETPLACE CATEGORY CHIPS
+   Scope: kategori pada halaman beranda
+   ========================================================= */
+
+#categories .category-grid {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 3px 2px 8px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+#categories .category-grid::-webkit-scrollbar {
+    display: none;
+}
+
+#categories .category-card {
+    display: inline-flex;
+    flex: 0 0 auto;
+
+    min-width: 0;
+    min-height: 38px;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+
+    padding: 9px 15px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--white);
+    color: var(--text);
+
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.2;
+
+    white-space: nowrap;
+    text-align: center;
+
+    box-shadow: none;
+    transform: none;
+}
+
+#categories .category-card > span {
+    display: none;
+}
+
+#categories .category-card:hover {
+    border-color: #c7ddcc;
+    background: #f7faf6;
+}
+
+#categories .category-card.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: var(--white);
+
+    box-shadow: none;
+    transform: none;
+}
+
+#categories .category-card.active > span {
+    display: none;
+}
+
+#categories .category-card:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+    #categories .category-grid {
+        gap: 8px;
+        margin-right: -2px;
+    }
+
+    #categories .category-card {
+        min-height: 36px;
+        padding: 9px 13px;
+        font-size: 11px;
+    }
+}

@@ -47,3 +47,8 @@
  * dapat menyesuaikan komponen yang sudah didefinisikan.
  */
 @import url("./responsive.css");
+
+/*
+ * 7. Tampilan katalog marketplace
+ */
+@import url("./marketplace.css");
