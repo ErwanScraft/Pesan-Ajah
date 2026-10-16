@@ -586,12 +586,83 @@ if ($storeName !== '') {
             color: #68736b;
             font-size: 12px;
         }
-
+        
+        /* Deretan produk horizontal per kategori */
         .store-page .store-category-products {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
+            display: flex;
+            align-items: stretch;
+            gap: 14px;
+        
+            width: 100%;
             min-width: 0;
+        
+            overflow-x: auto;
+            overflow-y: hidden;
+        
+            padding: 2px 2px 12px;
+        
+            scroll-snap-type: x proximity;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
+        
+            scrollbar-width: thin;
+            scrollbar-color: #cbd8ce transparent;
+        }
+        
+        /* Ukuran setiap kartu produk */
+        .store-page .store-category-products > .product-card {
+            flex: 0 0 220px;
+            width: 220px;
+            min-width: 0;
+        
+            scroll-snap-align: start;
+        }
+        
+        /* Scrollbar untuk browser berbasis WebKit */
+        .store-page .store-category-products::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .store-page .store-category-products::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .store-page .store-category-products::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            background: #cbd8ce;
+        }
+        
+        /* Tablet */
+        @media (max-width: 900px) {
+            .store-page .store-category-products {
+                gap: 12px;
+            }
+        
+            .store-page .store-category-products > .product-card {
+                flex-basis: 190px;
+                width: 190px;
+            }
+        }
+        
+        /* Mobile */
+        @media (max-width: 600px) {
+            .store-page .store-category-products {
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+        
+            .store-page .store-category-products > .product-card {
+                flex-basis: 160px;
+                width: 160px;
+            }
+        }
+        
+        /* Ponsel kecil */
+        @media (max-width: 380px) {
+            .store-page .store-category-products > .product-card {
+                flex-basis: 148px;
+                width: 148px;
+            }
         }
 
         .store-page .product-card {
@@ -731,13 +802,6 @@ if ($storeName !== '') {
            RESPONSIVE
            ================================================= */
 
-        @media (max-width: 900px) {
-            .store-page .store-category-products {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 12px;
-            }
-        }
-
         @media (max-width: 600px) {
             .store-page {
                 width: min(100% - 24px, 1120px);
@@ -774,11 +838,6 @@ if ($storeName !== '') {
 
             .store-profile-description {
                 font-size: 13px;
-            }
-
-            .store-page .store-category-products {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 10px;
             }
 
             .store-page .product-info {
@@ -821,10 +880,6 @@ if ($storeName !== '') {
 
             .store-profile-heading h1 {
                 font-size: 19px;
-            }
-
-            .store-page .store-category-products {
-                gap: 8px;
             }
 
             .store-page .product-info {
