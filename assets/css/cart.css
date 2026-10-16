@@ -1,21 +1,23 @@
+
 /* =========================================================
    PESAN AJAH — CART
    File: assets/css/cart.css
 
-   Components:
-   - Cart overlay and drawer
-   - Buyer information
-   - Selected products
-   - Fulfillment method
-   - Payment summary
-   - Checkout actions
+   Komponen:
+   - Overlay dan drawer keranjang
+   - Formulir pembeli dan lokasi
+   - Daftar produk dan kontrol jumlah
+   - Catatan pembeli
+   - Metode pesanan
+   - Ringkasan pembayaran
+   - Tombol checkout
 
-   All styles are scoped to #cart-overlay.
+   Semua selector dibatasi ke #cart-overlay.
    ========================================================= */
 
 
 /* =========================================================
-   1. VARIABLES
+   1. VARIABLES & BASE
    ========================================================= */
 
 #cart-overlay {
@@ -30,34 +32,18 @@
     --cart-border-light: #edf1ec;
 
     --cart-surface: #f7f9f6;
-    --cart-white: #ffffff;
+    --cart-white: #fff;
 
     --cart-danger: #b42318;
     --cart-danger-light: #fff1f0;
 
     --cart-radius-sm: 8px;
     --cart-radius-md: 12px;
-    --cart-radius-lg: 15px;
+    --cart-radius-lg: 16px;
 
     --cart-shadow: 0 12px 40px rgb(20 35 25 / 12%);
     --cart-transition: 180ms ease;
 
-    color: var(--cart-text);
-    box-sizing: border-box;
-}
-
-#cart-overlay *,
-#cart-overlay *::before,
-#cart-overlay *::after {
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   2. OVERLAY
-   ========================================================= */
-
-#cart-overlay {
     position: fixed;
     inset: 0;
     z-index: 1000;
@@ -68,6 +54,7 @@
 
     padding: 0;
 
+    color: var(--cart-text);
     background: rgb(17 24 19 / 45%);
 
     opacity: 0;
@@ -79,7 +66,17 @@
         visibility 220ms ease;
 }
 
-#cart-overlay[hidden] {
+#cart-overlay *,
+#cart-overlay *::before,
+#cart-overlay *::after {
+    box-sizing: border-box;
+}
+
+#cart-overlay[hidden],
+#cart-overlay .cart-empty[hidden],
+#cart-overlay .cart-footer[hidden],
+#cart-overlay .delivery-address-section[hidden],
+#cart-overlay .preview-location-link[hidden] {
     display: none !important;
 }
 
@@ -94,11 +91,12 @@
 
 
 /* =========================================================
-   3. CART DRAWER — DESKTOP
+   2. DRAWER
    ========================================================= */
 
 #cart-overlay .cart-drawer {
     position: relative;
+    isolation: isolate;
 
     display: flex;
     flex-direction: column;
@@ -108,6 +106,7 @@
     height: 100%;
     max-height: 100vh;
     max-height: 100dvh;
+
     min-width: 0;
     min-height: 0;
 
@@ -122,10 +121,7 @@
     box-shadow: var(--cart-shadow);
 
     transform: translateX(24px);
-
     transition: transform 240ms ease;
-
-    isolation: isolate;
 }
 
 #cart-overlay.active .cart-drawer,
@@ -137,7 +133,7 @@
 
 
 /* =========================================================
-   4. CART HEADER
+   3. HEADER
    ========================================================= */
 
 #cart-overlay .cart-header {
@@ -212,10 +208,15 @@
     cursor: pointer;
 
     transition:
-        background var(--cart-transition),
         color var(--cart-transition),
+        background var(--cart-transition),
         border-color var(--cart-transition),
         transform var(--cart-transition);
+}
+
+#cart-overlay .cart-close svg {
+    display: block;
+    flex: 0 0 auto;
 }
 
 #cart-overlay .cart-close:hover {
@@ -228,14 +229,9 @@
     transform: scale(0.96);
 }
 
-#cart-overlay .cart-close:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 22%);
-    outline-offset: 3px;
-}
-
 
 /* =========================================================
-   5. SCROLLABLE CONTENT
+   4. SCROLLABLE CONTENT
    ========================================================= */
 
 #cart-overlay .cart-content {
@@ -277,7 +273,7 @@
 
 
 /* =========================================================
-   6. EMPTY CART
+   5. EMPTY CART
    ========================================================= */
 
 #cart-overlay .cart-empty {
@@ -292,10 +288,6 @@
     padding: 36px 20px;
 
     text-align: center;
-}
-
-#cart-overlay .cart-empty[hidden] {
-    display: none !important;
 }
 
 #cart-overlay .cart-empty-icon {
@@ -315,6 +307,7 @@
 }
 
 #cart-overlay .cart-empty-icon svg {
+    display: block;
     width: 34px;
     height: 34px;
 }
@@ -331,7 +324,6 @@
 
 #cart-overlay .cart-empty p {
     max-width: 270px;
-
     margin: 9px 0 0;
 
     color: var(--cart-muted);
@@ -342,7 +334,7 @@
 
 
 /* =========================================================
-   7. CART FOOTER / CHECKOUT CONTENT
+   6. CHECKOUT LAYOUT
    ========================================================= */
 
 #cart-overlay .cart-footer {
@@ -352,8 +344,8 @@
 
     flex: 0 0 auto;
 
-    min-width: 0;
     width: 100%;
+    min-width: 0;
 
     margin: 0;
     padding: 0;
@@ -363,13 +355,9 @@
     box-shadow: none;
 }
 
-#cart-overlay .cart-footer[hidden] {
-    display: none !important;
-}
-
 
 /* =========================================================
-   8. SECTION HEADINGS
+   7. SECTION HEADINGS
    ========================================================= */
 
 #cart-overlay .cart-section-heading {
@@ -379,7 +367,6 @@
     gap: 12px;
 
     min-width: 0;
-
     margin: 0 0 16px;
 }
 
@@ -407,34 +394,21 @@
     line-height: 1.6;
 }
 
+/*
+ * Elemen ini dipertahankan untuk kompatibilitas markup.
+ * Jumlah produk utama sudah ditampilkan pada header.
+ */
 #cart-overlay .cart-item-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex: 0 0 auto;
-
-    min-height: 27px;
-    padding: 4px 10px;
-
-    color: var(--cart-primary);
-    background: var(--cart-primary-light);
-
-    border-radius: 999px;
-
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.4;
+    display: none;
 }
 
 
 /* =========================================================
-   9. BUYER INFORMATION
+   8. BUYER FORM
    ========================================================= */
 
 #cart-overlay .checkout-form {
     min-width: 0;
-
     margin: 0;
     padding: 0;
 }
@@ -449,7 +423,6 @@
     gap: 7px;
 
     min-width: 0;
-
     margin: 0 0 15px;
 }
 
@@ -523,7 +496,6 @@
 #cart-overlay .form-field select:disabled {
     color: var(--cart-muted);
     background: var(--cart-surface);
-
     cursor: not-allowed;
 }
 
@@ -541,16 +513,12 @@
 
 
 /* =========================================================
-   10. DELIVERY ADDRESS AND MAP
+   9. DELIVERY ADDRESS & MAP
    ========================================================= */
 
 #cart-overlay .delivery-address-section {
     min-width: 0;
     margin-top: 2px;
-}
-
-#cart-overlay .delivery-address-section[hidden] {
-    display: none !important;
 }
 
 #cart-overlay .location-picker {
@@ -572,6 +540,7 @@
     width: 100%;
     min-height: 43px;
 
+    margin: 0;
     padding: 10px 14px;
 
     color: var(--cart-primary);
@@ -611,7 +580,6 @@
 
     font-size: 12px;
     line-height: 1.6;
-
     overflow-wrap: anywhere;
 }
 
@@ -622,7 +590,6 @@
 #cart-overlay .preview-location-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
 
     width: fit-content;
     max-width: 100%;
@@ -644,18 +611,13 @@
     text-decoration: underline;
 }
 
-#cart-overlay .preview-location-link[hidden] {
-    display: none !important;
-}
-
 
 /* =========================================================
-   11. SELECTED PRODUCTS
+   10. SELECTED PRODUCTS
    ========================================================= */
 
 #cart-overlay .cart-products-section {
     min-width: 0;
-
     margin: 0;
     padding: 0;
 }
@@ -665,8 +627,8 @@
     flex-direction: column;
     gap: 12px;
 
-    min-width: 0;
     width: 100%;
+    min-width: 0;
 
     margin: 0;
     padding: 0;
@@ -694,9 +656,7 @@
     border: 1px solid var(--cart-border);
     border-radius: var(--cart-radius-md);
 
-    transition:
-        border-color var(--cart-transition),
-        background var(--cart-transition);
+    transition: border-color var(--cart-transition);
 }
 
 #cart-overlay .cart-items > .cart-item:hover,
@@ -780,7 +740,7 @@
 }
 
 
-/* Emoji product markup */
+/* Tampilan produk yang memakai emoji */
 
 #cart-overlay .cart-item-emoji {
     display: flex;
@@ -802,9 +762,10 @@
     line-height: 1;
 }
 
-
-/* Product markup with emoji, information and quantity control */
-
+/*
+ * Markup produk berbasis emoji:
+ * gambar/emoji di kolom pertama, informasi di kolom kedua.
+ */
 #cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) {
     grid-template-columns: 56px minmax(0, 1fr);
     grid-template-rows: auto auto;
@@ -840,7 +801,7 @@
 
 
 /* =========================================================
-   12. QUANTITY CONTROL
+   11. QUANTITY CONTROL
    ========================================================= */
 
 #cart-overlay .quantity-control {
@@ -943,7 +904,7 @@
 
 
 /* =========================================================
-   13. REMOVE PRODUCT
+   12. REMOVE PRODUCT
    ========================================================= */
 
 #cart-overlay .cart-item-remove,
@@ -972,8 +933,8 @@
     cursor: pointer;
 
     transition:
-        background var(--cart-transition),
-        color var(--cart-transition);
+        color var(--cart-transition),
+        background var(--cart-transition);
 }
 
 #cart-overlay .cart-item-remove:hover,
@@ -984,12 +945,35 @@
 
 
 /* =========================================================
+   13. BUYER NOTE
+   ========================================================= */
+
+#cart-overlay .buyer-note-section {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#cart-overlay .buyer-note-section .cart-section-heading {
+    margin-bottom: 12px;
+}
+
+#cart-overlay .buyer-note-section .form-field {
+    margin-bottom: 0;
+}
+
+#cart-overlay #buyer-note {
+    min-height: 84px;
+    resize: vertical;
+}
+
+
+/* =========================================================
    14. FULFILLMENT METHOD
    ========================================================= */
 
 #cart-overlay .fulfillment-section {
     min-width: 0;
-
     margin: 0;
     padding: 0;
 }
@@ -1045,7 +1029,6 @@
 #cart-overlay .fulfillment-option:has(input[type="radio"]:checked) {
     background: var(--cart-primary-light);
     border-color: var(--cart-primary);
-
     box-shadow: 0 0 0 1px rgb(23 107 69 / 5%);
 }
 
@@ -1075,9 +1058,9 @@
     border-radius: var(--cart-radius-sm);
 }
 
-/* Ikon metode pesanan: Diantar dan Ambil Sendiri */
 #cart-overlay .fulfillment-option-icon svg {
     display: block;
+
     flex: 0 0 20px;
 
     width: 20px;
@@ -1085,15 +1068,6 @@
 
     color: inherit;
     overflow: visible;
-}
-
-/* Ukuran ikon di perangkat mobile */
-@media (max-width: 600px) {
-    #cart-overlay .fulfillment-option-icon svg {
-        flex-basis: 19px;
-        width: 19px;
-        height: 19px;
-    }
 }
 
 #cart-overlay .fulfillment-copy {
@@ -1142,13 +1116,26 @@
 }
 
 
+/* Harga awal saat warung menyediakan ongkir */
+
+#cart-overlay .delivery-price-original {
+    color: var(--cart-muted);
+
+    font-size: 11px;
+    font-weight: 500;
+
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+}
+
+
 /* =========================================================
    15. PAYMENT SUMMARY
    ========================================================= */
 
 #cart-overlay .order-summary {
-    min-width: 0;
     width: 100%;
+    min-width: 0;
 
     margin: 0;
     padding: 18px;
@@ -1176,7 +1163,6 @@
     gap: 16px;
 
     min-width: 0;
-
     margin: 0 0 12px;
 }
 
@@ -1273,7 +1259,7 @@
 
 
 /* =========================================================
-   16. CHECKOUT ACTIONS
+   16. CHECKOUT BUTTON
    ========================================================= */
 
 #cart-overlay .checkout-actions {
@@ -1281,8 +1267,8 @@
     flex-direction: column;
     gap: 10px;
 
-    min-width: 0;
     width: 100%;
+    min-width: 0;
 
     margin: 0;
     padding: 0;
@@ -1357,12 +1343,6 @@
     transform: none;
 }
 
-#cart-overlay .checkout-actions button:focus-visible,
-#cart-overlay #checkout-button:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 22%);
-    outline-offset: 3px;
-}
-
 
 /* =========================================================
    17. ACCESSIBILITY
@@ -1385,7 +1365,10 @@
 }
 
 #cart-overlay button:focus-visible,
-#cart-overlay a:focus-visible {
+#cart-overlay a:focus-visible,
+#cart-overlay input:focus-visible,
+#cart-overlay textarea:focus-visible,
+#cart-overlay select:focus-visible {
     outline: 3px solid rgb(23 107 69 / 22%);
     outline-offset: 3px;
 }
@@ -1424,16 +1407,13 @@
 
 
 /* =========================================================
-   19. MOBILE BOTTOM SHEET
-   Similar interaction pattern to shopping apps.
-   Desktop remains a right-side drawer.
+   19. MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
     #cart-overlay {
         align-items: flex-end;
         justify-content: center;
-
         padding: 0;
     }
 
@@ -1460,11 +1440,9 @@
         background: var(--cart-white);
 
         border-radius: 20px 20px 0 0;
-
         box-shadow: var(--cart-shadow);
 
         transform: translateY(100%);
-
         transition: transform 280ms ease;
     }
 
@@ -1479,7 +1457,6 @@
         flex-shrink: 0;
 
         min-height: 72px;
-
         padding: 14px 16px;
 
         gap: 12px;
@@ -1533,8 +1510,10 @@
         margin-bottom: 13px;
     }
 
-    /* Prevents focus zoom on mobile browsers. */
-
+    /*
+     * Ukuran 16px mencegah zoom otomatis saat input
+     * difokuskan di sebagian browser ponsel.
+     */
     #cart-overlay .form-field input,
     #cart-overlay .form-field textarea,
     #cart-overlay .form-field select {
@@ -1598,6 +1577,12 @@
         height: 32px;
     }
 
+    #cart-overlay .fulfillment-option-icon svg {
+        flex-basis: 19px;
+        width: 19px;
+        height: 19px;
+    }
+
     #cart-overlay .fulfillment-copy strong {
         font-size: 12px;
     }
@@ -1625,7 +1610,7 @@
     }
 
     #cart-overlay .checkout-actions {
-        padding: 10px 0 0;
+        padding-top: 10px;
         padding-bottom: max(8px, env(safe-area-inset-bottom));
     }
 
@@ -1702,16 +1687,13 @@
         height: 30px;
     }
 
-    #cart-overlay .summary-row {
+    #cart-overlay .summary-row,
+    #cart-overlay .total-row {
         gap: 8px;
     }
 
     #cart-overlay .summary-row > strong {
         max-width: 55%;
-    }
-
-    #cart-overlay .total-row {
-        gap: 8px;
     }
 
     #cart-overlay .total-row > strong {
@@ -1758,35 +1740,13 @@
 @media (prefers-reduced-motion: reduce) {
     #cart-overlay,
     #cart-overlay .cart-drawer,
-    #cart-overlay button {
+    #cart-overlay button,
+    #cart-overlay a,
+    #cart-overlay input,
+    #cart-overlay textarea,
+    #cart-overlay select {
+        scroll-behavior: auto;
         transition: none !important;
         animation: none !important;
     }
-}
-
-
-/* =========================================================
-   CATATAN PEMBELI UNTUK PENJUAL
-   ========================================================= */
-
-#cart-overlay .buyer-note-section {
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-}
-
-#cart-overlay .buyer-note-section .cart-section-heading {
-    margin-bottom: 12px;
-}
-
-#cart-overlay .buyer-note-section .form-field {
-    margin-bottom: 0;
-}
-
-#cart-overlay .buyer-note-hint {
-    display: block;
-    margin-top: 2px;
-    color: var(--cart-muted);
-    font-size: 11px;
-    line-height: 1.5;
 }

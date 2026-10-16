@@ -1,3 +1,4 @@
+
 <?php
 declare(strict_types=1);
 ?>
@@ -15,6 +16,7 @@ declare(strict_types=1);
         aria-modal="true"
         aria-labelledby="cart-title"
     >
+        <!-- Header keranjang -->
         <div class="cart-header">
             <div class="cart-header-content">
                 <h2 id="cart-title">Keranjang</h2>
@@ -66,14 +68,22 @@ declare(strict_types=1);
                             stroke-linecap="round"
                             stroke-linejoin="round"
                         />
-                        <circle cx="10" cy="20" r="1.2" fill="currentColor"/>
-                        <circle cx="18" cy="20" r="1.2" fill="currentColor"/>
+                        <circle
+                            cx="10"
+                            cy="20"
+                            r="1.2"
+                            fill="currentColor"
+                        />
+                        <circle
+                            cx="18"
+                            cy="20"
+                            r="1.2"
+                            fill="currentColor"
+                        />
                     </svg>
                 </div>
 
                 <h3>Keranjang masih kosong</h3>
-
-                <p>Pilih produk yang ingin kamu pesan.</p>
 
                 <button
                     class="button button-primary"
@@ -84,10 +94,10 @@ declare(strict_types=1);
                 </button>
             </div>
 
-            <!-- Isi checkout -->
+            <!-- Form checkout -->
             <div class="cart-footer" id="cart-footer" hidden>
 
-                <!-- Data pemesan -->
+                <!-- Data pembeli -->
                 <section
                     class="checkout-form"
                     id="checkout-form-section"
@@ -96,7 +106,6 @@ declare(strict_types=1);
                     <div class="cart-section-heading">
                         <div>
                             <h3 id="buyer-heading">Data pemesan</h3>
-                            <p>Informasi untuk pesananmu</p>
                         </div>
                     </div>
 
@@ -196,7 +205,7 @@ declare(strict_types=1);
                     </div>
                 </section>
 
-                <!-- Produk pilihan -->
+                <!-- Produk dalam keranjang -->
                 <section
                     class="cart-products-section"
                     aria-labelledby="cart-products-heading"
@@ -206,10 +215,9 @@ declare(strict_types=1);
                             <h3 id="cart-products-heading">
                                 Produk pilihan
                             </h3>
-
-                            <p>Periksa pesananmu</p>
                         </div>
 
+                        <!-- Dipertahankan untuk kompatibilitas JavaScript -->
                         <span class="cart-item-count">
                             <span id="cart-count-items">0</span>
                             item
@@ -221,33 +229,29 @@ declare(strict_types=1);
                         id="cart-items"
                     ></div>
                 </section>
-                
-                <!-- Catatan pembeli untuk penjual -->
+
+                <!-- Catatan pembeli -->
                 <section
                     class="buyer-note-section"
                     aria-labelledby="buyer-note-heading"
                 >
                     <div class="cart-section-heading">
                         <div>
-                            <h3 id="buyer-note-heading">Catatan untuk penjual</h3>
-                            <p>Tambahkan pesan khusus untuk pesananmu (opsional)</p>
+                            <h3 id="buyer-note-heading">
+                                Catatan untuk penjual
+                            </h3>
                         </div>
                     </div>
-                
+
                     <div class="form-field">
-                        <label for="buyer-note">Catatan pembeli</label>
-                
                         <textarea
                             id="buyer-note"
                             name="buyer_note"
-                            placeholder="Contoh: jangan terlalu pedas, pilih buah yang matang..."
+                            aria-label="Catatan untuk penjual (opsional)"
+                            placeholder="Contoh: jangan terlalu pedas..."
                             rows="3"
                             maxlength="500"
                         ></textarea>
-                
-                        <small class="buyer-note-hint">
-                            Maksimal 500 karakter. Catatan akan dikirim ke WhatsApp penjual.
-                        </small>
                     </div>
                 </section>
 
@@ -261,8 +265,6 @@ declare(strict_types=1);
                             <h3 id="fulfillment-heading">
                                 Metode pesanan
                             </h3>
-
-                            <p>Pilih cara menerima pesanan</p>
                         </div>
                     </div>
 
@@ -271,6 +273,7 @@ declare(strict_types=1);
                             Pilih metode pesanan
                         </legend>
 
+                        <!-- Diantar -->
                         <label class="fulfillment-option">
                             <input
                                 type="radio"
@@ -279,7 +282,10 @@ declare(strict_types=1);
                                 checked
                             >
 
-                            <span class="fulfillment-option-icon" aria-hidden="true">
+                            <span
+                                class="fulfillment-option-icon"
+                                aria-hidden="true"
+                            >
                                 <svg
                                     viewBox="0 0 24 24"
                                     fill="none"
@@ -329,6 +335,7 @@ declare(strict_types=1);
                             </span>
                         </label>
 
+                        <!-- Ambil sendiri -->
                         <label class="fulfillment-option">
                             <input
                                 type="radio"
@@ -336,7 +343,10 @@ declare(strict_types=1);
                                 value="pickup"
                             >
 
-                            <span class="fulfillment-option-icon" aria-hidden="true">
+                            <span
+                                class="fulfillment-option-icon"
+                                aria-hidden="true"
+                            >
                                 <svg
                                     viewBox="0 0 24 24"
                                     fill="none"
@@ -399,7 +409,7 @@ declare(strict_types=1);
                     ></p>
                 </section>
 
-                <!-- Checkout -->
+                <!-- Tombol checkout -->
                 <div class="checkout-actions">
                     <button
                         class="button button-primary button-full"
