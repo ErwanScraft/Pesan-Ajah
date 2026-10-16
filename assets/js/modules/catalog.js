@@ -303,11 +303,11 @@ export function createCatalog({
   |--------------------------------------------------------------------------
   */
   
+
   function createMarketplaceStoreHeader(product) {
     const link = document.createElement("a");
   
     link.className = "marketplace-store-profile";
-  
     link.href = product.store_slug
       ? `/warung/${encodeURIComponent(product.store_slug)}`
       : "#";
@@ -317,21 +317,20 @@ export function createCatalog({
       link.removeAttribute("href");
     }
   
+    // Ikon warung
     const avatar = document.createElement("span");
-  
     avatar.className = "marketplace-store-avatar";
     avatar.setAttribute("aria-hidden", "true");
   
-    const initial = String(product.store || "W")
-      .trim()
-      .charAt(0)
-      .toLocaleUpperCase("id-ID") || "W";
+    const initial =
+      String(product.store || "W")
+        .trim()
+        .charAt(0)
+        .toLocaleUpperCase("id-ID") || "W";
   
     const fallback = document.createElement("span");
-  
     fallback.className = "marketplace-store-initial";
     fallback.textContent = initial;
-  
     avatar.append(fallback);
   
     if (product.store_icon_image) {
@@ -342,10 +341,14 @@ export function createCatalog({
       image.loading = "lazy";
       image.decoding = "async";
   
-      image.addEventListener("error", () => {
-        image.hidden = true;
-        fallback.hidden = false;
-      }, { once: true });
+      image.addEventListener(
+        "error",
+        () => {
+          image.hidden = true;
+          fallback.hidden = false;
+        },
+        { once: true },
+      );
   
       const validSource = setImageSource(
         image,
@@ -363,31 +366,41 @@ export function createCatalog({
       }
     }
   
+    // Nama warung dan pemilik
     const identity = document.createElement("span");
-  
     identity.className = "marketplace-store-identity";
   
     const name = document.createElement("strong");
-  
     name.className = "marketplace-store-name";
     name.textContent = product.store || "Warung";
   
     const owner = document.createElement("small");
-  
     owner.className = "marketplace-store-owner";
-  
     owner.textContent = product.store_owner
-      ? `(${product.store_owner})`
-      : "(Pemilik warung)";
+      ? `Pemilik: ${product.store_owner}`
+      : "Pemilik warung";
   
-    const arrow = document.createElement("span");
+    // Status warung di sisi kanan header
+    const isOpen = Boolean(product.store_is_open);
   
-    arrow.className = "marketplace-store-arrow";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "→";
+    const status = document.createElement("span");
+    status.className = [
+      "marketplace-store-status",
+      isOpen ? "is-open" : "is-closed",
+    ].join(" ");
   
+    const statusDot = document.createElement("span");
+    statusDot.className = "marketplace-store-status-dot";
+    statusDot.setAttribute("aria-hidden", "true");
+  
+    const statusText = document.createElement("span");
+    statusText.textContent = isOpen ? "Buka" : "Tutup";
+  
+    status.append(statusDot, statusText);
+  
+    // Status menjadi elemen kanan, bukan bagian identitas pemilik
     identity.append(name, owner);
-    link.append(avatar, identity, arrow);
+    link.append(avatar, identity, status);
   
     return link;
   }

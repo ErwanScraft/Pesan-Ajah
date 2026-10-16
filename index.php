@@ -157,15 +157,88 @@ require_once __DIR__ . '/app/bootstrap.php';
                 </div>
 
                 <!-- PESAN AJAH: HOMEPAGE BANNER -->
-                <section class="homepage-banner" aria-label="Banner Pesan Ajah">
-                    <div class="homepage-banner__slide">
-                        <img
-                            src="/assets/images/banner_1.webp"
-                            alt="Belanja kebutuhan harian di Pesan Ajah"
-                            class="homepage-banner__image"
-                            fetchpriority="high"
-                        >
+                <?php
+                $homepageBanners = [
+                    [
+                        'image' => '/assets/images/banner_1.webp',
+                        'alt' => 'Belanja kebutuhan harian di Pesan Ajah',
+                    ],
+                
+                    // Tambahkan banner berikutnya di sini:
+                    // [
+                    //     'image' => '/assets/images/banner_2.webp',
+                    //     'alt' => 'Promo belanja Pesan Ajah',
+                    // ],
+                ];
+                
+                $homepageBanners = array_values(array_filter(
+                    $homepageBanners,
+                    static fn (array $banner): bool =>
+                        !empty($banner['image'])
+                ));
+                ?>
+                
+                <section
+                    class="homepage-banner<?= count($homepageBanners) > 1 ? ' has-multiple-slides' : '' ?>"
+                    id="homepage-banner"
+                    aria-label="Banner Pesan Ajah"
+                    data-banner-carousel
+                >
+                    <div class="homepage-banner__track" data-banner-track>
+                        <?php foreach ($homepageBanners as $index => $banner): ?>
+                            <div
+                                class="homepage-banner__slide"
+                                data-banner-slide
+                                aria-hidden="<?= $index === 0 ? 'false' : 'true' ?>"
+                            >
+                                <img
+                                    class="homepage-banner__image"
+                                    src="<?= htmlspecialchars(
+                                        $banner['image'],
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    ) ?>"
+                                    alt="<?= htmlspecialchars(
+                                        $banner['alt'] ?? '',
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    ) ?>"
+                                    width="1200"
+                                    height="400"
+                                    <?= $index === 0
+                                        ? 'fetchpriority="high" loading="eager"'
+                                        : 'loading="lazy"' ?>
+                                    decoding="async"
+                                >
+                            </div>
+                        <?php endforeach; ?>
                     </div>
+                
+                    <?php if (count($homepageBanners) > 1): ?>
+                        <button
+                            class="homepage-banner__control homepage-banner__control--prev"
+                            type="button"
+                            aria-label="Banner sebelumnya"
+                            data-banner-prev
+                        >
+                            <span aria-hidden="true">‹</span>
+                        </button>
+                
+                        <button
+                            class="homepage-banner__control homepage-banner__control--next"
+                            type="button"
+                            aria-label="Banner berikutnya"
+                            data-banner-next
+                        >
+                            <span aria-hidden="true">›</span>
+                        </button>
+                
+                        <div
+                            class="homepage-banner__dots"
+                            aria-label="Pilih banner"
+                            data-banner-dots
+                        ></div>
+                    <?php endif; ?>
                 </section>
 
             </div>

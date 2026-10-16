@@ -127,8 +127,57 @@
     flex: 1 1 auto;
     flex-direction: column;
     gap: 3px;
-
     min-width: 0;
+}
+
+.marketplace-store-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    flex: 0 0 auto;
+    margin-left: auto;
+    padding: 6px 10px;
+
+    border: 1px solid transparent;
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.marketplace-store-status.is-open {
+    color: #176b45;
+    background: #eff9f1;
+    border-color: #cce8d3;
+}
+
+.marketplace-store-status.is-closed {
+    color: #a52a2a;
+    background: #fff3f3;
+    border-color: #f0d5d5;
+}
+
+.marketplace-store-status-dot {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.marketplace-store-profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    width: 100%;
+    min-width: 0;
+    color: var(--text);
+    text-decoration: none;
 }
 
 .marketplace-store-name {
@@ -161,40 +210,25 @@
     white-space: nowrap;
 }
 
-.marketplace-store-arrow {
-    display: grid;
-    place-items: center;
+/* Mobile */
+@media (max-width: 700px) {
+    .marketplace-store-profile {
+        gap: 9px;
+    }
 
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
-
-    margin-left: auto;
-
-    border: 1px solid var(--border);
-    border-radius: 50%;
-
-    color: var(--green);
-    background: var(--white);
-
-    font-size: 18px;
-    line-height: 1;
-
-    transition:
-        color 180ms ease,
-        background-color 180ms ease,
-        border-color 180ms ease,
-        transform 180ms ease;
+    .marketplace-store-status {
+        gap: 5px;
+        padding: 5px 8px;
+        font-size: 10px;
+    }
 }
 
-.marketplace-store-profile:hover .marketplace-store-arrow {
-    border-color: var(--green);
-    background: var(--green);
-    color: var(--white);
-
-    transform: translateX(2px);
+@media (prefers-reduced-motion: reduce) {
+    .marketplace-store-profile,
+    .marketplace-store-status {
+        transition: none;
+    }
 }
-
 
 /* =========================================================
    5. PRODUK HORIZONTAL

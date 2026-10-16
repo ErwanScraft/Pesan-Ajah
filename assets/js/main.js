@@ -3,6 +3,7 @@ import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
 import { showToast } from "./modules/toast.js";
 import { formatRupiah } from "./modules/format.js";
+import { initBannerCarousel } from "./modules/banner.js";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -897,6 +898,8 @@ if (currentYear) {
 | Inisialisasi
 |--------------------------------------------------------------------------
 */
+
+initBannerCarousel();
 
 catalog = createCatalog({
   products,
