@@ -79,6 +79,7 @@ try {
             p.price,
             p.unit,
             p.image,
+            p.tag,
             p.is_available,
 
             s.name AS store_name,
@@ -165,9 +166,11 @@ try {
          * kode frontend lain tidak langsung rusak.
          */
         $product['emoji'] = '';
-        
-        $product['tag'] = '';
-    }
+
+        $product['tag'] = is_string($product['tag'] ?? null)
+            ? trim($product['tag'])
+            : '';
+            }
 
     unset($product);
 

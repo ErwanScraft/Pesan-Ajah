@@ -276,6 +276,19 @@ function validate_product_input(array $input): array
             'message' => 'Harga harus berupa bilangan bulat positif.',
         ], 422);
     }
+    
+    $tag = trim(
+        is_string($input['tag'] ?? null)
+            ? $input['tag']
+            : ''
+    );
+    
+    if (mb_strlen($tag, 'UTF-8') > 40) {
+        api_json([
+            'success' => false,
+            'message' => 'Label produk maksimal 40 karakter.',
+        ], 422);
+    }
 
     return [
         'name' => $name,
@@ -288,6 +301,7 @@ function validate_product_input(array $input): array
         'available' => product_available_value(
             $input['available'] ?? true
         ),
+        'tag' => $tag !== '' ? $tag : null,
     ];
 }
 
@@ -307,6 +321,7 @@ if ($method === 'GET') {
             price,
             unit,
             image,
+            tag,
             is_available,
             created_at,
             updated_at
@@ -320,6 +335,7 @@ if ($method === 'GET') {
 
     $stmt->execute([
         'store_id' => $storeId,
+        'tag' => $data['tag'],
     ]);
 
     api_json([
@@ -474,6 +490,7 @@ if ($method === 'POST' || $method === 'PUT') {
                     price = :price,
                     unit = :unit,
                     image = :image,
+                    tag = :tag,
                     is_available = :is_available
                  WHERE id = :id
                    AND store_id = :store_id'
@@ -486,6 +503,7 @@ if ($method === 'POST' || $method === 'PUT') {
                 'price' => $data['price'],
                 'unit' => $data['unit'],
                 'image' => $imageToSave,
+                'tag' => $data['tag'],
                 'is_available' => $data['available'] ? 1 : 0,
                 'id' => $id,
                 'store_id' => $storeId,

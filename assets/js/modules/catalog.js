@@ -251,23 +251,6 @@ export function createCatalog({
     const info = document.createElement("div");
     info.className = "product-info";
 
-    const store = document.createElement("div");
-    store.className = "product-store";
-
-    if (product.store_slug) {
-      const storeLink = document.createElement("a");
-
-      storeLink.className = "store-product-store-link";
-      storeLink.href =
-        `/warung/${encodeURIComponent(product.store_slug)}`;
-
-      storeLink.textContent = product.store || "Warung";
-
-      store.append(storeLink);
-    } else {
-      store.textContent = product.store || "Warung";
-    }
-
     const name = document.createElement("h3");
 
     name.className = "product-name";
@@ -308,7 +291,7 @@ export function createCatalog({
       : "–";
 
     bottom.append(price, addButton);
-    info.append(store, name, unit, bottom);
+    info.append(name, unit, bottom);
     card.append(image, info);
 
     return card;

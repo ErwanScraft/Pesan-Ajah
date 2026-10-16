@@ -542,6 +542,7 @@ function renderProducts() {
         description: product.description || "",
         price: product.price,
         unit: product.unit,
+        tag: product.tag || "",
         available: nextValue,
       });
 
@@ -785,6 +786,10 @@ function editProduct(id) {
   productForm.elements.price.value = String(product.price);
   productForm.elements.unit.value = product.unit;
   
+  if (productForm.elements.tag) {
+    productForm.elements.tag.value = product.tag || "";
+  }
+  
   currentProductImage = product.image || null;
   selectedProductImage = null;
   
@@ -870,6 +875,7 @@ if (productForm) {
       category: String(formData.get("category") || "").trim(),
       price: Number(formData.get("price")),
       unit: String(formData.get("unit") || "").trim(),
+      tag: String(formData.get("tag") || "").trim(),
       description: String(
         formData.get("description") || "",
       ).trim(),
@@ -897,6 +903,7 @@ if (productForm) {
     requestData.set("category", payload.category);
     requestData.set("price", String(payload.price));
     requestData.set("unit", payload.unit);
+    requestData.set("tag", payload.tag);
     requestData.set("description", payload.description);
     requestData.set("available", String(payload.available));
 
