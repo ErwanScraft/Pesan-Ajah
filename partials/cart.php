@@ -221,6 +221,35 @@ declare(strict_types=1);
                         id="cart-items"
                     ></div>
                 </section>
+                
+                <!-- Catatan pembeli untuk penjual -->
+                <section
+                    class="buyer-note-section"
+                    aria-labelledby="buyer-note-heading"
+                >
+                    <div class="cart-section-heading">
+                        <div>
+                            <h3 id="buyer-note-heading">Catatan untuk penjual</h3>
+                            <p>Tambahkan pesan khusus untuk pesananmu (opsional)</p>
+                        </div>
+                    </div>
+                
+                    <div class="form-field">
+                        <label for="buyer-note">Catatan pembeli</label>
+                
+                        <textarea
+                            id="buyer-note"
+                            name="buyer_note"
+                            placeholder="Contoh: jangan terlalu pedas, pilih buah yang matang..."
+                            rows="3"
+                            maxlength="500"
+                        ></textarea>
+                
+                        <small class="buyer-note-hint">
+                            Maksimal 500 karakter. Catatan akan dikirim ke WhatsApp penjual.
+                        </small>
+                    </div>
+                </section>
 
                 <!-- Metode pesanan -->
                 <section

@@ -622,10 +622,13 @@ async function submitCheckout() {
 
       store_id: product.store_id,
 
+      
       buyer_name: buyerName,
       buyer_phone: buyerPhone,
-
+      buyer_note: $("#buyer-note")?.value.trim() ?? "",
+      
       delivery_method: deliveryMethod,
+
 
       delivery_address:
         deliveryMethod === "delivery"

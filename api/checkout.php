@@ -127,7 +127,18 @@ $buyerPhone = trim(
 
 $buyerPhoneNormalized = checkout_phone($buyerPhone);
 
+$buyerNote = trim(
+    is_string($input['buyer_note'] ?? null)
+        ? str_replace(
+            ["\r\n", "\r"],
+            "\n",
+            $input['buyer_note']
+        )
+        : ''
+);
+
 $deliveryMethod = $input['delivery_method'] ?? '';
+
 
 $deliveryAddress = trim(
     is_string($input['delivery_address'] ?? null)
@@ -589,11 +600,26 @@ try {
     $message[] = $orderNumber;
     $message[] = '';
     $message[] = '*Data Pembeli*';
+    
     $message[] = 'Nama: ' . $buyerName;
     $message[] = 'WhatsApp: ' . $buyerPhone;
     $message[] = '';
     
+    if ($buyerNote !== '') {
+        $message[] = '*Catatan Pembeli untuk Penjual*';
+        $message[] = $buyerNote;
+        $message[] = '';
+    }
+    
     $message[] = '*Metode Pesanan*';
+    
+    if (mb_strlen($buyerNote, 'UTF-8') > 500) {
+        checkout_json([
+            'success' => false,
+            'message' => 'Catatan pembeli maksimal 500 karakter.',
+        ], 422);
+    }
+
     
     if ($deliveryMethod === 'delivery') {
         $message[] = 'Diantar ke alamat';

@@ -1763,3 +1763,30 @@
         animation: none !important;
     }
 }
+
+
+/* =========================================================
+   CATATAN PEMBELI UNTUK PENJUAL
+   ========================================================= */
+
+#cart-overlay .buyer-note-section {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+#cart-overlay .buyer-note-section .cart-section-heading {
+    margin-bottom: 12px;
+}
+
+#cart-overlay .buyer-note-section .form-field {
+    margin-bottom: 0;
+}
+
+#cart-overlay .buyer-note-hint {
+    display: block;
+    margin-top: 2px;
+    color: var(--cart-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
