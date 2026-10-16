@@ -94,88 +94,10 @@ require_once __DIR__ . '/app/bootstrap.php';
          HEADER
          ===================================================== -->
 
-    <header class="site-header">
-        <div class="container header-inner">
-
-            <a
-                class="brand"
-                href="/"
-                aria-label="Pesan Ajah — Beranda"
-            >
-                <img
-                    class="brand-logo"
-                    src="/assets/images/logo.webp"
-                    alt=""
-                    width="44"
-                    height="44"
-                >
-
-                <span class="brand-text">
-                    <strong>Pesan Ajah</strong>
-                    <small>Belanja dekat, jadi mudah.</small>
-                </span>
-            </a>
-
-            <div class="location">
-                <span class="pin" aria-hidden="true">⌖</span>
-
-                <span>
-                    <small>Wilayah layanan</small>
-                    <strong>Banyukuning</strong>
-                </span>
-            </div>
-
-            <div class="header-actions">
-
-                <a
-                    class="text-link dashboard-link"
-                    href="/user/"
-                >
-                    Dashboard Buyer
-                </a>
-
-                <button
-                    class="cart-trigger"
-                    id="cart-trigger"
-                    type="button"
-                    aria-label="Buka keranjang belanja"
-                    title="Keranjang belanja"
-                >
-                    <svg
-                        class="cart-icon"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-
-                        <circle
-                            cx="10"
-                            cy="20"
-                            r="1.2"
-                            fill="currentColor"
-                        />
-
-                        <circle
-                            cx="18"
-                            cy="20"
-                            r="1.2"
-                            fill="currentColor"
-                        />
-                    </svg>
-
-                    <span class="count" id="cart-count">0</span>
-                </button>
-
-            </div>
-        </div>
-    </header>
+    <?php
+    $isStorePage = false;
+    require __DIR__ . '/_header.php';
+    ?>
 
     <main>
 
@@ -413,38 +335,7 @@ require_once __DIR__ . '/app/bootstrap.php';
          FOOTER
          ===================================================== -->
 
-    <footer class="site-footer">
-
-        <div class="container footer-inner">
-
-            <a
-                class="brand"
-                href="/"
-                aria-label="Pesan Ajah — Beranda"
-            >
-                <img
-                    class="brand-logo"
-                    src="/assets/images/logo.webp"
-                    alt=""
-                    width="44"
-                    height="44"
-                >
-
-                <span class="brand-text">
-                    <strong>Pesan Ajah</strong>
-                    <small>Belanja dekat, jadi mudah.</small>
-                </span>
-            </a>
-
-            <p>Marketplace warung lokal Banyukuning.</p>
-
-            <small>
-                © <span id="current-year"></span> Pesan Ajah
-            </small>
-
-        </div>
-
-    </footer>
+    <?php require __DIR__ . '/_footer.php'; ?>
 
     <!-- =====================================================
          KERANJANG BERSAMA
