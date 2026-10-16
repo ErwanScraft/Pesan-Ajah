@@ -132,6 +132,8 @@ CREATE TABLE IF NOT EXISTS products (
         NOT NULL DEFAULT 'pcs',
 
     image VARCHAR(255) DEFAULT NULL,
+    
+    tag VARCHAR(40) DEFAULT NULL,
 
     is_available TINYINT(1)
         NOT NULL DEFAULT 1,

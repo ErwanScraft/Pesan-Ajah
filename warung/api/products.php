@@ -335,7 +335,6 @@ if ($method === 'GET') {
 
     $stmt->execute([
         'store_id' => $storeId,
-        'tag' => $data['tag'],
     ]);
 
     api_json([
@@ -455,6 +454,7 @@ if ($method === 'POST' || $method === 'PUT') {
                     price,
                     unit,
                     image,
+                    tag,
                     is_available
                 ) VALUES (
                     :store_id,
@@ -464,10 +464,11 @@ if ($method === 'POST' || $method === 'PUT') {
                     :price,
                     :unit,
                     :image,
+                    :tag,
                     :is_available
                 )'
             );
-
+            
             $stmt->execute([
                 'store_id' => $storeId,
                 'name' => $data['name'],
@@ -476,6 +477,7 @@ if ($method === 'POST' || $method === 'PUT') {
                 'price' => $data['price'],
                 'unit' => $data['unit'],
                 'image' => $imageToSave,
+                'tag' => $data['tag'],
                 'is_available' => $data['available'] ? 1 : 0,
             ]);
 
