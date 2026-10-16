@@ -251,7 +251,40 @@ declare(strict_types=1);
                             >
 
                             <span class="fulfillment-option-icon" aria-hidden="true">
-                                Antar
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M3 7.5H14V17H3V7.5Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M14 11H18L21 14.5V17H14V11Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linejoin="round"
+                                    />
+                                    <circle
+                                        cx="7"
+                                        cy="17.5"
+                                        r="2"
+                                        fill="white"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                    />
+                                    <circle
+                                        cx="18"
+                                        cy="17.5"
+                                        r="2"
+                                        fill="white"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                    />
+                                </svg>
                             </span>
 
                             <span class="fulfillment-copy">
@@ -275,7 +308,24 @@ declare(strict_types=1);
                             >
 
                             <span class="fulfillment-option-icon" aria-hidden="true">
-                                Ambil
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M5 8H19L20 21H4L5 8Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linejoin="round"
+                                    />
+                                    <path
+                                        d="M9 9V6.5C9 4.84 10.34 3.5 12 3.5C13.66 3.5 15 4.84 15 6.5V9"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
                             </span>
 
                             <span class="fulfillment-copy">
