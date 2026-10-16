@@ -135,7 +135,7 @@ require_once __DIR__ . '/app/bootstrap.php';
                 </a>
 
                 <button
-                    class="button button-primary cart-trigger"
+                    class="cart-trigger"
                     id="cart-trigger"
                     type="button"
                     aria-label="Buka keranjang belanja"
