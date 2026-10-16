@@ -605,13 +605,6 @@ async function submitCheckout() {
     return;
   }
 
-  /*
-   * Buka tab kosong langsung dari aksi klik.
-   * WhatsApp baru dibuka setelah database mengonfirmasi
-   * bahwa pesanan berhasil disimpan.
-   */
-  const whatsappWindow = window.open("about:blank", "_blank");
-
   checkoutButton.disabled = true;
 
   const originalText = checkoutButton.textContent;
@@ -747,17 +740,37 @@ async function submitCheckout() {
       `Pesanan ${result.order_number} tersimpan dengan status menunggu konfirmasi.`,
     );
 
-    if (result.whatsapp_url) {
-      if (whatsappWindow && !whatsappWindow.closed) {
-        whatsappWindow.location.href = result.whatsapp_url;
-      } else {
-        window.location.href = result.whatsapp_url;
+    if (
+      typeof result.whatsapp_url === "string"
+      && result.whatsapp_url
+    ) {
+      try {
+        sessionStorage.setItem(
+          "pesan_ajah_checkout_redirect",
+          JSON.stringify({
+            order_number: result.order_number,
+            whatsapp_url: result.whatsapp_url,
+          }),
+        );
+      } catch {
+        showToast(
+          toast,
+          "Pesanan tersimpan, tetapi informasi tujuan WhatsApp tidak dapat disimpan. Silakan hubungi seller secara manual.",
+        );
+    
+        return;
       }
+    
+      window.location.href =
+        "/checkout-info.php?order=" +
+        encodeURIComponent(result.order_number);
     } else {
-      whatsappWindow?.close();
+      showToast(
+        toast,
+        "Pesanan berhasil disimpan, tetapi tautan WhatsApp seller tidak tersedia.",
+      );
     }
   } catch (error) {
-    whatsappWindow?.close();
 
     showToast(
       toast,
