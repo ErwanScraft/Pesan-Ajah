@@ -156,35 +156,17 @@ require_once __DIR__ . '/app/bootstrap.php';
 
                 </div>
 
-                <div
-                    class="hero-card"
-                    aria-label="Ilustrasi belanja kebutuhan harian"
-                >
-                    <div class="hero-circle"></div>
-
-                    <div class="mini-receipt">
-                        <span>DAFTAR BELANJA</span>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <b>✓ Siap dipesan</b>
+                <!-- PESAN AJAH: HOMEPAGE BANNER -->
+                <section class="homepage-banner" aria-label="Banner Pesan Ajah">
+                    <div class="homepage-banner__slide">
+                        <img
+                            src="/assets/images/banner_1.webp"
+                            alt="Belanja kebutuhan harian di Pesan Ajah"
+                            class="homepage-banner__image"
+                            fetchpriority="high"
+                        >
                     </div>
-
-                    <div class="grocery-bag">
-                        <span class="bag-handle"></span>
-                        <strong>P.</strong>
-                        <small>Belanja lokal</small>
-                    </div>
-
-                    <div class="floating-label">
-                        <span class="check-mark">✓</span>
-
-                        <span>
-                            <b>Warung sekitar</b>
-                            <small>Dukung usaha lokal</small>
-                        </span>
-                    </div>
-                </div>
+                </section>
 
             </div>
         </section>
