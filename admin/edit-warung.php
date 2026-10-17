@@ -45,7 +45,7 @@ if (request_is_post()) {
     verify_csrf();
 
     $name = trim((string) ($_POST['name'] ?? ''));
-    $owner = trim((string) ($_POST['owner'] ?? ''));
+    $owner = trim((string) ($_POST['owner_name'] ?? ''));
     $phone = trim((string) ($_POST['phone'] ?? ''));
     $address = trim((string) ($_POST['address'] ?? ''));
     $description = trim((string) ($_POST['description'] ?? ''));
@@ -145,7 +145,7 @@ if (request_is_post()) {
                  SET
                     name = :name,
                     slug = :slug,
-                    owner = :owner,
+                    owner_name = :owner,
                     phone = :phone,
                     address = :address,
                     description = :description,
@@ -156,7 +156,7 @@ if (request_is_post()) {
             $updateStore->execute([
                 'name' => $name,
                 'slug' => $slug,
-                'owner' => $owner,
+                'owner_name' => $owner,
                 'phone' => $phone !== '' ? $phone : null,
                 'address' => $address,
                 'description' => $description !== ''
@@ -225,7 +225,7 @@ if (request_is_post()) {
     $store = array_merge($store, [
         'name' => $name,
         'slug' => $slug,
-        'owner' => $owner,
+        'owner_name' => $owner,
         'phone' => $phone,
         'address' => $address,
         'description' => $description,
@@ -344,7 +344,7 @@ if (request_is_post()) {
                         <input
                             name="owner"
                             maxlength="80"
-                            value="<?= e($store['owner']) ?>"
+                            value="<?= e($store['owner_name']) ?>"
                             required
                         >
                     </label>

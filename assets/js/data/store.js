@@ -6,7 +6,7 @@ const STORAGE_KEY = storeId
 
 export const defaultStoreSettings = {
   name: "",
-  owner: "",
+  owner_name: "",
   phone: "",
   address: "",
   description: "",

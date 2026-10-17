@@ -12,7 +12,7 @@ if (request_method() === 'GET') {
 
         'settings' => [
             'name' => $store['name'],
-            'owner' => $store['owner'],
+            'owner_name' => $store['owner_name'],
             'phone' => $store['phone'],
             'address' => $store['address'],
             'description' => $store['description'],
@@ -118,7 +118,7 @@ $name = api_required_text(
 );
 
 $owner = api_required_text(
-    $input['owner'] ?? null,
+    $input['owner_name'] ?? null,
     'Nama pemilik',
     80
 );
@@ -156,7 +156,7 @@ $stmt = database()->prepare(
 
     SET
         name = :name,
-        owner = :owner,
+        owner_name = :owner,
         phone = :phone,
         address = :address,
         description = :description
@@ -166,7 +166,7 @@ $stmt = database()->prepare(
 
 $stmt->execute([
     'name' => $name,
-    'owner' => $owner,
+    'owner_name' => $owner,
     'phone' => $phone !== '' ? $phone : null,
     'address' => $address,
     'description' => $description !== '' ? $description : null,

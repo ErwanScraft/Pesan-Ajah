@@ -27,7 +27,7 @@ $recentStores = $pdo->query(
         s.id,
         s.name,
         s.slug,
-        s.owner,
+        s.owner_name,
         s.is_active,
         s.created_at
      FROM stores s
@@ -322,7 +322,7 @@ $error = flash('error');
                             <tr>
                                 <td><?= e($store['name']) ?></td>
 
-                                <td><?= e($store['owner']) ?></td>
+                                <td><?= e($store['owner_name']) ?></td>
 
                                 <td>
                                     <a

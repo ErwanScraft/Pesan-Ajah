@@ -33,7 +33,7 @@ function require_store_owner(): array
             s.id AS store_id,
             s.name,
             s.slug,
-            s.owner,
+            s.owner_name,
             s.phone,
             s.address,
             s.description,

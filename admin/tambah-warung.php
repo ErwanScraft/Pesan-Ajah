@@ -29,7 +29,7 @@ if (request_is_post()) {
     verify_csrf();
 
     $name = trim((string) ($_POST['name'] ?? ''));
-    $owner = trim((string) ($_POST['owner'] ?? ''));
+    $owner = trim((string) ($_POST['owner_name'] ?? ''));
     $username = trim((string) ($_POST['username'] ?? ''));
     $phone = trim((string) ($_POST['phone'] ?? ''));
     $address = trim((string) ($_POST['address'] ?? ''));
@@ -173,7 +173,7 @@ if (request_is_post()) {
                     user_id,
                     name,
                     slug,
-                    owner,
+                    owner_name,
                     phone,
                     address,
                     description,
@@ -198,7 +198,7 @@ if (request_is_post()) {
                 'user_id' => $userId,
                 'name' => $name,
                 'slug' => $slug,
-                'owner' => $owner,
+                'owner_name' => $owner,
                 'phone' => $phone !== '' ? $phone : null,
                 'address' => $address,
                 'description' => $description !== ''

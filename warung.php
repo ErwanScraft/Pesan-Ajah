@@ -46,7 +46,7 @@ $storeStmt = database()->prepare(
         s.id,
         s.name,
         s.slug,
-        s.owner,
+        s.owner_name,
         s.phone,
         s.address,
         s.description,
@@ -88,7 +88,7 @@ $storeName = trim(
 );
 
 $storeOwner = trim(
-    (string) ($store['owner'] ?? '')
+    (string) ($store['owner_name'] ?? '')
 );
 
 $storeDescription = trim(

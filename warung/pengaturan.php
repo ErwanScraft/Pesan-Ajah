@@ -315,7 +315,7 @@ require __DIR__ . '/_header.php';
                     name="owner"
                     maxlength="80"
                     autocomplete="name"
-                    value="<?= e($store['owner'] ?? '') ?>"
+                    value="<?= e($store['owner_name'] ?? '') ?>"
                     required
                 >
             </label>

@@ -11,7 +11,7 @@ $stmt = database()->query(
         s.id,
         s.name,
         s.slug,
-        s.owner,
+        s.owner_name,
         s.phone,
         s.is_open,
         s.free_delivery,
@@ -133,7 +133,7 @@ $stores = $stmt->fetchAll();
                         <tr>
                             <td><?= e($store['name']) ?></td>
 
-                            <td><?= e($store['owner']) ?></td>
+                            <td><?= e($store['owner_name']) ?></td>
 
                             <td><?= e($store['username']) ?></td>
 
