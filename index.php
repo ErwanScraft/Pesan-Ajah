@@ -162,13 +162,14 @@ require_once __DIR__ . '/app/bootstrap.php';
                     [
                         'image' => '/assets/images/banner_1.webp',
                         'alt' => 'Belanja kebutuhan harian di Pesan Ajah',
+                        'url' => '',
                     ],
                 
-                    // Tambahkan banner berikutnya di sini:
-                    // [
-                    //     'image' => '/assets/images/banner_2.webp',
-                    //     'alt' => 'Promo belanja Pesan Ajah',
-                    // ],
+                    [
+                        'image' => '/assets/images/banner_2.webp',
+                        'alt' => 'Warung Teras Rambutan',
+                        'url' => 'https://www.pesanajah.web.id/warung/terasrambutan',
+                    ],
                 ];
                 
                 $homepageBanners = array_values(array_filter(
@@ -191,25 +192,19 @@ require_once __DIR__ . '/app/bootstrap.php';
                                 data-banner-slide
                                 aria-hidden="<?= $index === 0 ? 'false' : 'true' ?>"
                             >
-                                <img
-                                    class="homepage-banner__image"
-                                    src="<?= htmlspecialchars(
-                                        $banner['image'],
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>"
-                                    alt="<?= htmlspecialchars(
-                                        $banner['alt'] ?? '',
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>"
-                                    width="1200"
-                                    height="400"
-                                    <?= $index === 0
-                                        ? 'fetchpriority="high" loading="eager"'
-                                        : 'loading="lazy"' ?>
-                                    decoding="async"
-                                >
+                                <?php if (!empty($banner['url'])): ?>
+                                    <a href="<?= htmlspecialchars($banner['url'], ENT_QUOTES, 'UTF-8') ?>">
+                                        <img
+                                            src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
+                                            alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
+                                        >
+                                    </a>
+                                <?php else: ?>
+                                    <img
+                                        src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
+                                        alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
+                                    >
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
