@@ -1,3 +1,4 @@
+
 export function initBannerCarousel(root = document) {
   const carousel = root.querySelector("[data-banner-carousel]");
 
@@ -9,37 +10,25 @@ export function initBannerCarousel(root = document) {
   const slides = [
     ...carousel.querySelectorAll("[data-banner-slide]"),
   ];
-  const dotsContainer = carousel.querySelector("[data-banner-dots]");
-  const previousButton = carousel.querySelector("[data-banner-prev]");
-  const nextButton = carousel.querySelector("[data-banner-next]");
 
-  if (!track || slides.length <= 1 || !dotsContainer) {
+  if (!track || slides.length <= 1) {
     return;
   }
 
+  const interval = 5000;
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  );
+
   let activeIndex = 0;
-
-  const dots = slides.map((slide, index) => {
-    const dot = document.createElement("button");
-
-    dot.type = "button";
-    dot.className = "homepage-banner__dot";
-    dot.setAttribute("aria-label", `Tampilkan banner ${index + 1}`);
-
-    dot.addEventListener("click", () => {
-      showSlide(index);
-    });
-
-    dotsContainer.append(dot);
-
-    return dot;
-  });
+  let autoplayTimer = null;
+  let scrollTimer = null;
 
   function normalizeIndex(index) {
     return (index + slides.length) % slides.length;
   }
 
-  function showSlide(index) {
+  function updateActiveSlide(index) {
     activeIndex = normalizeIndex(index);
 
     slides.forEach((slide, slideIndex) => {
@@ -48,47 +37,102 @@ export function initBannerCarousel(root = document) {
         String(slideIndex !== activeIndex),
       );
     });
+  }
 
-    dots.forEach((dot, dotIndex) => {
-      const isActive = dotIndex === activeIndex;
-
-      dot.classList.toggle("is-active", isActive);
-      dot.setAttribute("aria-current", String(isActive));
-    });
+  function showSlide(index) {
+    updateActiveSlide(index);
 
     track.scrollTo({
-      left: slides[activeIndex].offsetLeft,
-      behavior: window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches
-        ? "auto"
-        : "smooth",
+      left: activeIndex * track.clientWidth,
+      behavior: reducedMotion.matches ? "auto" : "smooth",
     });
   }
 
-  previousButton?.addEventListener("click", () => {
-    showSlide(activeIndex - 1);
-  });
+  function stopAutoplay() {
+    if (autoplayTimer !== null) {
+      window.clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+  }
 
-  nextButton?.addEventListener("click", () => {
-    showSlide(activeIndex + 1);
-  });
+  function startAutoplay() {
+    stopAutoplay();
 
-  let scrollTimer;
+    if (document.hidden) {
+      return;
+    }
 
-  track.addEventListener("scroll", () => {
-    window.clearTimeout(scrollTimer);
+    autoplayTimer = window.setInterval(() => {
+      showSlide(activeIndex + 1);
+    }, interval);
+  }
 
-    scrollTimer = window.setTimeout(() => {
-      const slideWidth = track.clientWidth;
+  function pauseAutoplay() {
+    stopAutoplay();
+  }
 
-      if (slideWidth > 0) {
-        showSlide(
+  function resumeAutoplay() {
+    startAutoplay();
+  }
+
+  /* Sinkronisasi ketika pengguna menggeser banner dengan jari. */
+  track.addEventListener(
+    "scroll",
+    () => {
+      window.clearTimeout(scrollTimer);
+
+      scrollTimer = window.setTimeout(() => {
+        const slideWidth = track.clientWidth;
+
+        if (slideWidth <= 0) {
+          return;
+        }
+
+        updateActiveSlide(
           Math.round(track.scrollLeft / slideWidth),
         );
-      }
-    }, 100);
-  }, { passive: true });
+      }, 100);
+    },
+    { passive: true },
+  );
 
-  showSlide(0);
+  /* Hentikan sementara saat banner sedang diarahkan pengguna. */
+  carousel.addEventListener("mouseenter", pauseAutoplay);
+  carousel.addEventListener("mouseleave", resumeAutoplay);
+
+  carousel.addEventListener("focusin", pauseAutoplay);
+
+  carousel.addEventListener("focusout", (event) => {
+    if (!carousel.contains(event.relatedTarget)) {
+      resumeAutoplay();
+    }
+  });
+
+  carousel.addEventListener("touchstart", pauseAutoplay, {
+    passive: true,
+  });
+
+  carousel.addEventListener("touchend", resumeAutoplay, {
+    passive: true,
+  });
+
+  carousel.addEventListener("touchcancel", resumeAutoplay, {
+    passive: true,
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pauseAutoplay();
+    } else {
+      resumeAutoplay();
+    }
+  });
+
+  /* Pertahankan posisi slide saat ukuran layar berubah. */
+  window.addEventListener("resize", () => {
+    showSlide(activeIndex);
+  });
+
+  updateActiveSlide(0);
+  startAutoplay();
 }

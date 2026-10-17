@@ -193,14 +193,19 @@ require_once __DIR__ . '/app/bootstrap.php';
                                 aria-hidden="<?= $index === 0 ? 'false' : 'true' ?>"
                             >
                                 <?php if (!empty($banner['url'])): ?>
-                                    <a href="<?= htmlspecialchars($banner['url'], ENT_QUOTES, 'UTF-8') ?>">
+                                    <a
+                                        href="<?= htmlspecialchars($banner['url'], ENT_QUOTES, 'UTF-8') ?>"
+                                        aria-label="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
+                                    >
                                         <img
+                                            class="homepage-banner__image"
                                             src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
                                             alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
                                         >
                                     </a>
                                 <?php else: ?>
                                     <img
+                                        class="homepage-banner__image"
                                         src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
                                         alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
                                     >
@@ -208,34 +213,7 @@ require_once __DIR__ . '/app/bootstrap.php';
                             </div>
                         <?php endforeach; ?>
                     </div>
-                
-                    <?php if (count($homepageBanners) > 1): ?>
-                        <button
-                            class="homepage-banner__control homepage-banner__control--prev"
-                            type="button"
-                            aria-label="Banner sebelumnya"
-                            data-banner-prev
-                        >
-                            <span aria-hidden="true">‹</span>
-                        </button>
-                
-                        <button
-                            class="homepage-banner__control homepage-banner__control--next"
-                            type="button"
-                            aria-label="Banner berikutnya"
-                            data-banner-next
-                        >
-                            <span aria-hidden="true">›</span>
-                        </button>
-                
-                        <div
-                            class="homepage-banner__dots"
-                            aria-label="Pilih banner"
-                            data-banner-dots
-                        ></div>
-                    <?php endif; ?>
                 </section>
-
             </div>
         </section>
 
