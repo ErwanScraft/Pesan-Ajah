@@ -592,32 +592,247 @@
   }
 }
 
-/* 9. Footer */
 
-.site-footer {
-  border-top: 1px solid var(--border);
-  background: #f5f8f2;
+/* =========================================
+   PESAN AJAH — MODERN FOOTER
+========================================= */
+
+.pa-footer {
+    position: relative;
+    overflow: hidden;
+    margin-top: 64px;
+    color: #f4faf5;
+    background: #105538;
 }
 
-.footer-inner {
-  display: flex;
-  min-height: 112px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  padding-block: 26px;
+.pa-footer::before {
+    position: absolute;
+    top: -130px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    border: 1px solid rgb(255 255 255 / 8%);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
 }
 
-.footer-inner > p {
-  margin-bottom: 0;
-  font-size: 11px;
+.pa-footer::after {
+    position: absolute;
+    top: -80px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border: 1px solid rgb(255 255 255 / 8%);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
 }
 
-.footer-inner > small {
-  color: var(--muted);
-  font-size: 10px;
+.pa-footer__container {
+    position: relative;
+    z-index: 1;
+    width: min(100% - 40px, 1120px);
+    margin-inline: auto;
 }
+
+.pa-footer__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(130px, 1fr) minmax(160px, 1fr);
+    gap: 48px;
+    padding-block: 56px 44px;
+}
+
+.pa-footer__brand {
+    max-width: 390px;
+}
+
+.pa-footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    font-size: 23px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.pa-footer__logo img {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.pa-footer__description {
+    max-width: 360px;
+    margin: 20px 0 24px;
+    color: #d0e2d5;
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+.pa-footer__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 46px;
+    padding: 12px 18px;
+    border: 1px solid #ddf2a5;
+    border-radius: 10px;
+    color: #173d27;
+    background: #ddf2a5;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background-color 180ms ease,
+        transform 180ms ease;
+}
+
+.pa-footer__cta:hover {
+    transform: translateY(-2px);
+    background: #e9f8c5;
+}
+
+.pa-footer__column h2 {
+    margin: 7px 0 20px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.pa-footer__column ul {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pa-footer__column a {
+    color: #d0e2d5;
+    font-size: 14px;
+    line-height: 1.6;
+    text-decoration: none;
+    transition: color 180ms ease;
+}
+
+.pa-footer__column a:hover {
+    color: #ddf2a5;
+}
+
+.pa-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 70px;
+    padding-block: 18px;
+    border-top: 1px solid rgb(255 255 255 / 14%);
+}
+
+.pa-footer__bottom p {
+    margin: 0;
+    color: #c1d8c8;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.pa-footer__bottom a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #ddf2a5;
+    font-size: 12px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.pa-footer__bottom a:hover {
+    color: #fff;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .pa-footer__main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 36px 28px;
+        padding-block: 42px 32px;
+    }
+
+    .pa-footer__brand {
+        grid-column: 1 / -1;
+        max-width: 480px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .pa-footer {
+        margin-top: 44px;
+    }
+
+    .pa-footer__container {
+        width: calc(100% - 32px);
+    }
+
+    .pa-footer__main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 30px 18px;
+        padding-block: 34px 28px;
+    }
+
+    .pa-footer__logo {
+        font-size: 21px;
+    }
+
+    .pa-footer__logo img {
+        width: 42px;
+        height: 42px;
+    }
+
+    .pa-footer__description {
+        margin-block: 16px 20px;
+        font-size: 13px;
+    }
+
+    .pa-footer__cta {
+        width: 100%;
+        padding-inline: 12px;
+        font-size: 13px;
+    }
+
+    .pa-footer__column h2 {
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+    .pa-footer__column ul {
+        gap: 12px;
+    }
+
+    .pa-footer__column a {
+        font-size: 13px;
+    }
+
+    .pa-footer__bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding-block: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pa-footer__cta,
+    .pa-footer__column a {
+        transition: none;
+    }
+}
+
 
 /* =========================================================
    PESAN AJAH — MARKETPLACE CATEGORY CHIPS
