@@ -203,16 +203,14 @@ if (
 
 $stmt = database()->prepare(
     'UPDATE stores
-
     SET
         name = :name,
-        owner_name = :owner,
+        owner_name = :owner_name,
         phone = :phone,
         address = :address,
         latitude = :latitude,
         longitude = :longitude,
         description = :description
-
     WHERE id = :store_id'
 );
 
@@ -229,5 +227,5 @@ $stmt->execute([
 
 api_json([
     'success' => true,
-    'message' => 'Profil warung berhasil disimpan.',
+    'message' => 'Pengaturan warung berhasil disimpan.',
 ]);
