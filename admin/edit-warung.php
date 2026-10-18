@@ -342,7 +342,7 @@ if (request_is_post()) {
                         <span>Nama pemilik</span>
 
                         <input
-                            name="owner"
+                            name="owner_name"
                             maxlength="80"
                             value="<?= e($store['owner_name']) ?>"
                             required

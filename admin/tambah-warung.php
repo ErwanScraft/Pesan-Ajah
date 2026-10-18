@@ -358,7 +358,7 @@ if (request_is_post()) {
                         <span>Nama pemilik *</span>
 
                         <input
-                            name="owner"
+                            name="owner_name"
                             value="<?= e($owner) ?>"
                             maxlength="80"
                             required
