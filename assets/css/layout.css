@@ -721,6 +721,37 @@
     color: #111;
 }
 
+.pa-footer__contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pa-footer__contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.pa-footer__contact-icon {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+}
+
+.pa-footer__contact-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.pa-footer__description {
+    line-height: 1.7;
+}
+
+
 @media (max-width: 768px) {
     .pa-footer__main {
         grid-template-columns: repeat(2, minmax(0, 1fr));
