@@ -130,7 +130,7 @@ $homepageBanners = array_values(array_filter(
 
                     <h1>
                         Belanja kebutuhan harian,
-                        <span>tanpa ribet.</span>
+                        <span>Lebih Praktis.</span>
                     </h1>
 
                     <p>
@@ -148,7 +148,7 @@ $homepageBanners = array_values(array_filter(
                         <input
                             id="search-input"
                             type="search"
-                            placeholder="Cari produk atau nama warung..."
+                            placeholder="Cari produk atau nama warung."
                             aria-label="Cari produk atau warung"
                         >
 
@@ -214,7 +214,7 @@ $homepageBanners = array_values(array_filter(
             <div class="section-heading">
                 <div>
                     <h2 id="category-title">
-                        Kategori belanja
+                        Kategori
                     </h2>
                 </div>
             </div>
@@ -243,14 +243,14 @@ $homepageBanners = array_values(array_filter(
         >
             <div class="section-heading">
                 <div>
-                    <h2>Produk warung</h2>
+                    <h2>Produk</h2>
                 </div>
 
                 <span
                     class="muted"
                     id="product-total"
                 >
-                    Memuat produk...
+                    Memuat...
                 </span>
             </div>
 
