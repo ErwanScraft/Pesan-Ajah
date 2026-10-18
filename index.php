@@ -1,3 +1,4 @@
+
 <?php
 
 declare(strict_types=1);
@@ -15,7 +16,26 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/app/bootstrap.php';
 
+$homepageBanners = [
+    [
+        'image' => '/assets/images/banner_1.webp',
+        'alt' => 'Belanja kebutuhan harian di Pesan Ajah',
+        'url' => '',
+    ],
+    [
+        'image' => '/assets/images/banner_2.webp',
+        'alt' => 'Warung Teras Rambutan',
+        'url' => 'https://www.pesanajah.web.id/warung/terasrambutan',
+    ],
+];
+
+$homepageBanners = array_values(array_filter(
+    $homepageBanners,
+    static fn (array $banner): bool => !empty($banner['image'])
+));
+
 ?>
+
 <!doctype html>
 <html lang="id">
 <head>
@@ -32,7 +52,7 @@ require_once __DIR__ . '/app/bootstrap.php';
 
     <meta
         name="description"
-        content="Pesan Ajah adalah marketplace warung lokal Banyukuning. Temukan produk kebutuhan harian, pesan dari warung sekitar, lalu pilih layanan antar atau ambil sendiri."
+        content="Belanja kebutuhan harian dari warung lokal Banyukuning dengan mudah."
     >
 
     <meta name="robots" content="index, follow">
@@ -76,7 +96,7 @@ require_once __DIR__ . '/app/bootstrap.php';
         rel="stylesheet"
         href="/assets/css/style.css"
     >
-    
+
     <link
         rel="stylesheet"
         href="/assets/css/store.css"
@@ -90,10 +110,7 @@ require_once __DIR__ . '/app/bootstrap.php';
 
 <body data-marketplace-page="true">
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
+    <!-- HEADER -->
     <?php
     $isStorePage = false;
     require __DIR__ . '/_header.php';
@@ -101,19 +118,11 @@ require_once __DIR__ . '/app/bootstrap.php';
 
     <main>
 
-        <!-- =================================================
-             HERO
-             ================================================= -->
-
+        <!-- HERO -->
         <section class="hero">
             <div class="container hero-layout">
 
                 <div class="hero-copy">
-
-                    <span class="eyebrow">
-                        <span class="dot"></span>
-                        Marketplace lokal Banyukuning
-                    </span>
 
                     <h1>
                         Belanja kebutuhan harian,
@@ -121,9 +130,8 @@ require_once __DIR__ . '/app/bootstrap.php';
                     </h1>
 
                     <p>
-                        Temukan kebutuhan dari warung sekitar.
-                        Pilih produk, masukkan keranjang, dan
-                        siapkan pesananmu dengan mudah.
+                        Belanja kebutuhan harian dari warung sekitar
+                        dengan mudah.
                     </p>
 
                     <form
@@ -148,44 +156,19 @@ require_once __DIR__ . '/app/bootstrap.php';
                         </button>
                     </form>
 
-                    <div class="hero-points">
-                        <span>✓ Warung lokal</span>
-                        <span>✓ Pesan praktis</span>
-                        <span>✓ Antar atau ambil sendiri</span>
-                    </div>
-
                 </div>
 
-                <!-- PESAN AJAH: HOMEPAGE BANNER -->
-                <?php
-                $homepageBanners = [
-                    [
-                        'image' => '/assets/images/banner_1.webp',
-                        'alt' => 'Belanja kebutuhan harian di Pesan Ajah',
-                        'url' => '',
-                    ],
-                
-                    [
-                        'image' => '/assets/images/banner_2.webp',
-                        'alt' => 'Warung Teras Rambutan',
-                        'url' => 'https://www.pesanajah.web.id/warung/terasrambutan',
-                    ],
-                ];
-                
-                $homepageBanners = array_values(array_filter(
-                    $homepageBanners,
-                    static fn (array $banner): bool =>
-                        !empty($banner['image'])
-                ));
-                ?>
-                
+                <!-- BANNER -->
                 <section
                     class="homepage-banner<?= count($homepageBanners) > 1 ? ' has-multiple-slides' : '' ?>"
                     id="homepage-banner"
                     aria-label="Banner Pesan Ajah"
                     data-banner-carousel
                 >
-                    <div class="homepage-banner__track" data-banner-track>
+                    <div
+                        class="homepage-banner__track"
+                        data-banner-track
+                    >
                         <?php foreach ($homepageBanners as $index => $banner): ?>
                             <div
                                 class="homepage-banner__slide"
@@ -214,13 +197,11 @@ require_once __DIR__ . '/app/bootstrap.php';
                         <?php endforeach; ?>
                     </div>
                 </section>
+
             </div>
         </section>
 
-        <!-- =====================================================
-             KATEGORI BELANJA
-             ===================================================== -->
-        
+        <!-- KATEGORI -->
         <section
             class="container section"
             id="categories"
@@ -228,25 +209,12 @@ require_once __DIR__ . '/app/bootstrap.php';
         >
             <div class="section-heading">
                 <div>
-                    <span class="eyebrow eyebrow-plain">
-                        MULAI DARI SINI
-                    </span>
-        
                     <h2 id="category-title">
                         Kategori belanja
                     </h2>
                 </div>
-        
-                <p>
-                    Pilih kategori yang kamu butuhkan.
-                </p>
             </div>
-        
-            <!--
-                Kategori dibuat secara dinamis oleh catalog.js.
-                Jangan menambahkan tombol kategori statis di luar
-                container ini agar tidak terjadi duplikasi.
-            -->
+
             <div
                 class="category-grid"
                 id="category-list"
@@ -264,29 +232,20 @@ require_once __DIR__ . '/app/bootstrap.php';
             </div>
         </section>
 
-        <!-- =================================================
-             KATALOG PRODUK
-             ================================================= -->
-
+        <!-- KATALOG PRODUK -->
         <section
             class="container section products-section"
             id="products"
         >
-
             <div class="section-heading">
                 <div>
-                    <span class="eyebrow eyebrow-plain">
-                        PILIHAN UNTUKMU
-                    </span>
-
                     <h2>Produk warung</h2>
-
-                    <p class="muted">
-                        Temukan produk yang tersedia dari warung lokal.
-                    </p>
                 </div>
 
-                <span class="muted" id="product-total">
+                <span
+                    class="muted"
+                    id="product-total"
+                >
                     Memuat produk...
                 </span>
             </div>
@@ -317,25 +276,17 @@ require_once __DIR__ . '/app/bootstrap.php';
                     Lihat semua produk
                 </button>
             </div>
-
         </section>
 
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
+    </main>
 
+    <!-- FOOTER -->
     <?php require __DIR__ . '/_footer.php'; ?>
 
-    <!-- =====================================================
-         KERANJANG BERSAMA
-         ===================================================== -->
-
+    <!-- KERANJANG -->
     <?php require __DIR__ . '/partials/cart.php'; ?>
 
-    <!-- =====================================================
-         NOTIFIKASI
-         ===================================================== -->
-
+    <!-- NOTIFIKASI -->
     <div
         class="toast"
         id="toast"
