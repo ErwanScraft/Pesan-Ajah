@@ -595,36 +595,6 @@ async function useCurrentLocation() {
 }
 
 async function submitCheckout() {
-
-  if (
-    deliveryMethod === "delivery" &&
-    !product.store_free_delivery
-  ) {
-    const buyerLat = Number(deliveryLatitude);
-    const buyerLon = Number(deliveryLongitude);
-  
-    if (!deliveryLatitude || !deliveryLongitude) {
-      showToast(
-        toast,
-        "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
-      );
-      return;
-    }
-  
-    if (
-      !Number.isFinite(buyerLat) ||
-      !Number.isFinite(buyerLon) ||
-      !Number.isFinite(product.store_latitude) ||
-      !Number.isFinite(product.store_longitude)
-    ) {
-      showToast(
-        toast,
-        "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
-      );
-      return;
-    }
-  }
-
   if (cart.quantity() === 0) {
     showToast(toast, "Keranjang masih kosong.");
     return;
@@ -658,6 +628,36 @@ async function submitCheckout() {
 
   const deliveryLongitude =
     $("#delivery-longitude")?.value.trim() ?? "";
+
+  // Validasi lokasi sebelum checkout.
+  if (
+    deliveryMethod === "delivery" &&
+    !product.store_free_delivery
+  ) {
+    const buyerLat = Number(deliveryLatitude);
+    const buyerLon = Number(deliveryLongitude);
+
+    if (!deliveryLatitude || !deliveryLongitude) {
+      showToast(
+        toast,
+        "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
+      );
+      return;
+    }
+
+    if (
+      !Number.isFinite(buyerLat) ||
+      !Number.isFinite(buyerLon) ||
+      !Number.isFinite(product.store_latitude) ||
+      !Number.isFinite(product.store_longitude)
+    ) {
+      showToast(
+        toast,
+        "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
+      );
+      return;
+    }
+  }
 
   if (!buyerName || buyerName.length > 100) {
     showToast(toast, "Nama pembeli wajib diisi.");

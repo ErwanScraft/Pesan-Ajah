@@ -302,9 +302,9 @@ try {
             s.is_open,
             s.free_delivery,
             s.is_active,
-            u.is_active AS user_is_active          
+            u.is_active AS user_is_active,
             s.latitude,
-            s.longitude,
+            s.longitude
 
         FROM stores s
 
