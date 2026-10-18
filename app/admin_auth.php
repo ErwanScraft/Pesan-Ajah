@@ -31,32 +31,6 @@ function admin_credentials(): array
 }
 
 /**
- * Membaca kredensial admin dari .env.
- */
-function admin_credentials(): array
-{
-    $username = trim((string) env('ADMIN_USERNAME', ''));
-    $password = (string) env('ADMIN_PASSWORD', '');
-
-    if ($username === '' || $password === '') {
-        throw new RuntimeException(
-            'ADMIN_USERNAME dan ADMIN_PASSWORD wajib dikonfigurasi.'
-        );
-    }
-
-    if (strlen($username) > 50) {
-        throw new RuntimeException(
-            'ADMIN_USERNAME maksimal 50 karakter.'
-        );
-    }
-
-    return [
-        'username' => $username,
-        'password' => $password,
-    ];
-}
-
-/**
  * Autentikasi admin sepenuhnya menggunakan .env.
  * Tidak mengakses tabel users atau database.
  */
