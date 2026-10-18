@@ -67,6 +67,10 @@ CREATE TABLE IF NOT EXISTS stores (
     phone VARCHAR(25) DEFAULT NULL,
 
     address VARCHAR(255) DEFAULT NULL,
+    
+    latitude DECIMAL(10,7) DEFAULT NULL,
+    
+    longitude DECIMAL(10,7) DEFAULT NULL,
 
     logo VARCHAR(255) DEFAULT NULL,
 
@@ -238,6 +242,8 @@ CREATE TABLE IF NOT EXISTS orders (
 
     delivery_fee INT UNSIGNED
         NOT NULL DEFAULT 0,
+        
+    delivery_distance_km DECIMAL(8,3) DEFAULT NULL,
 
     subtotal INT UNSIGNED
         NOT NULL DEFAULT 0,
