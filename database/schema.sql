@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 
     username VARCHAR(100) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
 
     role ENUM('admin', 'warung')
         NOT NULL DEFAULT 'warung',
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS stores (
 
     owner_name VARCHAR(150) DEFAULT NULL,
 
-    phone VARCHAR(25) NOT NULL,
+    phone VARCHAR(25) DEFAULT NULL,
 
     address VARCHAR(255) DEFAULT NULL,
 
