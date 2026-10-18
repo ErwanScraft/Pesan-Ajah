@@ -312,7 +312,7 @@ require __DIR__ . '/_header.php';
                 <span>Nama pemilik</span>
 
                 <input
-                    name="owner"
+                    name="owner_name"
                     maxlength="80"
                     autocomplete="name"
                     value="<?= e($store['owner_name'] ?? '') ?>"

@@ -1191,7 +1191,7 @@ async function loadSettings() {
   if (settingsForm) {
     for (const key of [
       "name",
-      "owner",
+      "owner_name",
       "phone",
       "address",
       "description",
@@ -1269,7 +1269,7 @@ if (settingsForm) {
     
     const payload = {
       name: String(formData.get("name") || "").trim(),
-      owner_name: String(formData.get("owner") || "").trim(),
+      owner_name: String(formData.get("owner_name") || "").trim(),
       phone: String(formData.get("phone") || "").trim(),
       address: String(formData.get("address") || "").trim(),
       description: String(
@@ -1285,7 +1285,7 @@ if (settingsForm) {
 
     if (
       !payload.name
-      || !payload.owner
+      || !payload.owner_name
       || !payload.address
     ) {
       notify("Nama warung, pemilik, dan alamat wajib diisi.");
