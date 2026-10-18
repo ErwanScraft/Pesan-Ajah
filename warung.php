@@ -202,7 +202,7 @@ foreach ($categoryStmt->fetchAll() as $row) {
 
 $categoryOrder = array_flip($productCategories);
 
-sort(
+usort(
     $categories,
     static function (string $a, string $b) use ($categoryOrder): int {
         $positionA = $categoryOrder[$a] ?? PHP_INT_MAX;
