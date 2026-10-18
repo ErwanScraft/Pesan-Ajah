@@ -8,8 +8,9 @@ declare(strict_types=1);
     <div class="container pa-footer__container">
 
         <div class="pa-footer__main">
-            <div class="pa-footer__brand">
 
+            <!-- Deskripsi aplikasi -->
+            <section class="pa-footer__brand" aria-labelledby="footer-brand">
                 <a
                     class="pa-footer__logo"
                     href="/"
@@ -17,75 +18,85 @@ declare(strict_types=1);
                 >
                     <img
                         src="/assets/images/logo.webp"
-                        alt="Logo Pesan Ajah"
-                        width="48"
-                        height="48"
+                        alt=""
+                        width="42"
+                        height="42"
                         loading="lazy"
                     >
-
-                    <span>Pesan Ajah</span>
+                    <span id="footer-brand">Pesan Ajah</span>
                 </a>
+
+                <h2 class="pa-footer__heading">
+                    Deskripsi Aplikasi
+                </h2>
 
                 <p class="pa-footer__description">
-                    Punya warung? Yuk, gabung di Pesan Ajah!
-                    Sudah punya akun? Login dan kelola warungmu di sini.
+                    Pesan Ajah memudahkan kamu menemukan produk
+                    dan berbelanja dari warung lokal.
                 </p>
+            </section>
 
-                <a
-                    class="pa-footer__cta"
-                    href="/warung/login.php"
-                >
-                    Masuk Dashboard Warung
-                    <span aria-hidden="true">&rarr;</span>
-                </a>
-
-            </div>
-
-            <div class="pa-footer__column">
-                <h2>Jelajahi</h2>
+            <!-- Navigasi -->
+            <nav class="pa-footer__column" aria-label="Navigasi footer">
+                <h2>Navigasi</h2>
 
                 <ul>
-                    <li>
-                        <a href="/">Beranda</a>
-                    </li>
-                    <li>
-                        <a href="/#categories">Kategori Produk</a>
-                    </li>
-                    <li>
-                        <a href="/#products">Daftar Produk</a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="pa-footer__column">
-                <h2>Untuk Warung</h2>
-
-                <ul>
-                    <li>
-                        <a href="/warung/login.php">
-                            Masuk Pemilik Warung
-                        </a>
-                    </li>
+                    <li><a href="/">Beranda</a></li>
                     <li>
                         <a href="/warung/login.php">
                             Dashboard Warung
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="https://github.com/ErwanScraft/Pesan-Ajah/commits/main/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Changelog
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://github.com/ErwanScraft/Pesan-Ajah"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            About Us
+                        </a>
+                    </li>
                 </ul>
-            </div>
+            </nav>
+
+            <!-- Kontak -->
+            <section class="pa-footer__column" aria-labelledby="footer-contact">
+                <h2 id="footer-contact">Contact Us</h2>
+
+                <ul>
+                    <li>
+                        <a
+                            href="https://wa.me/6282140008843"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            WhatsApp
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:support@pesanajah.web.id">
+                            Email
+                        </a>
+                    </li>
+                </ul>
+            </section>
 
         </div>
 
         <div class="pa-footer__bottom">
             <p>
                 &copy; <?= date('Y') ?> Pesan Ajah.
-                Marketplace warung lokal Banyukuning.
+                Hak cipta dilindungi.
             </p>
-
-            <a href="/" aria-label="Kembali ke beranda">
-                Belanja lebih dekat
-                <span aria-hidden="true">&uarr;</span>
-            </a>
         </div>
 
     </div>
