@@ -143,7 +143,6 @@ $homepageBanners = array_values(array_filter(
                         id="search-form"
                         role="search"
                     >
-                        <span aria-hidden="true">⌕</span>
 
                         <input
                             id="search-input"
@@ -243,15 +242,8 @@ $homepageBanners = array_values(array_filter(
         >
             <div class="section-heading">
                 <div>
-                    <h2>Produk</h2>
+                    <h2>Warung</h2>
                 </div>
-
-                <span
-                    class="muted"
-                    id="product-total"
-                >
-                    Memuat...
-                </span>
             </div>
 
             <div

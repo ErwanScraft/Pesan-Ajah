@@ -376,9 +376,7 @@ export function createCatalog({
   
     const owner = document.createElement("small");
     owner.className = "marketplace-store-owner";
-    owner.textContent = product.store_owner
-      ? `Pemilik: ${product.store_owner}`
-      : "Pemilik warung";
+    owner.textContent = product.store_owner || "";
   
     // Status warung di sisi kanan header
     const isOpen = Boolean(product.store_is_open);
