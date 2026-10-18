@@ -15,6 +15,49 @@ export function createCatalog({
 
   let selectedCategory = "Semua";
   let query = "";
+  
+  
+  /*
+  |--------------------------------------------------------------------------
+  | URUTAN KATEGORI DARI CONFIG PHP
+  |--------------------------------------------------------------------------
+  */
+
+  function readCategoryOrder() {
+    try {
+      const parsed = JSON.parse(
+        categoryList?.dataset.categoryOrder || "[]",
+      );
+
+      return Array.isArray(parsed)
+        ? parsed.filter(
+            (category) => typeof category === "string",
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const configuredCategories = readCategoryOrder();
+
+  const categoryRank = new Map(
+    configuredCategories.map((category, index) => [
+      category,
+      index,
+    ]),
+  );
+
+  function compareCategories(a, b) {
+    const rankA = categoryRank.get(a) ?? Infinity;
+    const rankB = categoryRank.get(b) ?? Infinity;
+
+    if (rankA !== rankB) {
+      return rankA - rankB;
+    }
+
+    return a.localeCompare(b, "id-ID");
+  }
 
   /*
   |--------------------------------------------------------------------------
@@ -52,7 +95,7 @@ export function createCatalog({
           .filter((product) => !product.archived)
           .map((product) => normalizeCategory(product.category)),
       ),
-    ].sort((a, b) => a.localeCompare(b, "id-ID"));
+    ].sort(compareCategories);
   
     const fragment = document.createDocumentFragment();
   
@@ -424,7 +467,12 @@ export function createCatalog({
 
     const fragment = document.createDocumentFragment();
 
-    for (const [category, categoryProducts] of groups) {
+    const sortedGroups = [...groups.entries()].sort(
+      ([categoryA], [categoryB]) =>
+        compareCategories(categoryA, categoryB),
+    );
+    
+    for (const [category, categoryProducts] of sortedGroups) {
       const section = document.createElement("section");
 
       section.className = "store-category-section";

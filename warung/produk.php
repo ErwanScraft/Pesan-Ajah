@@ -11,6 +11,8 @@ $pageKey = 'products';
 $pageTitle = 'Produk';
 $activePage = 'produk';
 
+$productCategories = require APP_ROOT . '/config/categories.php';
+
 require __DIR__ . '/_header.php';
 
 ?>
@@ -26,8 +28,6 @@ require __DIR__ . '/_header.php';
             id="product-count"
         >0 produk</span>
     </div>
-      
-    $productCategories = require APP_ROOT . '/config/categories.php';
 
     <!-- Form produk -->
     <section
