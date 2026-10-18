@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 
+require_once APP_ROOT . '/app/delivery.php';
+
 require_method('POST');
 
 header('Content-Type: application/json; charset=utf-8');
@@ -300,7 +302,9 @@ try {
             s.is_open,
             s.free_delivery,
             s.is_active,
-            u.is_active AS user_is_active
+            u.is_active AS user_is_active          
+            s.latitude,
+            s.longitude,
 
         FROM stores s
 
@@ -345,6 +349,59 @@ try {
         throw new RuntimeException(
             'Nomor WhatsApp warung belum valid.'
         );
+    }
+    
+    /*
+    |--------------------------------------------------------------------------
+    | HITUNG JARAK DAN ONGKIR
+    |--------------------------------------------------------------------------
+    */
+    
+    $deliveryDistanceKm = null;
+    $deliveryFee = 0;
+    
+    if ($deliveryMethod === 'delivery') {
+        $isFreeDelivery = (bool) $store['free_delivery'];
+    
+        if (!$isFreeDelivery) {
+            if (
+                $deliveryLatitude === null
+                || $deliveryLongitude === null
+            ) {
+                throw new RuntimeException(
+                    'Pilih lokasi pengantaran menggunakan GPS agar ongkir dapat dihitung.'
+                );
+            }
+    
+            if (
+                $store['latitude'] === null
+                || $store['longitude'] === null
+            ) {
+                throw new RuntimeException(
+                    'Lokasi warung belum diatur. Minta pemilik warung menyimpan lokasi GPS di Pengaturan.'
+                );
+            }
+        }
+    
+        if (
+            $deliveryLatitude !== null
+            && $deliveryLongitude !== null
+            && $store['latitude'] !== null
+            && $store['longitude'] !== null
+        ) {
+            $deliveryDistanceKm = delivery_distance_km(
+                (float) $store['latitude'],
+                (float) $store['longitude'],
+                $deliveryLatitude,
+                $deliveryLongitude
+            );
+        }
+    
+        if (!$isFreeDelivery) {
+            $deliveryFee = delivery_fee_from_distance(
+                $deliveryDistanceKm
+            );
+        }
     }
 
     /*
@@ -471,11 +528,6 @@ try {
         ];
     }
 
-    $deliveryFee = (
-        $deliveryMethod === 'delivery'
-        && !(bool) $store['free_delivery']
-    ) ? 1000.0 : 0.0;
-
     $total = round($subtotal + $deliveryFee, 2);
 
     /*
@@ -501,6 +553,7 @@ try {
             delivery_method,
             delivery_address,
             delivery_fee,
+            delivery_distance_km,
             subtotal,
             total,
             status,
@@ -517,6 +570,7 @@ try {
             :delivery_method,
             :delivery_address,
             :delivery_fee,
+            :delivery_distance_km,
             :subtotal,
             :total,
             'pending',
@@ -536,6 +590,7 @@ try {
         'delivery_method' => $deliveryMethod,
         'delivery_address' => $buyerAddress,
         'delivery_fee' => $deliveryFee,
+        'delivery_distance_km' => $deliveryDistanceKm,
         'subtotal' => $subtotal,
         'total' => $total,
         'token_hash' => $buyerTokenHash,
@@ -633,6 +688,13 @@ try {
             $message[] = '*Lokasi Google Maps*';
             $message[] = $buyerMapsUrl;
         }
+        
+        if ($deliveryDistanceKm !== null) {
+            $message[] = 'Jarak garis lurus: '
+                . number_format($deliveryDistanceKm, 2, ',', '.')
+                . ' km';
+        }
+
     } else {
         $message[] = 'Ambil sendiri di warung';
     }
@@ -687,6 +749,7 @@ try {
         'status' => 'pending',
         'subtotal' => $subtotal,
         'delivery_fee' => $deliveryFee,
+        'delivery_distance_km' => $deliveryDistanceKm,
         'total' => $total,
         'buyer_token' => $buyerToken,
         'whatsapp_url' => $whatsappUrl,
@@ -707,5 +770,6 @@ try {
         'message' => $exception instanceof RuntimeException
             ? $exception->getMessage()
             : 'Checkout gagal disimpan. Periksa konfigurasi database.',
-    ], 500);
+    ], $exception instanceof RuntimeException ? 422 : 500);
+
 }

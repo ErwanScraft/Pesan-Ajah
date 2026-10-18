@@ -89,6 +89,8 @@ try {
             s.phone AS store_phone,
             s.is_open AS store_is_open,
             s.free_delivery AS store_free_delivery
+            s.latitude AS store_latitude,
+            s.longitude AS store_longitude
 
         FROM products p
 

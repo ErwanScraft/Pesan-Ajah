@@ -62,10 +62,58 @@ function selectedStore() {
   ) ?? null;
 }
 
-function getDeliveryFee() {
-  if (cart.quantity() === 0) {
-    return 0;
+function estimateDelivery(product) {
+  if (!product) return null;
+
+  const buyerLatValue = $("#delivery-latitude")?.value;
+  const buyerLonValue = $("#delivery-longitude")?.value;
+
+  if (
+    buyerLatValue === undefined ||
+    buyerLatValue === "" ||
+    buyerLonValue === undefined ||
+    buyerLonValue === ""
+  ) {
+    return null;
   }
+
+  const buyerLat = Number(buyerLatValue);
+  const buyerLon = Number(buyerLonValue);
+  const storeLat = product.store_latitude;
+  const storeLon = product.store_longitude;
+
+  if (
+    !Number.isFinite(buyerLat) ||
+    !Number.isFinite(buyerLon) ||
+    !Number.isFinite(storeLat) ||
+    !Number.isFinite(storeLon)
+  ) {
+    return null;
+  }
+
+  const toRadians = (degrees) => degrees * Math.PI / 180;
+  const dLat = toRadians(storeLat - buyerLat);
+  const dLon = toRadians(storeLon - buyerLon);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(buyerLat)) *
+      Math.cos(toRadians(storeLat)) *
+      Math.sin(dLon / 2) ** 2;
+
+  const distance = 6371 * 2 * Math.atan2(
+    Math.sqrt(Math.max(0, Math.min(1, a))),
+    Math.sqrt(1 - Math.max(0, Math.min(1, a))),
+  );
+
+  return {
+    distance,
+    fee: Math.max(1, Math.ceil(distance / 5)) * 1000,
+  };
+}
+
+function getDeliveryFee() {
+  if (cart.quantity() === 0) return 0;
 
   if (selectedFulfillment() !== "delivery") {
     return 0;
@@ -73,13 +121,11 @@ function getDeliveryFee() {
 
   const product = selectedStore();
 
-  if (!product) {
-    return DELIVERY_FEE;
-  }
+  if (!product) return null;
 
-  return product.store_free_delivery
-    ? 0
-    : DELIVERY_FEE;
+  if (product.store_free_delivery) return 0;
+
+  return estimateDelivery(product)?.fee ?? null;
 }
 
 function renderCart() {
@@ -94,50 +140,59 @@ function renderCart() {
   const deliveryFee = getDeliveryFee();
   const subtotal = cart.total();
 
+  const product = selectedStore();
+  const estimate = estimateDelivery(product);
   const deliveryOptionPrice = $("#delivery-option-price");
-
+  
   if (deliveryOptionPrice) {
-    if (selectedStore()?.store_free_delivery) {
+    if (product?.store_free_delivery) {
       deliveryOptionPrice.innerHTML = `
         <span class="delivery-price-original">
-          ${formatRupiah(DELIVERY_FEE)}
+          ${estimate
+            ? formatRupiah(estimate.fee)
+            : "Ongkir"}
         </span>
       `;
+    } else if (estimate) {
+      deliveryOptionPrice.textContent =
+        formatRupiah(estimate.fee);
     } else {
-      deliveryOptionPrice.textContent = formatRupiah(
-        DELIVERY_FEE,
-      );
+      deliveryOptionPrice.textContent = "Pilih lokasi";
     }
   }
 
   const deliveryFeeElement = $("#delivery-fee");
-
+  
   if (deliveryFeeElement) {
-    deliveryFeeElement.textContent = formatRupiah(
-      deliveryFee,
-    );
+    deliveryFeeElement.textContent =
+      deliveryFee === null
+        ? "Pilih lokasi"
+        : formatRupiah(deliveryFee);
   }
-
+  
   const totalElement = $("#cart-total");
-
+  
   if (totalElement) {
     totalElement.textContent = formatRupiah(
-      subtotal + deliveryFee,
+      subtotal + (deliveryFee ?? 0),
     );
   }
-
+  
   const fulfillmentNote = $("#fulfillment-note");
-
+  
   if (fulfillmentNote) {
     if (selectedFulfillment() === "pickup") {
       fulfillmentNote.textContent =
         "Ambil sendiri di warung tanpa biaya pengantaran.";
-    } else if (selectedStore()?.store_free_delivery) {
+    } else if (product?.store_free_delivery) {
       fulfillmentNote.textContent =
-        "Biaya pengantaran ditanggung sesuai pengaturan warung.";
+        "Biaya pengantaran mengikuti pengaturan warung.";
+    } else if (!estimate) {
+      fulfillmentNote.textContent =
+        "Pilih lokasi GPS untuk menghitung ongkir.";
     } else {
       fulfillmentNote.textContent =
-        "Ongkir ditetapkan aplikasi sebesar Rp1.000 per pengantaran.";
+        `Jarak garis lurus sekitar ${estimate.distance.toFixed(2)} km. Ongkir final dihitung saat checkout.`;
     }
   }
 
@@ -298,6 +353,18 @@ async function loadCatalog() {
       store_free_delivery: Boolean(
         product.store_free_delivery,
       ),
+      
+      store_latitude:
+        product.store_latitude == null ||
+        product.store_latitude === ""
+          ? null
+          : Number(product.store_latitude),
+      
+      store_longitude:
+        product.store_longitude == null ||
+        product.store_longitude === ""
+          ? null
+          : Number(product.store_longitude),
 
       emoji: product.emoji || "📦",
       tag: product.tag || "",
@@ -502,6 +569,8 @@ async function useCurrentLocation() {
       `Lokasi berhasil dipilih: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}.`,
       "success",
     );
+    
+    renderCart();
   } catch (error) {
     let message = "Lokasi tidak berhasil diperoleh.";
 
@@ -526,6 +595,36 @@ async function useCurrentLocation() {
 }
 
 async function submitCheckout() {
+
+  if (
+    deliveryMethod === "delivery" &&
+    !product.store_free_delivery
+  ) {
+    const buyerLat = Number(deliveryLatitude);
+    const buyerLon = Number(deliveryLongitude);
+  
+    if (!deliveryLatitude || !deliveryLongitude) {
+      showToast(
+        toast,
+        "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
+      );
+      return;
+    }
+  
+    if (
+      !Number.isFinite(buyerLat) ||
+      !Number.isFinite(buyerLon) ||
+      !Number.isFinite(product.store_latitude) ||
+      !Number.isFinite(product.store_longitude)
+    ) {
+      showToast(
+        toast,
+        "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
+      );
+      return;
+    }
+  }
+
   if (cart.quantity() === 0) {
     showToast(toast, "Keranjang masih kosong.");
     return;
