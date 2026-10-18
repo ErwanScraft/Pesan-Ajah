@@ -320,45 +320,6 @@ require_once __DIR__ . '/app/bootstrap.php';
 
         </section>
 
-        <!-- =================================================
-             PROMOSI PENJUAL
-             ================================================= -->
-
-        <section class="container seller-promo">
-
-            <div class="promo-icon" aria-hidden="true">
-                ⌂
-            </div>
-
-            <div class="promo-copy">
-
-                <span class="eyebrow eyebrow-plain">
-                    UNTUK PEMILIK WARUNG
-                </span>
-
-                <h2>
-                    Warungmu bisa ditemukan lebih banyak warga.
-                </h2>
-
-                <p>
-                    Kelola produk, stok, status warung, dan pesanan
-                    dari dashboard sederhana.
-                </p>
-
-            </div>
-
-            <a
-                class="button button-primary"
-                href="/warung/login.php"
-            >
-                Dashboard Warung
-                <span aria-hidden="true">→</span>
-            </a>
-
-        </section>
-
-    </main>
-
     <!-- =====================================================
          FOOTER
          ===================================================== -->
