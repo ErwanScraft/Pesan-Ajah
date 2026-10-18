@@ -49,13 +49,16 @@ export function createCatalog({
   );
 
   function compareCategories(a, b) {
-    const rankA = categoryRank.get(a) ?? Infinity;
-    const rankB = categoryRank.get(b) ?? Infinity;
-
-    if (rankA !== rankB) {
+    const rankA = categoryRank.get(a);
+    const rankB = categoryRank.get(b);
+  
+    if (rankA !== undefined && rankB !== undefined) {
       return rankA - rankB;
     }
-
+  
+    if (rankA !== undefined) return -1;
+    if (rankB !== undefined) return 1;
+  
     return a.localeCompare(b, "id-ID");
   }
 

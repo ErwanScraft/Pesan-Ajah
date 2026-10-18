@@ -386,10 +386,48 @@ function renderProducts() {
     categoryMap.get(category).push(product);
   }
 
-  // Urutkan kategori secara alfabetis tanpa daftar statis.
-  const sortedCategories = [...categoryMap.keys()].sort(
-    (a, b) => a.localeCompare(b, "id-ID"),
+
+  function readCategoryOrder() {
+    try {
+      const parsed = JSON.parse(
+        document.body.dataset.categoryOrder || "[]",
+      );
+  
+      return Array.isArray(parsed)
+        ? parsed.filter(
+            (category) => typeof category === "string",
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  }
+  
+  const categoryRank = new Map(
+    readCategoryOrder().map((category, index) => [
+      category,
+      index,
+    ]),
   );
+  
+  function compareCategories(a, b) {
+    const rankA = categoryRank.get(a);
+    const rankB = categoryRank.get(b);
+  
+    if (rankA !== undefined && rankB !== undefined) {
+      return rankA - rankB;
+    }
+  
+    if (rankA !== undefined) return -1;
+    if (rankB !== undefined) return 1;
+  
+    return a.localeCompare(b, "id-ID");
+  }
+  
+  const sortedCategories = [...categoryMap.keys()].sort(
+    compareCategories,
+  );
+
 
 
   /* -------------------------------------------------------

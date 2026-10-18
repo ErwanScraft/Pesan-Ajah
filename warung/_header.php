@@ -16,6 +16,8 @@ declare(strict_types=1);
  * $store
  */
 
+$productCategories = require APP_ROOT . '/config/categories.php';
+
 $storeName = (string) ($store['name'] ?? 'Warung Anda');
 
 $storeInitial = function_exists('mb_substr')
@@ -75,7 +77,14 @@ $storeInitial = function_exists('mb_substr')
     data-page="<?= e($pageKey) ?>"
     data-store-id="<?= e($store['store_id'] ?? '') ?>"
     data-csrf-token="<?= e(csrf_token()) ?>"
+    data-category-order="<?= e(json_encode(
+        $productCategories,
+        JSON_UNESCAPED_UNICODE
+        | JSON_HEX_APOS
+        | JSON_HEX_QUOT
+    )) ?>"
 >
+
     <div class="dashboard-shell">
 
         <aside class="sidebar" id="sidebar">
