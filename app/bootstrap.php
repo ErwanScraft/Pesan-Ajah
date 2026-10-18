@@ -152,8 +152,36 @@ date_default_timezone_set(
 
 error_reporting(E_ALL);
 
-ini_set('display_errors', APP_DEBUG ? '1' : '0');
+// Jangan pernah menampilkan warning mentah PHP ke halaman.
+ini_set('display_errors', '0');
 ini_set('log_errors', '1');
+
+// Muat handler setelah APP_DEBUG dan fungsi env() tersedia.
+require_once APP_PATH . '/debug.php';
+
+set_error_handler('debug_error_handler');
+set_exception_handler('debug_exception_handler');
+register_shutdown_function('debug_shutdown_handler');
+
+// Kumpulkan warning/notice untuk ditampilkan sebagai popup di akhir
+// respons HTML. Jangan mengubah respons JSON atau file unduhan.
+if (APP_DEBUG) {
+    ob_start(static function (string $buffer): string {
+        if (
+            $buffer === ''
+            || stripos($buffer, '<html') === false
+            || empty($GLOBALS['pesan_ajah_debug_errors'])
+        ) {
+            return $buffer;
+        }
+
+        ob_start();
+        debug_render_collected_errors();
+        $popup = ob_get_clean();
+
+        return $buffer . ($popup === false ? '' : $popup);
+    });
+}
 
 /*
 |--------------------------------------------------------------------------

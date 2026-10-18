@@ -70,10 +70,18 @@ function database(): PDO
 
         return $pdo;
     } catch (PDOException $exception) {
-        error_log(
-            '[Pesan Ajah] Koneksi database gagal: '
-            . $exception->getMessage()
-        );
+        debug_report_error($exception, 'Koneksi database gagal');
+    
+        http_response_code(500);
+    
+        if (APP_DEBUG) {
+            throw $exception;
+        }
+    
+        // Pertahankan mekanisme respons generik yang digunakan
+        // aplikasi saat ini untuk pengunjung.
+        exit('Layanan sementara tidak tersedia. Silakan coba kembali.');
+    }
 
         http_response_code(500);
 
