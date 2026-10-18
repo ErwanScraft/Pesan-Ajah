@@ -1,4 +1,3 @@
-
 <?php
 
 declare(strict_types=1);
@@ -24,6 +23,11 @@ $homepageBanners = [
     ],
     [
         'image' => '/assets/images/banner_2.webp',
+        'alt' => 'Dasboard Warung',
+        'url' => 'https://www.pesanajah.web.id/warung/login.php',
+    ],
+    [
+        'image' => '/assets/images/banner_3.webp',
         'alt' => 'Warung Teras Rambutan',
         'url' => 'https://www.pesanajah.web.id/warung/terasrambutan',
     ],
