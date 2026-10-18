@@ -26,6 +26,8 @@ require __DIR__ . '/_header.php';
             id="product-count"
         >0 produk</span>
     </div>
+      
+    $productCategories = require APP_ROOT . '/config/categories.php';
 
     <!-- Form produk -->
     <section
@@ -64,18 +66,14 @@ require __DIR__ . '/_header.php';
                 <label class="form-field">
                     <span>Kategori</span>
 
-                    <select
-                        name="category"
-                        required
-                    >
-                        <option value="Sembako">Sembako</option>
-                        <option value="Makanan">Makanan</option>
-                        <option value="Minuman">Minuman</option>
-                        <option value="Kebutuhan Rumah">
-                            Kebutuhan Rumah
-                        </option>
-                        <option value="Lainnya">Lainnya</option>
+                    <select name="category" required>
+                        <?php foreach ($productCategories as $category): ?>
+                            <option value="<?= e($category) ?>">
+                                <?= e($category) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
+
                 </label>
 
                 <!-- Harga -->

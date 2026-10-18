@@ -239,6 +239,15 @@ function validate_product_input(array $input): array
         'Kategori',
         80
     );
+    
+    $allowedCategories = require APP_ROOT . '/config/categories.php';
+    
+    if (!in_array($category, $allowedCategories, true)) {
+        api_json([
+            'success' => false,
+            'message' => 'Kategori produk tidak valid.',
+        ], 422);
+    }
 
     $unit = api_required_text(
         $input['unit'] ?? null,

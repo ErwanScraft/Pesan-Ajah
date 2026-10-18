@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/app/bootstrap.php';
 
+$productCategories = require APP_ROOT . '/config/categories.php';
+
 /*
 |--------------------------------------------------------------------------
 | Ambil dan validasi slug
@@ -198,7 +200,18 @@ foreach ($categoryStmt->fetchAll() as $row) {
     }
 }
 
-sort($categories, SORT_NATURAL | SORT_FLAG_CASE);
+$categoryOrder = array_flip($productCategories);
+
+sort(
+    $categories,
+    static function (string $a, string $b) use ($categoryOrder): int {
+        $positionA = $categoryOrder[$a] ?? PHP_INT_MAX;
+        $positionB = $categoryOrder[$b] ?? PHP_INT_MAX;
+
+        return ($positionA <=> $positionB)
+            ?: strnatcasecmp($a, $b);
+    }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -1160,6 +1173,12 @@ if ($storeName !== '') {
             class="store-category-nav"
             id="category-list"
             aria-label="Kategori produk"
+            data-category-order="<?= e(json_encode(
+                $productCategories,
+                JSON_UNESCAPED_UNICODE
+                | JSON_HEX_APOS
+                | JSON_HEX_QUOT
+            )) ?>"
         >
 
             <a

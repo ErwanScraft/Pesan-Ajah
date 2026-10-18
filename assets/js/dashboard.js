@@ -368,17 +368,10 @@ function renderProducts() {
     return;
   }
 
+
   /* -------------------------------------------------------
      URUTAN KATEGORI
   ------------------------------------------------------- */
-
-  const categoryOrder = [
-    "Sembako",
-    "Makanan",
-    "Minuman",
-    "Kebutuhan Rumah",
-    "Lainnya",
-  ];
 
   const categoryMap = new Map();
 
@@ -393,17 +386,11 @@ function renderProducts() {
     categoryMap.get(category).push(product);
   }
 
-  const sortedCategories = [
-    ...categoryOrder.filter((category) =>
-      categoryMap.has(category),
-    ),
+  // Urutkan kategori secara alfabetis tanpa daftar statis.
+  const sortedCategories = [...categoryMap.keys()].sort(
+    (a, b) => a.localeCompare(b, "id-ID"),
+  );
 
-    ...[...categoryMap.keys()]
-      .filter(
-        (category) => !categoryOrder.includes(category),
-      )
-      .sort((a, b) => a.localeCompare(b, "id")),
-  ];
 
   /* -------------------------------------------------------
      HELPER: THUMBNAIL PRODUK

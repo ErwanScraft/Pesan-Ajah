@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/app/bootstrap.php';
 
+$productCategories = require APP_ROOT . '/config/categories.php';
+
 $homepageBanners = [
     [
         'image' => '/assets/images/banner_1.webp',
@@ -222,6 +224,12 @@ $homepageBanners = array_values(array_filter(
                 class="category-grid"
                 id="category-list"
                 aria-label="Kategori produk"
+                data-category-order="<?= e(json_encode(
+                    $productCategories,
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_HEX_APOS
+                    | JSON_HEX_QUOT
+                )) ?>"
             >
                 <button
                     class="category-card active"
