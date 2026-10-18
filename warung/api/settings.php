@@ -15,6 +15,8 @@ if (request_method() === 'GET') {
             'owner_name' => $store['owner_name'],
             'phone' => $store['phone'],
             'address' => $store['address'],
+            'latitude' => $store['latitude'],
+            'longitude' => $store['longitude'],
             'description' => $store['description'],
 
             'icon_image' => $store['icon_image'] ?? null,
@@ -129,6 +131,54 @@ $address = api_required_text(
     180
 );
 
+$latitudeInput = $input['latitude'] ?? null;
+$longitudeInput = $input['longitude'] ?? null;
+
+$latitude = null;
+$longitude = null;
+
+$hasLatitude = $latitudeInput !== null
+    && $latitudeInput !== '';
+
+$hasLongitude = $longitudeInput !== null
+    && $longitudeInput !== '';
+
+if ($hasLatitude !== $hasLongitude) {
+    api_json([
+        'success' => false,
+        'message' => 'Latitude dan longitude harus diisi bersamaan.',
+    ], 422);
+}
+
+if ($hasLatitude && $hasLongitude) {
+    if (
+        !is_numeric($latitudeInput)
+        || !is_numeric($longitudeInput)
+    ) {
+        api_json([
+            'success' => false,
+            'message' => 'Koordinat lokasi harus berupa angka.',
+        ], 422);
+    }
+
+    $latitude = (float) $latitudeInput;
+    $longitude = (float) $longitudeInput;
+
+    if (
+        !is_finite($latitude)
+        || !is_finite($longitude)
+        || $latitude < -90
+        || $latitude > 90
+        || $longitude < -180
+        || $longitude > 180
+    ) {
+        api_json([
+            'success' => false,
+            'message' => 'Koordinat lokasi berada di luar rentang yang valid.',
+        ], 422);
+    }
+}
+
 $phone = trim(
     is_string($input['phone'] ?? null)
         ? $input['phone']
@@ -159,6 +209,8 @@ $stmt = database()->prepare(
         owner_name = :owner,
         phone = :phone,
         address = :address,
+        latitude = :latitude,
+        longitude = :longitude,
         description = :description
 
     WHERE id = :store_id'
@@ -169,6 +221,8 @@ $stmt->execute([
     'owner_name' => $owner,
     'phone' => $phone !== '' ? $phone : null,
     'address' => $address,
+    'latitude' => $latitude,
+    'longitude' => $longitude,
     'description' => $description !== '' ? $description : null,
     'store_id' => $storeId,
 ]);

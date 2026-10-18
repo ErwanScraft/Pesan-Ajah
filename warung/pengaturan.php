@@ -349,7 +349,52 @@ require __DIR__ . '/_header.php';
                     required
                 >
             </label>
-
+            
+            <!-- Lokasi warung untuk perhitungan ongkir -->
+            <div class="form-field store-location-field">
+                <span>Latitude lokasi warung</span>
+                <input
+                    name="latitude"
+                    type="number"
+                    min="-90"
+                    max="90"
+                    step="any"
+                    inputmode="decimal"
+                    placeholder="-7.0000000"
+                >
+            </div>
+            
+            <div class="form-field store-location-field">
+                <span>Longitude lokasi warung</span>
+                <input
+                    name="longitude"
+                    type="number"
+                    min="-180"
+                    max="180"
+                    step="any"
+                    inputmode="decimal"
+                    placeholder="110.0000000"
+                >
+            </div>
+            
+            <div class="store-location-actions">
+                <button
+                    class="button button-outline"
+                    id="get-store-location"
+                    type="button"
+                >
+                    Ambil lokasi saya
+                </button>
+            
+                <p
+                    id="store-location-feedback"
+                    class="muted"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Gunakan GPS di lokasi warung agar perhitungan ongkir lebih akurat.
+                </p>
+            </div>
 
             <!-- Deskripsi warung -->
 

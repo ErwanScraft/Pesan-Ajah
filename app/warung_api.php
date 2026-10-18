@@ -96,6 +96,8 @@ function api_store_owner(): array
             s.owner_name,
             s.phone,
             s.address,
+            s.latitude,
+            s.longitude,
             s.description,
             s.is_open,
             s.free_delivery,

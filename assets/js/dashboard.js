@@ -1195,6 +1195,8 @@ async function loadSettings() {
       "phone",
       "address",
       "description",
+      "latitude",
+      "longitude",
     ]) {
       if (settingsForm.elements[key]) {
         settingsForm.elements[key].value =
@@ -1257,14 +1259,28 @@ if (settingsForm) {
     const wasEditing = editingProductId !== null;
     const formData = new FormData(settingsForm);
 
+    const latitudeValue = String(
+      formData.get("latitude") || "",
+    ).trim();
+    
+    const longitudeValue = String(
+      formData.get("longitude") || "",
+    ).trim();
+    
     const payload = {
       name: String(formData.get("name") || "").trim(),
-      owner: String(formData.get("owner") || "").trim(),
+      owner_name: String(formData.get("owner") || "").trim(),
       phone: String(formData.get("phone") || "").trim(),
       address: String(formData.get("address") || "").trim(),
       description: String(
         formData.get("description") || "",
       ).trim(),
+      latitude: latitudeValue === ""
+        ? null
+        : Number(latitudeValue),
+      longitude: longitudeValue === ""
+        ? null
+        : Number(longitudeValue),
     };
 
     if (
@@ -1273,6 +1289,29 @@ if (settingsForm) {
       || !payload.address
     ) {
       notify("Nama warung, pemilik, dan alamat wajib diisi.");
+      return;
+    }
+    
+    const hasLatitude = payload.latitude !== null;
+    const hasLongitude = payload.longitude !== null;
+    
+    if (hasLatitude !== hasLongitude) {
+      notify("Latitude dan longitude harus diisi bersamaan.");
+      return;
+    }
+    
+    if (
+      hasLatitude &&
+      (
+        !Number.isFinite(payload.latitude) ||
+        !Number.isFinite(payload.longitude) ||
+        payload.latitude < -90 ||
+        payload.latitude > 90 ||
+        payload.longitude < -180 ||
+        payload.longitude > 180
+      )
+    ) {
+      notify("Koordinat lokasi tidak valid.");
       return;
     }
 
@@ -1297,6 +1336,52 @@ if (settingsForm) {
 $("#reset-store-settings")?.addEventListener(
   "click",
   loadSettings,
+);
+
+$("#get-store-location")?.addEventListener(
+  "click",
+  () => {
+    const feedback = $("#store-location-feedback");
+    const latitudeInput = settingsForm?.elements.latitude;
+    const longitudeInput = settingsForm?.elements.longitude;
+
+    if (!navigator.geolocation) {
+      feedback.textContent =
+        "Browser ini tidak mendukung fitur lokasi.";
+      return;
+    }
+
+    feedback.textContent = "Mengambil lokasi GPS...";
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        latitudeInput.value =
+          position.coords.latitude.toFixed(7);
+
+        longitudeInput.value =
+          position.coords.longitude.toFixed(7);
+
+        feedback.textContent =
+          "Lokasi berhasil diambil. Klik Simpan pengaturan untuk menyimpannya.";
+      },
+      (error) => {
+        const messages = {
+          1: "Izin lokasi ditolak. Aktifkan izin lokasi di browser.",
+          2: "Lokasi tidak tersedia. Coba lagi di tempat terbuka.",
+          3: "Waktu mengambil lokasi habis. Silakan coba lagi.",
+        };
+
+        feedback.textContent =
+          messages[error.code] ||
+          "Lokasi gagal diambil.";
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      },
+    );
+  },
 );
 
 openToggle?.addEventListener("change", () => {
