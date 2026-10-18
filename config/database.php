@@ -70,25 +70,27 @@ function database(): PDO
 
         return $pdo;
     } catch (PDOException $exception) {
-        debug_report_error($exception, 'Koneksi database gagal');
-    
-        http_response_code(500);
-    
-        if (APP_DEBUG) {
-            throw $exception;
-        }
-    
-        // Pertahankan mekanisme respons generik yang digunakan
-        // aplikasi saat ini untuk pengunjung.
-        exit('Layanan sementara tidak tersedia. Silakan coba kembali.');
-    }
-
-        http_response_code(500);
-
-        if (APP_DEBUG) {
-            throw $exception;
+        if (function_exists('debug_report_error')) {
+            debug_report_error(
+                $exception,
+                'Koneksi database gagal'
+            );
+        } else {
+            error_log(
+                '[Pesan Ajah] Koneksi database gagal: '
+                . $exception->getMessage()
+            );
         }
 
-        exit('Layanan sedang mengalami gangguan. Silakan coba kembali.');
+        http_response_code(500);
+
+        if (defined('APP_DEBUG') && APP_DEBUG) {
+            throw $exception;
+        }
+
+        exit(
+            'Layanan sedang mengalami gangguan. '
+            . 'Silakan coba kembali.'
+        );
     }
 }
