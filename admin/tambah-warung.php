@@ -1,3 +1,4 @@
+
 <?php
 
 declare(strict_types=1);
@@ -15,7 +16,11 @@ $phone = '';
 $address = '';
 $description = '';
 $slug = '';
+$password = '';
 
+/**
+ * Membuat slug URL yang konsisten.
+ */
 function generate_store_slug(string $value): string
 {
     $value = trim(mb_strtolower($value, 'UTF-8'));
@@ -25,6 +30,9 @@ function generate_store_slug(string $value): string
     return trim($value, '-');
 }
 
+/**
+ * Memproses formulir pembuatan akun warung.
+ */
 if (request_is_post()) {
     verify_csrf();
 
@@ -34,44 +42,43 @@ if (request_is_post()) {
     $phone = trim((string) ($_POST['phone'] ?? ''));
     $address = trim((string) ($_POST['address'] ?? ''));
     $description = trim((string) ($_POST['description'] ?? ''));
-
     $slugInput = trim((string) ($_POST['slug'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
 
     $slug = generate_store_slug(
         $slugInput !== '' ? $slugInput : $name
     );
 
-    $password = (string) ($_POST['password'] ?? '');
-
-    if ($name === '' || mb_strlen($name) > 80) {
+    /*
+     * Validasi input.
+     */
+    if ($name === '' || mb_strlen($name, 'UTF-8') > 80) {
         $errors[] = 'Nama warung wajib diisi, maksimal 80 karakter.';
     }
 
-    if ($owner === '' || mb_strlen($owner) > 80) {
+    if ($owner === '' || mb_strlen($owner, 'UTF-8') > 80) {
         $errors[] = 'Nama pemilik wajib diisi, maksimal 80 karakter.';
     }
 
-    if (
-        !preg_match('/^[a-zA-Z0-9_.-]{3,50}$/', $username)
-    ) {
-        $errors[] = 'Username harus 3–50 karakter dan hanya boleh menggunakan huruf, angka, titik, garis bawah, atau tanda hubung.';
+    if (!preg_match('/^[a-zA-Z0-9_.-]{3,50}$/', $username)) {
+        $errors[] = 'Username harus 3–50 karakter dan hanya boleh berisi huruf, angka, titik, garis bawah, atau tanda hubung.';
     }
 
-    if ($address === '' || mb_strlen($address) > 180) {
+    if ($address === '' || mb_strlen($address, 'UTF-8') > 180) {
         $errors[] = 'Alamat wajib diisi, maksimal 180 karakter.';
     }
 
-    if (mb_strlen($phone) > 25) {
+    if (mb_strlen($phone, 'UTF-8') > 25) {
         $errors[] = 'Nomor telepon maksimal 25 karakter.';
     }
 
-    if (mb_strlen($description) > 500) {
+    if (mb_strlen($description, 'UTF-8') > 500) {
         $errors[] = 'Deskripsi maksimal 500 karakter.';
     }
 
     if (
         !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)
-        || mb_strlen($slug) > 80
+        || mb_strlen($slug, 'UTF-8') > 80
     ) {
         $errors[] = 'Slug URL tidak valid.';
     }
@@ -103,29 +110,42 @@ if (request_is_post()) {
         $errors[] = 'Kata sandi terlalu panjang.';
     }
 
+    /*
+     * Proses database.
+     *
+     * database() sengaja dimasukkan ke dalam try agar kegagalan
+     * koneksi database juga tercatat oleh sistem debug.
+     */
     if (!$errors) {
-        $pdo = database();
+        $pdo = null;
 
         try {
+            $pdo = database();
             $pdo->beginTransaction();
 
-            $check = $pdo->prepare(
+            /*
+             * Periksa username.
+             */
+            $checkUser = $pdo->prepare(
                 'SELECT id
                  FROM users
                  WHERE username = :username
                  LIMIT 1'
             );
 
-            $check->execute([
+            $checkUser->execute([
                 'username' => $username,
             ]);
 
-            if ($check->fetch()) {
+            if ($checkUser->fetch(PDO::FETCH_ASSOC)) {
                 throw new DomainException(
                     'Username sudah digunakan.'
                 );
             }
 
+            /*
+             * Periksa slug warung.
+             */
             $checkSlug = $pdo->prepare(
                 'SELECT id
                  FROM stores
@@ -137,24 +157,27 @@ if (request_is_post()) {
                 'slug' => $slug,
             ]);
 
-            if ($checkSlug->fetch()) {
+            if ($checkSlug->fetch(PDO::FETCH_ASSOC)) {
                 throw new DomainException(
                     'Slug URL sudah digunakan.'
                 );
             }
 
+            /*
+             * Buat akun pengguna dengan role warung.
+             */
             $userStmt = $pdo->prepare(
                 'INSERT INTO users (
                     username,
                     password_hash,
                     role,
                     is_active
-                 ) VALUES (
+                ) VALUES (
                     :username,
                     :password_hash,
                     :role,
                     1
-                 )'
+                )'
             );
 
             $userStmt->execute([
@@ -168,6 +191,15 @@ if (request_is_post()) {
 
             $userId = (int) $pdo->lastInsertId();
 
+            if ($userId <= 0) {
+                throw new RuntimeException(
+                    'ID akun warung tidak berhasil dibuat.'
+                );
+            }
+
+            /*
+             * Buat profil warung.
+             */
             $storeStmt = $pdo->prepare(
                 'INSERT INTO stores (
                     user_id,
@@ -180,18 +212,18 @@ if (request_is_post()) {
                     is_open,
                     free_delivery,
                     is_active
-                 ) VALUES (
+                ) VALUES (
                     :user_id,
                     :name,
                     :slug,
-                    :owner,
+                    :owner_name,
                     :phone,
                     :address,
                     :description,
                     0,
                     0,
                     1
-                 )'
+                )'
             );
 
             $storeStmt->execute([
@@ -206,28 +238,63 @@ if (request_is_post()) {
                     : null,
             ]);
 
+            /*
+             * Simpan kedua data secara atomik.
+             */
             $pdo->commit();
+
+            /*
+             * Jangan menyimpan kata sandi ke session atau log.
+             */
+            $password = '';
 
             flash('success', 'Akun warung berhasil dibuat.');
 
             redirect('/admin/warung.php');
         } catch (DomainException $exception) {
-            if ($pdo->inTransaction()) {
+            /*
+             * Kesalahan bisnis yang sudah diketahui, misalnya
+             * username atau slug duplikat.
+             */
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
 
             $errors[] = $exception->getMessage();
         } catch (Throwable $exception) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+            /*
+             * Rollback jika transaksi masih berjalan.
+             */
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                try {
+                    $pdo->rollBack();
+                } catch (Throwable $rollbackException) {
+                    debug_report_error(
+                        $rollbackException,
+                        'Rollback gagal saat membuat akun warung'
+                    );
+                }
             }
 
-            error_log(
-                'Gagal membuat akun warung: '
-                . $exception->getMessage()
+            /*
+             * Daftarkan exception ke sistem debug.
+             * Popup detail hanya ditampilkan ketika APP_DEBUG=true,
+             * sesuai implementasi app/debug.php.
+             */
+            debug_report_error(
+                $exception,
+                'Gagal membuat akun warung'
             );
 
+            /*
+             * Pesan umum tetap ditampilkan kepada pengguna.
+             */
             $errors[] = 'Akun gagal dibuat. Periksa data dan coba kembali.';
+        } finally {
+            /*
+             * Bersihkan referensi kata sandi dari variabel lokal.
+             */
+            $password = '';
         }
     }
 }
@@ -252,7 +319,7 @@ if (request_is_post()) {
             padding: 24px;
             border: 1px solid #e3e9e5;
             border-radius: 16px;
-            background: white;
+            background: #fff;
         }
 
         .form-grid {
@@ -264,16 +331,25 @@ if (request_is_post()) {
         .field {
             display: grid;
             gap: 8px;
+            min-width: 0;
         }
 
         .field input,
         .field textarea {
+            box-sizing: border-box;
             width: 100%;
             min-height: 44px;
             padding: 11px 12px;
             border: 1px solid #d8e0db;
             border-radius: 10px;
             font: inherit;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            outline: 2px solid #b7d8c3;
+            outline-offset: 1px;
+            border-color: #528b66;
         }
 
         .field textarea {
@@ -285,10 +361,17 @@ if (request_is_post()) {
         }
 
         .errors {
+            margin: 18px 0;
             padding: 14px 18px;
+            border: 1px solid #f0caca;
             border-radius: 10px;
             color: #a32323;
             background: #fff0f0;
+        }
+
+        .errors ul {
+            margin: 0;
+            padding-left: 20px;
         }
 
         .form-actions {
@@ -298,9 +381,18 @@ if (request_is_post()) {
             margin-top: 24px;
         }
 
+        .muted {
+            color: #68756d;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 560px) {
+            .page {
+                margin: 20px auto;
+            }
+
             .form-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
 
             .field.full {
@@ -309,6 +401,11 @@ if (request_is_post()) {
 
             .form-card {
                 padding: 18px;
+            }
+
+            .form-actions > * {
+                flex: 1 1 100%;
+                text-align: center;
             }
         }
     </style>
@@ -325,7 +422,7 @@ if (request_is_post()) {
         </header>
 
         <?php if ($errors): ?>
-            <div class="errors" role="alert">
+            <div class="errors" role="alert" aria-live="polite">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?= e($error) ?></li>
@@ -335,7 +432,11 @@ if (request_is_post()) {
         <?php endif; ?>
 
         <section class="form-card">
-            <form method="post" action="/admin/tambah-warung.php">
+            <form
+                method="post"
+                action="/admin/tambah-warung.php"
+                autocomplete="off"
+            >
                 <input
                     type="hidden"
                     name="csrf_token"
@@ -350,6 +451,7 @@ if (request_is_post()) {
                             name="name"
                             value="<?= e($name) ?>"
                             maxlength="80"
+                            autocomplete="organization"
                             required
                         >
                     </label>
@@ -361,6 +463,7 @@ if (request_is_post()) {
                             name="owner_name"
                             value="<?= e($owner) ?>"
                             maxlength="80"
+                            autocomplete="name"
                             required
                         >
                     </label>
@@ -375,6 +478,8 @@ if (request_is_post()) {
                             maxlength="50"
                             pattern="[a-zA-Z0-9_.-]+"
                             autocomplete="off"
+                            autocapitalize="none"
+                            spellcheck="false"
                             required
                         >
                     </label>
@@ -387,6 +492,7 @@ if (request_is_post()) {
                             type="tel"
                             value="<?= e($phone) ?>"
                             maxlength="25"
+                            autocomplete="tel"
                         >
                     </label>
 
@@ -397,6 +503,7 @@ if (request_is_post()) {
                             name="address"
                             value="<?= e($address) ?>"
                             maxlength="180"
+                            autocomplete="street-address"
                             required
                         >
                     </label>
@@ -408,8 +515,10 @@ if (request_is_post()) {
                             name="slug"
                             value="<?= e($slug) ?>"
                             maxlength="80"
-                            placeholder="Contoh: warungerwan"
+                            placeholder="Contoh: warung-erwan"
                             pattern="[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
+                            autocapitalize="none"
+                            spellcheck="false"
                         >
 
                         <small class="muted">
@@ -441,8 +550,8 @@ if (request_is_post()) {
                         >
 
                         <small class="muted">
-                            Minimal 12 karakter. Sampaikan kata sandi
-                            kepada pemilik melalui saluran yang aman.
+                            Minimal 12 karakter. Kata sandi disimpan
+                            dalam bentuk hash menggunakan password_hash().
                         </small>
                     </label>
                 </div>
