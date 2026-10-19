@@ -407,7 +407,9 @@ CREATE TABLE IF NOT EXISTS delivery_assignments (
     ) NOT NULL DEFAULT 'accepted',
 
     accepted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    to_store_at DATETIME DEFAULT NULL,
     picked_up_at DATETIME DEFAULT NULL,
+    to_buyer_at DATETIME DEFAULT NULL,
     completed_at DATETIME DEFAULT NULL,
 
     created_at TIMESTAMP

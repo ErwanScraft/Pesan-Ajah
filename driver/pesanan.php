@@ -10,92 +10,192 @@ $db = database();
 $message = flash('success');
 $error = flash('error');
 
+
 if (request_is_post()) {
     verify_csrf();
 
-    $action = $_POST['action'] ?? '';
+    $action = is_string($_POST['action'] ?? null)
+        ? $_POST['action']
+        : '';
+
     $orderId = filter_var(
         $_POST['order_id'] ?? null,
         FILTER_VALIDATE_INT,
         ['options' => ['min_range' => 1]]
     );
 
-    if ($action !== 'accept' || $orderId === false) {
-        flash('error', 'Permintaan pengambilan pesanan tidak valid.');
+    if ($orderId === false || $orderId === null) {
+        flash('error', 'ID pesanan tidak valid.');
         redirect('driver/pesanan.php');
     }
 
     try {
+        if ($action === 'accept') {
+            $db->beginTransaction();
+
+            $stmt = $db->prepare(
+                'SELECT id, store_id, delivery_method, status
+                 FROM orders
+                 WHERE id = :id
+                 FOR UPDATE'
+            );
+            $stmt->execute(['id' => $orderId]);
+            $order = $stmt->fetch();
+
+            if (
+                !$order
+                || $order['delivery_method'] !== 'delivery'
+                || !in_array(
+                    $order['status'],
+                    ['confirmed', 'processing'],
+                    true
+                )
+            ) {
+                throw new RuntimeException(
+                    'Pesanan tidak tersedia untuk diambil.'
+                );
+            }
+
+            $insert = $db->prepare(
+                "INSERT INTO delivery_assignments (
+                    order_id,
+                    store_id,
+                    driver_username,
+                    status
+                ) VALUES (
+                    :order_id,
+                    :store_id,
+                    :driver_username,
+                    'accepted'
+                )"
+            );
+
+            $insert->execute([
+                'order_id' => (int) $order['id'],
+                'store_id' => (int) $order['store_id'],
+                'driver_username' => (string) $driver['username'],
+            ]);
+
+            $db->commit();
+
+            flash('success', 'Pesanan berhasil kamu ambil.');
+            redirect('driver/pesanan.php');
+        }
+
+        if ($action !== 'advance') {
+            throw new RuntimeException(
+                'Aksi pengantaran tidak valid.'
+            );
+        }
+
+        $assignmentId = filter_var(
+            $_POST['assignment_id'] ?? null,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+
+        if ($assignmentId === false || $assignmentId === null) {
+            throw new RuntimeException(
+                'ID penugasan tidak valid.'
+            );
+        }
+
+        /*
+         * Alur status hanya boleh maju satu tahap.
+         * Kolom timestamp berasal dari daftar tetap,
+         * bukan dari input pengguna.
+         */
+        $transitions = [
+            'accepted' => [
+                'next' => 'to_store',
+                'timestamp' => 'to_store_at',
+                'message' => 'Status diperbarui: menuju warung.',
+            ],
+            'to_store' => [
+                'next' => 'picked_up',
+                'timestamp' => 'picked_up_at',
+                'message' => 'Pesanan ditandai sudah diambil dari warung.',
+            ],
+            'picked_up' => [
+                'next' => 'to_buyer',
+                'timestamp' => 'to_buyer_at',
+                'message' => 'Status diperbarui: menuju pembeli.',
+            ],
+            'to_buyer' => [
+                'next' => 'completed',
+                'timestamp' => 'completed_at',
+                'message' => 'Pengantaran berhasil diselesaikan.',
+            ],
+        ];
+
         $db->beginTransaction();
 
-        // Kunci pesanan agar dua driver tidak bisa
-        // mengambil pesanan yang sama secara bersamaan.
+        /*
+         * Kunci hanya penugasan milik driver yang sedang login.
+         * ID penugasan dari pengguna tidak cukup untuk memperoleh akses.
+         */
         $stmt = $db->prepare(
-            'SELECT
-                id,
-                store_id,
-                delivery_method,
-                status
-             FROM orders
+            'SELECT id, status
+             FROM delivery_assignments
              WHERE id = :id
+               AND driver_username = :driver
              FOR UPDATE'
         );
 
-        $stmt->execute(['id' => $orderId]);
-        $order = $stmt->fetch();
-
-        if (
-            !$order
-            || $order['delivery_method'] !== 'delivery'
-            || !in_array(
-                $order['status'],
-                ['confirmed', 'processing'],
-                true
-            )
-        ) {
-            throw new RuntimeException(
-                'Pesanan tidak tersedia untuk diambil.'
-            );
-        }
-
-        $existing = $db->prepare(
-            'SELECT id
-             FROM delivery_assignments
-             WHERE order_id = :order_id
-             LIMIT 1'
-        );
-
-        $existing->execute(['order_id' => $orderId]);
-
-        if ($existing->fetch()) {
-            throw new RuntimeException(
-                'Pesanan sudah diambil oleh driver lain.'
-            );
-        }
-
-        $insert = $db->prepare(
-            "INSERT INTO delivery_assignments (
-                order_id,
-                store_id,
-                driver_username,
-                status
-             ) VALUES (
-                :order_id,
-                :store_id,
-                :driver_username,
-                'accepted'
-             )"
-        );
-
-        $insert->execute([
-            'order_id' => (int) $order['id'],
-            'store_id' => (int) $order['store_id'],
-            'driver_username' => (string) $driver['username'],
+        $stmt->execute([
+            'id' => $assignmentId,
+            'driver' => (string) $driver['username'],
         ]);
+
+        $assignment = $stmt->fetch();
+
+        if (!$assignment) {
+            throw new RuntimeException(
+                'Penugasan tidak ditemukan atau bukan milik akunmu.'
+            );
+        }
+
+        $currentStatus = (string) $assignment['status'];
+
+        if (!isset($transitions[$currentStatus])) {
+            throw new RuntimeException(
+                'Pengantaran sudah selesai atau tidak dapat dilanjutkan.'
+            );
+        }
+
+        $transition = $transitions[$currentStatus];
+        $nextStatus = $transition['next'];
+        $timestampColumn = $transition['timestamp'];
+
+        /*
+         * Nama kolom timestamp diambil dari konfigurasi tetap
+         * di atas, sedangkan seluruh nilai data menggunakan parameter.
+         */
+        $update = $db->prepare(
+            "UPDATE delivery_assignments
+             SET status = :next_status,
+                 {$timestampColumn} = CURRENT_TIMESTAMP
+             WHERE id = :id
+               AND driver_username = :driver
+               AND status = :current_status"
+        );
+
+        $update->execute([
+            'next_status' => $nextStatus,
+            'id' => (int) $assignment['id'],
+            'driver' => (string) $driver['username'],
+            'current_status' => $currentStatus,
+        ]);
+
+        if ($update->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Status berubah atau sudah diproses. Muat ulang halaman.'
+            );
+        }
 
         $db->commit();
 
-        flash('success', 'Pesanan berhasil kamu ambil.');
+        flash('success', $transition['message']);
     } catch (Throwable $exception) {
         if ($db->inTransaction()) {
             $db->rollBack();
@@ -103,21 +203,28 @@ if (request_is_post()) {
 
         if ($exception instanceof RuntimeException) {
             flash('error', $exception->getMessage());
+        } elseif ($exception instanceof PDOException
+            && $action === 'accept'
+            && (string) $exception->getCode() === '23000'
+        ) {
+            // Indeks unik order_id mencegah pesanan diambil dua kali.
+            flash('error', 'Pesanan sudah diambil atau tidak tersedia.');
         } else {
             error_log(
-                '[Anter Ajah] Gagal mengambil pesanan: '
+                '[Anter Ajah] Gagal memperbarui pengantaran: '
                 . $exception->getMessage()
             );
 
             flash(
                 'error',
-                'Pesanan gagal diambil. Silakan coba kembali.'
+                'Status pengantaran gagal diperbarui. Silakan coba lagi.'
             );
         }
     }
 
     redirect('driver/pesanan.php');
 }
+
 
 // Pesanan yang masih tersedia.
 $queueStmt = $db->query(
@@ -429,6 +536,61 @@ function driver_status_label(string $status): string
                                         Telepon pembeli
                                     </a>
                                 <?php endif; ?>
+                                                       
+                                <?php
+                                $nextDeliveryAction = [
+                                    'accepted' => [
+                                        'label' => 'Mulai menuju warung',
+                                        'confirm' => 'Mulai perjalanan menuju warung?',
+                                    ],
+                                    'to_store' => [
+                                        'label' => 'Tandai pesanan sudah diambil',
+                                        'confirm' => 'Konfirmasi bahwa pesanan sudah diterima dari warung?',
+                                    ],
+                                    'picked_up' => [
+                                        'label' => 'Mulai menuju pembeli',
+                                        'confirm' => 'Mulai perjalanan menuju pembeli?',
+                                    ],
+                                    'to_buyer' => [
+                                        'label' => 'Selesaikan pengantaran',
+                                        'confirm' => 'Konfirmasi bahwa pesanan sudah diterima pembeli?',
+                                    ],
+                                ];
+                                
+                                $currentDeliveryStatus = (string) $order['delivery_status'];
+                                ?>
+                                
+                                <?php if (isset($nextDeliveryAction[$currentDeliveryStatus])): ?>
+                                    <form method="post" action="/driver/pesanan.php">
+                                        <?= csrf_field() ?>
+                                
+                                        <input type="hidden" name="action" value="advance">
+                                
+                                        <input
+                                            type="hidden"
+                                            name="order_id"
+                                            value="<?= (int) $order['order_id'] ?>"
+                                        >
+                                
+                                        <input
+                                            type="hidden"
+                                            name="assignment_id"
+                                            value="<?= (int) $order['assignment_id'] ?>"
+                                        >
+                                
+                                        <button
+                                            class="button button-primary"
+                                            type="submit"
+                                            onclick="return confirm(<?= e(json_encode(
+                                                $nextDeliveryAction[$currentDeliveryStatus]['confirm'],
+                                                JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+                                            )) ?>)"
+                                        >
+                                            <?= e($nextDeliveryAction[$currentDeliveryStatus]['label']) ?>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
                             </div>
                         </article>
                     <?php endforeach; ?>
