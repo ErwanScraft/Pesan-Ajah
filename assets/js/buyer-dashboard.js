@@ -38,6 +38,23 @@
         completed: "buyer-status-completed",
         cancelled: "buyer-status-cancelled"
     };
+    
+    const DELIVERY_STATUS_LABELS = {
+        accepted: "Pesanan diambil driver",
+        to_store: "Driver menuju warung",
+        picked_up: "Pesanan diambil dari warung",
+        to_buyer: "Driver menuju pembeli",
+        completed: "Pengantaran selesai",
+        cancelled: "Pengantaran dibatalkan"
+    };
+    
+    const DELIVERY_STEPS = [
+        "accepted",
+        "to_store",
+        "picked_up",
+        "to_buyer",
+        "completed"
+    ];
 
     const STATUS_DELETE_LABELS = {
         completed: "Hapus dari riwayat",
@@ -53,6 +70,22 @@
 
     let currentOrders = [];
     let isLoading = false;
+    let refreshTimer = null;
+    
+    function startOrderRefresh() {
+        if (refreshTimer !== null) {
+            window.clearInterval(refreshTimer);
+        }
+    
+        refreshTimer = window.setInterval(() => {
+            if (
+                document.visibilityState === "visible" &&
+                !isLoading
+            ) {
+                loadOrders();
+            }
+        }, 15000);
+    }
 
     /*
      * Format mata uang rupiah.
@@ -614,6 +647,95 @@
 
         return footer;
     }
+    
+    function createDeliverySection(order) {
+        if (order.delivery_method !== "delivery") {
+            return null;
+        }
+    
+        const section = createElement(
+            "section",
+            "buyer-delivery-tracking"
+        );
+    
+        section.appendChild(
+            createElement(
+                "h3",
+                "buyer-section-title",
+                "Progres pengantaran"
+            )
+        );
+    
+        const status = order.delivery_status
+            ? String(order.delivery_status)
+            : "";
+    
+        const label = status
+            ? DELIVERY_STATUS_LABELS[status] || "Status tidak dikenal"
+            : "Menunggu driver mengambil pesanan";
+    
+        section.appendChild(
+            createElement(
+                "p",
+                "buyer-delivery-current",
+                label
+            )
+        );
+    
+        if (!status) {
+            section.appendChild(
+                createElement(
+                    "p",
+                    "buyer-delivery-note",
+                    "Progres pengantaran akan muncul setelah driver mengambil pesanan."
+                )
+            );
+    
+            return section;
+        }
+    
+        if (status === "cancelled") {
+            section.appendChild(
+                createElement(
+                    "p",
+                    "buyer-delivery-note",
+                    "Pengantaran dibatalkan. Hubungi warung untuk informasi lebih lanjut."
+                )
+            );
+    
+            return section;
+        }
+    
+        const list = createElement(
+            "ol",
+            "buyer-delivery-steps"
+        );
+    
+        const currentIndex = DELIVERY_STEPS.indexOf(status);
+    
+        DELIVERY_STEPS.forEach((step, index) => {
+            const item = createElement(
+                "li",
+                index <= currentIndex
+                    ? "buyer-delivery-step is-complete"
+                    : "buyer-delivery-step"
+            );
+    
+            item.appendChild(
+                createElement(
+                    "span",
+                    "buyer-delivery-step-label",
+                    DELIVERY_STATUS_LABELS[step]
+                )
+            );
+    
+            list.appendChild(item);
+        });
+    
+        section.appendChild(list);
+    
+        return section;
+    }
 
     /*
      * Membuat kartu satu pesanan.
@@ -683,6 +805,12 @@
 
         if (addressSection) {
             card.appendChild(addressSection);
+        }
+        
+        const deliverySection = createDeliverySection(order);
+
+        if (deliverySection) {
+            card.appendChild(deliverySection);
         }
 
         card.appendChild(createOrderFooter(order));
@@ -862,6 +990,7 @@
         }
 
         loadOrders();
+        startOrderRefresh();
     }
 
     if (document.readyState === "loading") {

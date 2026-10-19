@@ -100,6 +100,13 @@ $sql = '
         o.order_number,
         o.buyer_name,
         o.delivery_method,
+        o.status,
+        da.status AS delivery_status,
+        da.accepted_at AS delivery_accepted_at,
+        da.to_store_at,
+        da.picked_up_at,
+        da.to_buyer_at,
+        da.completed_at AS delivery_completed_at,
         o.delivery_address,
         o.delivery_maps_url,
         o.delivery_latitude,
@@ -116,6 +123,9 @@ $sql = '
 
     INNER JOIN stores s
         ON s.id = o.store_id
+    
+    LEFT JOIN delivery_assignments da
+        ON da.order_id = o.id
 
     WHERE o.buyer_token_hash IN (
         ' . implode(', ', $placeholders) . '

@@ -952,3 +952,62 @@
         animation-iteration-count: 1 !important;
     }
 }
+
+.buyer-delivery-tracking {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid #e3e9e5;
+    border-radius: 12px;
+    background: #f8faf9;
+}
+
+.buyer-delivery-current {
+    margin: 8px 0 14px;
+    font-weight: 700;
+}
+
+.buyer-delivery-note {
+    margin: 8px 0 0;
+    color: #617067;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.buyer-delivery-steps {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.buyer-delivery-step {
+    position: relative;
+    padding: 10px 12px;
+    border: 1px solid #e3e9e5;
+    border-radius: 8px;
+    background: #fff;
+    color: #617067;
+    font-size: 14px;
+}
+
+.buyer-delivery-step.is-complete {
+    border-color: #b9ddc8;
+    background: #eaf6ef;
+    color: #176b45;
+    font-weight: 600;
+}
+
+.buyer-delivery-step-label {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .buyer-delivery-tracking {
+        padding: 12px;
+    }
+
+    .buyer-delivery-step {
+        font-size: 13px;
+    }
+}
