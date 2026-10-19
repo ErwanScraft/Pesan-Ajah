@@ -1,4 +1,3 @@
-
 /* =========================================================
    PESAN AJAH — CART
    File: assets/css/cart.css
@@ -1800,3 +1799,92 @@
     }
 }
 
+
+/* =========================================================
+   CLEAN CHECKOUT — PESAN AJAH
+   ========================================================= */
+
+#cart-overlay .cart-footer {
+    gap: 26px;
+}
+
+#cart-overlay .cart-section-heading {
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+#cart-overlay .cart-section-heading h3 {
+    font-size: 15px;
+    letter-spacing: -0.15px;
+}
+
+#cart-overlay .checkout-form .form-field {
+    margin-bottom: 14px;
+}
+
+#cart-overlay .form-field > label {
+    font-size: 13px;
+}
+
+#cart-overlay .form-field input,
+#cart-overlay .form-field textarea {
+    border-radius: 10px;
+}
+
+#cart-overlay .form-field textarea {
+    min-height: 76px;
+}
+
+#cart-overlay .fulfillment-options {
+    gap: 10px;
+}
+
+#cart-overlay .fulfillment-option {
+    border-radius: 12px;
+    padding: 14px;
+}
+
+#cart-overlay .order-summary {
+    padding: 18px;
+    border-radius: 14px;
+    background: var(--cart-surface);
+}
+
+#cart-overlay .order-summary h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+#cart-overlay .total-row {
+    margin-top: 14px;
+    padding-top: 14px;
+}
+
+#cart-overlay .checkout-actions {
+    padding-top: 2px;
+}
+
+#cart-overlay #checkout-button {
+    min-height: 50px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    #cart-overlay .cart-footer {
+        gap: 22px;
+    }
+
+    #cart-overlay .cart-section-heading {
+        margin-bottom: 12px;
+    }
+
+    #cart-overlay .order-summary {
+        padding: 16px;
+    }
+
+    #cart-overlay #checkout-button {
+        min-height: 48px;
+    }
+}
