@@ -54,11 +54,7 @@ declare(strict_types=1);
                         </a>
                     </li>
                     <li>
-                        <a
-                            href="/about.php"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                        <a href="/about.php">
                             About Us
                         </a>
                     </li>

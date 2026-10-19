@@ -1,3 +1,4 @@
+
 <?php
 
 declare(strict_types=1);
@@ -5,7 +6,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/app/bootstrap.php';
 
 $pageTitle = 'Tentang Kami — Pesan Ajah';
-$pageDescription = 'Pesan Ajah membantu pelanggan berbelanja dan warung lokal mengelola produk dengan lebih praktis.';
+$pageDescription = 'Pesan Ajah menghubungkan pelanggan dengan warung lokal melalui pengalaman belanja digital yang praktis dan membantu UMKM mengelola produk dengan lebih mudah.';
 
 ?>
 
@@ -39,13 +40,14 @@ require __DIR__ . '/_header.php';
             <span class="about-eyebrow">TENTANG PESAN AJAH</span>
 
             <h1>
-                Belanja lebih praktis,
-                <span>dukung warung sekitar.</span>
+                Belanja lebih mudah,
+                <span>warung lokal makin dekat.</span>
             </h1>
 
             <p>
-                Cara sederhana untuk menghubungkan pelanggan dengan
-                warung lokal melalui pengalaman belanja digital.
+                Pesan Ajah menghubungkan pelanggan dengan warung sekitar
+                melalui pengalaman belanja digital yang praktis, jelas,
+                dan mudah digunakan.
             </p>
 
             <a href="/" class="about-button">
@@ -54,24 +56,27 @@ require __DIR__ . '/_header.php';
         </div>
     </section>
 
-    <!-- CERITA -->
+    <!-- CERITA KAMI -->
     <section class="about-section container">
         <div class="about-intro">
             <span class="about-label">CERITA KAMI</span>
 
-            <h2>Berawal dari kebutuhan nyata.</h2>
+            <h2>Berawal dari kebutuhan sehari-hari.</h2>
 
             <p>
-                Pelanggan sering bertanya tentang harga dan ketersediaan
-                barang. Pemilik warung pun harus menjawab pertanyaan
-                serupa berulang kali.
+                Mengetahui harga dan ketersediaan produk seharusnya tidak
+                perlu melalui pertanyaan yang sama berulang kali. Namun,
+                hal ini masih menjadi bagian dari keseharian pelanggan
+                dan pemilik warung.
             </p>
 
             <p>
-                Dari pengamatan tersebut, Pesan Ajah hadir untuk
-                membuat informasi produk lebih mudah diakses dan
-                proses jual beli lebih praktis, seperti pengalaman
-                checkout di marketplace yang sudah familier.
+                Pesan Ajah hadir untuk membuat informasi produk lebih
+                mudah diakses dan proses pemesanan lebih terorganisir.
+                Dengan pengalaman belanja digital yang sederhana,
+                pelanggan dapat memilih kebutuhan dengan lebih praktis,
+                sementara pemilik warung dapat mengelola produk melalui
+                satu dashboard.
             </p>
         </div>
     </section>
@@ -81,16 +86,20 @@ require __DIR__ . '/_header.php';
         <div class="container">
             <div class="about-section-heading">
                 <span class="about-label">MANFAAT</span>
-                <h2>Satu aplikasi, dua manfaat.</h2>
+                <h2>Dirancang untuk kebutuhan keduanya.</h2>
             </div>
 
             <div class="about-benefits__grid">
                 <article class="about-benefit">
                     <div class="about-benefit__icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
-                                  stroke="currentColor" stroke-width="1.8"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
                             <circle cx="10" cy="20" r="1.3" fill="currentColor"/>
                             <circle cx="18" cy="20" r="1.3" fill="currentColor"/>
                         </svg>
@@ -99,28 +108,37 @@ require __DIR__ . '/_header.php';
                     <h3>Untuk Pelanggan</h3>
 
                     <p>
-                        Lihat produk, harga, dan status ketersediaan,
-                        lalu pilih barang dan checkout dengan lebih mudah.
+                        Temukan produk, periksa harga dan ketersediaannya,
+                        lalu lakukan pemesanan dengan proses yang lebih praktis.
                     </p>
                 </article>
 
                 <article class="about-benefit">
                     <div class="about-benefit__icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none">
-                            <path d="M4 10V20h16V10M3 4h18l-1.5 6H4.5L3 4Z"
-                                  stroke="currentColor" stroke-width="1.8"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M9 20v-6h6v6"
-                                  stroke="currentColor" stroke-width="1.8"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M4 10V20h16V10M3 4h18l-1.5 6H4.5L3 4Z"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M9 20v-6h6v6"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
                         </svg>
                     </div>
 
                     <h3>Untuk Pemilik Warung</h3>
 
                     <p>
-                        Kelola produk, harga, dan ketersediaan melalui
-                        Dashboard Warung dengan lebih simpel dan terorganisir.
+                        Kelola produk, harga, dan ketersediaan dengan mudah
+                        melalui Dashboard Warung agar informasi jualan tetap
+                        terorganisir dan mudah diperbarui.
                     </p>
 
                     <a href="/warung/login.php" class="about-text-link">
@@ -131,36 +149,36 @@ require __DIR__ . '/_header.php';
         </div>
     </section>
 
-    <!-- CAKUPAN -->
+    <!-- CAKUPAN LAYANAN -->
     <section class="about-section container">
         <div class="about-coverage">
             <span class="about-label">CAKUPAN LAYANAN</span>
 
-            <h2>Dimulai dari Banyu Kuning.</h2>
+            <h2>Bertumbuh bersama warung lokal.</h2>
 
             <p>
-                Saat ini Pesan Ajah berfokus melayani mitra warung
-                di wilayah Banyu Kuning. Ke depannya, kami berharap
-                dapat menjangkau lebih banyak wilayah dan membantu
-                lebih banyak UMKM lokal.
+                Pesan Ajah saat ini berfokus melayani mitra warung
+                di wilayah Banyu Kuning. Kami berharap dapat terus
+                berkembang, menjangkau lebih banyak wilayah, dan
+                membuka peluang digital bagi lebih banyak UMKM lokal.
             </p>
         </div>
     </section>
 
-    <!-- DUKUNGAN -->
+    <!-- DUKUNGAN PENGEMBANGAN -->
     <section class="about-support">
         <div class="container about-support__inner">
             <div>
                 <span class="about-label">DUKUNG PENGEMBANGAN</span>
 
-                <h2>Bantu Pesan Ajah terus berkembang.</h2>
+                <h2>Dukungan Anda berarti bagi kami.</h2>
 
                 <p>
-                    Pengembangan aplikasi membutuhkan biaya operasional
-                    dan dukungan finansial. Menggunakan layanan,
-                    mengajak warung bergabung, dan mengenalkan Pesan
-                    Ajah kepada orang sekitar adalah bentuk dukungan
-                    yang berarti.
+                    Pesan Ajah terus dikembangkan agar semakin bermanfaat
+                    bagi pelanggan dan warung lokal. Menggunakan layanan,
+                    mengajak warung bergabung, atau membagikan Pesan Ajah
+                    kepada orang sekitar merupakan dukungan nyata bagi
+                    keberlanjutan dan pengembangan platform ini.
                 </p>
             </div>
 
@@ -170,16 +188,19 @@ require __DIR__ . '/_header.php';
         </div>
     </section>
 
-    <!-- DEVELOPER -->
+    <!-- PENGEMBANG -->
     <section class="about-developer container">
         <div class="about-developer__mark" aria-hidden="true">PA</div>
 
         <div>
             <span class="about-label">PENGEMBANG</span>
+
             <h2>Erwan Sudandi</h2>
+
             <p>
-                Membangun pengalaman belanja digital yang lebih praktis
-                untuk warung dan UMKM lokal.
+                Mengembangkan Pesan Ajah sebagai upaya menghadirkan
+                solusi digital yang praktis dan relevan bagi warung
+                serta UMKM lokal.
             </p>
         </div>
     </section>
