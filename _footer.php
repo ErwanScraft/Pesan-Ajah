@@ -55,7 +55,7 @@ declare(strict_types=1);
                     </li>
                     <li>
                         <a
-                            href="https://github.com/ErwanScraft/Pesan-Ajah"
+                            href="/about.php"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
