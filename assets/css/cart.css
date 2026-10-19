@@ -1750,3 +1750,53 @@
         animation: none !important;
     }
 }
+
+
+/* =========================================================
+   23. CLEAN CART UI
+   ========================================================= */
+
+/* Hilangkan teks jumlah item yang berulang di header. */
+#cart-overlay .cart-header-content p {
+    display: none;
+}
+
+/* Hilangkan subteks metode pesanan yang tidak diperlukan. */
+#cart-overlay .fulfillment-copy small {
+    display: none;
+}
+
+/* Ringkas petunjuk alamat; label dan tombol lokasi tetap ada. */
+#cart-overlay #delivery-address-hint {
+    display: none;
+}
+
+/* Judul bagian dibuat lebih ringkas. */
+#cart-overlay .cart-section-heading {
+    margin-bottom: 12px;
+}
+
+#cart-overlay .cart-footer {
+    gap: 20px;
+}
+
+#cart-overlay .cart-content {
+    padding-top: 18px;
+    padding-bottom: 24px;
+}
+
+/* Ruang kosong keranjang lebih proporsional. */
+#cart-overlay .cart-empty {
+    min-height: 240px;
+}
+
+@media (max-width: 600px) {
+    #cart-overlay .cart-content {
+        padding: 16px 16px 24px;
+    }
+
+    #cart-overlay .cart-footer {
+        gap: 18px;
+    }
+}
+
