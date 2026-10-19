@@ -32,13 +32,11 @@ function delivery_distance_km(
 }
 
 /**
- * Tarif bertingkat:
- * 0–5 km   = Rp1.000
- * >5–10 km = Rp2.000
- * >10–15 km = Rp3.000
+ * Tarif ongkir berdasarkan jarak:
+ * 0–1 km       = Rp2.000
+ * >1–2 km      = Rp3.000
+ * >2–3 km      = Rp4.000
  * dan seterusnya.
- *
- * Tarif minimum Rp1.000.
  */
 function delivery_fee_from_distance(float $km): int
 {
@@ -48,5 +46,6 @@ function delivery_fee_from_distance(float $km): int
         );
     }
 
-    return max(1, (int) ceil($km / 5)) * 1000;
+    return max(2, (int) ceil($km) + 1) * 1000;
 }
+

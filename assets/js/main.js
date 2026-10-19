@@ -7,8 +7,6 @@ import { initBannerCarousel } from "./modules/banner.js";
 
 const $ = (selector) => document.querySelector(selector);
 
-const DELIVERY_FEE = 1000;
-
 const toast = $("#toast");
 const cartOverlay = $("#cart-overlay");
 const cartButton = $("#cart-trigger");
@@ -108,8 +106,9 @@ function estimateDelivery(product) {
 
   return {
     distance,
-    fee: Math.max(1, Math.ceil(distance / 5)) * 1000,
+    fee: Math.max(2, Math.ceil(distance) + 1) * 1000,
   };
+
 }
 
 function getDeliveryFee() {
