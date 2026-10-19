@@ -472,7 +472,7 @@ function toggleDeliveryFields() {
   const address = $("#delivery-address");
 
   if (address) {
-    address.required = isDelivery;
+    address.required = false;
   }
 
   if (!isDelivery) {
@@ -490,6 +490,7 @@ function toggleDeliveryFields() {
     setLocationStatus("Belum ada lokasi yang dipilih.");
   }
 }
+
 
 function validMapsUrl(value) {
   if (!value) {
@@ -672,13 +673,13 @@ async function submitCheckout() {
 
   if (
     deliveryMethod === "delivery" &&
-    (!deliveryAddress || deliveryAddress.length > 255)
+    deliveryAddress.length > 255
   ) {
     showToast(
       toast,
-      "Alamat pengantaran wajib diisi dan maksimal 255 karakter.",
+      "Detail alamat maksimal 255 karakter.",
     );
-
+  
     $("#delivery-address")?.focus();
     return;
   }

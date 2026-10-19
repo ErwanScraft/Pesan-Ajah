@@ -177,14 +177,11 @@ if (
 
 if (
     $deliveryMethod === 'delivery'
-    && (
-        $deliveryAddress === ''
-        || mb_strlen($deliveryAddress, 'UTF-8') > 255
-    )
+    && mb_strlen($deliveryAddress, 'UTF-8') > 255
 ) {
     checkout_json([
         'success' => false,
-        'message' => 'Alamat pengantaran wajib diisi.',
+        'message' => 'Detail alamat maksimal 255 karakter.',
     ], 422);
 }
 

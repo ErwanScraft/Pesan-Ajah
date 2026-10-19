@@ -138,25 +138,34 @@
                         >
                     </div>
 
-                    <!-- Alamat pengantaran -->
+                    <!-- Detail alamat opsional -->
                     <div
                         class="delivery-address-section"
                         id="delivery-address-section"
                     >
                         <div class="form-field">
                             <label for="delivery-address">
-                                Alamat pengantaran
+                                Detail alamat <span class="muted">(opsional)</span>
                             </label>
-
+                    
                             <textarea
                                 id="delivery-address"
                                 name="delivery_address"
-                                placeholder="Nama jalan, nomor rumah, RT/RW"
+                                placeholder="Dusun, RT/RW, patokan rumah, warna pagar (opsional)"
                                 rows="3"
-                                maxlength="500"
+                                maxlength="255"
+                                aria-describedby="delivery-address-hint"
                             ></textarea>
+                    
+                            <small
+                                id="delivery-address-hint"
+                                class="muted"
+                            >
+                                Tambahkan patokan agar kurir lebih mudah menemukan
+                                rumah. Lokasi GPS tetap digunakan untuk menghitung ongkir.
+                            </small>
                         </div>
-
+                    
                         <div class="location-picker">
                             <button
                                 class="button button-outline location-button"
@@ -165,32 +174,32 @@
                             >
                                 Gunakan lokasi saya
                             </button>
-
+                    
                             <p
                                 class="location-status"
                                 id="location-status"
                                 role="status"
                                 aria-live="polite"
                             ></p>
-
+                    
                             <input
                                 type="hidden"
                                 id="delivery-maps-url"
                                 name="delivery_maps_url"
                             >
-
+                    
                             <input
                                 type="hidden"
                                 id="delivery-latitude"
                                 name="delivery_latitude"
                             >
-
+                    
                             <input
                                 type="hidden"
                                 id="delivery-longitude"
                                 name="delivery_longitude"
                             >
-
+                    
                             <a
                                 class="preview-location-link"
                                 id="preview-location-link"
@@ -203,7 +212,6 @@
                             </a>
                         </div>
                     </div>
-                </section>
 
                 <!-- Produk dalam keranjang -->
                 <section
