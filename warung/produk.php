@@ -61,6 +61,22 @@ require __DIR__ . '/_header.php';
                         required
                     >
                 </label>
+                
+                <!-- Varian produk -->
+                <label class="form-field">
+                    <span>
+                        Varian
+                        <small>(opsional)</small>
+                    </span>
+                
+                    <input
+                        type="text"
+                        name="variant"
+                        maxlength="100"
+                        placeholder="Contoh: Goreng, Rasa Balado, Kuah"
+                        autocomplete="off"
+                    >
+                </label>
 
                 <!-- Kategori -->
                 <label class="form-field">

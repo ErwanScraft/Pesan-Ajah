@@ -187,6 +187,12 @@ export function createCart(products) {
 
       name.className = "cart-item-name";
       name.textContent = product.name;
+      
+      const variant = document.createElement("small");
+      
+      variant.className = "cart-item-variant";
+      variant.textContent = product.variant || "";
+      variant.hidden = !product.variant;
 
       const price = document.createElement("span");
 
@@ -196,7 +202,13 @@ export function createCart(products) {
         Number(product.price) * amount,
       );
 
-      details.append(name, price);
+      details.append(name);
+
+      if (product.variant) {
+        details.append(variant);
+      }
+      
+      details.append(price);
 
       const controls = document.createElement("div");
 

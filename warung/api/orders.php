@@ -39,6 +39,7 @@ if (request_method() === 'GET') {
     $itemStmt = database()->prepare(
         'SELECT
             product_name,
+            product_variant,
             quantity,
             price,
             subtotal

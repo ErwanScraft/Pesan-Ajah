@@ -355,9 +355,17 @@
                     "div",
                     "buyer-item-name"
                 );
-
+                
                 nameElement.textContent =
                     `${name} × ${quantity}`;
+                
+                const variantElement = createElement(
+                    "small",
+                    "buyer-item-variant",
+                    item.product_variant || ""
+                );
+                
+                variantElement.hidden = !item.product_variant;
 
                 const totalElement = createElement(
                     "div",
@@ -365,7 +373,13 @@
                     formatRupiah(subtotal)
                 );
 
-                row.append(nameElement, totalElement);
+                row.append(nameElement);
+
+                if (item.product_variant) {
+                    row.append(variantElement);
+                }
+                
+                row.append(totalElement);
                 list.appendChild(row);
             });
         }

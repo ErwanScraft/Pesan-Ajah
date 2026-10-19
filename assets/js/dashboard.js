@@ -503,7 +503,12 @@ function renderProducts() {
     const name = document.createElement("strong");
 
     name.textContent = product.name || "Produk tanpa nama";
-
+    
+    const variant = document.createElement("small");
+    variant.className = "manage-product-variant";
+    variant.textContent = product.variant || "";
+    variant.hidden = !product.variant;
+    
     const metadata = document.createElement("small");
 
     metadata.textContent =
@@ -519,7 +524,7 @@ function renderProducts() {
       ? "Stok tersedia"
       : "Stok habis";
 
-    details.append(name, metadata, status);
+    details.append(name, variant, metadata, status);
 
     info.append(
       createProductThumbnail(product),
@@ -563,6 +568,7 @@ function renderProducts() {
       await postJSON(API.products, {
         id: product.id,
         name: product.name,
+        variant: product.variant || "",
         category: product.category || "Lainnya",
         description: product.description || "",
         price: product.price,
@@ -807,6 +813,10 @@ function editProduct(id) {
   editingProductId = product.id;
 
   productForm.elements.name.value = product.name;
+  if (productForm.elements.variant) {
+    productForm.elements.variant.value =
+      product.variant || "";
+  }
   productForm.elements.category.value = product.category;
   productForm.elements.price.value = String(product.price);
   productForm.elements.unit.value = product.unit;
@@ -897,6 +907,7 @@ if (productForm) {
 
     const payload = {
       name: String(formData.get("name") || "").trim(),
+      variant: String(formData.get("variant") || "").trim(),
       category: String(formData.get("category") || "").trim(),
       price: Number(formData.get("price")),
       unit: String(formData.get("unit") || "").trim(),
@@ -925,6 +936,7 @@ if (productForm) {
     const requestData = new FormData();
 
     requestData.set("name", payload.name);
+    requestData.set("variant", payload.variant);
     requestData.set("category", payload.category);
     requestData.set("price", String(payload.price));
     requestData.set("unit", payload.unit);
@@ -1079,11 +1091,14 @@ function renderOrders() {
     const row = document.createElement("tr");
 
     const itemSummary = (order.items || [])
-      .map(
-        (item) =>
-          `${item.product_name} × ${item.quantity}`,
-      )
-      .join(", ");
+        .map((item) => {
+          const variant = item.product_variant
+            ? ` (${item.product_variant})`
+            : "";
+      
+          return `${item.product_name}${variant} × ${item.quantity}`;
+        })
+        .join(", ");
 
     const status = document.createElement("span");
 

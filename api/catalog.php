@@ -74,6 +74,7 @@ try {
             p.id,
             p.store_id,
             p.name,
+            p.variant,
             p.description,
             p.category,
             p.price,

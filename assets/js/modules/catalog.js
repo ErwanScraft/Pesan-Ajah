@@ -205,6 +205,7 @@ export function createCatalog({
 
       const searchableText = [
         product.name,
+        product.variant,
         category,
         product.store,
       ]
@@ -301,9 +302,15 @@ export function createCatalog({
 
     name.className = "product-name";
     name.textContent = product.name || "Produk";
-
+    
+    const variant = document.createElement("span");
+    
+    variant.className = "product-variant";
+    variant.textContent = product.variant || "";
+    variant.hidden = !product.variant;
+    
     const unit = document.createElement("span");
-
+    
     unit.className = "product-unit";
     unit.textContent = product.unit || "";
 
@@ -337,7 +344,13 @@ export function createCatalog({
       : "–";
 
     bottom.append(price, addButton);
-    info.append(name, unit, bottom);
+    info.append(name);
+
+    if (product.variant) {
+      info.append(variant);
+    }
+    
+    info.append(unit, bottom);
     card.append(image, info);
 
     return card;

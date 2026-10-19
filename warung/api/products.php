@@ -233,6 +233,19 @@ function validate_product_input(array $input): array
         'Nama produk',
         120
     );
+    
+    $variant = trim(
+        is_string($input['variant'] ?? null)
+            ? $input['variant']
+            : ''
+    );
+    
+    if (mb_strlen($variant, 'UTF-8') > 100) {
+        api_json([
+            'success' => false,
+            'message' => 'Varian maksimal 100 karakter.',
+        ], 422);
+    }
 
     $category = api_required_text(
         $input['category'] ?? null,
@@ -301,6 +314,7 @@ function validate_product_input(array $input): array
 
     return [
         'name' => $name,
+        'variant' => $variant !== '' ? $variant : null,
         'category' => $category,
         'unit' => $unit,
         'description' => $description !== ''
@@ -325,6 +339,7 @@ if ($method === 'GET') {
         'SELECT
             id,
             name,
+            variant,
             description,
             category,
             price,
@@ -458,6 +473,7 @@ if ($method === 'POST' || $method === 'PUT') {
                 'INSERT INTO products (
                     store_id,
                     name,
+                    variant,
                     description,
                     category,
                     price,
@@ -468,6 +484,7 @@ if ($method === 'POST' || $method === 'PUT') {
                 ) VALUES (
                     :store_id,
                     :name,
+                    :variant,
                     :description,
                     :category,
                     :price,
@@ -481,6 +498,7 @@ if ($method === 'POST' || $method === 'PUT') {
             $stmt->execute([
                 'store_id' => $storeId,
                 'name' => $data['name'],
+                'variant' => $data['variant'],
                 'description' => $data['description'],
                 'category' => $data['category'],
                 'price' => $data['price'],
@@ -496,6 +514,7 @@ if ($method === 'POST' || $method === 'PUT') {
                 'UPDATE products
                  SET
                     name = :name,
+                    variant = :variant,
                     description = :description,
                     category = :category,
                     price = :price,
@@ -509,6 +528,7 @@ if ($method === 'POST' || $method === 'PUT') {
 
             $stmt->execute([
                 'name' => $data['name'],
+                'variant' => $data['variant'],
                 'description' => $data['description'],
                 'category' => $data['category'],
                 'price' => $data['price'],

@@ -421,6 +421,19 @@
     word-break: break-word;
 }
 
+.buyer-item-variant {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted, #68736b);
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.buyer-item-variant[hidden] {
+    display: none !important;
+}
+
 .buyer-item-total {
     flex: 0 1 auto;
     min-width: 0;

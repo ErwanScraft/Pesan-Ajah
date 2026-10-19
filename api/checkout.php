@@ -478,6 +478,7 @@ try {
         'SELECT
             id,
             name,
+            variant,
             price,
             is_available
 
@@ -519,6 +520,11 @@ try {
         $orderItems[] = [
             'product_id' => (int) $product['id'],
             'product_name' => (string) $product['name'],
+            'product_variant' => trim(
+                (string) ($product['variant'] ?? '')
+            ) !== ''
+                ? (string) $product['variant']
+                : null,
             'quantity' => $quantity,
             'price' => $price,
             'subtotal' => $lineSubtotal,
@@ -607,6 +613,7 @@ try {
             order_id,
             product_id,
             product_name,
+            product_variant,
             quantity,
             price,
             subtotal
@@ -614,6 +621,7 @@ try {
             :order_id,
             :product_id,
             :product_name,
+            :product_variant,
             :quantity,
             :price,
             :subtotal
@@ -625,6 +633,7 @@ try {
             'order_id' => $orderId,
             'product_id' => $item['product_id'],
             'product_name' => $item['product_name'],
+            'product_variant' => $item['product_variant'],
             'quantity' => $item['quantity'],
             'price' => $item['price'],
             'subtotal' => $item['subtotal'],
@@ -703,10 +712,12 @@ try {
     
     foreach ($orderItems as $index => $item) {
         $message[] = ($index + 1) . '. ' . $item['product_name'];
+        if (!empty($item['product_variant'])) {
+            $message[] = '   Varian: ' . $item['product_variant'];
+        }
         $message[] = '   ' . $item['quantity']
             . ' x ' . checkout_rupiah((float) $item['price'])
             . ' = ' . checkout_rupiah((float) $item['subtotal']);
-    
         $message[] = '';
     }
     

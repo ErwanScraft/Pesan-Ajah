@@ -125,6 +125,8 @@ CREATE TABLE IF NOT EXISTS products (
     store_id BIGINT UNSIGNED NOT NULL,
 
     name VARCHAR(150) NOT NULL,
+    
+    variant VARCHAR(100) DEFAULT NULL,
 
     description TEXT DEFAULT NULL,
 
@@ -346,6 +348,8 @@ CREATE TABLE IF NOT EXISTS order_items (
     product_id BIGINT UNSIGNED DEFAULT NULL,
 
     product_name VARCHAR(150) NOT NULL,
+    
+    product_variant VARCHAR(100) DEFAULT NULL,
 
     quantity INT UNSIGNED NOT NULL DEFAULT 1,
 

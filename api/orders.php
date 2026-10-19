@@ -133,6 +133,7 @@ try {
     $itemStmt = $db->prepare(
         'SELECT
             product_name,
+            product_variant,
             quantity,
             price,
             subtotal
