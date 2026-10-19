@@ -63,13 +63,20 @@ $driver = require_driver();
             </form>
         </header>
 
+
         <section class="driver-card">
-            <h2>Dashboard siap</h2>
+            <h2>Operasional pengantaran</h2>
+        
             <p>
-                Autentikasi driver aktif. Fitur antrean pesanan
-                akan ditambahkan pada tahap berikutnya.
+                Lihat pesanan yang tersedia dan pantau pesanan
+                yang sudah kamu ambil.
             </p>
+        
+            <a class="button button-primary" href="/driver/pesanan.php">
+                Buka antrean pesanan
+            </a>
         </section>
+
     </main>
 </body>
 </html>

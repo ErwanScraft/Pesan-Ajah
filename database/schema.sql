@@ -382,8 +382,71 @@ CREATE TABLE IF NOT EXISTS order_items (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
 
-
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================
+-- 7. DELIVERY ASSIGNMENTS
+-- Penugasan dan status pengantaran oleh driver
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS delivery_assignments (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    order_id BIGINT UNSIGNED NOT NULL,
+    store_id BIGINT UNSIGNED NOT NULL,
+
+    driver_username VARCHAR(100) NOT NULL,
+
+    status ENUM(
+        'accepted',
+        'to_store',
+        'picked_up',
+        'to_buyer',
+        'completed',
+        'cancelled'
+    ) NOT NULL DEFAULT 'accepted',
+
+    accepted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    picked_up_at DATETIME DEFAULT NULL,
+    completed_at DATETIME DEFAULT NULL,
+
+    created_at TIMESTAMP
+        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP
+        NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+
+    -- Satu pesanan hanya boleh memiliki satu penugasan.
+    UNIQUE KEY uq_delivery_assignments_order (order_id),
+
+    KEY idx_delivery_driver_status (
+        driver_username,
+        status
+    ),
+
+    KEY idx_delivery_store_status (
+        store_id,
+        status
+    ),
+
+    CONSTRAINT fk_delivery_assignment_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_delivery_assignment_store
+        FOREIGN KEY (store_id)
+        REFERENCES stores (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
 
 
 -- =========================================================
