@@ -4,7 +4,7 @@
 
    Fitur:
    - Memuat pesanan berdasarkan token pelacakan.
-   - Menampilkan status terbaru pesanan.
+   - Menampilkan status warung dan pengantaran terpadu.
    - Menampilkan produk dan ringkasan pembayaran.
    - Menampilkan alamat pengantaran dan lokasi Maps.
    - Menghapus pesanan selesai atau dibatalkan dari riwayat
@@ -38,7 +38,7 @@
         completed: "buyer-status-completed",
         cancelled: "buyer-status-cancelled"
     };
-    
+
     const DELIVERY_STATUS_LABELS = {
         accepted: "Pesanan diambil driver",
         to_store: "Driver menuju warung",
@@ -47,7 +47,7 @@
         completed: "Pengantaran selesai",
         cancelled: "Pengantaran dibatalkan"
     };
-    
+
     const DELIVERY_STEPS = [
         "accepted",
         "to_store",
@@ -71,12 +71,16 @@
     let currentOrders = [];
     let isLoading = false;
     let refreshTimer = null;
-    
+
+    /*
+     * Memperbarui pesanan setiap 15 detik ketika halaman
+     * terlihat dan tidak ada proses pemuatan lain.
+     */
     function startOrderRefresh() {
         if (refreshTimer !== null) {
             window.clearInterval(refreshTimer);
         }
-    
+
         refreshTimer = window.setInterval(() => {
             if (
                 document.visibilityState === "visible" &&
@@ -147,15 +151,6 @@
 
     /*
      * Membaca token pelacakan dari localStorage.
-     *
-     * Format yang didukung:
-     * [
-     *   {
-     *     token: "...",
-     *     order_number: "...",
-     *     created_at: "..."
-     *   }
-     * ]
      */
     function getSavedOrders() {
         try {
@@ -219,6 +214,7 @@
         }
 
         elements.message.textContent = message;
+
         elements.message.classList.remove(
             "is-success",
             "is-error"
@@ -244,6 +240,7 @@
         }
 
         elements.message.textContent = "";
+
         elements.message.classList.remove(
             "is-success",
             "is-error"
@@ -293,7 +290,8 @@
                 "goo.gl"
             ];
 
-            const isAllowed = allowedHosts.includes(hostname) ||
+            const isAllowed =
+                allowedHosts.includes(hostname) ||
                 hostname.endsWith(".google.com");
 
             return isAllowed ? url.href : null;
@@ -386,19 +384,21 @@
 
                 const nameElement = createElement(
                     "div",
-                    "buyer-item-name"
+                    "buyer-item-name",
+                    `${name} × ${quantity}`
                 );
-                
-                nameElement.textContent =
-                    `${name} × ${quantity}`;
-                
+
+                const variant = item.product_variant
+                    ? String(item.product_variant)
+                    : "";
+
                 const variantElement = createElement(
                     "small",
                     "buyer-item-variant",
-                    item.product_variant || ""
+                    variant
                 );
-                
-                variantElement.hidden = !item.product_variant;
+
+                variantElement.hidden = !variant;
 
                 const totalElement = createElement(
                     "div",
@@ -406,13 +406,13 @@
                     formatRupiah(subtotal)
                 );
 
-                row.append(nameElement);
+                row.appendChild(nameElement);
 
-                if (item.product_variant) {
-                    row.append(variantElement);
+                if (variant) {
+                    row.appendChild(variantElement);
                 }
-                
-                row.append(totalElement);
+
+                row.appendChild(totalElement);
                 list.appendChild(row);
             });
         }
@@ -561,7 +561,9 @@
         const savedOrders = getSavedOrders();
 
         const updatedOrders = savedOrders.filter((item) => {
-            return String(item.order_number || "") !== orderNumber;
+            return (
+                String(item.order_number || "") !== orderNumber
+            );
         });
 
         if (!saveOrders(updatedOrders)) {
@@ -574,7 +576,9 @@
         }
 
         currentOrders = currentOrders.filter((item) => {
-            return String(item.order_number || "") !== orderNumber;
+            return (
+                String(item.order_number || "") !== orderNumber
+            );
         });
 
         renderOrders();
@@ -647,72 +651,125 @@
 
         return footer;
     }
-    
-    function createDeliverySection(order) {
-        if (order.delivery_method !== "delivery") {
-            return null;
-        }
-    
+
+    /*
+     * Panel status terpadu:
+     * - Status pesanan dari warung.
+     * - Status pengantaran dari driver.
+     * - Progres pengantaran jika tersedia.
+     */
+    function createOrderStatusSection(order) {
         const section = createElement(
             "section",
-            "buyer-delivery-tracking"
+            "buyer-order-status-panel"
         );
-    
-        section.appendChild(
+
+        const orderStatus = String(
+            order.status || "pending"
+        ).toLowerCase();
+
+        const statusRow = createElement(
+            "div",
+            "buyer-status-row"
+        );
+
+        statusRow.appendChild(
             createElement(
-                "h3",
-                "buyer-section-title",
-                "Progres pengantaran"
+                "span",
+                "buyer-status-caption",
+                "Status warung"
             )
         );
-    
-        const status = order.delivery_status
-            ? String(order.delivery_status)
-            : "";
-    
-        const label = status
-            ? DELIVERY_STATUS_LABELS[status] || "Status tidak dikenal"
+
+        statusRow.appendChild(
+            createElement(
+                "span",
+                [
+                    "buyer-status",
+                    STATUS_CLASSES[orderStatus] ||
+                        "buyer-status-pending"
+                ].join(" "),
+                STATUS_LABELS[orderStatus] ||
+                    "Menunggu konfirmasi"
+            )
+        );
+
+        section.appendChild(statusRow);
+
+        /*
+         * Untuk pesanan ambil sendiri, tidak ada progres driver.
+         */
+        if (order.delivery_method !== "delivery") {
+            section.appendChild(
+                createElement(
+                    "p",
+                    "buyer-delivery-current",
+                    "Metode: Ambil sendiri"
+                )
+            );
+
+            return section;
+        }
+
+        const deliveryStatus = String(
+            order.delivery_status || ""
+        ).toLowerCase();
+
+        const deliveryLabel = deliveryStatus
+            ? DELIVERY_STATUS_LABELS[deliveryStatus] ||
+                "Status tidak dikenal"
             : "Menunggu driver mengambil pesanan";
-    
-        section.appendChild(
+
+        const deliveryRow = createElement(
+            "div",
+            "buyer-delivery-status-row"
+        );
+
+        deliveryRow.appendChild(
             createElement(
-                "p",
-                "buyer-delivery-current",
-                label
+                "span",
+                "buyer-status-caption",
+                "Status pengantaran"
             )
         );
-    
-        if (!status) {
-            section.appendChild(
-                createElement(
-                    "p",
-                    "buyer-delivery-note",
-                    "Progres pengantaran akan muncul setelah driver mengambil pesanan."
-                )
-            );
-    
+
+        deliveryRow.appendChild(
+            createElement(
+                "span",
+                [
+                    "buyer-delivery-badge",
+                    deliveryStatus === "completed"
+                        ? "is-complete"
+                        : "",
+                    deliveryStatus === "cancelled"
+                        ? "is-cancelled"
+                        : ""
+                ].filter(Boolean).join(" "),
+                deliveryLabel
+            )
+        );
+
+        section.appendChild(deliveryRow);
+
+        /*
+         * Belum ada progres atau pengantaran dibatalkan:
+         * status tetap terlihat tanpa daftar langkah.
+         */
+        if (
+            !deliveryStatus ||
+            deliveryStatus === "cancelled"
+        ) {
             return section;
         }
-    
-        if (status === "cancelled") {
-            section.appendChild(
-                createElement(
-                    "p",
-                    "buyer-delivery-note",
-                    "Pengantaran dibatalkan. Hubungi warung untuk informasi lebih lanjut."
-                )
-            );
-    
-            return section;
-        }
-    
+
         const list = createElement(
             "ol",
             "buyer-delivery-steps"
         );
-    
-        const currentIndex = DELIVERY_STEPS.indexOf(status);
-    
+
+        const currentIndex =
+            DELIVERY_STEPS.indexOf(deliveryStatus);
+
         DELIVERY_STEPS.forEach((step, index) => {
             const item = createElement(
                 "li",
@@ -720,7 +777,7 @@
                     ? "buyer-delivery-step is-complete"
                     : "buyer-delivery-step"
             );
-    
+
             item.appendChild(
                 createElement(
                     "span",
@@ -728,17 +785,17 @@
                     DELIVERY_STATUS_LABELS[step]
                 )
             );
-    
+
             list.appendChild(item);
         });
-    
+
         section.appendChild(list);
-    
+
         return section;
     }
 
     /*
-     * Membuat kartu satu pesanan.
+     * Membuat satu kartu pesanan.
      */
     function createOrderCard(order) {
         const card = createElement(
@@ -782,22 +839,19 @@
             )
         );
 
-        const status = String(
-            order.status || "pending"
-        ).toLowerCase();
-
-        const statusBadge = createElement(
-            "span",
-            [
-                "buyer-status",
-                STATUS_CLASSES[status] || "buyer-status-pending"
-            ].join(" "),
-            STATUS_LABELS[status] || "Menunggu konfirmasi"
-        );
-
-        header.append(heading, statusBadge);
+        header.appendChild(heading);
         card.appendChild(header);
 
+        /*
+         * Urutan komponen kartu:
+         * 1. Identitas pesanan.
+         * 2. Status warung dan pengantaran.
+         * 3. Produk.
+         * 4. Pembayaran.
+         * 5. Alamat jika menggunakan delivery.
+         * 6. Informasi tambahan dan aksi.
+         */
+        card.appendChild(createOrderStatusSection(order));
         card.appendChild(createItemsSection(order));
         card.appendChild(createPaymentSection(order));
 
@@ -805,12 +859,6 @@
 
         if (addressSection) {
             card.appendChild(addressSection);
-        }
-        
-        const deliverySection = createDeliverySection(order);
-
-        if (deliverySection) {
-            card.appendChild(deliverySection);
         }
 
         card.appendChild(createOrderFooter(order));
