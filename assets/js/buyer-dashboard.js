@@ -3,13 +3,13 @@
    File: assets/js/buyer-dashboard.js
 
    Fitur:
-   - Memuat pesanan berdasarkan token pelacakan.
-   - Menampilkan status warung dan pengantaran terpadu.
-   - Menampilkan produk dan ringkasan pembayaran.
-   - Menampilkan alamat pengantaran dan lokasi Maps.
-   - Menghapus pesanan selesai atau dibatalkan dari riwayat
-     lokal pembeli tanpa menghapus data transaksi di database.
-   - Tampilan loading, empty state, dan error.
+   - Memuat pesanan melalui token pelacakan lokal.
+   - Menampilkan status pesanan warung dan pengantaran.
+   - Menampilkan rincian produk, varian, dan pembayaran.
+   - Menampilkan alamat dan tautan Google Maps yang tervalidasi.
+   - Menghapus pesanan selesai/dibatalkan dari riwayat lokal.
+   - Refresh otomatis setiap 15 detik.
+   - Loading, empty state, dan error handling.
 ========================================================= */
 
 (() => {
@@ -17,6 +17,7 @@
 
     const STORAGE_KEY = "pesan_ajah_order_tokens";
     const API_URL = "/api/orders.php";
+    const REFRESH_INTERVAL = 15000;
 
     const DELETABLE_STATUSES = new Set([
         "completed",
@@ -72,28 +73,16 @@
     let isLoading = false;
     let refreshTimer = null;
 
-    /*
-     * Memperbarui pesanan setiap 15 detik ketika halaman
-     * terlihat dan tidak ada proses pemuatan lain.
-     */
-    function startOrderRefresh() {
-        if (refreshTimer !== null) {
-            window.clearInterval(refreshTimer);
-        }
+    /* =====================================================
+       UTILITIES
+    ===================================================== */
 
-        refreshTimer = window.setInterval(() => {
-            if (
-                document.visibilityState === "visible" &&
-                !isLoading
-            ) {
-                loadOrders();
-            }
-        }, 15000);
+    function normalizeStatus(value) {
+        return String(value || "")
+            .trim()
+            .toLowerCase();
     }
 
-    /*
-     * Format mata uang rupiah.
-     */
     function formatRupiah(value) {
         const amount = Number(value) || 0;
 
@@ -104,9 +93,6 @@
         }).format(amount);
     }
 
-    /*
-     * Format tanggal dan waktu.
-     */
     function formatDate(value) {
         if (!value) {
             return "Tanggal tidak tersedia";
@@ -131,27 +117,56 @@
         }).format(date);
     }
 
-    /*
-     * Membuat elemen HTML dengan aman.
-     * Data API dimasukkan melalui textContent, bukan innerHTML.
-     */
-    function createElement(tag, className, text) {
+    function createElement(tag, className = "", text = null) {
         const element = document.createElement(tag);
 
         if (className) {
             element.className = className;
         }
 
-        if (text !== undefined && text !== null) {
+        if (text !== null && text !== undefined) {
             element.textContent = String(text);
         }
 
         return element;
     }
 
-    /*
-     * Membaca token pelacakan dari localStorage.
-     */
+    function getSafeMapsUrl(value) {
+        if (!value || typeof value !== "string") {
+            return null;
+        }
+
+        try {
+            const url = new URL(value);
+
+            if (url.protocol !== "https:") {
+                return null;
+            }
+
+            const hostname = url.hostname.toLowerCase();
+
+            const allowedHosts = [
+                "google.com",
+                "www.google.com",
+                "maps.google.com",
+                "maps.app.goo.gl",
+                "goo.gl"
+            ];
+
+            const allowed =
+                allowedHosts.includes(hostname) ||
+                hostname.endsWith(".google.com");
+
+            return allowed ? url.href : null;
+        } catch {
+            return null;
+        }
+    }
+
+    /* =====================================================
+       LOCAL ORDER STORAGE
+    ===================================================== */
+
     function getSavedOrders() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -184,9 +199,6 @@
         }
     }
 
-    /*
-     * Menyimpan token pelacakan kembali ke localStorage.
-     */
     function saveOrders(items) {
         try {
             localStorage.setItem(
@@ -205,9 +217,10 @@
         }
     }
 
-    /*
-     * Menampilkan notifikasi.
-     */
+    /* =====================================================
+       MESSAGES AND EMPTY STATE
+    ===================================================== */
+
     function showMessage(message, type = "") {
         if (!elements.message) {
             return;
@@ -231,9 +244,6 @@
         elements.message.hidden = false;
     }
 
-    /*
-     * Menyembunyikan notifikasi.
-     */
     function hideMessage() {
         if (!elements.message) {
             return;
@@ -249,9 +259,6 @@
         elements.message.hidden = true;
     }
 
-    /*
-     * Menampilkan atau menyembunyikan empty state.
-     */
     function updateEmptyState() {
         const hasOrders = currentOrders.length > 0;
 
@@ -264,45 +271,31 @@
         }
     }
 
-    /*
-     * Memastikan tautan Maps menggunakan HTTPS
-     * dan berasal dari domain Google Maps yang diizinkan.
-     */
-    function getSafeMapsUrl(value) {
-        if (!value || typeof value !== "string") {
-            return null;
+    function showLoadingState() {
+        if (!elements.orders) {
+            return;
         }
 
-        try {
-            const url = new URL(value);
+        elements.orders.hidden = false;
+        elements.orders.replaceChildren();
 
-            if (url.protocol !== "https:") {
-                return null;
-            }
+        elements.orders.appendChild(
+            createElement(
+                "div",
+                "buyer-loading",
+                "Memuat riwayat pesanan..."
+            )
+        );
 
-            const hostname = url.hostname.toLowerCase();
-
-            const allowedHosts = [
-                "google.com",
-                "www.google.com",
-                "maps.google.com",
-                "maps.app.goo.gl",
-                "goo.gl"
-            ];
-
-            const isAllowed =
-                allowedHosts.includes(hostname) ||
-                hostname.endsWith(".google.com");
-
-            return isAllowed ? url.href : null;
-        } catch {
-            return null;
+        if (elements.empty) {
+            elements.empty.hidden = true;
         }
     }
 
-    /*
-     * Membuat satu baris pembayaran.
-     */
+    /* =====================================================
+       PAYMENT COMPONENTS
+    ===================================================== */
+
     function createPaymentRow(label, value, isTotal = false) {
         const row = createElement(
             "div",
@@ -311,26 +304,63 @@
                 : "buyer-payment-row"
         );
 
-        const labelElement = createElement(
-            "span",
-            "buyer-payment-label",
-            label
+        row.append(
+            createElement(
+                "span",
+                "buyer-payment-label",
+                label
+            ),
+            createElement(
+                "span",
+                "buyer-payment-value",
+                value
+            )
         );
-
-        const valueElement = createElement(
-            "span",
-            "buyer-payment-value",
-            value
-        );
-
-        row.append(labelElement, valueElement);
 
         return row;
     }
 
-    /*
-     * Membuat bagian daftar produk.
-     */
+    function createPaymentSection(order) {
+        const section = createElement(
+            "section",
+            "buyer-order-payment"
+        );
+
+        const subtotal = Number(order.subtotal) || 0;
+        const deliveryFee = Number(order.delivery_fee) || 0;
+        const total = Number(order.total) || 0;
+
+        section.appendChild(
+            createPaymentRow(
+                "Subtotal",
+                formatRupiah(subtotal)
+            )
+        );
+
+        if (order.delivery_method === "delivery") {
+            section.appendChild(
+                createPaymentRow(
+                    "Ongkos kirim",
+                    formatRupiah(deliveryFee)
+                )
+            );
+        }
+
+        section.appendChild(
+            createPaymentRow(
+                "Total pembayaran",
+                formatRupiah(total),
+                true
+            )
+        );
+
+        return section;
+    }
+
+    /* =====================================================
+       ORDER ITEMS
+    ===================================================== */
+
     function createItemsSection(order) {
         const section = createElement(
             "section",
@@ -363,6 +393,11 @@
             items.forEach((item) => {
                 const row = createElement("li", "buyer-item");
 
+                const details = createElement(
+                    "div",
+                    "buyer-item-details"
+                );
+
                 const name = String(
                     item.product_name ||
                     item.name ||
@@ -382,37 +417,37 @@
                     )
                 ) || 0;
 
-                const nameElement = createElement(
-                    "div",
-                    "buyer-item-name",
-                    `${name} × ${quantity}`
+                details.appendChild(
+                    createElement(
+                        "div",
+                        "buyer-item-name",
+                        `${name} × ${quantity}`
+                    )
                 );
 
-                const variant = item.product_variant
-                    ? String(item.product_variant)
-                    : "";
-
-                const variantElement = createElement(
-                    "small",
-                    "buyer-item-variant",
-                    variant
-                );
-
-                variantElement.hidden = !variant;
-
-                const totalElement = createElement(
-                    "div",
-                    "buyer-item-total",
-                    formatRupiah(subtotal)
-                );
-
-                row.appendChild(nameElement);
+                const variant = String(
+                    item.product_variant || ""
+                ).trim();
 
                 if (variant) {
-                    row.appendChild(variantElement);
+                    details.appendChild(
+                        createElement(
+                            "small",
+                            "buyer-item-variant",
+                            variant
+                        )
+                    );
                 }
 
-                row.appendChild(totalElement);
+                row.append(
+                    details,
+                    createElement(
+                        "div",
+                        "buyer-item-total",
+                        formatRupiah(subtotal)
+                    )
+                );
+
                 list.appendChild(row);
             });
         }
@@ -422,52 +457,10 @@
         return section;
     }
 
-    /*
-     * Membuat ringkasan pembayaran.
-     */
-    function createPaymentSection(order) {
-        const section = createElement(
-            "section",
-            "buyer-order-payment"
-        );
+    /* =====================================================
+       DELIVERY ADDRESS
+    ===================================================== */
 
-        const subtotal = Number(order.subtotal) || 0;
-        const deliveryFee = Number(order.delivery_fee) || 0;
-        const total = Number(order.total) || 0;
-
-        section.appendChild(
-            createPaymentRow(
-                "Subtotal",
-                formatRupiah(subtotal)
-            )
-        );
-
-        if (order.delivery_method === "delivery") {
-            section.appendChild(
-                createPaymentRow(
-                    "Ongkos kirim",
-                    deliveryFee > 0
-                        ? formatRupiah(deliveryFee)
-                        : "Rp0"
-                )
-            );
-        }
-
-        section.appendChild(
-            createPaymentRow(
-                "Total pembayaran",
-                formatRupiah(total),
-                true
-            )
-        );
-
-        return section;
-    }
-
-    /*
-     * Membuat bagian alamat pengantaran.
-     * Bagian ini tidak ditampilkan untuk ambil sendiri.
-     */
     function createAddressSection(order) {
         if (order.delivery_method !== "delivery") {
             return null;
@@ -525,14 +518,146 @@
         return section;
     }
 
-    /*
-     * Menghapus token pesanan dari browser pembeli.
-     *
-     * Tidak menghapus data pada tabel orders atau order_items.
-     * Pesanan tetap tersedia di Dashboard Warung.
-     */
+    /* =====================================================
+       ORDER AND DELIVERY STATUS
+    ===================================================== */
+
+    function createOrderStatusSection(order) {
+        const section = createElement(
+            "section",
+            "buyer-order-status-panel"
+        );
+
+        const orderStatus = normalizeStatus(order.status) ||
+            "pending";
+
+        const statusRow = createElement(
+            "div",
+            "buyer-status-row"
+        );
+
+        statusRow.append(
+            createElement(
+                "span",
+                "buyer-status-caption",
+                "Status warung"
+            ),
+            createElement(
+                "span",
+                [
+                    "buyer-status",
+                    STATUS_CLASSES[orderStatus] ||
+                        "buyer-status-pending"
+                ].join(" "),
+                STATUS_LABELS[orderStatus] ||
+                    "Status belum tersedia"
+            )
+        );
+
+        section.appendChild(statusRow);
+
+        if (order.delivery_method !== "delivery") {
+            section.appendChild(
+                createElement(
+                    "p",
+                    "buyer-delivery-current",
+                    "Metode: Ambil sendiri"
+                )
+            );
+
+            return section;
+        }
+
+        const deliveryStatus = normalizeStatus(
+            order.delivery_status
+        );
+
+        const deliveryLabel = deliveryStatus
+            ? (
+                DELIVERY_STATUS_LABELS[deliveryStatus] ||
+                "Status pengantaran belum tersedia"
+            )
+            : "Menunggu driver mengambil pesanan";
+
+        const deliveryRow = createElement(
+            "div",
+            "buyer-delivery-status-row"
+        );
+
+        const badgeClasses = ["buyer-delivery-badge"];
+
+        if (deliveryStatus === "completed") {
+            badgeClasses.push("is-complete");
+        }
+
+        if (deliveryStatus === "cancelled") {
+            badgeClasses.push("is-cancelled");
+        }
+
+        deliveryRow.append(
+            createElement(
+                "span",
+                "buyer-status-caption",
+                "Status pengantaran"
+            ),
+            createElement(
+                "span",
+                badgeClasses.join(" "),
+                deliveryLabel
+            )
+        );
+
+        section.appendChild(deliveryRow);
+
+        if (
+            !deliveryStatus ||
+            deliveryStatus === "cancelled" ||
+            !DELIVERY_STEPS.includes(deliveryStatus)
+        ) {
+            return section;
+        }
+
+        const list = createElement(
+            "ol",
+            "buyer-delivery-steps"
+        );
+
+        const currentIndex = DELIVERY_STEPS.indexOf(
+            deliveryStatus
+        );
+
+        DELIVERY_STEPS.forEach((step, index) => {
+            const item = createElement(
+                "li",
+                index <= currentIndex
+                    ? "buyer-delivery-step is-complete"
+                    : "buyer-delivery-step"
+            );
+
+            item.appendChild(
+                createElement(
+                    "span",
+                    "buyer-delivery-step-label",
+                    DELIVERY_STATUS_LABELS[step]
+                )
+            );
+
+            list.appendChild(item);
+        });
+
+        section.appendChild(list);
+
+        return section;
+    }
+
+    /* =====================================================
+       DELETE FROM LOCAL HISTORY
+    ===================================================== */
+
     function removeBuyerOrder(order) {
-        if (!DELETABLE_STATUSES.has(order.status)) {
+        const status = normalizeStatus(order.status);
+
+        if (!DELETABLE_STATUSES.has(status)) {
             return;
         }
 
@@ -549,10 +674,9 @@
             return;
         }
 
-        const confirmation =
-            order.status === "completed"
-                ? `Hapus pesanan ${orderNumber} dari riwayat Buyer?`
-                : `Hapus pesanan ${orderNumber} yang dibatalkan dari riwayat Buyer?`;
+        const confirmation = status === "completed"
+            ? `Hapus pesanan ${orderNumber} dari riwayat Buyer?`
+            : `Hapus pesanan ${orderNumber} yang dibatalkan dari riwayat Buyer?`;
 
         if (!window.confirm(confirmation)) {
             return;
@@ -589,9 +713,10 @@
         );
     }
 
-    /*
-     * Membuat footer kartu pesanan.
-     */
+    /* =====================================================
+       ORDER FOOTER
+    ===================================================== */
+
     function createOrderFooter(order) {
         const footer = createElement(
             "footer",
@@ -603,200 +728,52 @@
                 ? "Ambil sendiri"
                 : "Diantar";
 
-        footer.appendChild(
+        footer.append(
             createElement(
                 "span",
                 "buyer-order-method",
                 `Metode: ${methodLabel}`
-            )
-        );
-
-        const updatedAt =
-            order.updated_at ||
-            order.created_at;
-
-        footer.appendChild(
+            ),
             createElement(
                 "span",
                 "buyer-order-updated",
-                `Diperbarui: ${formatDate(updatedAt)}`
+                `Diperbarui: ${formatDate(
+                    order.updated_at || order.created_at
+                )}`
             )
         );
 
-        /*
-         * Tombol hapus hanya muncul pada status:
-         * completed atau cancelled.
-         */
-        if (DELETABLE_STATUSES.has(order.status)) {
+        const status = normalizeStatus(order.status);
+
+        if (DELETABLE_STATUSES.has(status)) {
             const actions = createElement(
                 "div",
                 "buyer-order-actions"
             );
 
-            const deleteButton = createElement(
+            const button = createElement(
                 "button",
                 "buyer-order-delete",
-                STATUS_DELETE_LABELS[order.status]
+                STATUS_DELETE_LABELS[status]
             );
 
-            deleteButton.type = "button";
+            button.type = "button";
 
-            deleteButton.addEventListener("click", () => {
+            button.addEventListener("click", () => {
                 removeBuyerOrder(order);
             });
 
-            actions.appendChild(deleteButton);
+            actions.appendChild(button);
             footer.appendChild(actions);
         }
 
         return footer;
     }
 
-    /*
-     * Panel status terpadu:
-     * - Status pesanan dari warung.
-     * - Status pengantaran dari driver.
-     * - Progres pengantaran jika tersedia.
-     */
-    function createOrderStatusSection(order) {
-        const section = createElement(
-            "section",
-            "buyer-order-status-panel"
-        );
+    /* =====================================================
+       ORDER CARD
+    ===================================================== */
 
-        const orderStatus = String(
-            order.status || "pending"
-        ).toLowerCase();
-
-        const statusRow = createElement(
-            "div",
-            "buyer-status-row"
-        );
-
-        statusRow.appendChild(
-            createElement(
-                "span",
-                "buyer-status-caption",
-                "Status warung"
-            )
-        );
-
-        statusRow.appendChild(
-            createElement(
-                "span",
-                [
-                    "buyer-status",
-                    STATUS_CLASSES[orderStatus] ||
-                        "buyer-status-pending"
-                ].join(" "),
-                STATUS_LABELS[orderStatus] ||
-                    "Menunggu konfirmasi"
-            )
-        );
-
-        section.appendChild(statusRow);
-
-        /*
-         * Untuk pesanan ambil sendiri, tidak ada progres driver.
-         */
-        if (order.delivery_method !== "delivery") {
-            section.appendChild(
-                createElement(
-                    "p",
-                    "buyer-delivery-current",
-                    "Metode: Ambil sendiri"
-                )
-            );
-
-            return section;
-        }
-
-        const deliveryStatus = String(
-            order.delivery_status || ""
-        ).toLowerCase();
-
-        const deliveryLabel = deliveryStatus
-            ? DELIVERY_STATUS_LABELS[deliveryStatus] ||
-                "Status tidak dikenal"
-            : "Menunggu driver mengambil pesanan";
-
-        const deliveryRow = createElement(
-            "div",
-            "buyer-delivery-status-row"
-        );
-
-        deliveryRow.appendChild(
-            createElement(
-                "span",
-                "buyer-status-caption",
-                "Status pengantaran"
-            )
-        );
-
-        deliveryRow.appendChild(
-            createElement(
-                "span",
-                [
-                    "buyer-delivery-badge",
-                    deliveryStatus === "completed"
-                        ? "is-complete"
-                        : "",
-                    deliveryStatus === "cancelled"
-                        ? "is-cancelled"
-                        : ""
-                ].filter(Boolean).join(" "),
-                deliveryLabel
-            )
-        );
-
-        section.appendChild(deliveryRow);
-
-        /*
-         * Belum ada progres atau pengantaran dibatalkan:
-         * status tetap terlihat tanpa daftar langkah.
-         */
-        if (
-            !deliveryStatus ||
-            deliveryStatus === "cancelled"
-        ) {
-            return section;
-        }
-
-        const list = createElement(
-            "ol",
-            "buyer-delivery-steps"
-        );
-
-        const currentIndex =
-            DELIVERY_STEPS.indexOf(deliveryStatus);
-
-        DELIVERY_STEPS.forEach((step, index) => {
-            const item = createElement(
-                "li",
-                index <= currentIndex
-                    ? "buyer-delivery-step is-complete"
-                    : "buyer-delivery-step"
-            );
-
-            item.appendChild(
-                createElement(
-                    "span",
-                    "buyer-delivery-step-label",
-                    DELIVERY_STATUS_LABELS[step]
-                )
-            );
-
-            list.appendChild(item);
-        });
-
-        section.appendChild(list);
-
-        return section;
-    }
-
-    /*
-     * Membuat satu kartu pesanan.
-     */
     function createOrderCard(order) {
         const card = createElement(
             "article",
@@ -813,25 +790,19 @@
             "buyer-order-heading"
         );
 
-        heading.appendChild(
+        heading.append(
             createElement(
                 "p",
                 "buyer-order-store",
                 order.store_name ||
                 order.store ||
                 "Warung"
-            )
-        );
-
-        heading.appendChild(
+            ),
             createElement(
                 "p",
                 "buyer-order-number",
                 `No. Pesanan: ${order.order_number || "-"}`
-            )
-        );
-
-        heading.appendChild(
+            ),
             createElement(
                 "p",
                 "buyer-order-date",
@@ -842,15 +813,6 @@
         header.appendChild(heading);
         card.appendChild(header);
 
-        /*
-         * Urutan komponen kartu:
-         * 1. Identitas pesanan.
-         * 2. Status warung dan pengantaran.
-         * 3. Produk.
-         * 4. Pembayaran.
-         * 5. Alamat jika menggunakan delivery.
-         * 6. Informasi tambahan dan aksi.
-         */
         card.appendChild(createOrderStatusSection(order));
         card.appendChild(createItemsSection(order));
         card.appendChild(createPaymentSection(order));
@@ -866,9 +828,10 @@
         return card;
     }
 
-    /*
-     * Merender seluruh kartu pesanan.
-     */
+    /* =====================================================
+       RENDER ORDERS
+    ===================================================== */
+
     function renderOrders() {
         if (!elements.orders) {
             return;
@@ -885,42 +848,37 @@
         updateEmptyState();
     }
 
-    /*
-     * Memuat data pesanan dari API.
-     */
+    /* =====================================================
+       LOAD ORDERS
+    ===================================================== */
+
     async function loadOrders() {
-        if (isLoading) {
+        if (isLoading || !elements.orders) {
             return;
         }
 
         isLoading = true;
-
-        hideMessage();
-
-        if (!elements.orders) {
-            isLoading = false;
-            return;
-        }
 
         const savedOrders = getSavedOrders();
 
         if (savedOrders.length === 0) {
             currentOrders = [];
             renderOrders();
+            hideMessage();
             isLoading = false;
             return;
         }
 
-        elements.orders.hidden = false;
-        elements.orders.replaceChildren();
+        /*
+         * Jangan menghapus tampilan pesanan terakhir saat
+         * refresh berlangsung. Loading awal saja yang memakai
+         * placeholder.
+         */
+        if (currentOrders.length === 0) {
+            showLoadingState();
+        }
 
-        elements.orders.appendChild(
-            createElement(
-                "div",
-                "buyer-message",
-                "Memuat riwayat pesanan..."
-            )
-        );
+        hideMessage();
 
         try {
             const tokens = savedOrders.map((item) => item.token);
@@ -946,14 +904,7 @@
                 );
             }
 
-            if (!response.ok) {
-                throw new Error(
-                    result.message ||
-                    "Gagal memuat riwayat pesanan."
-                );
-            }
-
-            if (result.success === false) {
+            if (!response.ok || result.success === false) {
                 throw new Error(
                     result.message ||
                     "Gagal memuat riwayat pesanan."
@@ -964,10 +915,6 @@
                 ? result.orders
                 : [];
 
-            /*
-             * Menggabungkan nomor pesanan dari API dengan
-             * metadata lokal jika API tidak mengirimkannya.
-             */
             currentOrders = orders.map((order) => {
                 const localOrder = savedOrders.find((item) => {
                     return (
@@ -989,9 +936,6 @@
                 };
             });
 
-            /*
-             * Urutkan dari pesanan terbaru.
-             */
             currentOrders.sort((a, b) => {
                 const dateA = new Date(
                     String(a.created_at || "").replace(" ", "T")
@@ -1011,8 +955,17 @@
                 error
             );
 
-            currentOrders = [];
-            renderOrders();
+            /*
+             * Jika pernah berhasil memuat data, pertahankan data
+             * terakhir. Gangguan jaringan tidak membuat daftar
+             * pesanan langsung terlihat kosong.
+             */
+            if (currentOrders.length > 0) {
+                renderOrders();
+            } else {
+                elements.orders.replaceChildren();
+                updateEmptyState();
+            }
 
             showMessage(
                 error.message ||
@@ -1024,13 +977,43 @@
         }
     }
 
-    /*
-     * Inisialisasi Dashboard Buyer.
-     */
+    /* =====================================================
+       AUTO REFRESH
+    ===================================================== */
+
+    function startOrderRefresh() {
+        if (refreshTimer !== null) {
+            window.clearInterval(refreshTimer);
+        }
+
+        refreshTimer = window.setInterval(() => {
+            if (
+                document.visibilityState === "visible" &&
+                !isLoading
+            ) {
+                loadOrders();
+            }
+        }, REFRESH_INTERVAL);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        if (
+            document.visibilityState === "visible" &&
+            !isLoading
+        ) {
+            loadOrders();
+        }
+    });
+
+    /* =====================================================
+       INITIALIZATION
+    ===================================================== */
+
     function init() {
         if (elements.currentYear) {
-            elements.currentYear.textContent =
-                String(new Date().getFullYear());
+            elements.currentYear.textContent = String(
+                new Date().getFullYear()
+            );
         }
 
         if (!elements.orders) {
