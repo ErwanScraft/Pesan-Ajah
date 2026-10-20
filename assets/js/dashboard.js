@@ -1046,25 +1046,52 @@ async function loadOrders() {
   renderOrders();
 }
 
-function nextOrderStatus(status) {
-  const next = {
-    pending: {
+function nextOrderStatus(order) {
+  const status = String(order.status || "").toLowerCase();
+  const method = String(order.delivery_method || "").toLowerCase();
+
+  if (status === "pending") {
+    return {
       value: "confirmed",
       label: "Konfirmasi",
-    },
+    };
+  }
 
-    confirmed: {
+  if (status === "confirmed") {
+    return {
       value: "processing",
-      label: "Proses",
-    },
+      label: "Proses Pesanan",
+    };
+  }
 
-    processing: {
-      value: "completed",
-      label: "Selesaikan",
-    },
+  if (status === "processing") {
+    return method === "pickup"
+      ? {
+          value: "ready_for_pickup",
+          label: "Tandai Tersedia",
+        }
+      : {
+          value: "ready_for_driver",
+          label: "Siapkan untuk Driver",
+        };
+  }
+
+  return null;
+}
+
+function orderStatusLabel(status) {
+  const labels = {
+    pending: "Menunggu Konfirmasi",
+    confirmed: "Dikonfirmasi",
+    processing: "Sedang Diproses",
+    ready_for_pickup: "Tersedia",
+    ready_for_driver: "Menunggu Driver",
+    in_delivery: "Diantar",
+    completed: "Selesai",
+    cancelled: "Dibatalkan",
   };
 
-  return next[status] || null;
+  return labels[String(status || "").toLowerCase()] || status;
 }
 
 function renderOrders() {
@@ -1103,7 +1130,7 @@ function renderOrders() {
     const status = document.createElement("span");
 
     status.className = `status-pill status-${order.status}`;
-    status.textContent = order.status;
+    status.textContent = orderStatusLabel(order.status);
 
     const statusCell = document.createElement("td");
 
@@ -1111,28 +1138,13 @@ function renderOrders() {
 
     const actions = document.createElement("td");
 
-    const next = nextOrderStatus(order.status);
+    const next = nextOrderStatus(order);
 
     if (next) {
       actions.append(
         createButton(next.label, async () => {
           await changeOrderStatus(order, next.value);
         }),
-      );
-    }
-
-    if (
-      order.status === "pending"
-      || order.status === "confirmed"
-    ) {
-      actions.append(
-        createButton(
-          "Batalkan",
-          async () => {
-            await changeOrderStatus(order, "cancelled");
-          },
-          "table-action danger-action",
-        ),
       );
     }
 
@@ -1155,13 +1167,20 @@ async function changeOrderStatus(order, status) {
   const labels = {
     confirmed: "mengonfirmasi",
     processing: "memproses",
-    completed: "menyelesaikan",
-    cancelled: "membatalkan",
+    ready_for_pickup: "menandai pesanan tersedia",
+    ready_for_driver: "menyiapkan pesanan untuk driver",
   };
+
+  const action = labels[status];
+
+  if (!action) {
+    notify("Aksi status tidak valid.");
+    return;
+  }
 
   if (
     !window.confirm(
-      `Anda yakin ingin ${labels[status]} pesanan ${order.order_number}?`,
+      `Anda yakin ingin ${action} pesanan ${order.order_number}?`,
     )
   ) {
     return;

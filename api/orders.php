@@ -49,6 +49,105 @@ if (!is_array($input)) {
     ], 400);
 }
 
+/*
+ * Pembeli hanya boleh menyelesaikan pesanan Ambil Sendiri
+ * jika warung sudah menandai pesanan sebagai tersedia.
+ */
+if (($input['action'] ?? null) === 'confirm_pickup') {
+    $token = $input['token'] ?? null;
+
+    if (
+        !is_string($token)
+        || !preg_match('/^[a-f0-9]{64}$/i', $token)
+    ) {
+        buyer_orders_json([
+            'success' => false,
+            'message' => 'Token pesanan tidak valid.',
+        ], 422);
+    }
+
+    $db = database();
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT id, status, delivery_method
+             FROM orders
+             WHERE buyer_token_hash = :token_hash
+             FOR UPDATE'
+        );
+
+        $stmt->execute([
+            'token_hash' => hash('sha256', $token),
+        ]);
+
+        $order = $stmt->fetch();
+
+        if (!$order) {
+            $db->rollBack();
+
+            buyer_orders_json([
+                'success' => false,
+                'message' => 'Pesanan tidak ditemukan.',
+            ], 404);
+        }
+
+        if (
+            $order['delivery_method'] !== 'pickup'
+            || $order['status'] !== 'ready_for_pickup'
+        ) {
+            $db->rollBack();
+
+            buyer_orders_json([
+                'success' => false,
+                'message' => 'Pesanan belum tersedia untuk dikonfirmasi.',
+            ], 422);
+        }
+
+        $update = $db->prepare(
+            "UPDATE orders
+             SET status = 'completed',
+                 completed_at = CURRENT_TIMESTAMP
+             WHERE id = :id
+               AND delivery_method = 'pickup'
+               AND status = 'ready_for_pickup'"
+        );
+
+        $update->execute([
+            'id' => (int) $order['id'],
+        ]);
+
+        if ($update->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Status pesanan berubah. Muat ulang halaman.'
+            );
+        }
+
+        $db->commit();
+
+        buyer_orders_json([
+            'success' => true,
+            'message' => 'Pengambilan pesanan berhasil dikonfirmasi.',
+            'status' => 'completed',
+        ]);
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        error_log(
+            '[Pesan Ajah] Gagal mengonfirmasi pengambilan: '
+            . $exception->getMessage()
+        );
+
+        buyer_orders_json([
+            'success' => false,
+            'message' => 'Konfirmasi gagal. Silakan coba lagi.',
+        ], 500);
+    }
+}
+
 $tokens = $input['tokens'] ?? [];
 
 if (!is_array($tokens)) {

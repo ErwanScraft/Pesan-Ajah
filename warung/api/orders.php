@@ -86,14 +86,13 @@ if (request_method() !== 'POST') {
 $input = api_json_input();
 
 $id = api_positive_id($input['id'] ?? null);
-
 $status = $input['status'] ?? null;
 
 $allowedStatuses = [
     'confirmed',
     'processing',
-    'completed',
-    'cancelled',
+    'ready_for_pickup',
+    'ready_for_driver',
 ];
 
 if (
@@ -106,24 +105,17 @@ if (
     ], 422);
 }
 
-/*
- * Kunci baris pesanan dan validasi transisi status
- * dalam satu transaksi database.
- */
 $db = database();
 
 try {
     $db->beginTransaction();
 
     $stmt = $db->prepare(
-        'SELECT id, status
-
-        FROM orders
-
-        WHERE id = :id
-          AND store_id = :store_id
-
-        FOR UPDATE'
+        'SELECT id, status, delivery_method
+         FROM orders
+         WHERE id = :id
+           AND store_id = :store_id
+         FOR UPDATE'
     );
 
     $stmt->execute([
@@ -143,24 +135,28 @@ try {
     }
 
     $current = (string) $order['status'];
+    $method = (string) $order['delivery_method'];
 
+    /*
+     * Transisi umum:
+     * pending -> confirmed -> processing
+     *
+     * Tahap berikutnya bergantung pada metode pesanan.
+     */
     $transitions = [
         'pending' => [
             'confirmed',
-            'cancelled',
         ],
-
         'confirmed' => [
             'processing',
-            'cancelled',
         ],
-
-        'processing' => [
-            'completed',
-        ],
-
+        'processing' => $method === 'pickup'
+            ? ['ready_for_pickup']
+            : ['ready_for_driver'],
+        'ready_for_pickup' => [],
+        'ready_for_driver' => [],
+        'in_delivery' => [],
         'completed' => [],
-
         'cancelled' => [],
     ];
 
@@ -179,17 +175,36 @@ try {
         ], 422);
     }
 
+    /*
+     * Pastikan tahap akhir sesuai metode pengiriman.
+     */
+    if (
+        ($status === 'ready_for_pickup' && $method !== 'pickup')
+        || ($status === 'ready_for_driver' && $method !== 'delivery')
+    ) {
+        $db->rollBack();
+
+        api_json([
+            'success' => false,
+            'message' => 'Status tidak sesuai metode pesanan.',
+        ], 422);
+    }
+
     $update = $db->prepare(
         'UPDATE orders
-
-        SET status = :status
-
-        WHERE id = :id
-          AND store_id = :store_id'
+         SET status = :status,
+             confirmed_at = CASE
+                 WHEN :confirmed_status = \'confirmed\'
+                     THEN COALESCE(confirmed_at, CURRENT_TIMESTAMP)
+                 ELSE confirmed_at
+             END
+         WHERE id = :id
+           AND store_id = :store_id'
     );
 
     $update->execute([
         'status' => $status,
+        'confirmed_status' => $status,
         'id' => $id,
         'store_id' => $storeId,
     ]);

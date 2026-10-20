@@ -257,6 +257,9 @@ CREATE TABLE IF NOT EXISTS orders (
         'pending',
         'confirmed',
         'processing',
+        'ready_for_pickup',
+        'ready_for_driver',
+        'in_delivery',
         'completed',
         'cancelled'
     ) NOT NULL DEFAULT 'pending',

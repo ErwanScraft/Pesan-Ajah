@@ -13,7 +13,7 @@
 
     const ORDER_STATUS = {
         pending: {
-            label: "Menunggu konfirmasi",
+            label: "Menunggu Konfirmasi",
             className: "pending"
         },
         confirmed: {
@@ -21,8 +21,20 @@
             className: "confirmed"
         },
         processing: {
-            label: "Dalam proses",
+            label: "Sedang Diproses",
             className: "processing"
+        },
+        ready_for_pickup: {
+            label: "Tersedia",
+            className: "ready-for-pickup"
+        },
+        ready_for_driver: {
+            label: "Menunggu Driver",
+            className: "ready-for-driver"
+        },
+        in_delivery: {
+            label: "Diantar",
+            className: "in-delivery"
         },
         completed: {
             label: "Selesai",
@@ -372,6 +384,9 @@
             pending: "Menunggu konfirmasi warung",
             confirmed: "Pesanan telah dikonfirmasi",
             processing: "Pesanan sedang disiapkan",
+            ready_for_pickup: "Pesanan tersedia dan siap diambil di warung",
+            ready_for_driver: "Pesanan siap diserahkan kepada driver",
+            in_delivery: "Pesanan sedang diantarkan kepada pembeli",
             completed: "Pesanan telah selesai",
             cancelled: "Pesanan dibatalkan"
         }[orderStatus] || "Status pesanan diperbarui";
@@ -402,8 +417,13 @@
             return panel;
         }
 
-        const deliveryLabel = DELIVERY_STATUS[deliveryStatus] ||
-            "Menunggu driver";
+        const deliveryLabel = orderStatus === "ready_for_driver"
+            ? "Menunggu driver mengambil pesanan"
+            : orderStatus === "in_delivery"
+                ? "Pesanan sedang diantarkan"
+                : orderStatus === "completed"
+                    ? "Pengantaran selesai"
+                    : DELIVERY_STATUS[deliveryStatus] || "Menunggu driver";
 
         panel.appendChild(
             createTrackingRow(
@@ -656,21 +676,107 @@
         footer.appendChild(toggle);
         card.append(footer, details);
 
+        const orderActions = createElement("div", "buyer-order-actions");
+        const orderStatus = normalize(order.status);
+        const method = normalize(order.delivery_method);
+        
+        /*
+         * Cari token lokal berdasarkan nomor pesanan.
+         * Token mentah tidak dikirim kembali dari server.
+         */
+        const localOrder = savedOrders().find((item) => {
+            return String(item.order_number || "") ===
+                String(order.order_number || "");
+        });
+        
+        if (
+            method === "pickup" &&
+            orderStatus === "ready_for_pickup" &&
+            localOrder?.token
+        ) {
+            const confirmButton = createElement(
+                "button",
+                "buyer-details-toggle",
+                "Konfirmasi sudah diambil"
+            );
+        
+            confirmButton.type = "button";
+        
+            confirmButton.addEventListener("click", async () => {
+                if (
+                    !window.confirm(
+                        "Konfirmasi bahwa pesanan ini sudah diambil dari warung?"
+                    )
+                ) {
+                    return;
+                }
+        
+                confirmButton.disabled = true;
+                confirmButton.textContent = "Memproses...";
+        
+                try {
+                    const response = await fetch(API_URL, {
+                        method: "POST",
+                        credentials: "same-origin",
+                        cache: "no-store",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: "confirm_pickup",
+                            token: localOrder.token
+                        })
+                    });
+        
+                    const result = await response.json();
+        
+                    if (!response.ok || result.success !== true) {
+                        throw new Error(
+                            result.message ||
+                            "Konfirmasi pengambilan gagal."
+                        );
+                    }
+        
+                    showMessage(
+                        "Pengambilan pesanan berhasil dikonfirmasi.",
+                        "success"
+                    );
+        
+                    await loadOrders();
+                } catch (error) {
+                    showMessage(
+                        error instanceof Error
+                            ? error.message
+                            : "Konfirmasi gagal. Silakan coba lagi.",
+                        "error"
+                    );
+        
+                    confirmButton.disabled = false;
+                    confirmButton.textContent = "Konfirmasi sudah diambil";
+                }
+            });
+        
+            orderActions.appendChild(confirmButton);
+        }
+        
         if (isCompleted(order) || isCancelled(order)) {
-            const actions = createElement("div", "buyer-order-actions");
             const deleteButton = createElement(
                 "button",
                 "buyer-order-delete",
                 "Hapus dari riwayat"
             );
-
+        
             deleteButton.type = "button";
             deleteButton.addEventListener("click", () => {
                 removeOrder(order);
             });
-
-            actions.appendChild(deleteButton);
-            card.appendChild(actions);
+        
+            orderActions.appendChild(deleteButton);
+        }
+        
+        if (orderActions.childElementCount > 0) {
+            card.appendChild(orderActions);
         }
 
         return card;

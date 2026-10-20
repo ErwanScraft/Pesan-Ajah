@@ -70,20 +70,35 @@ endpoint API PHP.
 
 ### 3. Pengelolaan Pesanan
 
-Sistem pesanan menggunakan database untuk menyimpan informasi pesanan,
-rincian produk, metode pengantaran, biaya pengantaran, dan status pesanan.
+### Alur Status Pesanan
 
-Status pesanan yang digunakan pada database:
+Status pesanan dibedakan berdasarkan metode pengiriman.
 
-| Status | Keterangan |
-|---|---|
-| `pending` | Pesanan menunggu tindakan |
-| `confirmed` | Pesanan dikonfirmasi |
-| `processing` | Pesanan sedang diproses |
-| `completed` | Pesanan selesai |
-| `cancelled` | Pesanan dibatalkan |
+#### Ambil Sendiri
 
-Perubahan status pesanan divalidasi oleh backend.
+| Status | Keterangan | Pengubah |
+|---|---|---|
+| `pending` | Menunggu konfirmasi | Sistem |
+| `confirmed` | Dikonfirmasi warung | Warung |
+| `processing` | Sedang disiapkan | Warung |
+| `ready_for_pickup` | Tersedia untuk diambil | Warung |
+| `completed` | Pengambilan dikonfirmasi | Pembeli |
+
+#### Delivery
+
+| Status | Keterangan | Pengubah |
+|---|---|---|
+| `pending` | Menunggu konfirmasi | Sistem |
+| `confirmed` | Dikonfirmasi warung | Warung |
+| `processing` | Sedang disiapkan | Warung |
+| `ready_for_driver` | Siap diserahkan ke driver | Warung |
+| `in_delivery` | Sedang diantarkan | Driver saat mengambil tugas |
+| `completed` | Pengantaran selesai | Driver |
+
+Transisi status divalidasi oleh backend. Dashboard warung tidak dapat
+menyelesaikan pesanan secara langsung. Untuk Ambil Sendiri, pembeli
+mengonfirmasi bahwa pesanan sudah diambil. Untuk Delivery, penyelesaian
+dikonfirmasi melalui alur driver.
 
 ### 4. Dashboard Buyer
 

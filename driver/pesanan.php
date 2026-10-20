@@ -45,14 +45,10 @@ if (request_is_post()) {
             if (
                 !$order
                 || $order['delivery_method'] !== 'delivery'
-                || !in_array(
-                    $order['status'],
-                    ['confirmed', 'processing'],
-                    true
-                )
+                || $order['status'] !== 'ready_for_driver'
             ) {
                 throw new RuntimeException(
-                    'Pesanan tidak tersedia untuk diambil.'
+                    'Pesanan belum siap untuk diambil driver.'
                 );
             }
 
@@ -75,6 +71,24 @@ if (request_is_post()) {
                 'store_id' => (int) $order['store_id'],
                 'driver_username' => (string) $driver['username'],
             ]);
+            
+            $updateOrder = $db->prepare(
+                "UPDATE orders
+                 SET status = 'in_delivery'
+                 WHERE id = :id
+                   AND delivery_method = 'delivery'
+                   AND status = 'ready_for_driver'"
+            );
+            
+            $updateOrder->execute([
+                'id' => (int) $order['id'],
+            ]);
+            
+            if ($updateOrder->rowCount() !== 1) {
+                throw new RuntimeException(
+                    'Status pesanan berubah. Muat ulang halaman.'
+                );
+            }
 
             $db->commit();
 
@@ -135,7 +149,7 @@ if (request_is_post()) {
          * ID penugasan dari pengguna tidak cukup untuk memperoleh akses.
          */
         $stmt = $db->prepare(
-            'SELECT id, status
+            'SELECT id, order_id, status
              FROM delivery_assignments
              WHERE id = :id
                AND driver_username = :driver
@@ -192,6 +206,27 @@ if (request_is_post()) {
                 'Status berubah atau sudah diproses. Muat ulang halaman.'
             );
         }
+        
+        if ($nextStatus === 'completed') {
+            $completeOrder = $db->prepare(
+                "UPDATE orders
+                 SET status = 'completed',
+                     completed_at = CURRENT_TIMESTAMP
+                 WHERE id = :id
+                   AND delivery_method = 'delivery'
+                   AND status = 'in_delivery'"
+            );
+        
+            $completeOrder->execute([
+                'id' => (int) $assignment['order_id'],
+            ]);
+        
+            if ($completeOrder->rowCount() !== 1) {
+                throw new RuntimeException(
+                    'Pesanan tidak dapat diselesaikan. Periksa status pesanan.'
+                );
+            }
+        }
 
         $db->commit();
 
@@ -247,7 +282,7 @@ $queueStmt = $db->query(
      FROM orders o
      INNER JOIN stores s ON s.id = o.store_id
      WHERE o.delivery_method = 'delivery'
-       AND o.status IN ('confirmed', 'processing')
+       AND o.status = 'ready_for_driver'
        AND NOT EXISTS (
            SELECT 1
            FROM delivery_assignments da
