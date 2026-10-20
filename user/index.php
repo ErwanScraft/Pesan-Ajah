@@ -1,3 +1,4 @@
+
 <?php
 
 declare(strict_types=1);
@@ -24,36 +25,10 @@ header('Cache-Control: no-store, private');
     <script type="module" src="/assets/js/buyer-dashboard.js"></script>
 </head>
 <body>
-    <header class="site-header buyer-site-header">
-        <div class="container header-inner">
-            <a class="brand" href="/" aria-label="Pesan Ajah — Beranda">
-                <img
-                    class="brand-logo"
-                    src="/assets/images/logo.webp"
-                    alt=""
-                    width="44"
-                    height="44"
-                >
-                <span class="brand-text">
-                    <strong>Pesan Ajah</strong>
-                    <small>Belanja dekat, jadi mudah.</small>
-                </span>
-            </a>
-
-            <a class="button button-outline buyer-back-button" href="/">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                        d="M19 12H5M12 19l-7-7 7-7"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
-                <span>Belanja</span>
-            </a>
-        </div>
-    </header>
+    <?php
+    $isStorePage = false;
+    require dirname(__DIR__) . '/_header.php';
+    ?>
 
     <main class="buyer-page">
         <div class="container buyer-container">
@@ -147,13 +122,6 @@ header('Cache-Control: no-store, private');
         </div>
     </main>
 
-    <footer class="site-footer buyer-site-footer">
-        <div class="container footer-inner">
-            <p>Marketplace warung lokal Banyukuning.</p>
-            <small>
-                © <span id="buyer-current-year"></span> Pesan Ajah
-            </small>
-        </div>
-    </footer>
+    <?php require dirname(__DIR__) . '/_footer.php'; ?>
 </body>
 </html>
