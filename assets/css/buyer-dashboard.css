@@ -1,24 +1,29 @@
-/* =========================================================
-   PESAN AJAH — BUYER DASHBOARD
-   File: assets/css/buyer-dashboard.css
-========================================================= */
 
 /* =========================================================
-   1. BASE LAYOUT
+   PESAN AJAH — BUYER DASHBOARD
+   Mobile-first order tracking UI
 ========================================================= */
+
+:root {
+    --buyer-green: #237c56;
+    --buyer-green-dark: #176b45;
+    --buyer-green-soft: #edf7f0;
+    --buyer-text: #202520;
+    --buyer-muted: #737a75;
+    --buyer-border: #e4e7e4;
+    --buyer-surface: #f6f7f6;
+    --buyer-white: #ffffff;
+    --buyer-danger: #b42318;
+    --buyer-radius: 18px;
+}
+
+/* Base */
 
 .buyer-page {
     width: 100%;
-    min-width: 0;
-    min-height: 70vh;
-    padding: 36px 0 56px;
+    min-height: 65vh;
+    padding: 32px 0 48px;
     overflow-wrap: anywhere;
-}
-
-.buyer-container {
-    width: min(100% - 40px, 860px);
-    min-width: 0;
-    margin-inline: auto;
 }
 
 .buyer-page *,
@@ -31,281 +36,249 @@
     display: none !important;
 }
 
+.buyer-container {
+    width: min(100% - 40px, 860px);
+    min-width: 0;
+    margin-inline: auto;
+}
+
 .buyer-page button,
-.buyer-page input,
-.buyer-page select,
-.buyer-page textarea {
-    font: inherit;
-}
-
-.buyer-page img,
-.buyer-page svg {
-    max-width: 100%;
-}
-
-.buyer-page a,
-.buyer-page button {
+.buyer-page a {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* =========================================================
-   2. HEADER
-========================================================= */
+.buyer-page button {
+    font: inherit;
+}
+
+/* Header */
 
 .buyer-site-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    width: 100%;
+    position: relative;
+    z-index: 10;
 }
 
 .buyer-site-header .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
     min-width: 0;
 }
 
 .buyer-site-header .brand {
-    flex: 1 1 auto;
     min-width: 0;
+    flex: 1 1 auto;
+}
+
+.buyer-site-header .brand-logo {
+    flex: 0 0 auto;
+    object-fit: contain;
 }
 
 .buyer-site-header .brand-text {
     min-width: 0;
 }
 
-.buyer-site-header .brand-text strong,
-.buyer-site-header .brand-text small {
-    overflow-wrap: anywhere;
-}
-
 .buyer-back-button {
     display: inline-flex;
-    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
     min-height: 40px;
     padding: 9px 13px;
-    border-radius: var(--radius-md, 10px);
+    border-radius: 10px;
     font-size: 12px;
     font-weight: 700;
-    line-height: 1.4;
     text-decoration: none;
     white-space: nowrap;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        color 160ms ease;
 }
 
 .buyer-back-button svg {
-    display: block;
-    flex: 0 0 17px;
     width: 17px;
     height: 17px;
 }
 
-.buyer-back-button:active {
-    transform: translateY(1px);
-}
-
-/* =========================================================
-   3. PAGE INTRODUCTION
-========================================================= */
+/* Page introduction */
 
 .buyer-intro {
-    min-width: 0;
-    margin: 0 0 26px;
+    margin: 0 0 22px;
 }
 
 .buyer-intro .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
+    display: inline-block;
     margin: 0;
-    color: var(--muted, #68736b);
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.5;
-    letter-spacing: 0.07em;
+    color: var(--buyer-muted);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
 }
 
 .buyer-intro h1 {
-    margin: 8px 0 7px;
-    color: var(--text, #202820);
-    font-size: clamp(27px, 4vw, 34px);
+    margin: 7px 0 6px;
+    color: var(--buyer-text);
+    font-size: clamp(26px, 4vw, 34px);
     font-weight: 800;
-    letter-spacing: -0.8px;
     line-height: 1.25;
-    overflow-wrap: anywhere;
+    letter-spacing: -0.7px;
 }
 
 .buyer-intro p {
-    max-width: 540px;
     margin: 0;
-    color: var(--muted, #68736b);
+    color: var(--buyer-muted);
     font-size: 13px;
-    line-height: 1.75;
+    line-height: 1.7;
 }
 
-/* =========================================================
-   4. MESSAGE AND LOADING
-========================================================= */
+/* Summary counters */
+
+.buyer-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.buyer-summary-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 112px;
+    padding: 18px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: #f1f2f1;
+}
+
+.buyer-summary-label {
+    color: #707670;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.buyer-summary-card > strong {
+    color: var(--buyer-text);
+    font-size: 29px;
+    font-weight: 800;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.buyer-summary-icon {
+    display: none;
+}
+
+/* Message and loading */
 
 .buyer-message {
-    width: 100%;
-    min-width: 0;
-    margin: 0 0 16px;
+    margin: 0 0 14px;
     padding: 12px 14px;
-    border: 1px solid var(--border, #e5e9e4);
-    border-radius: var(--radius-md, 10px);
-    background: var(--white, #fff);
-    color: var(--muted, #68736b);
+    border: 1px solid var(--buyer-border);
+    border-radius: 10px;
+    background: var(--buyer-white);
+    color: var(--buyer-muted);
     font-size: 12px;
     line-height: 1.7;
-    overflow-wrap: anywhere;
 }
 
-.buyer-message:not([hidden]) {
-    display: block;
-}
-
-.buyer-page .buyer-message.is-success {
+.buyer-message.is-success {
     border-color: #b9dfc4;
     background: #f0faf3;
-    color: #176b45;
+    color: var(--buyer-green-dark);
 }
 
-.buyer-page .buyer-message.is-error {
-    border-color: #f0cccc;
+.buyer-message.is-error {
+    border-color: #efcaca;
     background: #fff4f4;
-    color: #b42318;
+    color: var(--buyer-danger);
 }
 
 .buyer-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    padding: 20px;
-    border: 1px solid var(--border, #e5e9e4);
+    padding: 32px 16px;
+    border: 1px solid var(--buyer-border);
     border-radius: 14px;
-    background: var(--white, #fff);
-    color: var(--muted, #68736b);
+    background: var(--buyer-white);
+    color: var(--buyer-muted);
     font-size: 12px;
-    line-height: 1.7;
     text-align: center;
 }
 
-/* =========================================================
-   5. ORDER LIST
-========================================================= */
+/* Orders list */
 
 .buyer-orders {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: 16px;
-    width: 100%;
+    gap: 14px;
     min-width: 0;
 }
-
-.buyer-orders > * {
-    min-width: 0;
-}
-
-/* =========================================================
-   6. ORDER CARD
-========================================================= */
 
 .buyer-order-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid var(--border, #e5e9e4);
-    border-radius: 16px;
-    background: var(--white, #fff);
-    box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 4%));
-    transition:
-        border-color 160ms ease,
-        box-shadow 160ms ease;
+    border: 1px solid var(--buyer-border);
+    border-radius: var(--buyer-radius);
+    background: var(--buyer-white);
+    box-shadow: 0 2px 5px rgb(0 0 0 / 2%);
 }
 
-.buyer-order-card:hover {
-    border-color: #d4e1d5;
-    box-shadow: var(--shadow-md, 0 5px 18px rgb(0 0 0 / 6%));
-}
-
-/* =========================================================
-   7. ORDER HEADER
-========================================================= */
+/* Card header */
 
 .buyer-order-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
     min-width: 0;
-    padding: 18px;
-    border-bottom: 1px solid var(--border, #e5e9e4);
-    background: var(--white, #fff);
+    padding: 17px 18px 15px;
+    border-bottom: 1px solid #eceeec;
 }
 
-.buyer-order-heading {
+.buyer-order-identity {
     flex: 1 1 auto;
     min-width: 0;
 }
 
 .buyer-order-store {
-    margin: 0 0 8px;
-    color: var(--text, #202820);
+    margin: 0 0 7px;
+    color: var(--buyer-text);
     font-size: 15px;
-    font-weight: 750;
-    line-height: 1.5;
+    font-weight: 800;
+    line-height: 1.45;
     overflow-wrap: anywhere;
 }
 
 .buyer-order-number {
-    display: inline-flex;
+    display: inline-block;
     max-width: 100%;
-    margin: 0;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: var(--surface, #f5f7f5);
-    color: var(--muted, #68736b);
+    margin: 0 0 6px;
+    color: var(--buyer-muted);
     font-size: 11px;
-    font-weight: 650;
     line-height: 1.6;
     overflow-wrap: anywhere;
-    word-break: break-word;
 }
 
 .buyer-order-date {
-    margin: 7px 0 0;
-    color: var(--muted, #68736b);
+    margin: 0;
+    color: var(--buyer-muted);
     font-size: 11px;
     line-height: 1.6;
 }
 
-/* =========================================================
-   8. ORDER STATUS BADGES
-========================================================= */
+/* Order status badge */
 
-.buyer-status {
+.buyer-status-badge {
     display: inline-flex;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    max-width: 100%;
-    min-height: 28px;
-    padding: 6px 10px;
-    border: 1px solid transparent;
+    max-width: 48%;
+    padding: 7px 10px;
     border-radius: 999px;
+    background: #eaf1eb;
+    color: #35634a;
     font-size: 10px;
     font-weight: 750;
     line-height: 1.4;
@@ -313,152 +286,285 @@
     overflow-wrap: anywhere;
 }
 
-.buyer-status-pending {
-    border-color: #f0dfb4;
-    background: #fff8e8;
+.buyer-status-badge.is-pending {
+    background: #fff3d8;
     color: #8a5a00;
 }
 
-.buyer-status-confirmed {
-    border-color: #d0def9;
-    background: #eff4ff;
+.buyer-status-badge.is-confirmed {
+    background: #e8f0ff;
     color: #2456a6;
 }
 
-.buyer-status-processing {
-    border-color: #cbe5d2;
-    background: #edf8f0;
+.buyer-status-badge.is-processing {
+    background: #e0f1e5;
     color: #176b45;
 }
 
-.buyer-status-completed {
-    border-color: #bde3c7;
-    background: #e7f6eb;
-    color: #126b46;
+.buyer-status-badge.is-completed {
+    background: #e0f3e6;
+    color: #176b45;
 }
 
-.buyer-status-cancelled {
-    border-color: #f0cccc;
-    background: #fff1f1;
+.buyer-status-badge.is-cancelled {
+    background: #fff0f0;
     color: #b42318;
 }
 
-/* =========================================================
-   9. ORDER AND DELIVERY STATUS PANEL
-========================================================= */
-
-.buyer-order-status-panel {
-    display: grid;
-    gap: 12px;
-    min-width: 0;
-    padding: 15px 18px;
-    border-bottom: 1px solid var(--border, #e5e9e4);
-    background: #fbfcfb;
+.buyer-status-badge.is-unknown {
+    background: #f0f1f0;
+    color: #626a63;
 }
 
-.buyer-status-row,
-.buyer-delivery-status-row {
+/* Order summary */
+
+.buyer-order-summary {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px 12px;
+    gap: 15px;
+    min-width: 0;
+    padding: 20px 18px;
+}
+
+.buyer-summary-product-icon {
+    display: grid;
+    flex: 0 0 76px;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 17px;
+    background: #f1f2f1;
+    color: var(--buyer-text);
+}
+
+.buyer-summary-product-icon svg {
+    width: 31px;
+    height: 31px;
+}
+
+.buyer-order-summary-content {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
-.buyer-status-caption {
-    color: var(--muted, #68736b);
-    font-size: 11px;
-    font-weight: 700;
+.buyer-order-summary-title {
+    margin: 0 0 5px;
+    color: var(--buyer-text);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.buyer-order-summary-meta {
+    margin: 0 0 8px;
+    color: var(--buyer-muted);
+    font-size: 12px;
     line-height: 1.6;
 }
 
-.buyer-order-status-panel .buyer-status {
-    max-width: 100%;
-}
-
-.buyer-delivery-current {
+.buyer-order-total {
     margin: 0;
-    color: var(--muted, #68736b);
-    font-size: 11px;
-    line-height: 1.7;
-}
-
-.buyer-delivery-badge {
-    display: inline-flex;
-    align-items: center;
-    max-width: 100%;
-    padding: 6px 10px;
-    border: 1px solid #d9e3f5;
-    border-radius: 999px;
-    background: #f0f5ff;
-    color: #2456a6;
-    font-size: 11px;
-    font-weight: 750;
-    line-height: 1.5;
+    color: var(--buyer-text);
+    font-size: clamp(19px, 3vw, 24px);
+    font-weight: 800;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
 }
 
-.buyer-delivery-badge.is-complete {
-    border-color: #bde3c7;
-    background: #e7f6eb;
-    color: #126b46;
-}
+/* Tracking panel */
 
-.buyer-delivery-badge.is-cancelled {
-    border-color: #f0cccc;
-    background: #fff1f1;
-    color: #b42318;
-}
-
-/* =========================================================
-   10. DELIVERY PROGRESS
-========================================================= */
-
-.buyer-order-status-panel .buyer-delivery-steps {
+.buyer-tracking-panel {
     display: grid;
-    gap: 7px;
-    margin: 2px 0 0;
+    gap: 17px;
+    min-width: 0;
+    margin: 0 16px 14px;
+    padding: 16px;
+    border: 1px solid var(--buyer-border);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.buyer-tracking-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.buyer-tracking-icon {
+    display: grid;
+    flex: 0 0 30px;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    color: var(--buyer-text);
+}
+
+.buyer-tracking-icon svg {
+    width: 25px;
+    height: 25px;
+}
+
+.buyer-tracking-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.buyer-tracking-title {
+    margin: 0 0 4px;
+    color: var(--buyer-text);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.buyer-tracking-description {
+    margin: 0;
+    color: var(--buyer-muted);
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.buyer-tracking-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    max-width: 42%;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f0f1f0;
+    color: #454b46;
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Delivery progress */
+
+.buyer-progress-steps {
+    display: grid;
+    gap: 5px;
+    margin: -3px 0 0;
     padding: 0;
     list-style: none;
 }
 
-.buyer-delivery-step {
+.buyer-progress-step {
     position: relative;
     min-width: 0;
-    padding: 9px 12px;
-    border: 1px solid #e3e9e5;
-    border-radius: 8px;
-    background: #fff;
-    color: #617067;
-    font-size: 12px;
+    padding: 7px 10px 7px 13px;
+    border-left: 3px solid #e5e8e5;
+    color: var(--buyer-muted);
+    font-size: 10px;
     line-height: 1.6;
+}
+
+.buyer-progress-step.is-complete {
+    border-left-color: var(--buyer-green);
+    color: var(--buyer-green-dark);
+}
+
+.buyer-progress-step.is-current {
+    background: #f0f8f2;
+    font-weight: 750;
+}
+
+.buyer-progress-label {
+    display: block;
     overflow-wrap: anywhere;
 }
 
-.buyer-delivery-step.is-complete {
-    border-color: #b9ddc8;
-    background: #eaf6ef;
-    color: #176b45;
-    font-weight: 650;
+.buyer-progress-track {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eceeed;
 }
 
-.buyer-delivery-step-label {
+.buyer-progress-bar {
     display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--buyer-green);
+    transition: width 250ms ease;
 }
 
-/* =========================================================
-   11. ORDER ITEMS
-========================================================= */
+.buyer-tracking-note {
+    margin: -11px 0 0;
+    color: var(--buyer-muted);
+    font-size: 10px;
+    line-height: 1.6;
+}
 
-.buyer-order-items {
+/* Order footer and detail toggle */
+
+.buyer-order-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
     min-width: 0;
-    padding: 18px;
+    padding: 0 18px 16px;
 }
 
-.buyer-section-title {
-    margin: 0 0 14px;
-    color: var(--text, #202820);
+.buyer-order-item-count {
+    color: var(--buyer-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.buyer-details-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 5px 0 5px 8px;
+    border: 0;
+    background: transparent;
+    color: var(--buyer-green-dark);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.buyer-details-chevron {
+    display: inline-block;
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 160ms ease;
+}
+
+.buyer-details-toggle.is-open .buyer-details-chevron {
+    transform: rotate(90deg);
+}
+
+/* Collapsible details */
+
+.buyer-order-details {
+    border-top: 1px solid var(--buyer-border);
+    background: #fbfcfb;
+}
+
+.buyer-order-details[hidden] {
+    display: none !important;
+}
+
+.buyer-detail-section {
+    padding: 17px 18px;
+    border-bottom: 1px solid var(--buyer-border);
+}
+
+.buyer-detail-heading {
+    margin: 0 0 13px;
+    color: var(--buyer-text);
     font-size: 13px;
     font-weight: 800;
     line-height: 1.5;
@@ -476,274 +582,169 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
     min-width: 0;
 }
 
-.buyer-item-details {
+.buyer-item-info {
     flex: 1 1 auto;
     min-width: 0;
 }
 
 .buyer-item-name {
-    min-width: 0;
-    color: var(--text, #202820);
+    margin: 0;
+    color: var(--buyer-text);
     font-size: 12px;
-    font-weight: 600;
-    line-height: 1.7;
+    font-weight: 650;
+    line-height: 1.6;
     overflow-wrap: anywhere;
-    word-break: break-word;
 }
 
 .buyer-item-variant {
-    display: block;
-    margin-top: 3px;
-    color: var(--muted, #68736b);
+    margin: 3px 0 0;
+    color: var(--buyer-muted);
     font-size: 11px;
-    font-weight: 400;
     line-height: 1.6;
-    overflow-wrap: anywhere;
-    word-break: break-word;
 }
 
-.buyer-item-total {
+.buyer-item-price {
     flex: 0 1 auto;
-    min-width: 0;
-    color: var(--text, #202820);
+    color: var(--buyer-text);
     font-size: 12px;
-    font-weight: 700;
-    line-height: 1.7;
+    line-height: 1.6;
     text-align: right;
     overflow-wrap: anywhere;
 }
 
 .buyer-item-empty {
-    color: var(--muted, #68736b);
+    color: var(--buyer-muted);
     font-size: 12px;
     line-height: 1.7;
 }
 
-/* =========================================================
-   12. PAYMENT SUMMARY
-========================================================= */
-
-.buyer-order-payment {
-    display: grid;
-    gap: 11px;
-    padding: 16px 18px;
-    border-top: 1px solid var(--border, #e5e9e4);
-    background: var(--surface, #fafbf9);
-}
+/* Payment rows */
 
 .buyer-payment-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    min-width: 0;
-    font-size: 12px;
+    padding: 7px 0;
 }
 
 .buyer-payment-label {
-    flex: 1 1 auto;
-    min-width: 0;
-    color: var(--muted, #68736b);
+    color: var(--buyer-muted);
+    font-size: 12px;
     line-height: 1.6;
 }
 
 .buyer-payment-value {
-    flex: 0 1 auto;
-    min-width: 0;
-    color: var(--text, #202820);
+    color: var(--buyer-text);
+    font-size: 12px;
     font-weight: 650;
     line-height: 1.6;
     text-align: right;
     overflow-wrap: anywhere;
 }
 
-.buyer-payment-total {
-    margin-top: 2px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border, #e5e9e4);
+.buyer-payment-row.is-total {
+    margin-top: 7px;
+    padding-top: 14px;
+    border-top: 1px dashed #dfe4df;
 }
 
-.buyer-payment-total .buyer-payment-label,
-.buyer-payment-total .buyer-payment-value {
-    color: var(--text, #202820);
+.buyer-payment-row.is-total .buyer-payment-label,
+.buyer-payment-row.is-total .buyer-payment-value {
+    color: var(--buyer-text);
     font-size: 13px;
     font-weight: 800;
 }
 
-/* =========================================================
-   13. DELIVERY ADDRESS
-========================================================= */
+/* Address */
 
-.buyer-order-address {
-    display: grid;
-    gap: 7px;
-    min-width: 0;
-    padding: 15px 18px;
-    border-top: 1px solid var(--border, #e5e9e4);
-}
-
-.buyer-address-label {
-    color: var(--muted, #68736b);
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.6;
-}
-
-.buyer-address {
-    margin: 0;
-    color: var(--text, #202820);
+.buyer-address-text {
+    margin: 0 0 10px;
+    color: var(--buyer-text);
     font-size: 12px;
     line-height: 1.8;
     overflow-wrap: anywhere;
-    word-break: break-word;
 }
 
-.buyer-order-map {
+.buyer-map-link {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: fit-content;
-    max-width: 100%;
-    min-height: 36px;
-    margin-top: 2px;
-    padding: 8px 11px;
-    border: 1px solid var(--border, #e5e9e4);
-    border-radius: 8px;
-    background: var(--white, #fff);
-    color: var(--text, #202820);
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--buyer-border);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--buyer-green-dark);
     font-size: 11px;
-    font-weight: 700;
-    line-height: 1.5;
+    font-weight: 750;
     text-decoration: none;
-    overflow-wrap: anywhere;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease;
 }
 
-.buyer-order-map:hover {
-    border-color: #d4e1d5;
-    background: var(--surface, #f7f8f6);
-}
-
-/* =========================================================
-   14. ORDER FOOTER
-========================================================= */
-
-.buyer-order-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    min-width: 0;
-    padding: 13px 18px;
-    border-top: 1px solid var(--border, #e5e9e4);
-    background: #f8faf7;
-}
-
-.buyer-order-method,
-.buyer-order-updated {
-    min-width: 0;
-    color: var(--muted, #68736b);
-    font-size: 10px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-}
-
-/* =========================================================
-   15. DELETE BUTTON
-========================================================= */
+/* Delete action */
 
 .buyer-order-actions {
     display: flex;
     justify-content: flex-end;
-    width: 100%;
-    min-width: 0;
+    padding: 0 18px 16px;
 }
 
 .buyer-order-delete {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
     min-height: 38px;
-    max-width: 100%;
-    padding: 8px 13px;
+    padding: 8px 12px;
     border: 1px solid #efcaca;
     border-radius: 9px;
     background: #fff;
-    color: #b42318;
-    font: inherit;
+    color: var(--buyer-danger);
     font-size: 11px;
     font-weight: 700;
-    line-height: 1.5;
     cursor: pointer;
-    transition:
-        background-color 160ms ease,
-        border-color 160ms ease,
-        color 160ms ease;
 }
 
 .buyer-order-delete:hover {
-    border-color: #e4a7a7;
     background: #fff4f4;
 }
 
-.buyer-order-delete:active {
-    transform: translateY(1px);
-}
-
-.buyer-order-delete:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* =========================================================
-   16. EMPTY STATE
-========================================================= */
+/* Empty state */
 
 .buyer-empty {
-    width: 100%;
-    min-width: 0;
-    padding: 38px 20px;
+    padding: 34px 20px;
     border: 1px dashed #d4dfd3;
-    border-radius: 14px;
-    background: var(--white, #fff);
+    border-radius: 16px;
+    background: #fff;
     text-align: center;
 }
 
 .buyer-empty-icon {
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
-    margin: 0 auto 14px;
-    border: 1px solid #dce9de;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 13px;
     border-radius: 15px;
-    background: var(--green-light, #edf8f0);
-    color: var(--green, #176b45);
-    font-size: 14px;
-    font-weight: 800;
+    background: var(--buyer-green-soft);
+    color: var(--buyer-green-dark);
+}
+
+.buyer-empty-icon svg {
+    width: 28px;
+    height: 28px;
 }
 
 .buyer-empty h2 {
     margin: 0 0 8px;
-    color: var(--text, #202820);
+    color: var(--buyer-text);
     font-size: 17px;
     font-weight: 800;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
 }
 
 .buyer-empty p {
     max-width: 370px;
-    margin: 0 auto 19px;
-    color: var(--muted, #68736b);
+    margin: 0 auto 18px;
+    color: var(--buyer-muted);
     font-size: 12px;
     line-height: 1.8;
 }
@@ -752,33 +753,23 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    max-width: 100%;
     min-height: 42px;
 }
 
-/* =========================================================
-   17. SECURITY NOTE
-========================================================= */
+/* Local-storage notice */
 
 .buyer-security-note {
-    margin: 18px 0 0;
-    padding: 12px 14px;
-    border: 1px solid var(--border, #e5e9e4);
-    border-radius: var(--radius-md, 10px);
-    background: #f8faf7;
-    color: var(--muted, #68736b);
-    font-size: 11px;
-    line-height: 1.8;
-    overflow-wrap: anywhere;
+    margin: 17px 0 0;
+    padding: 0;
+    color: var(--buyer-muted);
+    font-size: 10px;
+    line-height: 1.7;
 }
 
-/* =========================================================
-   18. FOOTER
-========================================================= */
+/* Footer */
 
 .buyer-site-footer {
     width: 100%;
-    min-width: 0;
 }
 
 .buyer-site-footer .footer-inner {
@@ -789,72 +780,41 @@
     min-width: 0;
 }
 
-.buyer-site-footer .footer-inner > * {
-    min-width: 0;
-}
-
 .buyer-site-footer p {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   19. ACCESSIBILITY
-========================================================= */
+/* Focus */
 
-.buyer-page a:focus-visible,
 .buyer-page button:focus-visible,
-.buyer-site-header a:focus-visible,
-.buyer-site-footer a:focus-visible {
-    outline: 3px solid rgb(23 107 69 / 25%);
+.buyer-page a:focus-visible,
+.buyer-site-header a:focus-visible {
+    outline: 3px solid rgb(35 124 86 / 28%);
     outline-offset: 3px;
 }
 
-.buyer-page button:focus:not(:focus-visible),
-.buyer-page a:focus:not(:focus-visible) {
-    outline: none;
-}
-
-/* =========================================================
-   20. TABLET
-========================================================= */
+/* Tablet */
 
 @media (max-width: 760px) {
     .buyer-page {
-        padding-top: 28px;
-        padding-bottom: 44px;
+        padding-top: 26px;
     }
 
     .buyer-container {
         width: calc(100% - 32px);
         max-width: 620px;
     }
-
-    .buyer-order-header,
-    .buyer-order-items,
-    .buyer-order-address,
-    .buyer-order-footer,
-    .buyer-order-status-panel {
-        padding-inline: 16px;
-    }
-
-    .buyer-order-payment {
-        padding-inline: 16px;
-    }
 }
 
-/* =========================================================
-   21. MOBILE
-========================================================= */
+/* Mobile */
 
 @media (max-width: 520px) {
     .buyer-page {
-        padding-top: 22px;
-        padding-bottom: 32px;
+        padding: 22px 0 32px;
     }
 
     .buyer-container {
         width: calc(100% - 24px);
-        max-width: none;
     }
 
     .buyer-site-header .header-inner {
@@ -868,7 +828,6 @@
     .buyer-site-header .brand-logo {
         width: 38px;
         height: 38px;
-        object-fit: contain;
     }
 
     .buyer-site-header .brand-text strong {
@@ -881,15 +840,8 @@
 
     .buyer-back-button {
         min-height: 36px;
-        gap: 5px;
         padding: 7px 9px;
         font-size: 10px;
-    }
-
-    .buyer-back-button svg {
-        flex-basis: 15px;
-        width: 15px;
-        height: 15px;
     }
 
     .buyer-intro {
@@ -898,123 +850,140 @@
 
     .buyer-intro h1 {
         font-size: 26px;
-        letter-spacing: -0.6px;
     }
 
-    .buyer-intro p {
-        font-size: 12px;
+    .buyer-summary {
+        gap: 10px;
+        margin-bottom: 16px;
     }
 
-    .buyer-message {
-        padding: 11px 12px;
+    .buyer-summary-card {
+        min-height: 108px;
+        padding: 16px;
+        border-radius: 16px;
     }
 
-    .buyer-orders {
-        gap: 12px;
+    .buyer-summary-label {
+        font-size: 11px;
+    }
+
+    .buyer-summary-card > strong {
+        font-size: 27px;
     }
 
     .buyer-order-card {
-        border-radius: 12px;
-        box-shadow: none;
-    }
-
-    .buyer-order-card:hover {
+        border-radius: 17px;
         box-shadow: none;
     }
 
     .buyer-order-header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
-        padding: 14px;
+        padding: 15px 16px;
     }
 
     .buyer-order-store {
+        font-size: 14px;
+    }
+
+    .buyer-status-badge {
+        max-width: 44%;
+        padding: 6px 9px;
+        font-size: 10px;
+    }
+
+    .buyer-order-summary {
+        gap: 13px;
+        padding: 17px 16px;
+    }
+
+    .buyer-summary-product-icon {
+        flex-basis: 68px;
+        width: 68px;
+        height: 68px;
+        border-radius: 15px;
+    }
+
+    .buyer-summary-product-icon svg {
+        width: 29px;
+        height: 29px;
+    }
+
+    .buyer-order-summary-title {
         font-size: 13px;
     }
 
-    .buyer-order-number {
+    .buyer-order-summary-meta {
         font-size: 11px;
     }
 
-    .buyer-order-status-panel {
-        gap: 10px;
-        padding: 13px 14px;
+    .buyer-order-total {
+        font-size: 21px;
     }
 
-    .buyer-status-row,
-    .buyer-delivery-status-row {
-        align-items: flex-start;
-        gap: 7px;
-    }
-
-    .buyer-status-caption {
-        flex: 1 1 100%;
-    }
-
-    .buyer-status,
-    .buyer-delivery-badge {
-        max-width: 100%;
-    }
-
-    .buyer-order-items,
-    .buyer-order-address {
+    .buyer-tracking-panel {
+        gap: 16px;
+        margin: 0 12px 13px;
         padding: 14px;
+        border-radius: 15px;
     }
 
-    .buyer-order-payment {
-        gap: 10px;
-        padding: 13px 14px;
-    }
-
-    .buyer-item {
+    .buyer-tracking-row {
         gap: 10px;
     }
 
-    .buyer-item-name,
-    .buyer-item-total {
-        font-size: 11px;
+    .buyer-tracking-icon {
+        flex-basis: 26px;
+        width: 26px;
+        height: 26px;
+    }
+
+    .buyer-tracking-icon svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .buyer-tracking-title {
+        font-size: 12px;
+    }
+
+    .buyer-tracking-description {
+        font-size: 10px;
+    }
+
+    .buyer-tracking-badge {
+        max-width: 36%;
+        padding: 6px 8px;
+        font-size: 10px;
     }
 
     .buyer-order-footer {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 12px 14px;
+        gap: 8px;
+        padding: 0 16px 15px;
     }
 
-    .buyer-order-actions {
-        justify-content: stretch;
+    .buyer-order-item-count {
+        font-size: 10px;
     }
 
-    .buyer-order-delete {
-        width: 100%;
-        min-height: 40px;
-    }
-
-    .buyer-delivery-step {
-        padding: 9px 10px;
+    .buyer-details-toggle {
         font-size: 11px;
     }
 
-    .buyer-empty {
-        padding: 30px 16px;
+    .buyer-detail-section {
+        padding: 15px 16px;
     }
 
-    .buyer-security-note {
-        padding: 11px 12px;
-        font-size: 10px;
+    .buyer-order-actions {
+        padding: 0 16px 15px;
     }
 
     .buyer-site-footer .footer-inner {
         align-items: flex-start;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
     }
 }
 
-/* =========================================================
-   22. SMALL MOBILE
-========================================================= */
+/* Very narrow screens */
 
 @media (max-width: 360px) {
     .buyer-container {
@@ -1025,37 +994,60 @@
         display: none;
     }
 
-    .buyer-back-button {
-        gap: 4px;
-        padding-inline: 7px;
+    .buyer-order-header {
+        gap: 7px;
+        padding-inline: 12px;
+    }
+
+    .buyer-status-badge {
+        max-width: 42%;
+        padding: 6px 7px;
         font-size: 9px;
     }
 
-    .buyer-order-number {
-        font-size: 10px;
+    .buyer-order-summary {
+        gap: 10px;
+        padding-inline: 12px;
     }
 
-    .buyer-payment-row {
-        gap: 8px;
+    .buyer-summary-product-icon {
+        flex-basis: 56px;
+        width: 56px;
+        height: 56px;
     }
 
-    .buyer-payment-label,
-    .buyer-payment-value {
-        font-size: 11px;
+    .buyer-order-total {
+        font-size: 19px;
+    }
+
+    .buyer-tracking-panel {
+        margin-inline: 9px;
+        padding: 12px;
+    }
+
+    .buyer-tracking-badge {
+        max-width: 34%;
+        font-size: 9px;
+    }
+
+    .buyer-order-footer {
+        padding-inline: 12px;
+    }
+
+    .buyer-detail-section {
+        padding-inline: 12px;
     }
 }
 
-/* =========================================================
-   23. REDUCED MOTION
-========================================================= */
+/* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
     .buyer-page *,
     .buyer-site-header *,
     .buyer-site-footer * {
         scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
