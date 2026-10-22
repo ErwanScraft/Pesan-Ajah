@@ -15,69 +15,139 @@ require __DIR__ . '/_header.php';
 
 ?>
 
-<div class="welcome-row">
-    <div>
-        <h2>Daftar pesanan</h2>
+<section class="orders-page">
 
-        <p class="muted">
-            Periksa pesanan dan perbarui status sesuai proses warung.
-        </p>
+    <div class="orders-page-heading">
+        <h2>Pesanan</h2>
+
+        <button
+            class="icon-button orders-refresh"
+            id="orders-refresh"
+            type="button"
+            aria-label="Muat ulang pesanan"
+            title="Muat ulang"
+        >
+            ↻
+        </button>
     </div>
 
-    <span class="demo-badge">
-        <span class="dot"></span>
-        Mode demo
-    </span>
-</div>
+    <section
+        class="orders-summary-section"
+        aria-labelledby="orders-summary-title"
+    >
+        <h3 id="orders-summary-title">
+            Ringkasan status pesanan
+        </h3>
 
-<section class="dashboard-card">
+        <div
+            class="orders-summary-grid"
+            id="orders-summary"
+        >
+            <article class="order-summary-card">
+                <span>Menunggu</span>
+                <strong>—</strong>
+            </article>
 
-    <div class="card-heading">
-        <div>
-            <h3>Semua pesanan</h3>
+            <article class="order-summary-card">
+                <span>Diproses</span>
+                <strong>—</strong>
+            </article>
 
-            <p class="muted">
-                Pesanan ditampilkan dalam tabel berikut.
-            </p>
+            <article class="order-summary-card">
+                <span>Siap diambil</span>
+                <strong>—</strong>
+            </article>
+
+            <article class="order-summary-card">
+                <span>Diantar</span>
+                <strong>—</strong>
+            </article>
+        </div>
+    </section>
+
+    <section
+        class="orders-list-section"
+        aria-labelledby="orders-list-title"
+    >
+        <div class="orders-list-heading">
+            <h3 id="orders-list-title">Daftar pesanan</h3>
+
+            <span class="orders-count">
+                <span id="orders-count">0</span> pesanan
+            </span>
         </div>
 
-        <span class="table-caption">
-            Daftar pesanan
-        </span>
-    </div>
+        <div
+            class="orders-filters"
+            role="group"
+            aria-label="Filter status pesanan"
+        >
+            <button
+                type="button"
+                class="order-filter active"
+                data-order-filter="all"
+                aria-pressed="true"
+            >
+                Semua
+            </button>
 
-    <div class="table-wrap">
+            <button
+                type="button"
+                class="order-filter"
+                data-order-filter="waiting"
+                aria-pressed="false"
+            >
+                Menunggu
+            </button>
 
-        <table class="data-table">
+            <button
+                type="button"
+                class="order-filter"
+                data-order-filter="processing"
+                aria-pressed="false"
+            >
+                Diproses
+            </button>
 
-            <thead>
-                <tr>
-                    <th scope="col">ID pesanan</th>
-                    <th scope="col">Pembeli</th>
-                    <th scope="col">Ringkasan</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Aksi</th>
-                </tr>
-            </thead>
+            <button
+                type="button"
+                class="order-filter"
+                data-order-filter="pickup"
+                aria-pressed="false"
+            >
+                Siap diambil
+            </button>
 
-            <tbody id="orders-table"></tbody>
+            <button
+                type="button"
+                class="order-filter"
+                data-order-filter="delivery"
+                aria-pressed="false"
+            >
+                Diantar
+            </button>
 
-        </table>
+            <button
+                type="button"
+                class="order-filter"
+                data-order-filter="completed"
+                aria-pressed="false"
+            >
+                Selesai
+            </button>
+        </div>
 
-    </div>
+        <div
+            class="orders-list"
+            id="orders-list"
+            aria-live="polite"
+        >
+            <div class="orders-empty">
+                Memuat pesanan...
+            </div>
+        </div>
+    </section>
 
 </section>
-
-<div class="dashboard-note">
-    <strong>Catatan:</strong>
-
-    <p>
-        Halaman ini sudah dilindungi autentikasi PHP.
-        Daftar pesanan masih menggunakan implementasi demo.
-        Integrasi database diperlukan agar pesanan tersimpan
-        di server dan hanya ditampilkan kepada warung pemiliknya.
-    </p>
-</div>
 
 <?php require __DIR__ . '/_footer.php'; ?>

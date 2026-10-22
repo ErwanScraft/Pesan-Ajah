@@ -1032,18 +1032,40 @@ $("#cancel-product")?.addEventListener(
   resetProductForm,
 );
 
+
 /* =========================================================
    PESANAN
 ========================================================= */
 
 let orders = [];
+let orderFilter = "all";
 
 async function loadOrders() {
-  const data = await apiRequest(API.orders);
+  const refreshButton = $("#orders-refresh");
 
-  orders = data.orders;
+  if (refreshButton) {
+    refreshButton.disabled = true;
+  }
 
-  renderOrders();
+  try {
+    const data = await apiRequest(API.orders);
+
+    orders = Array.isArray(data.orders)
+      ? data.orders
+      : [];
+
+    renderOrders();
+  } catch (error) {
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Pesanan gagal dimuat.",
+    );
+  } finally {
+    if (refreshButton) {
+      refreshButton.disabled = false;
+    }
+  }
 }
 
 function nextOrderStatus(order) {
@@ -1060,20 +1082,22 @@ function nextOrderStatus(order) {
   if (status === "confirmed") {
     return {
       value: "processing",
-      label: "Proses Pesanan",
+      label: "Mulai proses",
     };
   }
 
   if (status === "processing") {
-    return method === "pickup"
-      ? {
-          value: "ready_for_pickup",
-          label: "Tandai Tersedia",
-        }
-      : {
-          value: "ready_for_driver",
-          label: "Siapkan untuk Driver",
-        };
+    if (method === "pickup") {
+      return {
+        value: "ready_for_pickup",
+        label: "Siap diambil",
+      };
+    }
+
+    return {
+      value: "ready_for_driver",
+      label: "Siapkan untuk driver",
+    };
   }
 
   return null;
@@ -1081,85 +1105,358 @@ function nextOrderStatus(order) {
 
 function orderStatusLabel(status) {
   const labels = {
-    pending: "Menunggu Konfirmasi",
+    pending: "Menunggu",
     confirmed: "Dikonfirmasi",
-    processing: "Sedang Diproses",
-    ready_for_pickup: "Tersedia",
-    ready_for_driver: "Menunggu Driver",
+    processing: "Diproses",
+    ready_for_pickup: "Siap diambil",
+    ready_for_driver: "Menunggu driver",
     in_delivery: "Diantar",
     completed: "Selesai",
     cancelled: "Dibatalkan",
   };
 
-  return labels[String(status || "").toLowerCase()] || status;
+  return labels[String(status || "").toLowerCase()]
+    || "Status tidak diketahui";
+}
+
+function orderMethodLabel(method) {
+  return String(method || "").toLowerCase() === "pickup"
+    ? "Ambil Sendiri"
+    : "Delivery";
+}
+
+function formatOrderDate(value) {
+  if (!value) {
+    return "Waktu tidak tersedia";
+  }
+
+  const date = new Date(String(value).replace(" ", "T"));
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function createOrderSummaryCard(label, value, iconName, colorClass) {
+  const card = document.createElement("article");
+  card.className = "order-summary-card";
+
+  const heading = document.createElement("div");
+  heading.className = "order-summary-heading";
+
+  const title = document.createElement("span");
+  title.textContent = label;
+
+  const icon = document.createElement("span");
+  icon.className = `order-summary-icon ${colorClass}`;
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = iconName;
+
+  const number = document.createElement("strong");
+  number.textContent = String(value);
+
+  heading.append(title, icon);
+  card.append(heading, number);
+
+  return card;
+}
+
+function renderOrderSummary() {
+  const target = $("#orders-summary");
+
+  if (!target) {
+    return;
+  }
+
+  target.replaceChildren();
+
+  const getStatus = (order) =>
+    String(order.status || "").toLowerCase();
+
+  const getMethod = (order) =>
+    String(order.delivery_method || "").toLowerCase();
+
+  const waiting = orders.filter((order) =>
+    getStatus(order) === "pending"
+  ).length;
+
+  const processing = orders.filter((order) =>
+    ["confirmed", "processing"].includes(getStatus(order))
+  ).length;
+
+  const pickup = orders.filter((order) =>
+    getMethod(order) === "pickup"
+    && getStatus(order) === "ready_for_pickup"
+  ).length;
+
+  const delivery = orders.filter((order) =>
+    getMethod(order) !== "pickup"
+    && getStatus(order) === "in_delivery"
+  ).length;
+
+  target.append(
+    createOrderSummaryCard(
+      "Menunggu",
+      waiting,
+      "◷",
+      "amber",
+    ),
+    createOrderSummaryCard(
+      "Diproses",
+      processing,
+      "↻",
+      "blue",
+    ),
+    createOrderSummaryCard(
+      "Siap diambil",
+      pickup,
+      "✓",
+      "green",
+    ),
+    createOrderSummaryCard(
+      "Diantar",
+      delivery,
+      "↗",
+      "purple",
+    ),
+  );
+}
+
+function filterOrders() {
+  return orders.filter((order) => {
+    const status = String(order.status || "").toLowerCase();
+    const method = String(order.delivery_method || "").toLowerCase();
+
+    switch (orderFilter) {
+      case "waiting":
+        return status === "pending";
+
+      case "processing":
+        return ["confirmed", "processing"].includes(status);
+
+      case "pickup":
+        return method === "pickup"
+          && status === "ready_for_pickup";
+
+      case "delivery":
+        return method !== "pickup"
+          && status === "in_delivery";
+
+      case "completed":
+        return ["completed", "cancelled"].includes(status);
+
+      case "all":
+      default:
+        return true;
+    }
+  });
 }
 
 function renderOrders() {
-  const table = $("#orders-table");
+  const list = $("#orders-list");
 
-  if (!table) return;
+  if (!list) {
+    return;
+  }
 
-  table.replaceChildren();
+  renderOrderSummary();
+  list.replaceChildren();
 
-  if (orders.length === 0) {
-    const row = document.createElement("tr");
-    const cell = createCell("Belum ada pesanan.");
+  const visibleOrders = filterOrders();
+  const count = $("#orders-count");
 
-    cell.colSpan = 6;
-    cell.className = "empty-table-cell";
+  if (count) {
+    count.textContent = String(visibleOrders.length);
+  }
 
-    row.append(cell);
-    table.append(row);
+  if (visibleOrders.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "orders-empty";
+
+    const title = document.createElement("strong");
+    title.textContent = orders.length === 0
+      ? "Belum ada pesanan"
+      : "Pesanan tidak ditemukan";
+
+    const detail = document.createElement("p");
+    detail.textContent = orders.length === 0
+      ? "Pesanan baru akan muncul di sini."
+      : "Coba pilih filter status yang lain.";
+
+    empty.append(title, detail);
+    list.append(empty);
 
     return;
   }
 
-  for (const order of orders) {
-    const row = document.createElement("tr");
+  for (const order of visibleOrders) {
+    const card = document.createElement("article");
+    card.className = "order-card";
+    card.dataset.orderId = String(order.id);
 
-    const itemSummary = (order.items || [])
-        .map((item) => {
-          const variant = item.product_variant
-            ? ` (${item.product_variant})`
-            : "";
-      
-          return `${item.product_name}${variant} × ${item.quantity}`;
-        })
-        .join(", ");
+    const header = document.createElement("div");
+    header.className = "order-card-header";
+
+    const orderTitle = document.createElement("h3");
+    orderTitle.textContent =
+      `Pesanan #${order.order_number || order.id}`;
 
     const status = document.createElement("span");
+    const statusCode = String(order.status || "").toLowerCase();
 
-    status.className = `status-pill status-${order.status}`;
-    status.textContent = orderStatusLabel(order.status);
+    status.className = `status-pill status-${statusCode}`;
+    status.textContent = orderStatusLabel(statusCode);
 
-    const statusCell = document.createElement("td");
+    header.append(orderTitle, status);
 
-    statusCell.append(status);
+    const buyer = document.createElement("p");
+    buyer.className = "order-card-buyer";
+    buyer.textContent =
+      `${order.buyer_name || "Pembeli"} · ${formatOrderDate(order.created_at)}`;
 
-    const actions = document.createElement("td");
+    const summary = document.createElement("div");
+    summary.className = "order-card-summary";
+
+    const method = document.createElement("span");
+    method.className = "order-method";
+    method.textContent = orderMethodLabel(order.delivery_method);
+
+    const total = document.createElement("strong");
+    total.className = "order-card-total";
+    total.textContent = formatRupiah(order.total);
+
+    summary.append(method, total);
+
+    /* Detail pesanan */
+
+    const details = document.createElement("div");
+    details.className = "order-card-details";
+    details.hidden = true;
+
+    const itemsTitle = document.createElement("strong");
+    itemsTitle.textContent = "Rincian produk";
+
+    const itemList = document.createElement("ul");
+    itemList.className = "order-item-list";
+
+    for (const item of (order.items || [])) {
+      const row = document.createElement("li");
+
+      const itemName = document.createElement("span");
+      const variant = item.product_variant
+        ? ` (${item.product_variant})`
+        : "";
+
+      itemName.textContent =
+        `${item.product_name || "Produk"}${variant} × ${item.quantity}`;
+
+      const itemPrice = document.createElement("span");
+
+      const subtotal = item.subtotal
+        ?? (Number(item.price || 0) * Number(item.quantity || 0));
+
+      itemPrice.textContent = formatRupiah(subtotal);
+
+      row.append(itemName, itemPrice);
+      itemList.append(row);
+    }
+
+    details.append(itemsTitle, itemList);
+
+    const meta = document.createElement("div");
+    meta.className = "order-detail-meta";
+
+    function addMeta(label, value) {
+      if (
+        value === null
+        || value === undefined
+        || String(value).trim() === ""
+      ) {
+        return;
+      }
+
+      const line = document.createElement("p");
+      const strong = document.createElement("strong");
+
+      strong.textContent = `${label}: `;
+
+      line.append(
+        strong,
+        document.createTextNode(String(value)),
+      );
+
+      meta.append(line);
+    }
+
+    addMeta("Nomor pembeli", order.buyer_phone);
+
+    if (String(order.delivery_method || "").toLowerCase() !== "pickup") {
+      addMeta("Alamat", order.delivery_address);
+
+      if (order.delivery_fee !== null && order.delivery_fee !== undefined) {
+        addMeta("Ongkir", formatRupiah(order.delivery_fee));
+      }
+    }
+
+    addMeta("Catatan", order.buyer_note);
+    details.append(meta);
+
+    /* Tombol aksi */
+
+    const footer = document.createElement("div");
+    footer.className = "order-card-actions";
+
+    const detailButton = createButton(
+      "Lihat detail pesanan",
+      () => {
+        details.hidden = !details.hidden;
+
+        detailButton.textContent = details.hidden
+          ? "Lihat detail pesanan"
+          : "Tutup detail";
+
+        detailButton.setAttribute(
+          "aria-expanded",
+          String(!details.hidden),
+        );
+      },
+      "button button-outline order-detail-button",
+    );
+
+    detailButton.setAttribute("aria-expanded", "false");
+    footer.append(detailButton);
 
     const next = nextOrderStatus(order);
 
     if (next) {
-      actions.append(
-        createButton(next.label, async () => {
+      const actionButton = createButton(
+        next.label,
+        async () => {
           await changeOrderStatus(order, next.value);
-        }),
+        },
+        "button button-primary order-next-button",
       );
+
+      footer.append(actionButton);
     }
 
-    row.append(
-      createCell(order.order_number, "order-id"),
-      createCell(
-        `${order.buyer_name}\n${order.buyer_phone}`,
-      ),
-      createCell(itemSummary || "Tidak ada rincian"),
-      createCell(formatRupiah(order.total)),
-      statusCell,
-      actions,
+    card.append(
+      header,
+      buyer,
+      summary,
+      details,
+      footer,
     );
 
-    table.append(row);
+    list.append(card);
   }
 }
 
@@ -1167,7 +1464,7 @@ async function changeOrderStatus(order, status) {
   const labels = {
     confirmed: "mengonfirmasi",
     processing: "memproses",
-    ready_for_pickup: "menandai pesanan tersedia",
+    ready_for_pickup: "menandai pesanan siap diambil",
     ready_for_driver: "menyiapkan pesanan untuk driver",
   };
 
@@ -1180,7 +1477,7 @@ async function changeOrderStatus(order, status) {
 
   if (
     !window.confirm(
-      `Anda yakin ingin ${action} pesanan ${order.order_number}?`,
+      `Yakin ingin ${action} pesanan ${order.order_number}?`,
     )
   ) {
     return;
@@ -1199,9 +1496,37 @@ async function changeOrderStatus(order, status) {
 
     notify("Status pesanan berhasil diperbarui.");
   } catch (error) {
-    notify(error.message);
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Status pesanan gagal diperbarui.",
+    );
   }
 }
+
+/* Filter pesanan */
+
+document.querySelectorAll("[data-order-filter]").forEach((button) => {
+  button.addEventListener("click", () => {
+    orderFilter = button.dataset.orderFilter || "all";
+
+    document.querySelectorAll("[data-order-filter]").forEach((item) => {
+      const active = item === button;
+
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-pressed", String(active));
+    });
+
+    renderOrders();
+  });
+});
+
+/* Muat ulang */
+
+$("#orders-refresh")?.addEventListener(
+  "click",
+  loadOrders,
+);
 
 /* =========================================================
    PENGATURAN
