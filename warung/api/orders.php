@@ -133,7 +133,25 @@ if ($action === 'delete') {
                 'message' => 'Hanya pesanan selesai atau dibatalkan yang dapat dihapus.',
             ], 422);
         }
-
+        
+        /*
+         * Hapus penugasan driver terlebih dahulu karena
+         * delivery_assignments.order_id mereferensikan orders.id.
+         *
+         * Tetap berada dalam transaksi yang sama agar semua
+         * perubahan dibatalkan jika penghapusan gagal.
+         */
+        $deleteAssignment = $db->prepare(
+            'DELETE FROM delivery_assignments
+             WHERE order_id = :order_id
+               AND store_id = :store_id'
+        );
+        
+        $deleteAssignment->execute([
+            'order_id' => $id,
+            'store_id' => $storeId,
+        ]);
+        
         /*
          * Hapus item pesanan terlebih dahulu agar tidak
          * terkendala foreign key pada order_items.
