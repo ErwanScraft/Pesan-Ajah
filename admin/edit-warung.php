@@ -158,7 +158,7 @@ if (request_is_post()) {
                  SET
                     name = :name,
                     slug = :slug,
-                    owner_name = :owner,
+                    owner_name = :owner_name,
                     phone = :phone,
                     address = :address,
                     description = :description,
