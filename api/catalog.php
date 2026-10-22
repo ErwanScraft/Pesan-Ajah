@@ -24,7 +24,7 @@ try {
             s.slug,
             s.phone,
             s.is_open,
-            s.free_delivery
+            s.free_delivery,
             s.delivery_discount
 
         FROM stores s
