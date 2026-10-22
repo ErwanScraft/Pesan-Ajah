@@ -86,6 +86,113 @@ if (request_method() !== 'POST') {
 $input = api_json_input();
 
 $id = api_positive_id($input['id'] ?? null);
+$action = $input['action'] ?? null;
+
+/*
+ * Hapus riwayat pesanan.
+ * Hanya pesanan berstatus completed milik warung
+ * yang sedang login yang dapat dihapus.
+ */
+if ($action === 'delete') {
+    $db = database();
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT id, status
+             FROM orders
+             WHERE id = :id
+               AND store_id = :store_id
+             FOR UPDATE'
+        );
+
+        $stmt->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        $order = $stmt->fetch();
+
+        if (!$order) {
+            $db->rollBack();
+
+            api_json([
+                'success' => false,
+                'message' => 'Pesanan tidak ditemukan.',
+            ], 404);
+        }
+
+        if ((string) $order['status'] !== 'completed') {
+            $db->rollBack();
+
+            api_json([
+                'success' => false,
+                'message' => 'Hanya pesanan selesai yang dapat dihapus.',
+            ], 422);
+        }
+
+        /*
+         * Hapus item pesanan terlebih dahulu agar tidak
+         * terkendala foreign key pada order_items.
+         */
+        $deleteItems = $db->prepare(
+            'DELETE FROM order_items
+             WHERE order_id = :order_id'
+        );
+
+        $deleteItems->execute([
+            'order_id' => $id,
+        ]);
+
+        /*
+         * Pastikan pesanan masih milik warung ini
+         * dan statusnya tetap completed.
+         */
+        $deleteOrder = $db->prepare(
+            'DELETE FROM orders
+             WHERE id = :id
+               AND store_id = :store_id
+               AND status = \'completed\''
+        );
+
+        $deleteOrder->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        if ($deleteOrder->rowCount() !== 1) {
+            $db->rollBack();
+
+            api_json([
+                'success' => false,
+                'message' => 'Pesanan tidak dapat dihapus.',
+            ], 409);
+        }
+
+        $db->commit();
+
+        api_json([
+            'success' => true,
+            'message' => 'Riwayat pesanan berhasil dihapus.',
+        ]);
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        error_log(
+            '[Pesan Ajah] Gagal menghapus riwayat pesanan: '
+            . $exception->getMessage()
+        );
+
+        api_json([
+            'success' => false,
+            'message' => 'Riwayat pesanan gagal dihapus.',
+        ], 500);
+    }
+}
+
 $status = $input['status'] ?? null;
 
 $allowedStatuses = [

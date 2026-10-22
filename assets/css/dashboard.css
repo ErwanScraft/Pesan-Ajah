@@ -1566,3 +1566,23 @@
     align-items: flex-start;
   }
 }
+
+/* Tombol hapus riwayat pesanan */
+
+.order-delete-button {
+  flex: 0 0 auto;
+  border: 1px solid #f0caca;
+  background: #fff5f5;
+  color: #b42318;
+}
+
+.order-delete-button:hover {
+  border-color: #e5a5a5;
+  background: #fee9e9;
+  color: #912018;
+}
+
+.order-delete-button:focus-visible {
+  outline: 2px solid #b42318;
+  outline-offset: 2px;
+}

@@ -1068,40 +1068,32 @@ async function loadOrders() {
   }
 }
 
-function nextOrderStatus(order) {
-  const status = String(order.status || "").toLowerCase();
-  const method = String(order.delivery_method || "").toLowerCase();
+const next = nextOrderStatus(order);
 
-  if (status === "pending") {
-    return {
-      value: "confirmed",
-      label: "Konfirmasi",
-    };
-  }
+if (next) {
+  const actionButton = createButton(
+    next.label,
+    async () => {
+      await changeOrderStatus(order, next.value);
+    },
+    "button button-primary order-next-button",
+  );
 
-  if (status === "confirmed") {
-    return {
-      value: "processing",
-      label: "Mulai proses",
-    };
-  }
-
-  if (status === "processing") {
-    if (method === "pickup") {
-      return {
-        value: "ready_for_pickup",
-        label: "Siap diambil",
-      };
-    }
-
-    return {
-      value: "ready_for_driver",
-      label: "Siapkan untuk driver",
-    };
-  }
-
-  return null;
+  footer.append(actionButton);
 }
+
+if (String(order.status || "").toLowerCase() === "completed") {
+  const deleteButton = createButton(
+    "Hapus",
+    async () => {
+      await deleteCompletedOrder(order);
+    },
+    "button button-danger order-delete-button",
+  );
+
+  footer.append(deleteButton);
+}
+
 
 function orderStatusLabel(status) {
   const labels = {
@@ -1500,6 +1492,44 @@ async function changeOrderStatus(order, status) {
       error instanceof Error
         ? error.message
         : "Status pesanan gagal diperbarui.",
+    );
+  }
+}
+
+
+async function deleteCompletedOrder(order) {
+  if (String(order.status || "").toLowerCase() !== "completed") {
+    notify("Hanya pesanan selesai yang dapat dihapus.");
+    return;
+  }
+
+  const orderLabel = order.order_number || order.id;
+
+  if (
+    !window.confirm(
+      `Hapus riwayat pesanan #${orderLabel}? Tindakan ini tidak dapat dibatalkan.`,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    await postJSON(API.orders, {
+      action: "delete",
+      id: order.id,
+    });
+
+    await Promise.all([
+      loadOrders(),
+      loadDashboard(),
+    ]);
+
+    notify("Riwayat pesanan berhasil dihapus.");
+  } catch (error) {
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Riwayat pesanan gagal dihapus.",
     );
   }
 }
