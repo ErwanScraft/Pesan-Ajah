@@ -1068,32 +1068,41 @@ async function loadOrders() {
   }
 }
 
-const next = nextOrderStatus(order);
 
-if (next) {
-  const actionButton = createButton(
-    next.label,
-    async () => {
-      await changeOrderStatus(order, next.value);
-    },
-    "button button-primary order-next-button",
-  );
+function nextOrderStatus(order) {
+  const status = String(order.status || "").toLowerCase();
+  const method = String(order.delivery_method || "").toLowerCase();
 
-  footer.append(actionButton);
+  if (status === "pending") {
+    return {
+      value: "confirmed",
+      label: "Konfirmasi",
+    };
+  }
+
+  if (status === "confirmed") {
+    return {
+      value: "processing",
+      label: "Mulai proses",
+    };
+  }
+
+  if (status === "processing") {
+    if (method === "pickup") {
+      return {
+        value: "ready_for_pickup",
+        label: "Siap diambil",
+      };
+    }
+
+    return {
+      value: "ready_for_driver",
+      label: "Siapkan untuk driver",
+    };
+  }
+
+  return null;
 }
-
-if (String(order.status || "").toLowerCase() === "completed") {
-  const deleteButton = createButton(
-    "Hapus",
-    async () => {
-      await deleteCompletedOrder(order);
-    },
-    "button button-danger order-delete-button",
-  );
-
-  footer.append(deleteButton);
-}
-
 
 function orderStatusLabel(status) {
   const labels = {
@@ -1426,8 +1435,9 @@ function renderOrders() {
     detailButton.setAttribute("aria-expanded", "false");
     footer.append(detailButton);
 
+    
     const next = nextOrderStatus(order);
-
+    
     if (next) {
       const actionButton = createButton(
         next.label,
@@ -1436,8 +1446,20 @@ function renderOrders() {
         },
         "button button-primary order-next-button",
       );
-
+    
       footer.append(actionButton);
+    }
+    
+    if (String(order.status || "").toLowerCase() === "completed") {
+      const deleteButton = createButton(
+        "Hapus riwayat",
+        async () => {
+          await deleteCompletedOrder(order);
+        },
+        "button button-danger order-delete-button",
+      );
+    
+      footer.append(deleteButton);
     }
 
     card.append(
