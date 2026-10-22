@@ -298,6 +298,7 @@ try {
             s.phone,
             s.is_open,
             s.free_delivery,
+            s.delivery_discount,
             s.is_active,
             u.is_active AS user_is_active,
             s.latitude,
@@ -349,12 +350,14 @@ try {
     }
     
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     | HITUNG JARAK DAN ONGKIR
     |--------------------------------------------------------------------------
     */
     
     $deliveryDistanceKm = null;
+    $deliveryFeeOriginal = 0;
+    $deliveryDiscount = 0;
     $deliveryFee = 0;
     
     if ($deliveryMethod === 'delivery') {
@@ -392,12 +395,29 @@ try {
                 $deliveryLatitude,
                 $deliveryLongitude
             );
-        }
     
-        if (!$isFreeDelivery) {
-            $deliveryFee = delivery_fee_from_distance(
+            $deliveryFeeOriginal = delivery_fee_from_distance(
                 $deliveryDistanceKm
             );
+        }
+    
+        if ($isFreeDelivery) {
+            // Gratis ongkir tetap memiliki prioritas.
+            $deliveryDiscount = $deliveryFeeOriginal;
+            $deliveryFee = 0;
+        } else {
+            $configuredDiscount = max(
+                0,
+                (int) ($store['delivery_discount'] ?? 0)
+            );
+    
+            $deliveryDiscount = min(
+                $configuredDiscount,
+                $deliveryFeeOriginal
+            );
+    
+            $deliveryFee = $deliveryFeeOriginal
+                - $deliveryDiscount;
         }
     }
 
@@ -556,6 +576,8 @@ try {
             delivery_method,
             delivery_address,
             delivery_fee,
+            delivery_fee_original,
+            delivery_discount,
             delivery_distance_km,
             subtotal,
             total,
@@ -573,6 +595,8 @@ try {
             :delivery_method,
             :delivery_address,
             :delivery_fee,
+            :delivery_fee_original,
+            :delivery_discount,
             :delivery_distance_km,
             :subtotal,
             :total,
@@ -593,6 +617,8 @@ try {
         'delivery_method' => $deliveryMethod,
         'delivery_address' => $buyerAddress,
         'delivery_fee' => $deliveryFee,
+        'delivery_fee_original' => $deliveryFeeOriginal,
+        'delivery_discount' => $deliveryDiscount,
         'delivery_distance_km' => $deliveryDistanceKm,
         'subtotal' => $subtotal,
         'total' => $total,
@@ -726,12 +752,16 @@ try {
     $message[] = 'Subtotal: ' . checkout_rupiah($subtotal);
     
     if ($deliveryMethod === 'delivery') {
-        if ($deliveryFee > 0) {
-            $message[] = 'Ongkos kirim: '
-                . checkout_rupiah($deliveryFee);
-        } else {
-            $message[] = 'Ongkos kirim: Rp0';
+        $message[] = 'Ongkir standar: '
+            . checkout_rupiah($deliveryFeeOriginal);
+    
+        if ($deliveryDiscount > 0) {
+            $message[] = 'Diskon ongkir: -'
+                . checkout_rupiah($deliveryDiscount);
         }
+    
+        $message[] = 'Ongkir dibayar: '
+            . checkout_rupiah($deliveryFee);
     }
     
     $message[] = '';
@@ -757,6 +787,8 @@ try {
         'status' => 'pending',
         'subtotal' => $subtotal,
         'delivery_fee' => $deliveryFee,
+        'delivery_fee_original' => $deliveryFeeOriginal,
+        'delivery_discount' => $deliveryDiscount,
         'delivery_distance_km' => $deliveryDistanceKm,
         'total' => $total,
         'buyer_token' => $buyerToken,

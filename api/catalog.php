@@ -25,6 +25,7 @@ try {
             s.phone,
             s.is_open,
             s.free_delivery
+            s.delivery_discount
 
         FROM stores s
 
@@ -90,6 +91,7 @@ try {
             s.phone AS store_phone,
             s.is_open AS store_is_open,
             s.free_delivery AS store_free_delivery,
+            s.delivery_discount AS store_delivery_discount,
             s.latitude AS store_latitude,
             s.longitude AS store_longitude
 
@@ -145,6 +147,11 @@ try {
 
         $product['store_free_delivery'] =
             (bool) $product['store_free_delivery'];
+        
+        $product['store_delivery_discount'] = max(
+            0,
+            (int) ($product['store_delivery_discount'] ?? 0)
+        );
 
         /*
          * Properti yang digunakan oleh frontend.
@@ -183,6 +190,10 @@ try {
 
         $store['free_delivery'] =
             (bool) $store['free_delivery'];
+        $store['delivery_discount'] = max(
+            0,
+            (int) ($store['delivery_discount'] ?? 0)
+        );
     }
 
     unset($store);

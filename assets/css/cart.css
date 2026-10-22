@@ -1127,6 +1127,14 @@
     text-decoration-thickness: 1px;
 }
 
+/* Harga ongkir setelah diskon */
+
+#cart-overlay .delivery-price-discount {
+    color: var(--cart-primary);
+    font-size: 12px;
+    font-weight: 750;
+}
+
 
 /* =========================================================
    15. PAYMENT SUMMARY

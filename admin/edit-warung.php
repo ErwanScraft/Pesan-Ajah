@@ -62,6 +62,19 @@ if (request_is_post()) {
     $slug = trim($slug, '-');
 
     $isActive = isset($_POST['is_active']) ? 1 : 0;
+    
+    $deliveryDiscount = filter_var(
+        $_POST['delivery_discount'] ?? '0',
+        FILTER_VALIDATE_INT
+    );
+    
+    if (
+        $deliveryDiscount === false
+        || $deliveryDiscount < 0
+        || $deliveryDiscount > 100000000
+    ) {
+        $errors[] = 'Diskon ongkir harus berupa nominal Rp0 sampai Rp100.000.000.';
+    }
 
     $newPassword = (string) ($_POST['new_password'] ?? '');
 
@@ -149,6 +162,7 @@ if (request_is_post()) {
                     phone = :phone,
                     address = :address,
                     description = :description,
+                    delivery_discount = :delivery_discount,
                     is_active = :is_active
                  WHERE id = :id'
             );
@@ -162,6 +176,7 @@ if (request_is_post()) {
                 'description' => $description !== ''
                     ? $description
                     : null,
+                'delivery_discount' => $deliveryDiscount,
                 'is_active' => $isActive,
                 'id' => $id,
             ]);
@@ -229,6 +244,7 @@ if (request_is_post()) {
         'phone' => $phone,
         'address' => $address,
         'description' => $description,
+        'delivery_discount' => $deliveryDiscount,
         'is_active' => $isActive,
     ]);
 }
@@ -404,6 +420,26 @@ if (request_is_post()) {
                             maxlength="500"
                             rows="4"
                         ><?= e($store['description'] ?? '') ?></textarea>
+                    </label>
+                    
+                    <label class="field">
+                        <span>Diskon ongkir (Rp)</span>
+                    
+                        <input
+                            name="delivery_discount"
+                            type="number"
+                            min="0"
+                            max="100000000"
+                            step="1000"
+                            value="<?= e((string) ($store['delivery_discount'] ?? 0)) ?>"
+                            required
+                        >
+                    
+                        <small class="muted">
+                            Diskon diterapkan pada tarif ongkir standar.
+                            Nilai diskon tidak dapat melebihi ongkir.
+                            Isi 0 jika tidak ada diskon.
+                        </small>
                     </label>
 
                     <label class="field">

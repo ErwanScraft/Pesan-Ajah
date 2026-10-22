@@ -111,6 +111,7 @@ function estimateDelivery(product) {
 
 }
 
+
 function getDeliveryFee() {
   if (cart.quantity() === 0) return 0;
 
@@ -124,8 +125,18 @@ function getDeliveryFee() {
 
   if (product.store_free_delivery) return 0;
 
-  return estimateDelivery(product)?.fee ?? null;
+  const estimate = estimateDelivery(product);
+
+  if (!estimate) return null;
+
+  const discount = Math.min(
+    Math.max(0, Number(product.store_delivery_discount) || 0),
+    estimate.fee,
+  );
+
+  return estimate.fee - discount;
 }
+
 
 function renderCart() {
   cart.render(cartView);
@@ -145,16 +156,40 @@ function renderCart() {
   
   if (deliveryOptionPrice) {
     if (product?.store_free_delivery) {
-      deliveryOptionPrice.innerHTML = `
-        <span class="delivery-price-original">
-          ${estimate
-            ? formatRupiah(estimate.fee)
-            : "Ongkir"}
-        </span>
-      `;
+      deliveryOptionPrice.innerHTML = estimate
+        ? `
+          <span class="delivery-price-original">
+            ${formatRupiah(estimate.fee)}
+          </span>
+          <span class="delivery-price-discount">
+            Gratis
+          </span>
+        `
+        : "Gratis";
     } else if (estimate) {
-      deliveryOptionPrice.textContent =
-        formatRupiah(estimate.fee);
+      const discount = Math.min(
+        Math.max(
+          0,
+          Number(product?.store_delivery_discount) || 0,
+        ),
+        estimate.fee,
+      );
+  
+      const finalFee = estimate.fee - discount;
+  
+      if (discount > 0) {
+        deliveryOptionPrice.innerHTML = `
+          <span class="delivery-price-original">
+            ${formatRupiah(estimate.fee)}
+          </span>
+          <span class="delivery-price-discount">
+            ${formatRupiah(finalFee)}
+          </span>
+        `;
+      } else {
+        deliveryOptionPrice.textContent =
+          formatRupiah(estimate.fee);
+      }
     } else {
       deliveryOptionPrice.textContent = "Pilih lokasi";
     }
@@ -185,7 +220,19 @@ function renderCart() {
         "Ambil sendiri di warung tanpa biaya pengantaran.";
     } else if (product?.store_free_delivery) {
       fulfillmentNote.textContent =
-        "Biaya pengantaran mengikuti pengaturan warung.";
+        "Warung memberikan gratis ongkir.";
+    } else if (
+      product &&
+      Number(product.store_delivery_discount) > 0 &&
+      estimate
+    ) {
+      fulfillmentNote.textContent =
+        `Diskon ongkir ${formatRupiah(
+          Math.min(
+            Number(product.store_delivery_discount),
+            estimate.fee,
+          ),
+        )}. Ongkir final dihitung saat checkout.`;
     } else if (!estimate) {
       fulfillmentNote.textContent =
         "Pilih lokasi GPS untuk menghitung ongkir.";
@@ -351,6 +398,11 @@ async function loadCatalog() {
 
       store_free_delivery: Boolean(
         product.store_free_delivery,
+      ),
+      
+      store_delivery_discount: Math.max(
+        0,
+        Number(product.store_delivery_discount) || 0,
       ),
       
       store_latitude:
