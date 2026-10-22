@@ -123,12 +123,14 @@ if ($action === 'delete') {
             ], 404);
         }
 
-        if ((string) $order['status'] !== 'completed') {
+        $status = (string) $order['status'];
+        
+        if (!in_array($status, ['completed', 'cancelled'], true)) {
             $db->rollBack();
-
+        
             api_json([
                 'success' => false,
-                'message' => 'Hanya pesanan selesai yang dapat dihapus.',
+                'message' => 'Hanya pesanan selesai atau dibatalkan yang dapat dihapus.',
             ], 422);
         }
 
@@ -147,15 +149,15 @@ if ($action === 'delete') {
 
         /*
          * Pastikan pesanan masih milik warung ini
-         * dan statusnya tetap completed.
+         * dan statusnya tetap dapat dihapus.
          */
         $deleteOrder = $db->prepare(
             'DELETE FROM orders
              WHERE id = :id
                AND store_id = :store_id
-               AND status = \'completed\''
+               AND status IN (\'completed\', \'cancelled\')'
         );
-
+        
         $deleteOrder->execute([
             'id' => $id,
             'store_id' => $storeId,

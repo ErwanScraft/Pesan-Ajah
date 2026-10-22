@@ -1435,7 +1435,6 @@ function renderOrders() {
     detailButton.setAttribute("aria-expanded", "false");
     footer.append(detailButton);
 
-    
     const next = nextOrderStatus(order);
     
     if (next) {
@@ -1450,11 +1449,13 @@ function renderOrders() {
       footer.append(actionButton);
     }
     
-    if (String(order.status || "").toLowerCase() === "completed") {
+    const orderStatus = String(order.status || "").toLowerCase();
+    
+    if (["completed", "cancelled"].includes(orderStatus)) {
       const deleteButton = createButton(
         "Hapus riwayat",
         async () => {
-          await deleteCompletedOrder(order);
+          await deleteOrderHistory(order);
         },
         "button button-danger order-delete-button",
       );
@@ -1518,10 +1519,13 @@ async function changeOrderStatus(order, status) {
   }
 }
 
+async function deleteOrderHistory(order) {
+  const status = String(order.status || "").toLowerCase();
 
-async function deleteCompletedOrder(order) {
-  if (String(order.status || "").toLowerCase() !== "completed") {
-    notify("Hanya pesanan selesai yang dapat dihapus.");
+  if (!["completed", "cancelled"].includes(status)) {
+    notify(
+      "Hanya pesanan selesai atau dibatalkan yang dapat dihapus.",
+    );
     return;
   }
 
