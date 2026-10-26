@@ -884,6 +884,32 @@ async function submitCheckout() {
         "Pesanan tersimpan, tetapi browser tidak dapat menyimpan riwayat. Buka Dashboard Buyer setelah checkout ini.",
       );
     }
+    
+    // Simpan ringkasan sebelum keranjang dikosongkan.
+    // Nilai subtotal dan total berasal dari respons API checkout.
+    const checkoutSummary = {
+      order_number: result.order_number,
+      delivery_method: deliveryMethod,
+      items: cart.entries().map((entry) => {
+        const item = products.find(
+          (product) =>
+            Number(product.id) === Number(entry.product_id),
+        );
+
+        return {
+          name: item?.name || "Produk",
+          variant: item?.variant || "",
+          price: Number(item?.price) || 0,
+          quantity: Number(entry.quantity) || 0,
+        };
+      }),
+      subtotal: Number(result.subtotal) || 0,
+      delivery_fee: Number(result.delivery_fee) || 0,
+      delivery_fee_original:
+        Number(result.delivery_fee_original) || 0,
+      delivery_discount: Number(result.delivery_discount) || 0,
+      total: Number(result.total) || 0,
+    };
 
     cart.clear();
 
@@ -906,6 +932,7 @@ async function submitCheckout() {
           JSON.stringify({
             order_number: result.order_number,
             whatsapp_url: result.whatsapp_url,
+            summary: checkoutSummary,
           }),
         );
       } catch {
