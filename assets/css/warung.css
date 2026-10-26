@@ -1,4 +1,3 @@
-
 /* =========================================================
    PESAN AJAH — HALAMAN WARUNG
    File: assets/css/warung.css
@@ -40,7 +39,6 @@
 
 /* =========================================================
    PROFIL WARUNG
-   Nama pemilik ditampilkan di bawah nama warung.
    ========================================================= */
 
 .store-identity {
@@ -167,6 +165,60 @@
     overflow-wrap: anywhere;
 }
 
+/* Alamat dan tombol Google Maps */
+
+.store-address-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-top: 4px;
+}
+
+.store-address-row p {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.store-maps-button {
+    display: inline-grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    background: #fff;
+    color: #292929;
+    text-decoration: none;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.store-maps-button svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.store-maps-button:hover {
+    border-color: #c9c9c9;
+    background: #f5f5f5;
+}
+
+.store-maps-button:active {
+    transform: scale(.96);
+}
+
 /* Status buka/tutup */
 
 .store-status {
@@ -233,23 +285,26 @@
 .store-catalog-heading {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .store-catalog-heading h2 {
     margin: 0;
     color: #171717;
-    font-size: 24px;
+    font-size: 23px;
     font-weight: 700;
     line-height: 1.35;
+    letter-spacing: -.35px;
 }
 
-.store-product-total {
-    flex: 0 0 auto;
-    color: #737373;
-    font-size: 12px;
+/* Sembunyikan jumlah produk tanpa mengganggu elemen lain.
+   JavaScript katalog tetap boleh mengisi elemen jumlah. */
+
+.store-product-total,
+.store-category-count {
+    display: none !important;
 }
 
 /* =========================================================
@@ -302,8 +357,8 @@
 
 /* =========================================================
    KATEGORI HORIZONTAL
-   Tombol Semua berupa ikon dan tetap di sisi kiri.
-   Kategori lain dapat digeser secara horizontal.
+   Tombol Semua tetap di kiri.
+   Kategori lainnya dapat digeser horizontal.
    ========================================================= */
 
 .store-category-nav {
@@ -361,7 +416,7 @@
     color: #fff;
 }
 
-/* Ikon Semua tetap di kiri ketika kategori digeser */
+/* Ikon Semua */
 
 .store-category-nav .category-all-button {
     position: sticky;
@@ -388,13 +443,12 @@
 }
 
 /* =========================================================
-   DAFTAR PRODUK
-   Kategori dipilih melalui navigasi di atas.
+   DAFTAR PRODUK DAN KATEGORI
    ========================================================= */
 
 .store-products {
     display: grid;
-    gap: 22px;
+    gap: 24px;
     min-width: 0;
 }
 
@@ -406,23 +460,17 @@
 .store-category-heading {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 12px;
-    margin: 0 0 10px;
+    margin: 0 0 12px;
 }
 
 .store-category-heading h2 {
     margin: 0;
     color: #202020;
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 650;
     line-height: 1.4;
-}
-
-.store-category-count {
-    flex: 0 0 auto;
-    color: #777;
-    font-size: 12px;
 }
 
 .store-category-products {
@@ -431,25 +479,25 @@
     min-width: 0;
 }
 
-
 /* =========================================================
-   ITEM PRODUK
-   Gambar kiri | nama dan varian tengah | harga dan + kanan
+   KARTU PRODUK
+   Gambar kiri | nama dan varian tengah
+   Harga dan tombol tambah di kanan
    ========================================================= */
 
 .store-category-products .product-card {
     display: grid;
-    grid-template-columns: 96px minmax(0, 1fr) 124px;
+    grid-template-columns: 84px minmax(0, 1fr) 88px;
     grid-template-rows: auto auto auto;
     align-items: center;
-    column-gap: 16px;
+    column-gap: 14px;
     row-gap: 5px;
     width: 100%;
     min-width: 0;
-    min-height: 124px;
-    padding: 12px;
-    border: 1px solid #e8e8e8;
-    border-radius: 14px;
+    min-height: 104px;
+    padding: 10px;
+    border: 1px solid #eaeaea;
+    border-radius: 13px;
     background: #fff;
     box-shadow: none;
     transition: border-color 160ms ease;
@@ -459,7 +507,7 @@
     border-color: #d0d0d0;
 }
 
-/* Gambar di sisi kiri */
+/* Gambar produk */
 
 .store-category-products .product-image {
     position: relative;
@@ -467,11 +515,11 @@
     grid-column: 1;
     grid-row: 1 / span 3;
     align-self: center;
-    width: 96px;
-    height: 96px;
+    width: 84px;
+    height: 84px;
     place-items: center;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #f2f2f2;
 }
 
@@ -519,7 +567,7 @@
     white-space: nowrap;
 }
 
-/* Informasi produk: nama dan varian di tengah */
+/* Informasi produk */
 
 .store-category-products .product-info {
     display: contents;
@@ -535,7 +583,7 @@
     margin: 0;
     overflow: hidden;
     color: #222;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 650;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -552,7 +600,7 @@
     max-width: 100%;
     margin: 0;
     color: #777;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.45;
     overflow-wrap: anywhere;
 }
@@ -567,7 +615,7 @@
     align-self: start;
     min-width: 0;
     color: #777;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
 }
 
@@ -575,7 +623,7 @@
     display: none;
 }
 
-/* Harga dan tombol berada di sisi kanan */
+/* Harga dan tombol tambah */
 
 .store-category-products .product-bottom {
     display: contents;
@@ -588,12 +636,15 @@
     justify-self: end;
     min-width: 0;
     color: #202020;
-    font-size: 19px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.4;
     text-align: right;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
+
+/* Tombol + lebih kecil dan proporsional */
 
 .store-category-products .add-button {
     display: inline-grid;
@@ -601,18 +652,18 @@
     grid-row: 2;
     align-self: start;
     justify-self: end;
-    width: 54px;
-    min-width: 54px;
-    height: 54px;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
     place-items: center;
     padding: 0;
     border: 0;
-    border-radius: 14px;
+    border-radius: 9px;
     background: #168342;
     color: #fff;
     font: inherit;
-    font-size: 34px;
-    font-weight: 500;
+    font-size: 22px;
+    font-weight: 400;
     line-height: 1;
     cursor: pointer;
     transition:
@@ -709,6 +760,12 @@
         gap: 20px;
     }
 
+    .store-maps-button {
+        flex-basis: 36px;
+        width: 36px;
+        height: 36px;
+    }
+
     .store-catalog {
         padding-top: 28px;
     }
@@ -735,7 +792,7 @@
     }
 
     .store-category-heading h2 {
-        font-size: 19px;
+        font-size: 18px;
     }
 
     .store-category-products {
@@ -743,37 +800,37 @@
     }
 
     .store-category-products .product-card {
-        grid-template-columns: 112px minmax(0, 1fr) 140px;
-        min-height: 140px;
-        column-gap: 20px;
-        row-gap: 8px;
-        padding: 14px;
-    }
-    
-    .store-category-products .product-image {
-        width: 112px;
-        height: 112px;
-        border-radius: 14px;
-    }
-    
-    .store-category-products .product-name {
-        font-size: 17px;
-    }
-    
-    .store-category-products .product-variant {
-        font-size: 14px;
-    }
-    
-    .store-category-products .product-price {
-        font-size: 19px;
-    }
-    
-    .store-category-products .add-button {
-        width: 54px;
-        min-width: 54px;
-        height: 54px;
+        grid-template-columns: 96px minmax(0, 1fr) 104px;
+        min-height: 116px;
+        column-gap: 18px;
+        row-gap: 6px;
+        padding: 12px;
     }
 
+    .store-category-products .product-image {
+        width: 96px;
+        height: 96px;
+        border-radius: 12px;
+    }
+
+    .store-category-products .product-name {
+        font-size: 15px;
+    }
+
+    .store-category-products .product-variant {
+        font-size: 13px;
+    }
+
+    .store-category-products .product-price {
+        font-size: 16px;
+    }
+
+    .store-category-products .add-button {
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 23px;
+    }
 }
 
 /* =========================================================
@@ -849,6 +906,22 @@
         font-size: 12px;
     }
 
+    .store-address-row {
+        gap: 8px;
+    }
+
+    .store-maps-button {
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+    }
+
+    .store-maps-button svg {
+        width: 18px;
+        height: 18px;
+    }
+
     .store-detail-delivery {
         gap: 8px;
         padding: 9px 10px;
@@ -865,10 +938,6 @@
 
     .store-catalog-heading h2 {
         font-size: 23px;
-    }
-
-    .store-product-total {
-        font-size: 11px;
     }
 
     .store-search-form {
@@ -893,43 +962,57 @@
         margin-bottom: 14px;
     }
 
+    .store-products {
+        gap: 20px;
+    }
+
+    .store-category-heading {
+        margin-bottom: 10px;
+    }
+
+    .store-category-heading h2 {
+        font-size: 16px;
+    }
+
+    .store-category-products {
+        gap: 9px;
+    }
 
     .store-category-products .product-card {
-        grid-template-columns: 72px minmax(0, 1fr) 94px;
-        min-height: 92px;
-        column-gap: 10px;
+        grid-template-columns: 68px minmax(0, 1fr) 78px;
+        min-height: 88px;
+        column-gap: 9px;
         row-gap: 4px;
-        padding: 9px;
+        padding: 8px;
         border-radius: 12px;
     }
-    
+
     .store-category-products .product-image {
-        width: 72px;
-        height: 72px;
+        width: 68px;
+        height: 68px;
         border-radius: 9px;
     }
-    
+
     .store-category-products .product-name {
-        font-size: 14px;
-    }
-    
-    .store-category-products .product-variant,
-    .store-category-products .product-unit {
-        font-size: 12px;
-    }
-    
-    .store-category-products .product-price {
-        font-size: 14px;
-    }
-    
-    .store-category-products .add-button {
-        width: 38px;
-        min-width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        font-size: 25px;
+        font-size: 13px;
     }
 
+    .store-category-products .product-variant,
+    .store-category-products .product-unit {
+        font-size: 11px;
+    }
+
+    .store-category-products .product-price {
+        font-size: 13px;
+    }
+
+    .store-category-products .add-button {
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        font-size: 20px;
+    }
 }
 
 /* =========================================================
@@ -956,22 +1039,24 @@
     }
 
     .store-category-products .product-card {
-        gap: 8px;
+        grid-template-columns: 58px minmax(0, 1fr) 68px;
+        column-gap: 7px;
+        row-gap: 4px;
         padding: 7px;
     }
 
     .store-category-products .product-image {
-        flex-basis: 64px;
-        width: 64px;
-        height: 64px;
-    }
-
-    .store-category-products .product-info {
-        min-height: 64px;
+        width: 58px;
+        height: 58px;
     }
 
     .store-category-products .product-name {
-        font-size: 13px;
+        font-size: 12px;
+    }
+
+    .store-category-products .product-variant,
+    .store-category-products .product-unit {
+        font-size: 10px;
     }
 
     .store-category-products .product-price {
@@ -979,10 +1064,10 @@
     }
 
     .store-category-products .add-button {
-        flex-basis: 30px;
-        width: 30px;
-        min-width: 30px;
-        height: 30px;
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        font-size: 19px;
     }
 }
 
@@ -995,7 +1080,8 @@
     .store-category-products .product-card,
     .store-category-products .add-button,
     .store-search-form input,
-    .store-search-form button {
+    .store-search-form button,
+    .store-maps-button {
         transition: none;
     }
 }

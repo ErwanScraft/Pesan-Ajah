@@ -57,6 +57,10 @@ $storeName = trim((string) ($store['name'] ?? 'Warung'));
 $storeOwner = trim((string) ($store['owner_name'] ?? ''));
 $storeDescription = trim((string) ($store['description'] ?? ''));
 $storeAddress = trim((string) ($store['address'] ?? ''));
+$storeMapsUrl = $storeAddress !== ''
+    ? 'https://www.google.com/maps/search/?api=1&query='
+        . rawurlencode($storeName . ' ' . $storeAddress)
+    : null;
 $isStoreOpen = (bool) ($store['is_open'] ?? false);
 $hasFreeDelivery = (bool) ($store['free_delivery'] ?? false);
 
@@ -201,10 +205,34 @@ $metaDescription = $storeDescription !== ''
                             <circle cx="12" cy="10" r="2.5"></circle>
                         </svg>
                     </span>
-
+                
                     <div class="store-detail-content">
                         <span class="store-detail-label">Alamat</span>
-                        <p><?= e($storeAddress !== '' ? $storeAddress : 'Alamat belum diisi') ?></p>
+                
+                        <div class="store-address-row">
+                            <p><?= e($storeAddress !== '' ? $storeAddress : 'Alamat belum diisi') ?></p>
+                
+                            <?php if ($storeMapsUrl !== null): ?>
+                                <a
+                                    class="store-maps-button"
+                                    href="<?= e($storeMapsUrl) ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Lihat lokasi <?= e($storeName) ?> di Google Maps"
+                                    title="Lihat lokasi di Google Maps"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path>
+                                        <circle cx="12" cy="9" r="2.5"></circle>
+                                        <path d="M19 3v5m-2.5-2.5h5"></path>
+                                    </svg>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
 
@@ -228,7 +256,6 @@ $metaDescription = $storeDescription !== ''
 
             <div class="store-catalog-heading">
                 <h2 id="store-products-title">Produk</h2>
-                <span id="product-total" class="store-product-total">Memuat produk...</span>
             </div>
 
             <!-- Pencarian -->
