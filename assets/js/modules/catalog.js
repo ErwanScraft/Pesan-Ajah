@@ -664,6 +664,7 @@ export function createCatalog({
     renderMarketplaceProducts(result);
   }
 
+
   /*
   |--------------------------------------------------------------------------
   | PILIH KATEGORI
@@ -698,47 +699,6 @@ export function createCatalog({
     }
 
     event.preventDefault();
-
-    if (groupedMode) {
-      const category = button.dataset.category;
-
-      if (category === "Semua") {
-        setCategory("Semua");
-
-        grid.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-        return;
-      }
-
-      const section = [
-        ...grid.querySelectorAll("[data-category-name]"),
-      ].find(
-        (item) => item.dataset.categoryName === category,
-      );
-
-      categoryList
-        .querySelectorAll("[data-category]")
-        .forEach((item) => {
-          const active = item === button;
-
-          item.classList.toggle("active", active);
-
-          item.setAttribute(
-            "aria-pressed",
-            String(active),
-          );
-        });
-
-      section?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-
-      return;
-    }
 
     setCategory(button.dataset.category);
   });
