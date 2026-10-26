@@ -1,0 +1,776 @@
+
+/* =========================================================
+   PESAN AJAH — PUBLIC STORE
+   File: assets/css/warung.css
+   ========================================================= */
+
+.store-page {
+    width: min(1160px, calc(100% - 40px));
+    min-width: 0;
+    margin: 0 auto;
+    padding-bottom: 56px;
+}
+
+.store-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-width: 0;
+}
+
+/* =========================================================
+   PROFIL WARUNG
+   ========================================================= */
+
+.store-page .store-profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    margin: 24px 0 28px;
+    padding: 28px;
+    border: 1px solid #e5eae6;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgb(25 45 28 / 4%);
+}
+
+.store-profile-brand {
+    flex: 0 0 92px;
+}
+
+.store-profile-icon {
+    display: block;
+    width: 92px;
+    height: 92px;
+    overflow: hidden;
+    border: 1px solid #e3e9e5;
+    border-radius: 18px;
+    background: #f5f7f2;
+    object-fit: cover;
+    object-position: center;
+}
+
+.store-profile-icon-placeholder {
+    display: grid;
+    place-items: center;
+    color: #176b45;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.store-profile-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.store-profile-label {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: #176b45;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+}
+
+.store-profile-heading h1 {
+    margin: 0;
+    color: #202b23;
+    overflow-wrap: anywhere;
+    font-size: clamp(25px, 3vw, 32px);
+    font-weight: 800;
+    letter-spacing: -.6px;
+    line-height: 1.25;
+}
+
+.store-owner {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    color: #68736b;
+    font-size: 13px;
+}
+
+.store-owner svg {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.store-owner strong {
+    color: #27342b;
+}
+
+.store-profile-description {
+    max-width: 680px;
+    margin: 14px 0;
+    color: #566158;
+    font-size: 14px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+.store-profile-description-muted {
+    color: #7a837c;
+}
+
+/* =========================================================
+   STATUS, ONGKIR, ALAMAT, KONTAK
+   ========================================================= */
+
+.store-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.store-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    max-width: 100%;
+    padding: 8px 11px;
+    border: 1px solid #e3e9e5;
+    border-radius: 10px;
+    background: #fff;
+    color: #465149;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.store-chip svg {
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+}
+
+.store-chip.is-open {
+    border-color: #cce8d5;
+    background: #f0faf3;
+    color: #176b45;
+}
+
+.store-chip.is-closed {
+    border-color: #f1d7d7;
+    background: #fff5f5;
+    color: #a33c3c;
+}
+
+.store-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.store-chip-delivery {
+    color: #176b45;
+}
+
+.store-profile-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #edf0ed;
+    font-size: 13px;
+}
+
+.store-contact-label {
+    color: #68736b;
+}
+
+.store-contact-value {
+    color: #27342b;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PENCARIAN
+   ========================================================= */
+
+.store-search-section {
+    margin-bottom: 18px;
+}
+
+.store-search-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #e1e7e2;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgb(25 45 28 / 3%);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.store-search-form:focus-within {
+    border-color: #8dbba0;
+    box-shadow: 0 0 0 3px rgb(23 107 69 / 8%);
+}
+
+.store-search-form input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #27342b;
+    font: inherit;
+}
+
+.store-search-form input:focus-visible {
+    outline: 2px solid #176b45;
+    outline-offset: -2px;
+    border-radius: 8px;
+}
+
+.store-search-form .button {
+    min-height: 42px;
+    padding-inline: 20px;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   NAVIGASI KATEGORI
+   Tombol Semua tetap di kiri.
+   Kategori lainnya dapat digeser horizontal.
+   ========================================================= */
+
+.store-category-nav {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 28px;
+    padding: 3px 2px 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+}
+
+.store-category-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.store-category-nav .category-card {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid #e3e9e5;
+    border-radius: 999px;
+    background: #fff;
+    color: #39443c;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 180ms ease,
+                background-color 180ms ease,
+                border-color 180ms ease;
+}
+
+.store-category-nav .category-card:hover {
+    border-color: #c7ddcc;
+    background: #f7faf6;
+}
+
+.store-category-nav .category-card.active {
+    border-color: #176b45;
+    background: #176b45;
+    color: #fff;
+}
+
+/* Tombol Semua */
+
+.store-category-nav .category-all-button {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 4px 0 8px rgb(0 0 0 / 5%);
+}
+
+.store-category-nav .category-all-button.active {
+    border-color: #176b45;
+    background: #176b45;
+    color: #fff;
+}
+
+.store-category-nav .category-all-icon {
+    display: grid !important;
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    background: transparent;
+    color: currentColor;
+}
+
+.store-category-nav .category-all-icon svg {
+    display: block !important;
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    visibility: visible;
+    opacity: 1;
+}
+
+.store-category-nav .category-all-icon svg rect {
+    fill: none;
+    stroke: currentColor;
+}
+
+/* =========================================================
+   JUDUL KATALOG
+   ========================================================= */
+
+.store-page #products {
+    min-width: 0;
+}
+
+.store-page #products .section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.store-page #products .section-heading > div {
+    min-width: 0;
+}
+
+.store-page #products .section-heading h2 {
+    margin: 0;
+    color: #202b23;
+    font-size: clamp(20px, 2.5vw, 25px);
+    font-weight: 800;
+    letter-spacing: -.4px;
+    line-height: 1.35;
+}
+
+.store-page #products .section-heading p {
+    margin-top: 5px;
+    margin-bottom: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.store-page #product-total {
+    flex: 0 0 auto;
+    font-size: 12px;
+}
+
+/* =========================================================
+   PRODUK HORIZONTAL PER KATEGORI
+   Struktur ini digunakan catalog.js.
+   ========================================================= */
+
+.store-page #product-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+}
+
+.store-page #product-grid[hidden] {
+    display: none !important;
+}
+
+.store-page .store-category-section {
+    min-width: 0;
+    scroll-margin-top: 24px;
+}
+
+.store-page .store-category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.store-page .store-category-heading h2 {
+    margin: 0;
+    color: #26342a;
+    font-size: 17px;
+    font-weight: 750;
+    letter-spacing: -.2px;
+    line-height: 1.4;
+}
+
+.store-page .store-category-count {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border: 1px solid #e7ece8;
+    border-radius: 8px;
+    background: #f8faf8;
+    color: #68736b;
+    font-size: 11px;
+}
+
+/* Deretan kartu dapat digeser */
+
+.store-page .store-category-products {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+    padding: 2px 2px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd8ce transparent;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.store-page .store-category-products::-webkit-scrollbar {
+    height: 5px;
+}
+
+.store-page .store-category-products::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.store-page .store-category-products::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cbd8ce;
+}
+
+/* Kartu produk */
+
+.store-page .store-category-products > .product-card {
+    flex: 0 0 208px;
+    width: 208px;
+    min-width: 0;
+    border-color: #e6ebe7;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgb(25 45 28 / 3%);
+    scroll-snap-align: start;
+}
+
+.store-page .store-category-products > .product-card:hover {
+    border-color: #cbdccf;
+}
+
+.store-page .store-category-products .product-image {
+    aspect-ratio: 4 / 3;
+}
+
+.store-page .store-category-products .product-info {
+    gap: 7px;
+    padding: 12px;
+}
+
+.store-page .store-category-products .product-name {
+    min-height: 2.8em;
+    color: #253128;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.store-page .store-category-products .product-variant {
+    color: #707b72;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.store-page .store-category-products .product-price {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.store-page .store-category-products .add-button {
+    flex: 0 0 35px;
+    width: 35px;
+    height: 35px;
+    border-radius: 11px;
+}
+
+/* =========================================================
+   TAUTAN DAN EMPTY STATE
+   ========================================================= */
+
+.store-page .store-product-store-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.store-page .store-product-store-link:hover {
+    color: #176b45;
+    text-decoration: underline;
+}
+
+.store-page #empty-state {
+    margin: 24px 0;
+    padding: 32px 20px;
+    border: 1px dashed #d9e2db;
+    border-radius: 16px;
+    background: #fff;
+    text-align: center;
+}
+
+.store-page #empty-state[hidden] {
+    display: none !important;
+}
+
+.store-page #empty-state h3 {
+    margin-bottom: 8px;
+    font-size: 17px;
+}
+
+.store-page #empty-state p {
+    margin-bottom: 18px;
+    color: #68736b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Fokus keyboard */
+
+.store-page .category-card:focus-visible,
+.store-page .add-button:focus-visible,
+.store-page .store-search-form button:focus-visible {
+    outline: 3px solid rgb(23 107 69 / 30%);
+    outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET DAN MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .store-page .store-category-products {
+        gap: 12px;
+    }
+
+    .store-page .store-category-products > .product-card {
+        flex-basis: 190px;
+        width: 190px;
+    }
+}
+
+@media (max-width: 700px) {
+    .store-page {
+        width: calc(100% - 28px);
+        padding-bottom: 36px;
+    }
+
+    .store-page .store-profile {
+        gap: 15px;
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    .store-profile-brand {
+        flex-basis: 66px;
+    }
+
+    .store-profile-icon {
+        width: 66px;
+        height: 66px;
+        border-radius: 13px;
+    }
+
+    .store-profile-icon-placeholder {
+        font-size: 25px;
+    }
+
+    .store-profile-heading h1 {
+        font-size: 22px;
+        letter-spacing: -.3px;
+    }
+
+    .store-owner {
+        align-items: flex-start;
+        font-size: 12px;
+    }
+
+    .store-profile-description {
+        margin: 12px 0;
+        font-size: 13px;
+    }
+
+    .store-meta {
+        gap: 7px;
+        margin-top: 14px;
+    }
+
+    .store-chip {
+        min-height: 32px;
+        padding: 7px 9px;
+        font-size: 11px;
+    }
+
+    .store-profile-contact {
+        gap: 5px;
+        margin-top: 14px;
+        padding-top: 12px;
+    }
+
+    .store-search-form {
+        gap: 5px;
+    }
+
+    .store-search-form input {
+        padding-inline: 9px;
+        font-size: 13px;
+    }
+
+    .store-search-form .button {
+        padding-inline: 14px;
+    }
+
+    .store-category-nav {
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .store-category-nav .category-card {
+        min-height: 37px;
+        padding-inline: 13px;
+        font-size: 11px;
+    }
+
+    .store-category-nav .category-all-button {
+        flex-basis: 40px;
+        width: 40px;
+        min-width: 40px;
+        min-height: 37px;
+        height: 37px;
+        padding: 0;
+    }
+
+    .store-page #products .section-heading {
+        margin-bottom: 17px;
+    }
+
+    .store-page #products .section-heading h2 {
+        font-size: 20px;
+    }
+
+    .store-page #products .section-heading p {
+        font-size: 11px;
+    }
+
+    .store-page #product-grid {
+        gap: 25px;
+    }
+
+    .store-page .store-category-heading h2 {
+        font-size: 16px;
+    }
+
+    .store-page .store-category-products {
+        gap: 11px;
+        padding-bottom: 12px;
+    }
+
+    .store-page .store-category-products > .product-card {
+        flex-basis: 158px;
+        width: 158px;
+        border-radius: 13px;
+    }
+
+    .store-page .store-category-products .product-info {
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .store-page .store-category-products .product-name {
+        font-size: 12px;
+    }
+
+    .store-page .store-category-products .product-price {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .store-page {
+        width: calc(100% - 24px);
+    }
+
+    .store-page .store-profile {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .store-profile-brand {
+        flex-basis: 52px;
+    }
+
+    .store-profile-icon {
+        width: 52px;
+        height: 52px;
+    }
+
+    .store-profile-heading h1 {
+        font-size: 19px;
+    }
+
+    .store-profile-label {
+        font-size: 9px;
+    }
+
+    .store-category-nav .category-all-button {
+        flex-basis: 40px;
+        width: 40px;
+        min-width: 40px;
+    }
+
+    .store-page .store-category-products > .product-card {
+        flex-basis: 145px;
+        width: 145px;
+    }
+
+    .store-search-form .button {
+        padding-inline: 11px;
+    }
+}
+
+/* Hormati preferensi pengurangan animasi */
+
+@media (prefers-reduced-motion: reduce) {
+    .store-search-form,
+    .store-category-nav .category-card {
+        transition: none;
+    }
+}

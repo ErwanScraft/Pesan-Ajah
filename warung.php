@@ -275,9 +275,7 @@ if ($storeName !== '') {
         ) ?>"
     >
 
-    <title>
-        <?= e($storeName) ?> — Pesan Ajah
-    </title>
+    <title><?= e($storeName) ?> — Pesan Ajah</title>
 
     <link
         rel="icon"
@@ -306,725 +304,10 @@ if ($storeName !== '') {
         href="/assets/css/style.css"
     >
 
-    <style>
-        /* =================================================
-           PUBLIC STORE — LAYOUT
-           ================================================= */
-
-        .store-page {
-            width: min(1120px, calc(100% - 32px));
-            margin: 0 auto;
-            padding-bottom: 48px;
-        }
-
-        .store-header-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        /* =================================================
-           STORE PROFILE
-           ================================================= */
-
-        .store-profile {
-            display: flex;
-            align-items: flex-start;
-            gap: 24px;
-            margin: 28px 0;
-            padding: 28px;
-            border: 1px solid #e3e9e5;
-            border-radius: 18px;
-            background: #fff;
-        }
-
-        .store-profile-brand {
-            flex: 0 0 88px;
-        }
-
-        .store-profile-icon {
-            display: block;
-            width: 88px;
-            height: 88px;
-            overflow: hidden;
-            border: 1px solid #e3e9e5;
-            border-radius: 18px;
-            background: #f5f7f2;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        .store-profile-icon-placeholder {
-            display: grid;
-            place-items: center;
-            color: #176b45;
-            font-size: 34px;
-            font-weight: 800;
-        }
-
-        .store-profile-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .store-profile-label {
-            display: inline-block;
-            margin-bottom: 8px;
-            color: #176b45;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: .08em;
-        }
-
-        .store-profile-heading h1 {
-            margin: 0;
-            overflow-wrap: anywhere;
-            font-size: clamp(24px, 4vw, 32px);
-            line-height: 1.25;
-        }
-
-        .store-owner {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            margin-top: 10px;
-            color: #68736b;
-            font-size: 13px;
-        }
-
-        .store-owner svg {
-            flex: 0 0 18px;
-            width: 18px;
-            height: 18px;
-        }
-
-        .store-owner strong {
-            color: #27342b;
-        }
-
-        .store-profile-description {
-            margin: 14px 0;
-            color: #566158;
-            font-size: 14px;
-            line-height: 1.7;
-            overflow-wrap: anywhere;
-        }
-
-        .store-profile-description-muted {
-            color: #7a837c;
-        }
-
-        /* =================================================
-           STORE META
-           ================================================= */
-
-        .store-meta {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .store-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            min-height: 32px;
-            max-width: 100%;
-            padding: 7px 10px;
-            border: 1px solid #e3e9e5;
-            border-radius: 9px;
-            background: #fff;
-            color: #465149;
-            font-size: 12px;
-            line-height: 1.4;
-            overflow-wrap: anywhere;
-        }
-
-        .store-chip svg {
-            flex: 0 0 17px;
-            width: 17px;
-            height: 17px;
-        }
-
-        .store-chip.is-open {
-            border-color: #cce8d5;
-            background: #f0faf3;
-            color: #176b45;
-        }
-
-        .store-chip.is-closed {
-            border-color: #f1d7d7;
-            background: #fff5f5;
-            color: #a33c3c;
-        }
-
-        .store-status-dot {
-            width: 7px;
-            height: 7px;
-            flex: 0 0 7px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        .store-chip-delivery {
-            color: #176b45;
-        }
-
-        .store-profile-contact {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 16px;
-            font-size: 13px;
-        }
-
-        .store-contact-label {
-            color: #68736b;
-        }
-
-        .store-contact-value {
-            color: #27342b;
-            font-weight: 600;
-            overflow-wrap: anywhere;
-        }
-
-        /* =================================================
-           SEARCH
-           ================================================= */
-
-        .store-search-section {
-            margin-bottom: 22px;
-        }
-
-        .store-search-form {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #e3e9e5;
-            border-radius: 14px;
-            background: #fff;
-        }
-
-        .store-search-form input {
-            flex: 1;
-            width: 100%;
-            min-width: 0;
-            padding: 10px 12px;
-            border: 0;
-            outline: 0;
-            background: transparent;
-            color: #27342b;
-            font: inherit;
-        }
-
-        .store-search-form input:focus-visible {
-            outline: 2px solid #176b45;
-            outline-offset: -2px;
-            border-radius: 8px;
-        }
-
-
-        /* =================================================
-           CATEGORY NAVIGATION
-           Selaras dengan navigasi kategori beranda
-           ================================================= */
-        
-        .store-category-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        
-            width: 100%;
-            min-width: 0;
-        
-            margin-bottom: 24px;
-            padding: 3px 2px 8px;
-        
-            overflow-x: auto;
-            overflow-y: hidden;
-        
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-x: contain;
-            touch-action: pan-x;
-        }
-        
-        .store-category-nav::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .store-category-nav .category-card {
-            display: inline-flex;
-            flex: 0 0 auto;
-            align-items: center;
-            justify-content: center;
-        
-            min-height: 38px;
-            padding: 9px 14px;
-        
-            border: 1px solid #e3e9e5;
-            border-radius: 999px;
-        
-            background: #fff;
-            color: #39443c;
-        
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 650;
-            line-height: 1.2;
-        
-            text-decoration: none;
-            white-space: nowrap;
-            cursor: pointer;
-        
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease;
-        }
-        
-        .store-category-nav .category-card:hover {
-            border-color: #c7ddcc;
-            background: #f7faf6;
-        }
-        
-        .store-category-nav .category-card.active {
-            border-color: #176b45;
-            background: #176b45;
-            color: #fff;
-        }
-        
-        /* Tombol Semua tetap di sisi kiri saat kategori digulir. */
-        .store-category-nav .category-all-button {
-            position: sticky;
-            left: 0;
-            z-index: 2;
-        
-            flex: 0 0 42px;
-            width: 42px;
-            min-width: 42px;
-            height: 38px;
-            min-height: 38px;
-        
-            padding: 0;
-            border-radius: 12px;
-        
-            background: #fff;
-            box-shadow: 4px 0 8px rgb(0 0 0 / 5%);
-        }
-        
-        .store-category-nav .category-all-button.active {
-            border-color: #176b45;
-            background: #176b45;
-            color: #fff;
-        }
-        
-        /* Pastikan pembungkus dan SVG ikon terlihat. */
-        .store-category-nav .category-all-icon {
-            display: grid !important;
-            flex: 0 0 20px;
-        
-            width: 20px;
-            height: 20px;
-        
-            place-items: center;
-            background: transparent;
-            color: currentColor;
-        }
-        
-        .store-category-nav .category-all-icon svg {
-            display: block !important;
-        
-            width: 20px;
-            height: 20px;
-        
-            stroke: currentColor;
-            visibility: visible;
-            opacity: 1;
-        }
-        
-        .store-category-nav .category-all-icon svg rect {
-            fill: none;
-            stroke: currentColor;
-        }
-        
-        /* Responsif untuk ponsel. */
-        @media (max-width: 600px) {
-            .store-category-nav {
-                gap: 8px;
-            }
-        
-            .store-category-nav .category-card {
-                min-height: 36px;
-                padding: 9px 13px;
-                font-size: 11px;
-            }
-        
-            .store-category-nav .category-all-button {
-                flex-basis: 40px;
-                width: 40px;
-                min-width: 40px;
-        
-                height: 36px;
-                min-height: 36px;
-        
-                padding: 0;
-                border-radius: 11px;
-            }
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            .store-category-nav .category-card {
-                transition: none;
-            }
-        }
-
-        /* =================================================
-           PRODUCTS
-           ================================================= */
-
-        .store-page .products-section {
-            min-width: 0;
-        }
-
-        .store-page #product-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr);
-            gap: 24px;
-            min-width: 0;
-        }
-
-        .store-page .store-category-section {
-            min-width: 0;
-            scroll-margin-top: 100px;
-        }
-
-        .store-page .store-category-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .store-page .store-category-heading h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.4;
-        }
-
-        .store-page .store-category-count {
-            flex-shrink: 0;
-            color: #68736b;
-            font-size: 12px;
-        }
-        
-        /* Deretan produk horizontal per kategori */
-        .store-page .store-category-products {
-            display: flex;
-            align-items: stretch;
-            gap: 14px;
-        
-            width: 100%;
-            min-width: 0;
-        
-            overflow-x: auto;
-            overflow-y: hidden;
-        
-            padding: 2px 2px 12px;
-        
-            scroll-snap-type: x proximity;
-            overscroll-behavior-x: contain;
-            -webkit-overflow-scrolling: touch;
-        
-            scrollbar-width: thin;
-            scrollbar-color: #cbd8ce transparent;
-        }
-        
-        /* Ukuran setiap kartu produk */
-        .store-page .store-category-products > .product-card {
-            flex: 0 0 220px;
-            width: 220px;
-            min-width: 0;
-        
-            scroll-snap-align: start;
-        }
-        
-        /* Scrollbar untuk browser berbasis WebKit */
-        .store-page .store-category-products::-webkit-scrollbar {
-            height: 5px;
-        }
-        
-        .store-page .store-category-products::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .store-page .store-category-products::-webkit-scrollbar-thumb {
-            border-radius: 999px;
-            background: #cbd8ce;
-        }
-        
-        /* Tablet */
-        @media (max-width: 900px) {
-            .store-page .store-category-products {
-                gap: 12px;
-            }
-        
-            .store-page .store-category-products > .product-card {
-                flex-basis: 190px;
-                width: 190px;
-            }
-        }
-        
-        /* Mobile */
-        @media (max-width: 600px) {
-            .store-page .store-category-products {
-                gap: 10px;
-                padding-bottom: 10px;
-            }
-        
-            .store-page .store-category-products > .product-card {
-                flex-basis: 160px;
-                width: 160px;
-            }
-        }
-        
-        /* Ponsel kecil */
-        @media (max-width: 380px) {
-            .store-page .store-category-products > .product-card {
-                flex-basis: 148px;
-                width: 148px;
-            }
-        }
-
-        .store-page .product-card {
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            overflow: hidden;
-            border: 1px solid #e3e9e5;
-            border-radius: 14px;
-            background: #fff;
-        }
-
-        .store-page .product-image {
-            position: relative;
-            display: grid;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            place-items: center;
-            background: #f5f7f2;
-        }
-
-        .store-page .product-photo {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            object-position: center;
-        }
-
-        .store-page .product-image-placeholder {
-            padding: 12px;
-            color: #707970;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .store-page .product-tag {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            padding: 5px 8px;
-            border-radius: 7px;
-            background: #176b45;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .store-page .product-info {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 0;
-            padding: 12px;
-        }
-
-        .store-page .product-store {
-            color: #68736b;
-            font-size: 12px;
-            overflow-wrap: anywhere;
-        }
-
-        .store-page .product-name {
-            margin: 0;
-            overflow-wrap: anywhere;
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.5;
-        }
-
-        .store-page .product-unit {
-            color: #68736b;
-            font-size: 12px;
-        }
-
-        .store-page .product-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: auto;
-        }
-
-        .store-page .product-price {
-            min-width: 0;
-            color: #176b45;
-            font-size: 14px;
-            font-weight: 700;
-            overflow-wrap: anywhere;
-        }
-
-        .store-page .add-button {
-            display: inline-grid;
-            flex: 0 0 36px;
-            width: 36px;
-            height: 36px;
-            place-items: center;
-            border: 0;
-            border-radius: 10px;
-            background: #176b45;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .store-page .add-button:disabled {
-            background: #e7ebe8;
-            color: #858d87;
-            cursor: not-allowed;
-        }
-
-        .store-page .store-product-store-link {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .store-page .store-product-store-link:hover {
-            color: #176b45;
-            text-decoration: underline;
-        }
-
-        .store-page #product-grid[hidden] {
-            display: none !important;
-        }
-
-        .store-page #empty-state {
-            margin: 24px 0;
-            padding: 32px 20px;
-            border: 1px dashed #d9e2db;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        /* =================================================
-           RESPONSIVE
-           ================================================= */
-
-        @media (max-width: 600px) {
-            .store-page {
-                width: min(100% - 24px, 1120px);
-            }
-
-            .store-profile {
-                gap: 14px;
-                margin-top: 18px;
-                padding: 18px;
-            }
-
-            .store-profile-brand {
-                flex-basis: 64px;
-            }
-
-            .store-profile-icon {
-                width: 64px;
-                height: 64px;
-                border-radius: 14px;
-            }
-
-            .store-profile-icon-placeholder {
-                font-size: 25px;
-            }
-
-            .store-profile-heading h1 {
-                font-size: 22px;
-            }
-
-            .store-owner {
-                align-items: flex-start;
-                font-size: 12px;
-            }
-
-            .store-profile-description {
-                font-size: 13px;
-            }
-
-            .store-page .product-info {
-                padding: 10px;
-            }
-
-            .store-page .product-name {
-                font-size: 13px;
-            }
-
-            .store-page .product-price {
-                font-size: 13px;
-            }
-
-            .store-page .add-button {
-                flex-basis: 34px;
-                width: 34px;
-                height: 34px;
-            }
-
-            .store-header-actions {
-                gap: 8px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .store-profile {
-                gap: 12px;
-                padding: 14px;
-            }
-
-            .store-profile-brand {
-                flex-basis: 52px;
-            }
-
-            .store-profile-icon {
-                width: 52px;
-                height: 52px;
-            }
-
-            .store-profile-heading h1 {
-                font-size: 19px;
-            }
-
-            .store-page .product-info {
-                padding: 8px;
-            }
-        }
-    </style>
+    <link
+        rel="stylesheet"
+        href="/assets/css/warung.css"
+    >
 </head>
 
 <body
@@ -1033,10 +316,6 @@ if ($storeName !== '') {
     data-store-id="<?= $storeId ?>"
 >
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
     <?php
     $isStorePage = true;
     require __DIR__ . '/_header.php';
@@ -1044,9 +323,7 @@ if ($storeName !== '') {
 
     <main class="store-page">
 
-        <!-- =================================================
-             PROFIL WARUNG
-             ================================================= -->
+        <!-- PROFIL WARUNG -->
 
         <section
             class="store-profile"
@@ -1061,8 +338,8 @@ if ($storeName !== '') {
                         class="store-profile-icon"
                         src="<?= e($storeIconUrl) ?>"
                         alt="Logo <?= e($storeName) ?>"
-                        width="88"
-                        height="88"
+                        width="92"
+                        height="92"
                     >
 
                 <?php else: ?>
@@ -1140,8 +417,6 @@ if ($storeName !== '') {
                     </p>
 
                 <?php endif; ?>
-
-                <!-- Status dan informasi toko -->
 
                 <div class="store-meta">
 
@@ -1260,9 +535,7 @@ if ($storeName !== '') {
 
         </section>
 
-        <!-- =================================================
-             PENCARIAN PRODUK
-             ================================================= -->
+        <!-- PENCARIAN PRODUK -->
 
         <section class="store-search-section">
 
@@ -1290,9 +563,7 @@ if ($storeName !== '') {
 
         </section>
 
-        <!-- =================================================
-             KATEGORI
-             ================================================= -->
+        <!-- NAVIGASI KATEGORI -->
 
         <nav
             class="store-category-nav"
@@ -1305,6 +576,7 @@ if ($storeName !== '') {
                 | JSON_HEX_QUOT
             )) ?>"
         >
+
             <a
                 href="#"
                 class="category-card category-all-button active"
@@ -1314,6 +586,7 @@ if ($storeName !== '') {
                 aria-pressed="true"
             >
                 <span class="category-all-icon" aria-hidden="true">
+
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
@@ -1325,18 +598,45 @@ if ($storeName !== '') {
                         stroke-linecap="round"
                         stroke-linejoin="round"
                     >
-                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
-                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
-                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
-                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+                        <rect
+                            x="3.5"
+                            y="3.5"
+                            width="7"
+                            height="7"
+                            rx="1.5"
+                        />
+
+                        <rect
+                            x="13.5"
+                            y="3.5"
+                            width="7"
+                            height="7"
+                            rx="1.5"
+                        />
+
+                        <rect
+                            x="3.5"
+                            y="13.5"
+                            width="7"
+                            height="7"
+                            rx="1.5"
+                        />
+
+                        <rect
+                            x="13.5"
+                            y="13.5"
+                            width="7"
+                            height="7"
+                            rx="1.5"
+                        />
                     </svg>
+
                 </span>
             </a>
+
         </nav>
 
-        <!-- =================================================
-             KATALOG
-             ================================================= -->
+        <!-- KATALOG -->
 
         <section
             class="products-section"
@@ -1374,6 +674,7 @@ if ($storeName !== '') {
                 id="empty-state"
                 hidden
             >
+
                 <h3>Produk tidak ditemukan</h3>
 
                 <p>
@@ -1388,27 +689,16 @@ if ($storeName !== '') {
                 >
                     Lihat semua produk
                 </button>
+
             </div>
 
         </section>
 
     </main>
 
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
-
     <?php require __DIR__ . '/_footer.php'; ?>
 
-    <!-- =====================================================
-         KERANJANG BERSAMA
-         ===================================================== -->
-
     <?php require __DIR__ . '/partials/cart.php'; ?>
-
-    <!-- =====================================================
-         NOTIFIKASI
-         ===================================================== -->
 
     <div
         class="toast"
