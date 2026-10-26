@@ -111,42 +111,54 @@
 .store-identity {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     min-width: 0;
-    margin-top: 22px;
-    margin-bottom: 18px;
+    margin: 22px 0 18px;
 }
 
-.store-identity img {
-    flex: 0 0 auto;
+.store-identity-logo {
+    display: flex;
+    flex: 0 0 82px;
+    align-items: center;
+    justify-content: center;
     width: 82px;
     height: 82px;
-    object-fit: cover;
-    background: var(--store-surface);
-    border: 3px solid var(--store-surface);
-    border-radius: var(--store-radius-lg);
-    box-shadow: var(--store-shadow-sm);
+    overflow: hidden;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 1.75rem;
+    font-weight: 750;
 }
 
-.store-identity > div {
+.store-identity-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+    border-radius: inherit;
+    box-shadow: none;
+}
+
+.store-identity-text {
     flex: 1;
     min-width: 0;
 }
 
-.store-identity h1,
-.store-identity h2 {
+.store-identity-text h1 {
     margin: 0;
-    color: var(--store-text);
+    color: var(--text);
     font-size: clamp(1.25rem, 3vw, 1.75rem);
     font-weight: 750;
-    line-height: 1.25;
-    letter-spacing: -0.035em;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
     overflow-wrap: anywhere;
 }
 
-.store-identity p {
-    margin: 6px 0 0;
-    color: var(--store-muted);
+.store-identity-text p {
+    margin: 5px 0 0;
+    color: var(--muted);
     font-size: 0.875rem;
     line-height: 1.5;
 }
@@ -156,98 +168,164 @@
    --------------------------------------------------------- */
 
 .store-details {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
     margin-bottom: 24px;
-    padding: 16px;
-    background: var(--store-surface);
-    border: 1px solid var(--store-border);
-    border-radius: var(--store-radius-lg);
-    box-shadow: var(--store-shadow-sm);
+    padding: 18px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
 }
 
-.store-details > * {
-    min-width: 0;
+.store-details > h2 {
+    margin: 0 0 16px;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 750;
 }
 
-.store-details p,
-.store-details .store-address,
-.store-details .store-location {
-    margin: 0;
-    color: var(--store-muted);
-    font-size: 0.875rem;
-    line-height: 1.65;
-    overflow-wrap: anywhere;
+.store-detail-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
 }
 
-.store-details strong {
-    color: var(--store-text);
-    font-weight: 650;
-}
-
-.store-details a:not(.store-maps-button) {
-    color: var(--store-brand-dark);
-}
-
-/* Alamat dan tombol Google Maps */
-
-.store-address-row,
-.store-location-row {
+.store-detail-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 11px;
     min-width: 0;
 }
 
-.store-address-row > :first-child,
-.store-location-row > :first-child {
+.store-detail-icon {
+    display: flex;
+    flex: 0 0 38px;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border-radius: var(--radius-md);
+}
+
+.store-detail-icon svg,
+.store-detail-delivery svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.store-detail-content {
     flex: 1;
     min-width: 0;
 }
 
+.store-detail-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.store-detail-content p {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.store-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.store-status.is-open {
+    color: var(--green-dark);
+    background: var(--green-light);
+}
+
+.store-status.is-closed {
+    color: var(--danger);
+    background: var(--surface);
+}
+
+.store-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    background: currentColor;
+    border-radius: 50%;
+}
+
+.store-address-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+}
+
+.store-address-row p {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
 .store-maps-button {
     display: inline-flex;
-    flex: 0 0 auto;
+    flex: 0 0 38px;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    min-width: 40px;
-    min-height: 40px;
-    padding: 9px 12px;
-    color: var(--store-brand-dark);
-    background: var(--store-brand-light);
-    border: 1px solid var(--store-brand-light);
-    border-radius: var(--store-radius-md);
-    font-size: 0.8125rem;
-    font-weight: 650;
-    line-height: 1;
-    transition:
-        background var(--transition),
-        border-color var(--transition),
-        transform var(--transition);
+    width: 38px;
+    height: 38px;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border: 1px solid var(--green-light);
+    border-radius: var(--radius-md);
+    transition: background var(--transition);
 }
 
 .store-maps-button:hover {
-    background: var(--store-surface-soft);
-    border-color: var(--store-border);
+    background: var(--surface);
+    border-color: var(--border);
 }
 
-.store-maps-button:active {
-    transform: scale(0.97);
+.store-maps-button svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.store-maps-button:focus-visible {
-    outline: 2px solid var(--store-brand);
-    outline-offset: 3px;
+.store-detail-delivery {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    grid-column: 1 / -1;
+    padding-top: 12px;
+    color: var(--green-dark);
+    border-top: 1px solid var(--border);
+    font-size: 0.8125rem;
+    font-weight: 650;
 }
 
-.store-maps-button svg,
-.store-maps-button i {
-    flex: 0 0 auto;
-    width: 17px;
-    height: 17px;
+.store-detail-delivery svg {
+    flex: 0 0 20px;
 }
 
 /* Status buka dan tutup */
@@ -373,139 +451,303 @@
    6. NAVIGASI KATEGORI
    --------------------------------------------------------- */
 
+
+/* Katalog dan kategori */
+.store-catalog {
+    min-width: 0;
+}
+
+.store-catalog-heading {
+    margin-bottom: 14px;
+}
+
+.store-catalog-heading h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.125rem;
+    font-weight: 750;
+}
+
 .store-category-nav {
-    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 100%;
     min-width: 0;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
     padding: 2px 0 8px;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-x: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--store-border) transparent;
+    scrollbar-color: var(--border) transparent;
     -webkit-overflow-scrolling: touch;
-}
-
-.store-category-nav::-webkit-scrollbar {
-    height: 4px;
-}
-
-.store-category-nav::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.store-category-nav::-webkit-scrollbar-thumb {
-    background: var(--store-border);
-    border-radius: 999px;
 }
 
 .store-category-nav > * {
     flex: 0 0 auto;
 }
 
-/* Tombol kategori */
-
-.store-category-nav a,
-.store-category-nav button,
-.store-category-nav .category-button {
+.store-category-nav .category-card {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    min-height: 40px;
+    min-height: 39px;
     padding: 0 15px;
-    color: var(--store-muted);
-    background: var(--store-surface);
-    border: 1px solid var(--store-border);
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--border);
     border-radius: 999px;
     font-size: 0.8125rem;
-    font-weight: 600;
-    line-height: 1;
+    font-weight: 650;
     white-space: nowrap;
     cursor: pointer;
-    transition:
-        color var(--transition),
-        background var(--transition),
-        border-color var(--transition);
 }
 
-.store-category-nav a:hover,
-.store-category-nav button:hover,
-.store-category-nav .category-button:hover {
-    color: var(--store-brand-dark);
-    background: var(--store-brand-light);
-    border-color: var(--store-brand-light);
+.store-category-nav .category-card:hover {
+    color: var(--green-dark);
+    background: var(--green-light);
 }
 
-/* Kategori aktif */
-
-.store-category-nav a.active,
-.store-category-nav button.active,
-.store-category-nav .active,
-.store-category-nav [aria-current="true"],
-.store-category-nav [aria-pressed="true"] {
+.store-category-nav .category-card.active {
     color: var(--white);
-    background: var(--store-brand);
-    border-color: var(--store-brand);
+    background: var(--green);
+    border-color: var(--green);
 }
 
-/* Tombol Semua berbentuk ikon */
-
-.category-all-button {
+/* Tombol kategori Semua */
+.store-category-nav .category-all-button {
     position: sticky;
     left: 0;
     z-index: 2;
     display: inline-flex;
-    flex: 0 0 42px;
+    flex: 0 0 40px;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    min-width: 42px;
-    height: 40px;
-    min-height: 40px;
+    width: 40px;
+    height: 39px;
     padding: 0;
-    color: var(--store-muted);
-    background: var(--store-surface);
-    border: 1px solid var(--store-border);
-    border-radius: var(--store-radius-md);
-    box-shadow: 3px 0 8px rgb(22 45 29 / 4%);
-    cursor: pointer;
-    transition:
-        color var(--transition),
-        background var(--transition),
-        border-color var(--transition);
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
 }
 
-.category-all-button:hover {
-    color: var(--store-brand-dark);
-    background: var(--store-brand-light);
-    border-color: var(--store-brand-light);
-}
-
-.category-all-button.active,
-.category-all-button[aria-current="true"],
-.category-all-button[aria-pressed="true"] {
+.store-category-nav .category-all-button.active {
     color: var(--white);
-    background: var(--store-brand);
-    border-color: var(--store-brand);
+    background: var(--green);
+    border-color: var(--green);
 }
 
-.category-all-button svg,
-.category-all-button i {
-    display: block;
+.store-category-nav .category-all-button svg {
     width: 19px;
     height: 19px;
 }
 
-/* Jangan tampilkan jumlah produk per kategori */
+/* Kelompok kategori */
+.store-category-section {
+    min-width: 0;
+    margin-bottom: 26px;
+    scroll-margin-top: 90px;
+}
 
+.store-category-heading {
+    margin-bottom: 12px;
+}
+
+.store-category-heading h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+/* Jumlah produk tidak ditampilkan */
 .store-category-count,
 .store-product-total {
     display: none !important;
+}
+
+/* Daftar vertikal produk */
+.store-category-products {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Kartu produk: gambar kiri, detail kanan */
+.product-card {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 11px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.product-card:hover {
+    border-color: var(--green-light);
+    box-shadow: var(--shadow-md);
+}
+
+/* Gambar dan placeholder */
+.product-image {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+}
+
+.product-image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-image-placeholder {
+    padding: 5px;
+    color: var(--muted);
+    font-size: 0.625rem;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.product-tag {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 1;
+    max-width: calc(100% - 10px);
+    padding: 3px 5px;
+    overflow: hidden;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Informasi produk */
+.product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    min-width: 0;
+}
+
+.product-name {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.product-variant {
+    color: var(--muted);
+    font-size: 0.78125rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.product-unit {
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+/* Harga dan tombol + dalam satu baris */
+.product-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+    margin-top: 6px;
+}
+
+.product-price {
+    min-width: 0;
+    margin: 0;
+    color: var(--green-dark);
+    font-size: 0.9375rem;
+    font-weight: 750;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Tombol tambah */
+.add-button {
+    display: inline-flex;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--white);
+    background: var(--green);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-md);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+}
+
+.add-button:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+.add-button:active {
+    transform: scale(0.95);
+}
+
+.add-button:disabled {
+    color: var(--muted);
+    background: var(--surface);
+    border-color: var(--border);
+    cursor: not-allowed;
+}
+
+/* Kondisi kosong */
+.store-empty {
+    padding: 26px 16px;
+    text-align: center;
+    background: var(--white);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.store-empty h3 {
+    margin-bottom: 6px;
+    color: var(--text);
+    font-size: 0.9375rem;
+}
+
+.store-empty p {
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: 0.8125rem;
 }
 
 /* ---------------------------------------------------------
@@ -954,234 +1196,659 @@
     }
 }
 
-/* ---------------------------------------------------------
-   13. RESPONSIVE — MOBILE
-   --------------------------------------------------------- */
+
+/* =========================================================
+   WARUNG.PHP — RESPONSIVE MOBILE
+   Breakpoint utama: 699px
+   Seluruh warna menggunakan token base.css
+   ========================================================= */
 
 @media (max-width: 699px) {
+
+    /* -----------------------------------------------------
+       1. HALAMAN
+       ----------------------------------------------------- */
+
     .store-page {
         width: calc(100% - 28px);
-        padding-bottom: 36px;
+        max-width: var(--container-width);
+        min-width: 0;
+        margin-inline: auto;
+        padding-bottom: 32px;
+        overflow-wrap: anywhere;
     }
 
-    .store-banner,
-    .store-banner img {
-        min-height: 110px;
+    .store-page * {
+        min-width: 0;
     }
+
+    /* -----------------------------------------------------
+       2. BANNER
+       ----------------------------------------------------- */
 
     .store-banner {
-        border-radius: var(--store-radius-lg);
+        min-height: 105px;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
     }
+
+    .store-banner img {
+        width: 100%;
+        height: auto;
+        min-height: 105px;
+        aspect-ratio: 16 / 6;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* -----------------------------------------------------
+       3. IDENTITAS WARUNG
+       ----------------------------------------------------- */
 
     .store-identity {
+        display: flex;
+        align-items: center;
         gap: 12px;
-        margin-top: 18px;
-        margin-bottom: 16px;
+        margin: 17px 0 16px;
     }
 
-    .store-identity img {
-        width: 68px;
-        height: 68px;
-        border-radius: var(--store-radius-md);
+    .store-identity-logo {
+        display: flex;
+        flex: 0 0 64px;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        overflow: hidden;
+        color: var(--green-dark);
+        background: var(--green-light);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 1.375rem;
+        font-weight: 750;
     }
 
-    .store-identity h1,
-    .store-identity h2 {
-        font-size: 1.25rem;
+    .store-identity-logo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 0;
+        border-radius: inherit;
+        box-shadow: none;
     }
 
-    .store-identity p {
-        margin-top: 4px;
-        font-size: 0.8125rem;
+    .store-identity-text {
+        flex: 1;
+        min-width: 0;
     }
+
+    .store-identity-text h1 {
+        margin: 0;
+        color: var(--text);
+        font-size: 1.2rem;
+        font-weight: 750;
+        line-height: 1.35;
+        letter-spacing: -0.025em;
+        overflow-wrap: anywhere;
+    }
+
+    .store-identity-text p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+
+    /* -----------------------------------------------------
+       4. DETAIL WARUNG
+       ----------------------------------------------------- */
 
     .store-details {
-        gap: 11px;
-        margin-bottom: 18px;
-        padding: 13px;
-        border-radius: var(--store-radius-md);
+        margin-bottom: 19px;
+        padding: 14px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
     }
 
-    .store-details p,
-    .store-details .store-address,
-    .store-details .store-location {
+    .store-details > h2 {
+        margin: 0 0 14px;
+        color: var(--text);
+        font-size: 0.9375rem;
+        font-weight: 750;
+    }
+
+    .store-detail-list {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .store-detail-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .store-detail-icon {
+        display: flex;
+        flex: 0 0 35px;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        color: var(--green-dark);
+        background: var(--green-light);
+        border-radius: var(--radius-sm);
+    }
+
+    .store-detail-icon svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .store-detail-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .store-detail-label {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .store-detail-content p {
+        margin: 0;
+        color: var(--text);
         font-size: 0.8125rem;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+    }
+
+    .store-address-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .store-address-row p {
+        flex: 1;
+        min-width: 0;
     }
 
     .store-maps-button {
-        min-width: 38px;
-        min-height: 38px;
-        padding: 9px;
+        display: inline-flex;
+        flex: 0 0 36px;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        color: var(--green-dark);
+        background: var(--green-light);
+        border: 1px solid var(--green-light);
+        border-radius: var(--radius-sm);
     }
 
-    .store-maps-button .maps-label {
-        display: none;
+    .store-maps-button svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
     }
+
+    .store-detail-delivery {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        grid-column: auto;
+        padding-top: 12px;
+        color: var(--green-dark);
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .store-detail-delivery svg {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .store-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .store-status.is-open {
+        color: var(--green-dark);
+        background: var(--green-light);
+    }
+
+    .store-status.is-closed {
+        color: var(--danger);
+        background: var(--surface);
+    }
+
+    /* -----------------------------------------------------
+       5. PENCARIAN
+       ----------------------------------------------------- */
 
     .store-search-form {
+        display: flex;
+        align-items: stretch;
         gap: 7px;
-        margin-bottom: 17px;
+        width: 100%;
+        margin-bottom: 16px;
     }
 
     .store-search-form input,
     .store-search-form input[type="search"] {
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
         min-height: 43px;
-        padding-inline: 12px;
+        padding: 0 12px;
+        color: var(--text);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
         font-size: 0.8125rem;
+    }
+
+    .store-search-form input:focus {
+        border-color: var(--green);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--green-light);
     }
 
     .store-search-form button {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
         min-height: 43px;
-        padding-inline: 13px;
+        padding: 0 13px;
+        color: var(--white);
+        background: var(--green);
+        border: 1px solid var(--green);
+        border-radius: var(--radius-md);
         font-size: 0.8125rem;
+        font-weight: 650;
+        white-space: nowrap;
     }
+
+    .store-search-form button:active {
+        background: var(--green-dark);
+    }
+
+    /* -----------------------------------------------------
+       6. KATEGORI HORIZONTAL
+       Tombol Semua tetap di kiri.
+       Kategori lain dapat digeser secara horizontal.
+       ----------------------------------------------------- */
 
     .store-category-nav {
+        display: flex;
+        align-items: center;
         gap: 7px;
+        width: 100%;
+        min-width: 0;
         margin-bottom: 20px;
+        padding: 2px 0 7px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .store-category-nav a,
-    .store-category-nav button,
-    .store-category-nav .category-button {
-        min-height: 37px;
-        padding-inline: 13px;
-        font-size: 0.78125rem;
+    .store-category-nav > * {
+        flex: 0 0 auto;
     }
 
-    .category-all-button {
-        flex-basis: 39px;
-        width: 39px;
-        min-width: 39px;
+    .store-category-nav .category-all-button {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        display: inline-flex;
+        flex: 0 0 38px;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        min-width: 38px;
         height: 37px;
+        padding: 0;
+        color: var(--muted);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    .store-category-nav .category-all-button svg {
+        display: block;
+        width: 18px;
+        height: 18px;
+    }
+
+    .store-category-nav .category-all-button.active {
+        color: var(--white);
+        background: var(--green);
+        border-color: var(--green);
+    }
+
+    .store-category-nav .category-card {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
         min-height: 37px;
+        padding: 0 12px;
+        color: var(--muted);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.78125rem;
+        font-weight: 650;
+        line-height: 1;
+        white-space: nowrap;
+        cursor: pointer;
     }
 
-    .store-category-products {
-        margin-bottom: 24px;
+    .store-category-nav .category-card.active {
+        color: var(--white);
+        background: var(--green);
+        border-color: var(--green);
     }
 
-    .store-category-products > h2,
-    .store-category-products > h3 {
-        margin-bottom: 12px;
-        font-size: 1rem;
+    .store-category-count,
+    .store-product-total {
+        display: none !important;
     }
 
-    .store-category-products .product-list,
-    .store-category-products .products-list,
-    .store-category-products .store-products,
-    .store-category-products .product-grid {
-        gap: 9px;
+    /* -----------------------------------------------------
+       7. BAGIAN KATEGORI PRODUK
+       ----------------------------------------------------- */
+
+    .store-category-section {
+        min-width: 0;
+        margin-bottom: 22px;
+        scroll-margin-top: 75px;
     }
 
-    .product-card {
-        grid-template-columns: 68px minmax(0, 1fr) auto;
-        gap: 11px;
-        padding: 10px;
-        border-radius: var(--store-radius-md);
+    .store-category-heading {
+        margin-bottom: 11px;
     }
 
-    .product-image {
-        width: 68px;
-        height: 68px;
-        border-radius: var(--store-radius-sm);
-    }
-
-    .product-name {
-        font-size: 0.875rem;
+    .store-category-heading h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.975rem;
+        font-weight: 750;
         line-height: 1.4;
     }
 
-    .product-variant {
-        margin-top: 3px;
-        font-size: 0.75rem;
+    .store-category-products {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        min-width: 0;
     }
 
-    .product-description {
-        margin-top: 4px;
+    /* -----------------------------------------------------
+       8. KARTU PRODUK
+       Struktur: gambar di kiri, informasi di kanan.
+       Harga dan tombol tambah ada di bagian bawah.
+       ----------------------------------------------------- */
+
+    .product-card {
+        display: grid;
+        grid-template-columns: 66px minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        min-width: 0;
+        padding: 9px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .product-image {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 66px;
+        height: 66px;
+        overflow: hidden;
+        background: var(--surface);
+        border-radius: var(--radius-sm);
+    }
+
+    .product-image img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-image-placeholder {
+        padding: 4px;
+        color: var(--muted);
+        font-size: 0.6rem;
+        line-height: 1.35;
+        text-align: center;
+    }
+
+    .product-tag {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        z-index: 1;
+        max-width: calc(100% - 8px);
+        padding: 3px 5px;
+        overflow: hidden;
+        color: var(--green-dark);
+        background: var(--green-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+
+    .product-name {
+        display: -webkit-box;
+        margin: 0;
+        overflow: hidden;
+        color: var(--text);
+        font-size: 0.875rem;
+        font-weight: 700;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .product-variant {
+        color: var(--muted);
         font-size: 0.75rem;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .product-unit {
+        color: var(--muted);
+        font-size: 0.7rem;
+        line-height: 1.4;
+    }
+
+    .product-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+        margin-top: 5px;
     }
 
     .product-price {
-        margin-top: 5px;
+        min-width: 0;
+        margin: 0;
+        color: var(--green-dark);
         font-size: 0.875rem;
-    }
-
-    .product-actions,
-    .product-card-actions {
-        gap: 6px;
-        min-width: 34px;
+        font-weight: 750;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+        font-variant-numeric: tabular-nums;
     }
 
     .add-button {
-        width: 34px;
-        min-width: 34px;
-        height: 34px;
-        min-height: 34px;
-        border-radius: var(--store-radius-sm);
+        display: inline-flex;
+        flex: 0 0 33px;
+        align-items: center;
+        justify-content: center;
+        width: 33px;
+        height: 33px;
+        padding: 0;
+        color: var(--white);
+        background: var(--green);
+        border: 1px solid var(--green);
+        border-radius: var(--radius-sm);
         font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1;
+        cursor: pointer;
     }
 
-    .add-button svg,
-    .add-button i {
-        width: 16px;
-        height: 16px;
+    .add-button:active {
+        background: var(--green-dark);
     }
 
-    .product-badge,
-    .product-label {
-        margin-top: 5px;
-        font-size: 0.65625rem;
+    .add-button:disabled {
+        color: var(--muted);
+        background: var(--surface);
+        border-color: var(--border);
+        cursor: not-allowed;
+    }
+
+    /* -----------------------------------------------------
+       9. KONDISI KOSONG
+       ----------------------------------------------------- */
+
+    .store-empty {
+        padding: 24px 14px;
+        text-align: center;
+        background: var(--white);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    .store-empty h3 {
+        margin: 0 0 6px;
+        color: var(--text);
+        font-size: 0.9rem;
+    }
+
+    .store-empty p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.55;
     }
 }
 
-/* ---------------------------------------------------------
-   14. RESPONSIVE — LAYAR SANGAT KECIL
-   --------------------------------------------------------- */
+/* =========================================================
+   LAYAR SANGAT KECIL
+   ========================================================= */
 
 @media (max-width: 359px) {
     .store-page {
         width: calc(100% - 20px);
     }
 
-    .store-identity {
-        gap: 10px;
+    .store-identity-logo {
+        flex-basis: 56px;
+        width: 56px;
+        height: 56px;
     }
 
-    .store-identity img {
-        width: 58px;
-        height: 58px;
-    }
-
-    .store-identity h1,
-    .store-identity h2 {
-        font-size: 1.125rem;
+    .store-identity-text h1 {
+        font-size: 1.05rem;
     }
 
     .store-details {
         padding: 11px;
     }
 
+    .store-search-form {
+        gap: 5px;
+    }
+
+    .store-search-form input,
+    .store-search-form input[type="search"] {
+        padding-inline: 9px;
+        font-size: 0.75rem;
+    }
+
     .store-search-form button {
-        padding-inline: 10px;
+        padding-inline: 9px;
+        font-size: 0.75rem;
     }
 
     .product-card {
-        grid-template-columns: 58px minmax(0, 1fr) auto;
+        grid-template-columns: 56px minmax(0, 1fr);
         gap: 8px;
         padding: 8px;
     }
 
     .product-image {
-        width: 58px;
-        height: 58px;
+        width: 56px;
+        height: 56px;
     }
 
     .product-name {
         font-size: 0.8125rem;
     }
 
-    .product-variant {
+    .product-variant,
+    .product-unit {
         font-size: 0.6875rem;
     }
 
@@ -1190,10 +1857,9 @@
     }
 
     .add-button {
-        width: 32px;
-        min-width: 32px;
-        height: 32px;
-        min-height: 32px;
+        flex-basis: 30px;
+        width: 30px;
+        height: 30px;
     }
 }
 
