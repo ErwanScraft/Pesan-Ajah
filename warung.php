@@ -57,7 +57,6 @@ $storeName = trim((string) ($store['name'] ?? 'Warung'));
 $storeOwner = trim((string) ($store['owner_name'] ?? ''));
 $storeDescription = trim((string) ($store['description'] ?? ''));
 $storeAddress = trim((string) ($store['address'] ?? ''));
-$storePhone = trim((string) ($store['phone'] ?? ''));
 $isStoreOpen = (bool) ($store['is_open'] ?? false);
 $hasFreeDelivery = (bool) ($store['free_delivery'] ?? false);
 
@@ -135,7 +134,7 @@ $metaDescription = $storeDescription !== ''
 
     <main class="store-page">
 
-        <!-- BANNER WARUNG -->
+        <!-- Banner -->
         <section class="store-banner" aria-label="Banner warung">
             <img
                 src="/assets/images/banner_1.webp"
@@ -146,7 +145,7 @@ $metaDescription = $storeDescription !== ''
             >
         </section>
 
-        <!-- IDENTITAS WARUNG -->
+        <!-- Identitas warung -->
         <section class="store-identity" aria-labelledby="store-profile-name">
             <div class="store-identity-logo">
                 <?php if ($storeIconUrl !== null): ?>
@@ -170,25 +169,11 @@ $metaDescription = $storeDescription !== ''
             </div>
         </section>
 
-        <!-- DETAIL WARUNG -->
+        <!-- Detail: hanya status dan alamat -->
         <section class="store-details" aria-labelledby="store-details-title">
             <h2 id="store-details-title">Detail Warung</h2>
 
             <div class="store-detail-list">
-
-                <div class="store-detail-item">
-                    <span class="store-detail-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="7" r="4"></circle>
-                            <path d="M4 21v-2a8 8 0 0 1 16 0v2"></path>
-                        </svg>
-                    </span>
-
-                    <div class="store-detail-content">
-                        <span class="store-detail-label">Pemilik</span>
-                        <p><?= e($storeOwner !== '' ? $storeOwner : 'Belum diisi') ?></p>
-                    </div>
-                </div>
 
                 <div class="store-detail-item">
                     <span class="store-detail-icon" aria-hidden="true">
@@ -238,7 +223,7 @@ $metaDescription = $storeDescription !== ''
             </div>
         </section>
 
-        <!-- KATALOG PRODUK -->
+        <!-- Katalog produk -->
         <section class="store-catalog" id="products" aria-labelledby="store-products-title">
 
             <div class="store-catalog-heading">
@@ -246,6 +231,7 @@ $metaDescription = $storeDescription !== ''
                 <span id="product-total" class="store-product-total">Memuat produk...</span>
             </div>
 
+            <!-- Pencarian -->
             <form class="store-search-form" id="search-form" role="search">
                 <input
                     id="search-input"
@@ -256,6 +242,7 @@ $metaDescription = $storeDescription !== ''
                 <button type="submit">Cari</button>
             </form>
 
+            <!-- Kategori dibuat otomatis oleh catalog.js -->
             <nav
                 class="store-category-nav"
                 id="category-list"
@@ -268,7 +255,7 @@ $metaDescription = $storeDescription !== ''
                 )) ?>"
             ></nav>
 
-            <!-- ID dipertahankan untuk catalog.js -->
+            <!-- catalog.js mengelompokkan produk di sini -->
             <div class="store-products" id="product-grid" aria-live="polite"></div>
 
             <div class="store-empty" id="empty-state" hidden>

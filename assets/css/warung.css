@@ -1,5 +1,5 @@
 /* =========================================================
-   PESAN AJAH — REDESIGN HALAMAN WARUNG
+   PESAN AJAH — HALAMAN WARUNG
    File: assets/css/warung.css
    ========================================================= */
 
@@ -16,10 +16,11 @@
     box-sizing: border-box;
 }
 
-/* Banner */
+/* =========================================================
+   BANNER
+   ========================================================= */
 
 .store-banner {
-    position: relative;
     width: 100%;
     aspect-ratio: 16 / 5;
     margin-top: 18px;
@@ -36,7 +37,9 @@
     object-position: center;
 }
 
-/* Identitas warung */
+/* =========================================================
+   IDENTITAS WARUNG
+   ========================================================= */
 
 .store-identity {
     display: flex;
@@ -88,15 +91,16 @@
     overflow-wrap: anywhere;
 }
 
-/* Detail warung */
+/* =========================================================
+   DETAIL WARUNG
+   ========================================================= */
 
 .store-details {
     padding: 28px 0 30px;
     border-bottom: 1px solid #e8e8e8;
 }
 
-.store-details h2,
-.store-catalog-heading h2 {
+.store-details h2 {
     margin: 0;
     color: #171717;
     font-size: 23px;
@@ -180,9 +184,9 @@
 }
 
 .store-status-dot {
+    flex: 0 0 7px;
     width: 7px;
     height: 7px;
-    flex: 0 0 7px;
     border-radius: 50%;
     background: currentColor;
 }
@@ -206,7 +210,9 @@
     height: 22px;
 }
 
-/* Katalog */
+/* =========================================================
+   JUDUL KATALOG
+   ========================================================= */
 
 .store-catalog {
     min-width: 0;
@@ -223,7 +229,11 @@
 }
 
 .store-catalog-heading h2 {
+    margin: 0;
+    color: #171717;
     font-size: 28px;
+    font-weight: 700;
+    line-height: 1.35;
 }
 
 .store-product-total {
@@ -232,8 +242,53 @@
     font-size: 13px;
 }
 
-/* Kategori horizontal.
-   Tombol Semua dibuat sticky agar tetap di kiri ketika digeser. */
+/* =========================================================
+   PENCARIAN
+   ========================================================= */
+
+.store-search-form {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 18px;
+}
+
+.store-search-form input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #dedede;
+    border-radius: 12px;
+    outline: none;
+    background: #fff;
+    color: #222;
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 160ms ease;
+}
+
+.store-search-form input:focus {
+    border-color: #777;
+}
+
+.store-search-form button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 12px;
+    background: #111;
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   KATEGORI HORIZONTAL
+   Tombol Semua berupa ikon dan tetap di kiri.
+   ========================================================= */
 
 .store-category-nav {
     position: relative;
@@ -295,7 +350,7 @@
     min-width: 48px;
     height: 44px;
     padding: 0;
-    border-radius: 999px;
+    border-radius: 50%;
     box-shadow: 5px 0 8px rgb(255 255 255 / 90%);
 }
 
@@ -310,11 +365,14 @@
     height: 20px;
 }
 
-/* Kelompok kategori dari catalog.js */
+/* =========================================================
+   DAFTAR PRODUK PER KATEGORI
+   Setiap kategori menjadi kelompok daftar vertikal.
+   ========================================================= */
 
 .store-products {
     display: grid;
-    gap: 24px;
+    gap: 26px;
     min-width: 0;
 }
 
@@ -351,55 +409,70 @@
     min-width: 0;
 }
 
-/* Item produk: gambar kiri, detail tengah, tombol kanan */
+/* =========================================================
+   KARTU PRODUK
+   Struktur aktual dari catalog.js:
+   article.product-card
+     .product-image
+       img.product-photo
+       .product-image-placeholder
+     .product-info
+       .product-name
+       .product-variant
+       .product-unit
+       .product-bottom
+         .product-price
+         button.add-button
+   ========================================================= */
 
 .store-category-products .product-card {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     width: 100%;
     min-width: 0;
-    min-height: 142px;
+    min-height: 136px;
     padding: 12px;
     border: 1px solid #e2e2e2;
-    border-radius: 18px;
+    border-radius: 17px;
     background: #fff;
     box-shadow: 0 1px 2px rgb(0 0 0 / 2%);
 }
 
+/* Gambar di kiri */
+
 .store-category-products .product-image {
     position: relative;
     display: grid;
-    flex: 0 0 116px;
-    width: 116px;
-    height: 116px;
+    flex: 0 0 108px;
+    width: 108px;
+    height: 108px;
     place-items: center;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 11px;
     background: #f2f2f2;
 }
 
-.store-category-products .product-image img,
-.store-category-products .product-image .product-photo {
+.store-category-products .product-photo {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.store-category-products .product-image img[hidden],
-.store-category-products .product-image .product-photo[hidden] {
+.store-category-products .product-photo[hidden] {
     display: none;
 }
 
 .store-category-products .product-image-placeholder {
     display: grid;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
     place-items: center;
     padding: 8px;
     color: #888;
     font-size: 11px;
+    line-height: 1.4;
     text-align: center;
 }
 
@@ -422,14 +495,17 @@
     white-space: nowrap;
 }
 
+/* Informasi di tengah */
+
 .store-category-products .product-info {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     min-width: 0;
+    min-height: 108px;
     align-self: stretch;
     padding: 2px 0;
 }
@@ -440,7 +516,7 @@
     margin: 0;
     overflow: hidden;
     color: #222;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 650;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -457,14 +533,21 @@
     overflow-wrap: anywhere;
 }
 
+.store-category-products .product-variant[hidden] {
+    display: none;
+}
+
 .store-category-products .product-unit {
     color: #777;
     font-size: 12px;
+    line-height: 1.4;
 }
 
 .store-category-products .product-unit:empty {
     display: none;
 }
+
+/* Harga dan tombol tambah */
 
 .store-category-products .product-bottom {
     display: flex;
@@ -485,9 +568,9 @@
 
 .store-category-products .add-button {
     display: inline-grid;
-    flex: 0 0 42px;
-    width: 42px;
-    height: 42px;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
     place-items: center;
     padding: 0;
     border: 0;
@@ -519,7 +602,9 @@
     cursor: not-allowed;
 }
 
-/* Kondisi kosong */
+/* =========================================================
+   KONDISI KOSONG
+   ========================================================= */
 
 .store-empty {
     padding: 32px 16px;
@@ -544,45 +629,9 @@
     line-height: 1.6;
 }
 
-/* Pencarian kompatibel dengan main.js jika form digunakan */
-
-.store-search-form {
-    display: flex;
-    gap: 8px;
-    margin: 0 0 18px;
-}
-
-.store-search-form input {
-    flex: 1;
-    min-width: 0;
-    min-height: 44px;
-    padding: 10px 14px;
-    border: 1px solid #dedede;
-    border-radius: 12px;
-    background: #fff;
-    color: #222;
-    font: inherit;
-    font-size: 14px;
-}
-
-.store-search-form input:focus {
-    border-color: #888;
-    outline: 2px solid rgb(0 0 0 / 6%);
-}
-
-.store-search-form button {
-    min-height: 44px;
-    padding: 0 16px;
-    border: 0;
-    border-radius: 12px;
-    background: #111;
-    color: #fff;
-    font: inherit;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* Fokus keyboard */
+/* =========================================================
+   FOKUS KEYBOARD
+   ========================================================= */
 
 .store-page button:focus-visible,
 .store-page a:focus-visible,
@@ -591,7 +640,9 @@
     outline-offset: 3px;
 }
 
-/* Tablet */
+/* =========================================================
+   TABLET DAN DESKTOP
+   ========================================================= */
 
 @media (min-width: 700px) {
     .store-page {
@@ -625,7 +676,7 @@
     }
 
     .store-category-products .product-card {
-        min-height: 150px;
+        min-height: 148px;
         padding: 14px;
     }
 
@@ -634,9 +685,15 @@
         width: 120px;
         height: 120px;
     }
+
+    .store-category-products .product-info {
+        min-height: 120px;
+    }
 }
 
-/* Ponsel */
+/* =========================================================
+   PONSEL
+   ========================================================= */
 
 @media (max-width: 480px) {
     .store-page {
@@ -713,7 +770,7 @@
     }
 
     .store-catalog-heading {
-        margin-bottom: 16px;
+        margin-bottom: 15px;
     }
 
     .store-catalog-heading h2 {
@@ -722,6 +779,23 @@
 
     .store-product-total {
         font-size: 12px;
+    }
+
+    .store-search-form {
+        gap: 7px;
+        margin-bottom: 15px;
+    }
+
+    .store-search-form input {
+        min-height: 42px;
+        padding-inline: 12px;
+        font-size: 13px;
+    }
+
+    .store-search-form button {
+        min-height: 42px;
+        padding-inline: 13px;
+        font-size: 13px;
     }
 
     .store-category-nav {
@@ -743,7 +817,7 @@
     }
 
     .store-products {
-        gap: 20px;
+        gap: 22px;
     }
 
     .store-category-heading {
@@ -774,6 +848,7 @@
 
     .store-category-products .product-info {
         gap: 5px;
+        min-height: 88px;
     }
 
     .store-category-products .product-name {
@@ -800,7 +875,9 @@
     }
 }
 
-/* Ponsel sangat kecil */
+/* =========================================================
+   PONSEL KECIL
+   ========================================================= */
 
 @media (max-width: 350px) {
     .store-page {
@@ -828,6 +905,10 @@
         height: 72px;
     }
 
+    .store-category-products .product-info {
+        min-height: 72px;
+    }
+
     .store-category-products .product-name {
         font-size: 14px;
     }
@@ -843,9 +924,12 @@
     }
 }
 
+/* Kurangi animasi sesuai preferensi perangkat */
+
 @media (prefers-reduced-motion: reduce) {
     .store-category-nav .category-card,
-    .store-category-products .add-button {
+    .store-category-products .add-button,
+    .store-search-form input {
         transition: none;
     }
 }
