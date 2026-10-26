@@ -1,0 +1,208 @@
+
+/* =========================================================
+   PESAN AJAH — BUYER MENU
+   File: assets/css/buyer-menu.css
+
+   Tanggung jawab:
+   1. Dropdown navigasi Buyer
+   2. Item navigasi dan ikon
+   3. Status menu yang belum tersedia
+   4. Responsivitas dan aksesibilitas
+   ========================================================= */
+
+.buyer-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.buyer-menu-trigger {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    background: transparent;
+    color: inherit;
+
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 0.2s ease;
+}
+
+.buyer-menu-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.buyer-menu-trigger:hover,
+.buyer-menu[open] > .buyer-menu-trigger {
+    background: var(--surface, #f5f5f5);
+}
+
+.buyer-menu-trigger:focus-visible,
+.buyer-menu-item:focus-visible {
+    outline: 2px solid var(--green, #176b45);
+    outline-offset: 3px;
+}
+
+.buyer-menu-trigger svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+}
+
+.buyer-menu[open] .buyer-menu-trigger svg {
+    transform: rotate(180deg);
+}
+
+/* Panel dropdown */
+
+.buyer-menu-panel {
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: min(300px, calc(100vw - 24px));
+    padding: 8px;
+
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 14px;
+
+    background: var(--white, #fff);
+    color: var(--text, #222);
+
+    box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+    animation: buyer-menu-enter 0.16s ease-out;
+}
+
+/* Item navigasi */
+
+.buyer-menu-item {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+
+    padding: 11px 10px;
+    border: 0;
+    border-radius: 9px;
+
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+
+    transition: background-color 0.2s ease;
+}
+
+a.buyer-menu-item:hover {
+    background: var(--surface, #f5f5f5);
+}
+
+.buyer-menu-item > svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    opacity: 0.8;
+}
+
+.buyer-menu-item-content {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.buyer-menu-item-title {
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.buyer-menu-item-description {
+    color: var(--muted, #777);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Pemisah */
+
+.buyer-menu-divider {
+    height: 1px;
+    margin: 5px 2px;
+    background: var(--border, #e5e7eb);
+}
+
+/* Fitur yang belum tersedia */
+
+.buyer-menu-item.is-unavailable {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.buyer-menu-badge {
+    flex: 0 0 auto;
+    padding: 3px 6px;
+    border-radius: 5px;
+
+    background: var(--surface, #f5f5f5);
+    color: var(--muted, #777);
+
+    font-size: 9px;
+    font-weight: 650;
+}
+
+/* Animasi */
+
+@keyframes buyer-menu-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tablet dan mobile */
+
+@media (max-width: 700px) {
+    .buyer-menu-trigger {
+        width: 34px;
+        height: 34px;
+    }
+
+    .buyer-menu-panel {
+        top: calc(100% + 8px);
+        right: -4px;
+    }
+}
+
+@media (max-width: 380px) {
+    .buyer-menu-panel {
+        width: min(280px, calc(100vw - 20px));
+    }
+}
+
+/* Preferensi aksesibilitas */
+
+@media (prefers-reduced-motion: reduce) {
+    .buyer-menu-trigger,
+    .buyer-menu-trigger svg,
+    .buyer-menu-panel,
+    .buyer-menu-item {
+        animation: none;
+        transition: none;
+    }
+}

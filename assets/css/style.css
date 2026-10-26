@@ -1,12 +1,13 @@
+
 /* =========================================================
    PESAN AJAH — GLOBAL CSS ENTRY POINT
 
-   File:
-   assets/css/style.css
+   File: assets/css/style.css
 
    Scope:
    - Base styles
    - General layout
+   - Buyer menu
    - Shared components
    - Cart
    - Seller dashboard
@@ -15,40 +16,26 @@
    CSS halaman khusus dimuat oleh halaman masing-masing.
    ========================================================= */
 
-/*
- * 1. Fondasi
- */
+/* 1. Fondasi */
 @import url("./base.css");
 
-/*
- * 2. Layout umum
- */
+/* 2. Layout umum */
 @import url("./layout.css");
 
-/*
- * 3. Komponen umum
- */
+/* 3. Navigasi Buyer */
+@import url("./buyer-menu.css");
+
+/* 4. Komponen umum */
 @import url("./components.css");
 
-/*
- * 4. Keranjang dan checkout
- */
+/* 5. Keranjang dan checkout */
 @import url("./cart.css");
 
-/*
- * 5. Dashboard warung
- */
+/* 6. Dashboard warung */
 @import url("./dashboard.css");
 
-/*
- * 6. Responsif
- *
- * Diletakkan setelah CSS umum agar aturan responsif
- * dapat menyesuaikan komponen yang sudah didefinisikan.
- */
+/* 7. Responsif umum */
 @import url("./responsive.css");
 
-/*
- * 7. Tampilan katalog marketplace
- */
+/* 8. Tampilan katalog marketplace */
 @import url("./marketplace.css");
