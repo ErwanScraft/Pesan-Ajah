@@ -102,15 +102,22 @@ export function createCatalog({
   
     const fragment = document.createDocumentFragment();
   
+    /*
+     * TOMBOL SEMUA
+     *
+     * Beranda: ikon grid tanpa teks.
+     * Halaman warung: tetap menggunakan navigasi Semua yang lama.
+     */
     const allButton = document.createElement(
       groupedMode ? "a" : "button",
     );
   
     allButton.className = groupedMode
       ? ""
-      : "category-card";
+      : "category-card category-all-button";
   
     allButton.dataset.category = "Semua";
+  
     allButton.setAttribute(
       "aria-pressed",
       String(selectedCategory === "Semua"),
@@ -118,24 +125,59 @@ export function createCatalog({
   
     if (groupedMode) {
       allButton.href = "#";
+      allButton.textContent = "Semua";
   
       if (selectedCategory === "Semua") {
         allButton.classList.add("active");
       }
-  
-      allButton.textContent = "Semua";
     } else {
       allButton.type = "button";
+      allButton.setAttribute(
+        "aria-label",
+        "Tampilkan semua produk",
+      );
+      allButton.title = "Semua kategori";
   
       const icon = document.createElement("span");
-  
+      icon.className = "category-all-icon";
       icon.setAttribute("aria-hidden", "true");
-      icon.textContent = "⌂";
   
-      allButton.append(
-        icon,
-        document.createTextNode(" Semua"),
-      );
+      const svgNamespace = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNamespace, "svg");
+  
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("width", "20");
+      svg.setAttribute("height", "20");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "1.8");
+      svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+  
+      const rectangles = [
+        [3.5, 3.5],
+        [13.5, 3.5],
+        [3.5, 13.5],
+        [13.5, 13.5],
+      ];
+  
+      for (const [x, y] of rectangles) {
+        const rect = document.createElementNS(
+          svgNamespace,
+          "rect",
+        );
+  
+        rect.setAttribute("x", String(x));
+        rect.setAttribute("y", String(y));
+        rect.setAttribute("width", "7");
+        rect.setAttribute("height", "7");
+        rect.setAttribute("rx", "1.5");
+  
+        svg.append(rect);
+      }
+  
+      icon.append(svg);
+      allButton.append(icon);
     }
   
     allButton.classList.toggle(
@@ -145,6 +187,9 @@ export function createCatalog({
   
     fragment.append(allButton);
   
+    /*
+     * KATEGORI DINAMIS
+     */
     for (const category of categories) {
       const button = document.createElement(
         groupedMode ? "a" : "button",

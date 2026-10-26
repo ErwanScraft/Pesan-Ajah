@@ -232,13 +232,31 @@ $homepageBanners = array_values(array_filter(
                 )) ?>"
             >
                 <button
-                    class="category-card active"
+                    class="category-card category-all-button active"
                     type="button"
                     data-category="Semua"
+                    aria-label="Tampilkan semua produk"
+                    title="Semua kategori"
                     aria-pressed="true"
                 >
-                    <span aria-hidden="true">⌂</span>
-                    Semua
+                    <span class="category-all-icon" aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+                            <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+                            <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+                            <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+                        </svg>
+                    </span>
                 </button>
             </div>
         </section>

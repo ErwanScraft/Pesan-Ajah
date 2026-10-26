@@ -812,8 +812,9 @@
 }
 
 
+
 /* =========================================================
-   PESAN AJAH — MARKETPLACE CATEGORY CHIPS
+   PESAN AJAH — MARKETPLACE CATEGORY NAVIGATION
    Scope: kategori pada halaman beranda
    ========================================================= */
 
@@ -833,11 +834,16 @@
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+    touch-action: pan-x;
+
+    scroll-padding-left: 52px;
 }
 
 #categories .category-grid::-webkit-scrollbar {
     display: none;
 }
+
+/* Semua tombol kategori */
 
 #categories .category-card {
     display: inline-flex;
@@ -859,6 +865,7 @@
     background: var(--white);
     color: var(--text);
 
+    font-family: inherit;
     font-size: 12px;
     font-weight: 650;
     line-height: 1.2;
@@ -868,16 +875,28 @@
 
     box-shadow: none;
     transform: none;
+    cursor: pointer;
+
+    transition:
+        color 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease;
 }
+
+/* Ikon dekoratif pada kategori biasa disembunyikan */
 
 #categories .category-card > span {
     display: none;
 }
 
+/* Hover kategori nonaktif */
+
 #categories .category-card:hover {
     border-color: #c7ddcc;
     background: #f7faf6;
 }
+
+/* Kategori aktif */
 
 #categories .category-card.active {
     border-color: var(--green);
@@ -888,24 +907,118 @@
     transform: none;
 }
 
-#categories .category-card.active > span {
-    display: none;
-}
+/* Fokus keyboard */
 
 #categories .category-card:focus-visible {
     outline: 2px solid var(--green);
     outline-offset: 3px;
 }
 
+/* =========================================================
+   TOMBOL SEMUA — IKON TETAP DI KIRI
+   ========================================================= */
+
+#categories .category-all-button {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+
+    display: inline-flex;
+    flex: 0 0 42px;
+
+    width: 42px;
+    min-width: 42px;
+    height: 38px;
+    min-height: 38px;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 1px;
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    background: var(--white);
+    color: var(--text);
+
+    box-shadow: 4px 0 8px rgb(0 0 0 / 4%);
+}
+
+/* Tampilkan ikon grid pada tombol Semua */
+
+#categories .category-all-button > .category-all-icon {
+    display: grid;
+
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+
+    place-items: center;
+
+    background: transparent;
+    color: currentColor;
+}
+
+#categories .category-all-button > .category-all-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+/* Hover tombol Semua */
+
+#categories .category-all-button:hover {
+    border-color: #b7d9c0;
+    background: #f7faf6;
+}
+
+/* Semua aktif */
+
+#categories .category-all-button.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: var(--white);
+
+    box-shadow: 4px 0 8px rgb(0 0 0 / 7%);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 700px) {
     #categories .category-grid {
         gap: 8px;
         margin-right: -2px;
+
+        padding-top: 3px;
+        padding-bottom: 7px;
     }
 
     #categories .category-card {
         min-height: 36px;
         padding: 9px 13px;
+
         font-size: 11px;
+    }
+
+    #categories .category-all-button {
+        flex-basis: 40px;
+
+        width: 40px;
+        min-width: 40px;
+        height: 36px;
+        min-height: 36px;
+
+        padding: 0;
+        border-radius: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #categories .category-card {
+        transition: none;
     }
 }
