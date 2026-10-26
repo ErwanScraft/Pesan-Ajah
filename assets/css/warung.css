@@ -1,10 +1,11 @@
+
 /* =========================================================
    PESAN AJAH — HALAMAN WARUNG
    File: assets/css/warung.css
    ========================================================= */
 
 .store-page {
-    width: min(100% - 32px, 1000px);
+    width: min(calc(100% - 32px), 1000px);
     min-width: 0;
     margin-inline: auto;
     padding-bottom: 48px;
@@ -17,7 +18,7 @@
 }
 
 /* =========================================================
-   BANNER
+   BANNER WARUNG
    ========================================================= */
 
 .store-banner {
@@ -38,28 +39,30 @@
 }
 
 /* =========================================================
-   IDENTITAS WARUNG
+   PROFIL WARUNG
+   Nama pemilik ditampilkan di bawah nama warung.
    ========================================================= */
 
 .store-identity {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 22px 0 30px;
+    gap: 16px;
+    min-width: 0;
+    padding: 20px 0 24px;
     border-bottom: 1px solid #e8e8e8;
 }
 
 .store-identity-logo {
     display: grid;
-    flex: 0 0 88px;
-    width: 88px;
-    height: 88px;
+    flex: 0 0 76px;
+    width: 76px;
+    height: 76px;
     place-items: center;
     overflow: hidden;
-    border-radius: 18px;
+    border-radius: 16px;
     background: #f2f2f2;
     color: #454545;
-    font-size: 30px;
+    font-size: 27px;
     font-weight: 700;
 }
 
@@ -71,22 +74,23 @@
 }
 
 .store-identity-text {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
 .store-identity-text h1 {
     margin: 0;
     color: #171717;
-    font-size: clamp(22px, 3vw, 30px);
+    font-size: clamp(21px, 3vw, 30px);
     font-weight: 700;
     line-height: 1.3;
     overflow-wrap: anywhere;
 }
 
 .store-identity-text p {
-    margin: 8px 0 0;
+    margin: 4px 0 0;
     color: #737373;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
     overflow-wrap: anywhere;
 }
@@ -96,28 +100,28 @@
    ========================================================= */
 
 .store-details {
-    padding: 28px 0 30px;
+    padding: 24px 0;
     border-bottom: 1px solid #e8e8e8;
 }
 
 .store-details h2 {
     margin: 0;
     color: #171717;
-    font-size: 23px;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.4;
 }
 
 .store-detail-list {
     display: grid;
-    gap: 22px;
-    margin-top: 24px;
+    gap: 16px;
+    margin-top: 18px;
 }
 
 .store-detail-item {
     display: flex;
     align-items: flex-start;
-    gap: 15px;
+    gap: 12px;
     min-width: 0;
 }
 
@@ -133,8 +137,8 @@
 .store-detail-icon svg,
 .store-detail-delivery svg {
     display: block;
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -143,6 +147,7 @@
 }
 
 .store-detail-content {
+    flex: 1 1 auto;
     min-width: 0;
     padding-top: 1px;
 }
@@ -150,17 +155,19 @@
 .store-detail-label {
     display: block;
     color: #737373;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
 }
 
 .store-detail-content p {
-    margin: 7px 0 0;
+    margin: 4px 0 0;
     color: #242424;
-    font-size: 17px;
+    font-size: 15px;
     line-height: 1.55;
     overflow-wrap: anywhere;
 }
+
+/* Status buka/tutup */
 
 .store-status {
     display: inline-flex;
@@ -191,6 +198,8 @@
     background: currentColor;
 }
 
+/* Informasi ongkir */
+
 .store-detail-delivery {
     display: flex;
     align-items: center;
@@ -202,6 +211,7 @@
     background: #f5f5f5;
     color: #3e3e3e;
     font-size: 14px;
+    line-height: 1.5;
 }
 
 .store-detail-delivery svg {
@@ -211,12 +221,12 @@
 }
 
 /* =========================================================
-   JUDUL KATALOG
+   KATALOG PRODUK
    ========================================================= */
 
 .store-catalog {
     min-width: 0;
-    padding-top: 28px;
+    padding-top: 24px;
     scroll-margin-top: 20px;
 }
 
@@ -225,13 +235,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 
 .store-catalog-heading h2 {
     margin: 0;
     color: #171717;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.35;
 }
@@ -239,17 +249,17 @@
 .store-product-total {
     flex: 0 0 auto;
     color: #737373;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 /* =========================================================
-   PENCARIAN
+   PENCARIAN PRODUK
    ========================================================= */
 
 .store-search-form {
     display: flex;
     gap: 8px;
-    margin: 0 0 18px;
+    margin: 0 0 16px;
 }
 
 .store-search-form input {
@@ -283,11 +293,17 @@
     font: inherit;
     font-size: 14px;
     cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.store-search-form button:hover {
+    background: #333;
 }
 
 /* =========================================================
    KATEGORI HORIZONTAL
-   Tombol Semua berupa ikon dan tetap di kiri.
+   Tombol Semua berupa ikon dan tetap di sisi kiri.
+   Kategori lain dapat digeser secara horizontal.
    ========================================================= */
 
 .store-category-nav {
@@ -295,10 +311,10 @@
     z-index: 2;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     min-width: 0;
-    margin: 0 0 20px;
+    margin: 0 0 16px;
     padding: 2px 0 8px;
     overflow-x: auto;
     overflow-y: hidden;
@@ -317,14 +333,14 @@
     align-items: center;
     justify-content: center;
     min-width: 48px;
-    min-height: 44px;
-    padding: 10px 20px;
+    min-height: 40px;
+    padding: 9px 16px;
     border: 1px solid #dedede;
     border-radius: 999px;
     background: #fff;
     color: #303030;
     font: inherit;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.3;
     text-decoration: none;
     white-space: nowrap;
@@ -335,20 +351,26 @@
         border-color 160ms ease;
 }
 
+.store-category-nav .category-card:hover {
+    border-color: #999;
+}
+
 .store-category-nav .category-card.active {
     border-color: #111;
     background: #111;
     color: #fff;
 }
 
+/* Ikon Semua tetap di kiri ketika kategori digeser */
+
 .store-category-nav .category-all-button {
     position: sticky;
     left: 0;
     z-index: 3;
-    flex: 0 0 48px;
-    width: 48px;
-    min-width: 48px;
-    height: 44px;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 40px;
     padding: 0;
     border-radius: 50%;
     box-shadow: 5px 0 8px rgb(255 255 255 / 90%);
@@ -366,13 +388,13 @@
 }
 
 /* =========================================================
-   DAFTAR PRODUK PER KATEGORI
-   Setiap kategori menjadi kelompok daftar vertikal.
+   DAFTAR PRODUK
+   Kategori dipilih melalui navigasi di atas.
    ========================================================= */
 
 .store-products {
     display: grid;
-    gap: 26px;
+    gap: 22px;
     min-width: 0;
 }
 
@@ -386,13 +408,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 0 12px;
+    margin: 0 0 10px;
 }
 
 .store-category-heading h2 {
     margin: 0;
     color: #202020;
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     line-height: 1.4;
 }
@@ -405,51 +427,48 @@
 
 .store-category-products {
     display: grid;
-    gap: 12px;
+    gap: 10px;
     min-width: 0;
 }
 
 /* =========================================================
-   KARTU PRODUK
-   Struktur aktual dari catalog.js:
-   article.product-card
-     .product-image
-       img.product-photo
-       .product-image-placeholder
-     .product-info
-       .product-name
-       .product-variant
-       .product-unit
-       .product-bottom
-         .product-price
-         button.add-button
+   ITEM PRODUK
+   Format:
+   [Gambar] Nama Produk
+            Varian
+            Harga                 [+]
    ========================================================= */
 
 .store-category-products .product-card {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     width: 100%;
     min-width: 0;
-    min-height: 136px;
-    padding: 12px;
-    border: 1px solid #e2e2e2;
-    border-radius: 17px;
+    min-height: 104px;
+    padding: 10px;
+    border: 1px solid #e8e8e8;
+    border-radius: 14px;
     background: #fff;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 2%);
+    box-shadow: none;
+    transition: border-color 160ms ease;
 }
 
-/* Gambar di kiri */
+.store-category-products .product-card:hover {
+    border-color: #d0d0d0;
+}
+
+/* Gambar produk */
 
 .store-category-products .product-image {
     position: relative;
     display: grid;
-    flex: 0 0 108px;
-    width: 108px;
-    height: 108px;
+    flex: 0 0 84px;
+    width: 84px;
+    height: 84px;
     place-items: center;
     overflow: hidden;
-    border-radius: 11px;
+    border-radius: 10px;
     background: #f2f2f2;
 }
 
@@ -465,9 +484,9 @@
 }
 
 .store-category-products .product-image-placeholder {
-    display: grid;
     position: absolute;
     inset: 0;
+    display: grid;
     place-items: center;
     padding: 8px;
     color: #888;
@@ -480,12 +499,14 @@
     display: none;
 }
 
+/* Label produk jika tersedia */
+
 .store-category-products .product-tag {
     position: absolute;
-    top: 7px;
-    left: 7px;
-    max-width: calc(100% - 14px);
-    padding: 4px 7px;
+    top: 6px;
+    left: 6px;
+    max-width: calc(100% - 12px);
+    padding: 4px 6px;
     overflow: hidden;
     border-radius: 6px;
     background: #fff;
@@ -495,7 +516,7 @@
     white-space: nowrap;
 }
 
-/* Informasi di tengah */
+/* Informasi produk */
 
 .store-category-products .product-info {
     display: flex;
@@ -503,10 +524,10 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 6px;
-    min-width: 0;
-    min-height: 108px;
+    gap: 5px;
     align-self: stretch;
+    min-width: 0;
+    min-height: 84px;
     padding: 2px 0;
 }
 
@@ -516,7 +537,7 @@
     margin: 0;
     overflow: hidden;
     color: #222;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 650;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -524,18 +545,22 @@
     -webkit-line-clamp: 2;
 }
 
+/* Varian opsional */
+
 .store-category-products .product-variant {
     display: block;
     max-width: 100%;
     color: #777;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.45;
     overflow-wrap: anywhere;
 }
 
 .store-category-products .product-variant[hidden] {
     display: none;
 }
+
+/* Satuan produk jika digunakan */
 
 .store-category-products .product-unit {
     color: #777;
@@ -559,8 +584,9 @@
 }
 
 .store-category-products .product-price {
+    min-width: 0;
     color: #202020;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -568,17 +594,18 @@
 
 .store-category-products .add-button {
     display: inline-grid;
-    flex: 0 0 40px;
-    width: 40px;
-    height: 40px;
+    flex: 0 0 36px;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
     place-items: center;
     padding: 0;
     border: 0;
-    border-radius: 50%;
+    border-radius: 11px;
     background: #111;
     color: #fff;
     font: inherit;
-    font-size: 23px;
+    font-size: 22px;
     font-weight: 500;
     line-height: 1;
     cursor: pointer;
@@ -619,6 +646,7 @@
 
 .store-empty h3 {
     margin: 0 0 8px;
+    color: #222;
     font-size: 17px;
 }
 
@@ -646,7 +674,7 @@
 
 @media (min-width: 700px) {
     .store-page {
-        width: min(100% - 48px, 1000px);
+        width: min(calc(100% - 48px), 1000px);
     }
 
     .store-banner {
@@ -655,39 +683,92 @@
     }
 
     .store-identity {
-        gap: 22px;
+        gap: 20px;
         padding-top: 24px;
-        padding-bottom: 32px;
+        padding-bottom: 28px;
     }
 
     .store-identity-logo {
-        flex-basis: 96px;
-        width: 96px;
-        height: 96px;
+        flex-basis: 88px;
+        width: 88px;
+        height: 88px;
     }
 
     .store-details {
-        padding-top: 30px;
-        padding-bottom: 34px;
+        padding-top: 26px;
+        padding-bottom: 28px;
     }
 
     .store-detail-list {
+        gap: 20px;
+    }
+
+    .store-catalog {
+        padding-top: 28px;
+    }
+
+    .store-catalog-heading h2 {
+        font-size: 26px;
+    }
+
+    .store-category-nav .category-card {
+        min-height: 42px;
+        padding-inline: 18px;
+        font-size: 14px;
+    }
+
+    .store-category-nav .category-all-button {
+        flex-basis: 46px;
+        width: 46px;
+        min-width: 46px;
+        height: 42px;
+    }
+
+    .store-products {
         gap: 24px;
     }
 
+    .store-category-heading h2 {
+        font-size: 19px;
+    }
+
+    .store-category-products {
+        gap: 12px;
+    }
+
     .store-category-products .product-card {
-        min-height: 148px;
-        padding: 14px;
+        gap: 14px;
+        min-height: 112px;
+        padding: 12px;
     }
 
     .store-category-products .product-image {
-        flex-basis: 120px;
-        width: 120px;
-        height: 120px;
+        flex-basis: 88px;
+        width: 88px;
+        height: 88px;
     }
 
     .store-category-products .product-info {
-        min-height: 120px;
+        min-height: 88px;
+    }
+
+    .store-category-products .product-name {
+        font-size: 16px;
+    }
+
+    .store-category-products .product-variant {
+        font-size: 13px;
+    }
+
+    .store-category-products .product-price {
+        font-size: 16px;
+    }
+
+    .store-category-products .add-button {
+        flex-basis: 40px;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
     }
 }
 
@@ -697,7 +778,7 @@
 
 @media (max-width: 480px) {
     .store-page {
-        width: calc(100% - 28px);
+        width: calc(100% - 24px);
         padding-bottom: 32px;
     }
 
@@ -708,42 +789,41 @@
     }
 
     .store-identity {
-        gap: 14px;
-        padding: 18px 0 24px;
+        gap: 12px;
+        padding-block: 16px 20px;
     }
 
     .store-identity-logo {
-        flex-basis: 72px;
-        width: 72px;
-        height: 72px;
-        border-radius: 14px;
-        font-size: 25px;
+        flex-basis: 64px;
+        width: 64px;
+        height: 64px;
+        border-radius: 13px;
+        font-size: 24px;
     }
 
     .store-identity-text h1 {
-        font-size: 22px;
+        font-size: 21px;
     }
 
     .store-identity-text p {
-        margin-top: 5px;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .store-details {
-        padding: 24px 0;
+        padding-block: 22px;
     }
 
     .store-details h2 {
-        font-size: 20px;
+        font-size: 19px;
     }
 
     .store-detail-list {
-        gap: 19px;
-        margin-top: 20px;
+        gap: 16px;
+        margin-top: 16px;
     }
 
     .store-detail-item {
-        gap: 12px;
+        gap: 10px;
     }
 
     .store-detail-icon {
@@ -753,42 +833,48 @@
     }
 
     .store-detail-icon svg {
-        width: 23px;
-        height: 23px;
+        width: 22px;
+        height: 22px;
     }
 
     .store-detail-content p {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .store-detail-label {
+        font-size: 12px;
+    }
+
+    .store-detail-delivery {
+        gap: 8px;
+        padding: 9px 10px;
         font-size: 13px;
     }
 
     .store-catalog {
-        padding-top: 24px;
+        padding-top: 22px;
     }
 
     .store-catalog-heading {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .store-catalog-heading h2 {
-        font-size: 25px;
+        font-size: 23px;
     }
 
     .store-product-total {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .store-search-form {
         gap: 7px;
-        margin-bottom: 15px;
+        margin-bottom: 14px;
     }
 
     .store-search-form input {
         min-height: 42px;
-        padding-inline: 12px;
+        padding-inline: 11px;
         font-size: 13px;
     }
 
@@ -800,1054 +886,80 @@
 
     .store-category-nav {
         gap: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .store-category-nav .category-card {
-        min-height: 40px;
-        padding: 9px 16px;
-        font-size: 13px;
-    }
-
-    .store-category-nav .category-all-button {
-        flex-basis: 44px;
-        width: 44px;
-        min-width: 44px;
-        height: 40px;
-    }
-
-    .store-products {
-        gap: 22px;
-    }
-
-    .store-category-heading {
-        margin-bottom: 10px;
-    }
-
-    .store-category-heading h2 {
-        font-size: 17px;
-    }
-
-    .store-category-products {
-        gap: 10px;
-    }
-
-    .store-category-products .product-card {
-        gap: 12px;
-        min-height: 112px;
-        padding: 9px;
-        border-radius: 15px;
-    }
-
-    .store-category-products .product-image {
-        flex-basis: 88px;
-        width: 88px;
-        height: 88px;
-        border-radius: 10px;
-    }
-
-    .store-category-products .product-info {
-        gap: 5px;
-        min-height: 88px;
-    }
-
-    .store-category-products .product-name {
-        font-size: 15px;
-    }
-
-    .store-category-products .product-variant {
+        min-height: 38px;
+        padding: 8px 14px;
         font-size: 12px;
     }
 
-    .store-category-products .product-price {
-        font-size: 14px;
+    .store-category-nav .category-all-button {
+        flex-basis: 42px;
+        width: 42px;
+        min-width: 42px;
+        height: 38px;
     }
 
-    .store-category-products .add-button {
-        flex-basis: 36px;
-        width: 36px;
-        height: 36px;
-        font-size: 21px;
+    .store-category-nav .category-all-icon svg {
+        width: 18px;
+        height: 18px;
     }
 
-    .store-category-products .product-bottom {
-        gap: 6px;
-    }
-}
-
-/* =========================================================
-   PONSEL KECIL
-   ========================================================= */
-
-@media (max-width: 350px) {
-    .store-page {
-        width: calc(100% - 22px);
+    .store-products {
+        gap: 20px;
     }
 
-    .store-identity-logo {
-        flex-basis: 62px;
-        width: 62px;
-        height: 62px;
+    .store-category-heading {
+        margin-bottom: 9px;
     }
 
-    .store-identity-text h1 {
-        font-size: 19px;
-    }
-
-    .store-category-products .product-card {
-        gap: 9px;
-        padding: 8px;
-    }
-
-    .store-category-products .product-image {
-        flex-basis: 72px;
-        width: 72px;
-        height: 72px;
-    }
-
-    .store-category-products .product-info {
-        min-height: 72px;
-    }
-
-    .store-category-products .product-name {
-        font-size: 14px;
-    }
-
-    .store-category-products .product-price {
-        font-size: 13px;
-    }
-
-    .store-category-products .add-button {
-        flex-basis: 32px;
-        width: 32px;
-        height: 32px;
-    }
-}
-
-/* Kurangi animasi sesuai preferensi perangkat */
-
-@media (prefers-reduced-motion: reduce) {
-    .store-category-nav .category-card,
-    .store-category-products .add-button,
-    .store-search-form input {
-        transition: none;
-    }
-}
-
-
-/* =========================================================
-   PESAN AJAH — HALAMAN WARUNG
-   File: assets/css/warung.css
-   ========================================================= */
-
-.store-page {
-    width: min(100% - 32px, 1000px);
-    min-width: 0;
-    margin-inline: auto;
-    padding-bottom: 48px;
-    color: #171717;
-}
-
-.store-page,
-.store-page * {
-    box-sizing: border-box;
-}
-
-/* =========================================================
-   BANNER
-   ========================================================= */
-
-.store-banner {
-    width: 100%;
-    aspect-ratio: 16 / 5;
-    margin-top: 18px;
-    overflow: hidden;
-    border-radius: 18px;
-    background: #f0f0f0;
-}
-
-.store-banner img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-/* =========================================================
-   IDENTITAS WARUNG
-   ========================================================= */
-
-.store-identity {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 22px 0 30px;
-    border-bottom: 1px solid #e8e8e8;
-}
-
-.store-identity-logo {
-    display: grid;
-    flex: 0 0 88px;
-    width: 88px;
-    height: 88px;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 18px;
-    background: #f2f2f2;
-    color: #454545;
-    font-size: 30px;
-    font-weight: 700;
-}
-
-.store-identity-logo img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.store-identity-text {
-    min-width: 0;
-}
-
-.store-identity-text h1 {
-    margin: 0;
-    color: #171717;
-    font-size: clamp(22px, 3vw, 30px);
-    font-weight: 700;
-    line-height: 1.3;
-    overflow-wrap: anywhere;
-}
-
-.store-identity-text p {
-    margin: 8px 0 0;
-    color: #737373;
-    font-size: 16px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-/* =========================================================
-   DETAIL WARUNG
-   ========================================================= */
-
-.store-details {
-    padding: 28px 0 30px;
-    border-bottom: 1px solid #e8e8e8;
-}
-
-.store-details h2 {
-    margin: 0;
-    color: #171717;
-    font-size: 23px;
-    font-weight: 700;
-    line-height: 1.35;
-}
-
-.store-detail-list {
-    display: grid;
-    gap: 22px;
-    margin-top: 24px;
-}
-
-.store-detail-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    min-width: 0;
-}
-
-.store-detail-icon {
-    display: grid;
-    flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    color: #737373;
-}
-
-.store-detail-icon svg,
-.store-detail-delivery svg {
-    display: block;
-    width: 25px;
-    height: 25px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.store-detail-content {
-    min-width: 0;
-    padding-top: 1px;
-}
-
-.store-detail-label {
-    display: block;
-    color: #737373;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.store-detail-content p {
-    margin: 7px 0 0;
-    color: #242424;
-    font-size: 17px;
-    line-height: 1.55;
-    overflow-wrap: anywhere;
-}
-
-.store-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 30px;
-    padding: 5px 11px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.store-status.is-open {
-    background: #d9f3e3;
-    color: #167343;
-}
-
-.store-status.is-closed {
-    background: #fce5e5;
-    color: #b42318;
-}
-
-.store-status-dot {
-    flex: 0 0 7px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-}
-
-.store-detail-delivery {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-    max-width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #f5f5f5;
-    color: #3e3e3e;
-    font-size: 14px;
-}
-
-.store-detail-delivery svg {
-    flex: 0 0 22px;
-    width: 22px;
-    height: 22px;
-}
-
-/* =========================================================
-   JUDUL KATALOG
-   ========================================================= */
-
-.store-catalog {
-    min-width: 0;
-    padding-top: 28px;
-    scroll-margin-top: 20px;
-}
-
-.store-catalog-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.store-catalog-heading h2 {
-    margin: 0;
-    color: #171717;
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.35;
-}
-
-.store-product-total {
-    flex: 0 0 auto;
-    color: #737373;
-    font-size: 13px;
-}
-
-/* =========================================================
-   PENCARIAN
-   ========================================================= */
-
-.store-search-form {
-    display: flex;
-    gap: 8px;
-    margin: 0 0 18px;
-}
-
-.store-search-form input {
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    padding: 10px 14px;
-    border: 1px solid #dedede;
-    border-radius: 12px;
-    outline: none;
-    background: #fff;
-    color: #222;
-    font: inherit;
-    font-size: 14px;
-    transition: border-color 160ms ease;
-}
-
-.store-search-form input:focus {
-    border-color: #777;
-}
-
-.store-search-form button {
-    flex: 0 0 auto;
-    min-height: 44px;
-    padding: 0 17px;
-    border: 0;
-    border-radius: 12px;
-    background: #111;
-    color: #fff;
-    font: inherit;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* =========================================================
-   KATEGORI HORIZONTAL
-   Tombol Semua berupa ikon dan tetap di kiri.
-   ========================================================= */
-
-.store-category-nav {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    min-width: 0;
-    margin: 0 0 20px;
-    padding: 2px 0 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-.store-category-nav::-webkit-scrollbar {
-    display: none;
-}
-
-.store-category-nav .category-card {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    min-width: 48px;
-    min-height: 44px;
-    padding: 10px 20px;
-    border: 1px solid #dedede;
-    border-radius: 999px;
-    background: #fff;
-    color: #303030;
-    font: inherit;
-    font-size: 14px;
-    line-height: 1.3;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition:
-        color 160ms ease,
-        background-color 160ms ease,
-        border-color 160ms ease;
-}
-
-.store-category-nav .category-card.active {
-    border-color: #111;
-    background: #111;
-    color: #fff;
-}
-
-.store-category-nav .category-all-button {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    flex: 0 0 48px;
-    width: 48px;
-    min-width: 48px;
-    height: 44px;
-    padding: 0;
-    border-radius: 50%;
-    box-shadow: 5px 0 8px rgb(255 255 255 / 90%);
-}
-
-.store-category-nav .category-all-icon {
-    display: grid;
-    place-items: center;
-}
-
-.store-category-nav .category-all-icon svg {
-    display: block;
-    width: 20px;
-    height: 20px;
-}
-
-/* =========================================================
-   DAFTAR PRODUK PER KATEGORI
-   Setiap kategori menjadi kelompok daftar vertikal.
-   ========================================================= */
-
-.store-products {
-    display: grid;
-    gap: 26px;
-    min-width: 0;
-}
-
-.store-category-section {
-    min-width: 0;
-    scroll-margin-top: 24px;
-}
-
-.store-category-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 0 0 12px;
-}
-
-.store-category-heading h2 {
-    margin: 0;
-    color: #202020;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.4;
-}
-
-.store-category-count {
-    flex: 0 0 auto;
-    color: #777;
-    font-size: 12px;
-}
-
-.store-category-products {
-    display: grid;
-    gap: 12px;
-    min-width: 0;
-}
-
-/* =========================================================
-   KARTU PRODUK
-   Struktur aktual dari catalog.js:
-   article.product-card
-     .product-image
-       img.product-photo
-       .product-image-placeholder
-     .product-info
-       .product-name
-       .product-variant
-       .product-unit
-       .product-bottom
-         .product-price
-         button.add-button
-   ========================================================= */
-
-.store-category-products .product-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-    min-width: 0;
-    min-height: 136px;
-    padding: 12px;
-    border: 1px solid #e2e2e2;
-    border-radius: 17px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 2%);
-}
-
-/* Gambar di kiri */
-
-.store-category-products .product-image {
-    position: relative;
-    display: grid;
-    flex: 0 0 108px;
-    width: 108px;
-    height: 108px;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 11px;
-    background: #f2f2f2;
-}
-
-.store-category-products .product-photo {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.store-category-products .product-photo[hidden] {
-    display: none;
-}
-
-.store-category-products .product-image-placeholder {
-    display: grid;
-    position: absolute;
-    inset: 0;
-    place-items: center;
-    padding: 8px;
-    color: #888;
-    font-size: 11px;
-    line-height: 1.4;
-    text-align: center;
-}
-
-.store-category-products .product-image-placeholder[hidden] {
-    display: none;
-}
-
-.store-category-products .product-tag {
-    position: absolute;
-    top: 7px;
-    left: 7px;
-    max-width: calc(100% - 14px);
-    padding: 4px 7px;
-    overflow: hidden;
-    border-radius: 6px;
-    background: #fff;
-    color: #333;
-    font-size: 10px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Informasi di tengah */
-
-.store-category-products .product-info {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 6px;
-    min-width: 0;
-    min-height: 108px;
-    align-self: stretch;
-    padding: 2px 0;
-}
-
-.store-category-products .product-name {
-    display: -webkit-box;
-    width: 100%;
-    margin: 0;
-    overflow: hidden;
-    color: #222;
-    font-size: 16px;
-    font-weight: 650;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-
-.store-category-products .product-variant {
-    display: block;
-    max-width: 100%;
-    color: #777;
-    font-size: 13px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-.store-category-products .product-variant[hidden] {
-    display: none;
-}
-
-.store-category-products .product-unit {
-    color: #777;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.store-category-products .product-unit:empty {
-    display: none;
-}
-
-/* Harga dan tombol tambah */
-
-.store-category-products .product-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-    margin-top: auto;
-}
-
-.store-category-products .product-price {
-    color: #202020;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-}
-
-.store-category-products .add-button {
-    display: inline-grid;
-    flex: 0 0 40px;
-    width: 40px;
-    height: 40px;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: #111;
-    color: #fff;
-    font: inherit;
-    font-size: 23px;
-    font-weight: 500;
-    line-height: 1;
-    cursor: pointer;
-    transition:
-        background-color 160ms ease,
-        transform 160ms ease,
-        opacity 160ms ease;
-}
-
-.store-category-products .add-button:hover:not(:disabled) {
-    background: #333;
-}
-
-.store-category-products .add-button:active:not(:disabled) {
-    transform: scale(.96);
-}
-
-.store-category-products .add-button:disabled {
-    background: #dedede;
-    color: #777;
-    cursor: not-allowed;
-}
-
-/* =========================================================
-   KONDISI KOSONG
-   ========================================================= */
-
-.store-empty {
-    padding: 32px 16px;
-    border: 1px dashed #ddd;
-    border-radius: 16px;
-    text-align: center;
-}
-
-.store-empty[hidden] {
-    display: none;
-}
-
-.store-empty h3 {
-    margin: 0 0 8px;
-    font-size: 17px;
-}
-
-.store-empty p {
-    margin: 0 0 16px;
-    color: #737373;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-/* =========================================================
-   FOKUS KEYBOARD
-   ========================================================= */
-
-.store-page button:focus-visible,
-.store-page a:focus-visible,
-.store-page input:focus-visible {
-    outline: 2px solid #555;
-    outline-offset: 3px;
-}
-
-/* =========================================================
-   TABLET DAN DESKTOP
-   ========================================================= */
-
-@media (min-width: 700px) {
-    .store-page {
-        width: min(100% - 48px, 1000px);
-    }
-
-    .store-banner {
-        aspect-ratio: 16 / 4.5;
-        margin-top: 24px;
-    }
-
-    .store-identity {
-        gap: 22px;
-        padding-top: 24px;
-        padding-bottom: 32px;
-    }
-
-    .store-identity-logo {
-        flex-basis: 96px;
-        width: 96px;
-        height: 96px;
-    }
-
-    .store-details {
-        padding-top: 30px;
-        padding-bottom: 34px;
-    }
-
-    .store-detail-list {
-        gap: 24px;
-    }
-
-    .store-category-products .product-card {
-        min-height: 148px;
-        padding: 14px;
-    }
-
-    .store-category-products .product-image {
-        flex-basis: 120px;
-        width: 120px;
-        height: 120px;
-    }
-
-    .store-category-products .product-info {
-        min-height: 120px;
-    }
-}
-
-/* =========================================================
-   PONSEL
-   ========================================================= */
-
-@media (max-width: 480px) {
-    .store-page {
-        width: calc(100% - 28px);
-        padding-bottom: 32px;
-    }
-
-    .store-banner {
-        aspect-ratio: 16 / 5;
-        margin-top: 12px;
-        border-radius: 14px;
-    }
-
-    .store-identity {
-        gap: 14px;
-        padding: 18px 0 24px;
-    }
-
-    .store-identity-logo {
-        flex-basis: 72px;
-        width: 72px;
-        height: 72px;
-        border-radius: 14px;
-        font-size: 25px;
-    }
-
-    .store-identity-text h1 {
-        font-size: 22px;
-    }
-
-    .store-identity-text p {
-        margin-top: 5px;
-        font-size: 14px;
-    }
-
-    .store-details {
-        padding: 24px 0;
-    }
-
-    .store-details h2 {
-        font-size: 20px;
-    }
-
-    .store-detail-list {
-        gap: 19px;
-        margin-top: 20px;
-    }
-
-    .store-detail-item {
-        gap: 12px;
-    }
-
-    .store-detail-icon {
-        flex-basis: 27px;
-        width: 27px;
-        height: 27px;
-    }
-
-    .store-detail-icon svg {
-        width: 23px;
-        height: 23px;
-    }
-
-    .store-detail-content p {
+    .store-category-heading h2 {
         font-size: 16px;
     }
 
-    .store-detail-label {
-        font-size: 13px;
-    }
-
-    .store-catalog {
-        padding-top: 24px;
-    }
-
-    .store-catalog-heading {
-        margin-bottom: 15px;
-    }
-
-    .store-catalog-heading h2 {
-        font-size: 25px;
-    }
-
-    .store-product-total {
-        font-size: 12px;
-    }
-
-    .store-search-form {
-        gap: 7px;
-        margin-bottom: 15px;
-    }
-
-    .store-search-form input {
-        min-height: 42px;
-        padding-inline: 12px;
-        font-size: 13px;
-    }
-
-    .store-search-form button {
-        min-height: 42px;
-        padding-inline: 13px;
-        font-size: 13px;
-    }
-
-    .store-category-nav {
-        gap: 8px;
-        margin-bottom: 16px;
-    }
-
-    .store-category-nav .category-card {
-        min-height: 40px;
-        padding: 9px 16px;
-        font-size: 13px;
-    }
-
-    .store-category-nav .category-all-button {
-        flex-basis: 44px;
-        width: 44px;
-        min-width: 44px;
-        height: 40px;
-    }
-
-    .store-products {
-        gap: 22px;
-    }
-
-    .store-category-heading {
-        margin-bottom: 10px;
-    }
-
-    .store-category-heading h2 {
-        font-size: 17px;
+    .store-category-count {
+        font-size: 11px;
     }
 
     .store-category-products {
-        gap: 10px;
-    }
-
-    .store-category-products .product-card {
-        gap: 12px;
-        min-height: 112px;
-        padding: 9px;
-        border-radius: 15px;
-    }
-
-    .store-category-products .product-image {
-        flex-basis: 88px;
-        width: 88px;
-        height: 88px;
-        border-radius: 10px;
-    }
-
-    .store-category-products .product-info {
-        gap: 5px;
-        min-height: 88px;
-    }
-
-    .store-category-products .product-name {
-        font-size: 15px;
-    }
-
-    .store-category-products .product-variant {
-        font-size: 12px;
-    }
-
-    .store-category-products .product-price {
-        font-size: 14px;
-    }
-
-    .store-category-products .add-button {
-        flex-basis: 36px;
-        width: 36px;
-        height: 36px;
-        font-size: 21px;
-    }
-
-    .store-category-products .product-bottom {
-        gap: 6px;
-    }
-}
-
-/* =========================================================
-   PONSEL KECIL
-   ========================================================= */
-
-@media (max-width: 350px) {
-    .store-page {
-        width: calc(100% - 22px);
-    }
-
-    .store-identity-logo {
-        flex-basis: 62px;
-        width: 62px;
-        height: 62px;
-    }
-
-    .store-identity-text h1 {
-        font-size: 19px;
-    }
-
-    .store-category-products .product-card {
         gap: 9px;
+    }
+
+    .store-category-products .product-card {
+        gap: 10px;
+        min-height: 92px;
         padding: 8px;
+        border-radius: 12px;
     }
 
     .store-category-products .product-image {
         flex-basis: 72px;
         width: 72px;
         height: 72px;
+        border-radius: 9px;
     }
 
     .store-category-products .product-info {
+        gap: 4px;
         min-height: 72px;
     }
 
     .store-category-products .product-name {
         font-size: 14px;
+    }
+
+    .store-category-products .product-variant {
+        font-size: 11px;
+    }
+
+    .store-category-products .product-unit {
+        font-size: 11px;
+    }
+
+    .store-category-products .product-bottom {
+        gap: 6px;
     }
 
     .store-category-products .product-price {
@@ -1857,17 +969,77 @@
     .store-category-products .add-button {
         flex-basis: 32px;
         width: 32px;
+        min-width: 32px;
         height: 32px;
+        border-radius: 9px;
+        font-size: 20px;
     }
 }
 
-/* Kurangi animasi sesuai preferensi perangkat */
+/* =========================================================
+   PONSEL KECIL
+   ========================================================= */
+
+@media (max-width: 350px) {
+    .store-page {
+        width: calc(100% - 20px);
+    }
+
+    .store-identity {
+        gap: 10px;
+    }
+
+    .store-identity-logo {
+        flex-basis: 58px;
+        width: 58px;
+        height: 58px;
+    }
+
+    .store-identity-text h1 {
+        font-size: 19px;
+    }
+
+    .store-category-products .product-card {
+        gap: 8px;
+        padding: 7px;
+    }
+
+    .store-category-products .product-image {
+        flex-basis: 64px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .store-category-products .product-info {
+        min-height: 64px;
+    }
+
+    .store-category-products .product-name {
+        font-size: 13px;
+    }
+
+    .store-category-products .product-price {
+        font-size: 12px;
+    }
+
+    .store-category-products .add-button {
+        flex-basis: 30px;
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+    }
+}
+
+/* =========================================================
+   AKSESIBILITAS: REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
     .store-category-nav .category-card,
+    .store-category-products .product-card,
     .store-category-products .add-button,
-    .store-search-form input {
+    .store-search-form input,
+    .store-search-form button {
         transition: none;
     }
 }
-
