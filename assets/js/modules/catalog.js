@@ -87,11 +87,12 @@ export function createCatalog({
   |
   */
 
+
   function renderCategories() {
     if (!categoryList) {
       return;
     }
-  
+
     const categories = [
       ...new Set(
         products
@@ -99,130 +100,103 @@ export function createCatalog({
           .map((product) => normalizeCategory(product.category)),
       ),
     ].sort(compareCategories);
-  
+
     const fragment = document.createDocumentFragment();
-  
-    /*
-     * TOMBOL SEMUA
-     *
-     * Beranda: ikon grid tanpa teks.
-     * Halaman warung: tetap menggunakan navigasi Semua yang lama.
-     */
+    const svgNamespace = "http://www.w3.org/2000/svg";
+
+    // Tombol Semua: struktur sama untuk beranda dan warung.
     const allButton = document.createElement(
       groupedMode ? "a" : "button",
     );
-  
-    allButton.className = groupedMode
-      ? ""
-      : "category-card category-all-button";
-  
+
+    allButton.className = "category-card category-all-button";
     allButton.dataset.category = "Semua";
-  
+    allButton.setAttribute("aria-label", "Tampilkan semua produk");
+    allButton.setAttribute("title", "Semua kategori");
     allButton.setAttribute(
       "aria-pressed",
       String(selectedCategory === "Semua"),
     );
-  
+
     if (groupedMode) {
       allButton.href = "#";
-      allButton.textContent = "Semua";
-  
-      if (selectedCategory === "Semua") {
-        allButton.classList.add("active");
-      }
     } else {
       allButton.type = "button";
-      allButton.setAttribute(
-        "aria-label",
-        "Tampilkan semua produk",
-      );
-      allButton.title = "Semua kategori";
-  
-      const icon = document.createElement("span");
-      icon.className = "category-all-icon";
-      icon.setAttribute("aria-hidden", "true");
-  
-      const svgNamespace = "http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(svgNamespace, "svg");
-  
-      svg.setAttribute("viewBox", "0 0 24 24");
-      svg.setAttribute("width", "20");
-      svg.setAttribute("height", "20");
-      svg.setAttribute("fill", "none");
-      svg.setAttribute("stroke", "currentColor");
-      svg.setAttribute("stroke-width", "1.8");
-      svg.setAttribute("stroke-linecap", "round");
-      svg.setAttribute("stroke-linejoin", "round");
-  
-      const rectangles = [
-        [3.5, 3.5],
-        [13.5, 3.5],
-        [3.5, 13.5],
-        [13.5, 13.5],
-      ];
-  
-      for (const [x, y] of rectangles) {
-        const rect = document.createElementNS(
-          svgNamespace,
-          "rect",
-        );
-  
-        rect.setAttribute("x", String(x));
-        rect.setAttribute("y", String(y));
-        rect.setAttribute("width", "7");
-        rect.setAttribute("height", "7");
-        rect.setAttribute("rx", "1.5");
-  
-        svg.append(rect);
-      }
-  
-      icon.append(svg);
-      allButton.append(icon);
     }
-  
+
+    // Ikon grid empat kotak.
+    const icon = document.createElement("span");
+    icon.className = "category-all-icon";
+    icon.setAttribute("aria-hidden", "true");
+
+    const svg = document.createElementNS(svgNamespace, "svg");
+    svg.setAttribute("xmlns", svgNamespace);
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("width", "20");
+    svg.setAttribute("height", "20");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.8");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("focusable", "false");
+
+    const positions = [
+      [3.5, 3.5],
+      [13.5, 3.5],
+      [3.5, 13.5],
+      [13.5, 13.5],
+    ];
+
+    positions.forEach(([x, y]) => {
+      const rect = document.createElementNS(
+        svgNamespace,
+        "rect",
+      );
+
+      rect.setAttribute("x", String(x));
+      rect.setAttribute("y", String(y));
+      rect.setAttribute("width", "7");
+      rect.setAttribute("height", "7");
+      rect.setAttribute("rx", "1.5");
+
+      svg.appendChild(rect);
+    });
+
+    icon.appendChild(svg);
+    allButton.appendChild(icon);
+
     allButton.classList.toggle(
       "active",
       selectedCategory === "Semua",
     );
-  
-    fragment.append(allButton);
-  
-    /*
-     * KATEGORI DINAMIS
-     */
-    for (const category of categories) {
+
+    fragment.appendChild(allButton);
+
+    // Kategori produk tetap dinamis.
+    categories.forEach((category) => {
       const button = document.createElement(
         groupedMode ? "a" : "button",
       );
-  
+
       const isActive = selectedCategory === category;
-  
+
+      button.className = "category-card";
       button.dataset.category = category;
       button.setAttribute("aria-pressed", String(isActive));
-  
+
       if (groupedMode) {
         button.href = "#";
-        button.textContent = category;
       } else {
         button.type = "button";
-        button.className = "category-card";
-  
-        const icon = document.createElement("span");
-  
-        icon.setAttribute("aria-hidden", "true");
-        icon.textContent = "▦";
-  
-        button.append(
-          icon,
-          document.createTextNode(` ${category}`),
-        );
       }
-  
+
+      button.textContent = category;
       button.classList.toggle("active", isActive);
-  
-      fragment.append(button);
-    }
-  
+
+      fragment.appendChild(button);
+    });
+
     categoryList.replaceChildren(fragment);
   }
 

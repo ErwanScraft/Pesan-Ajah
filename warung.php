@@ -528,35 +528,160 @@ if ($storeName !== '') {
             border-radius: 8px;
         }
 
+
         /* =================================================
            CATEGORY NAVIGATION
+           Selaras dengan navigasi kategori beranda
            ================================================= */
-
+        
         .store-category-nav {
             display: flex;
+            align-items: center;
             gap: 8px;
+        
+            width: 100%;
+            min-width: 0;
+        
             margin-bottom: 24px;
-            padding-bottom: 6px;
+            padding: 3px 2px 8px;
+        
             overflow-x: auto;
-            scrollbar-width: thin;
+            overflow-y: hidden;
+        
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            touch-action: pan-x;
         }
-
-        .store-category-nav a {
+        
+        .store-category-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .store-category-nav .category-card {
+            display: inline-flex;
             flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+        
+            min-height: 38px;
             padding: 9px 14px;
+        
             border: 1px solid #e3e9e5;
-            border-radius: 24px;
+            border-radius: 999px;
+        
             background: #fff;
             color: #39443c;
-            font-size: 13px;
+        
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 650;
+            line-height: 1.2;
+        
             text-decoration: none;
             white-space: nowrap;
+            cursor: pointer;
+        
+            transition:
+                color 0.18s ease,
+                background-color 0.18s ease,
+                border-color 0.18s ease;
         }
-
-        .store-category-nav a.active {
+        
+        .store-category-nav .category-card:hover {
+            border-color: #c7ddcc;
+            background: #f7faf6;
+        }
+        
+        .store-category-nav .category-card.active {
             border-color: #176b45;
             background: #176b45;
             color: #fff;
+        }
+        
+        /* Tombol Semua tetap di sisi kiri saat kategori digulir. */
+        .store-category-nav .category-all-button {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+        
+            flex: 0 0 42px;
+            width: 42px;
+            min-width: 42px;
+            height: 38px;
+            min-height: 38px;
+        
+            padding: 0;
+            border-radius: 12px;
+        
+            background: #fff;
+            box-shadow: 4px 0 8px rgb(0 0 0 / 5%);
+        }
+        
+        .store-category-nav .category-all-button.active {
+            border-color: #176b45;
+            background: #176b45;
+            color: #fff;
+        }
+        
+        /* Pastikan pembungkus dan SVG ikon terlihat. */
+        .store-category-nav .category-all-icon {
+            display: grid !important;
+            flex: 0 0 20px;
+        
+            width: 20px;
+            height: 20px;
+        
+            place-items: center;
+            background: transparent;
+            color: currentColor;
+        }
+        
+        .store-category-nav .category-all-icon svg {
+            display: block !important;
+        
+            width: 20px;
+            height: 20px;
+        
+            stroke: currentColor;
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .store-category-nav .category-all-icon svg rect {
+            fill: none;
+            stroke: currentColor;
+        }
+        
+        /* Responsif untuk ponsel. */
+        @media (max-width: 600px) {
+            .store-category-nav {
+                gap: 8px;
+            }
+        
+            .store-category-nav .category-card {
+                min-height: 36px;
+                padding: 9px 13px;
+                font-size: 11px;
+            }
+        
+            .store-category-nav .category-all-button {
+                flex-basis: 40px;
+                width: 40px;
+                min-width: 40px;
+        
+                height: 36px;
+                min-height: 36px;
+        
+                padding: 0;
+                border-radius: 11px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .store-category-nav .category-card {
+                transition: none;
+            }
         }
 
         /* =================================================
@@ -1180,28 +1305,33 @@ if ($storeName !== '') {
                 | JSON_HEX_QUOT
             )) ?>"
         >
-
             <a
                 href="#"
-                class="active"
+                class="category-card category-all-button active"
                 data-category="Semua"
+                aria-label="Tampilkan semua produk"
+                title="Semua kategori"
                 aria-pressed="true"
             >
-                Semua
+                <span class="category-all-icon" aria-hidden="true">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+                    </svg>
+                </span>
             </a>
-
-            <?php foreach ($categories as $category): ?>
-
-                <a
-                    href="#"
-                    data-category="<?= e($category) ?>"
-                    aria-pressed="false"
-                >
-                    <?= e($category) ?>
-                </a>
-
-            <?php endforeach; ?>
-
         </nav>
 
         <!-- =================================================
