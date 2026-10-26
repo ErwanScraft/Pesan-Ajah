@@ -431,22 +431,23 @@
     min-width: 0;
 }
 
+
 /* =========================================================
    ITEM PRODUK
-   Format:
-   [Gambar] Nama Produk
-            Varian
-            Harga                 [+]
+   Gambar kiri | nama dan varian tengah | harga dan + kanan
    ========================================================= */
 
 .store-category-products .product-card {
-    display: flex;
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 124px;
+    grid-template-rows: auto auto auto;
     align-items: center;
-    gap: 12px;
+    column-gap: 16px;
+    row-gap: 5px;
     width: 100%;
     min-width: 0;
-    min-height: 104px;
-    padding: 10px;
+    min-height: 124px;
+    padding: 12px;
     border: 1px solid #e8e8e8;
     border-radius: 14px;
     background: #fff;
@@ -458,17 +459,19 @@
     border-color: #d0d0d0;
 }
 
-/* Gambar produk */
+/* Gambar di sisi kiri */
 
 .store-category-products .product-image {
     position: relative;
     display: grid;
-    flex: 0 0 84px;
-    width: 84px;
-    height: 84px;
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: 96px;
+    height: 96px;
     place-items: center;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #f2f2f2;
 }
 
@@ -516,28 +519,23 @@
     white-space: nowrap;
 }
 
-/* Informasi produk */
+/* Informasi produk: nama dan varian di tengah */
 
 .store-category-products .product-info {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 5px;
-    align-self: stretch;
-    min-width: 0;
-    min-height: 84px;
-    padding: 2px 0;
+    display: contents;
 }
 
 .store-category-products .product-name {
     display: -webkit-box;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
     width: 100%;
+    min-width: 0;
     margin: 0;
     overflow: hidden;
     color: #222;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 650;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -545,13 +543,16 @@
     -webkit-line-clamp: 2;
 }
 
-/* Varian opsional */
-
 .store-category-products .product-variant {
     display: block;
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    min-width: 0;
     max-width: 100%;
+    margin: 0;
     color: #777;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.45;
     overflow-wrap: anywhere;
 }
@@ -560,9 +561,11 @@
     display: none;
 }
 
-/* Satuan produk jika digunakan */
-
 .store-category-products .product-unit {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+    min-width: 0;
     color: #777;
     font-size: 12px;
     line-height: 1.4;
@@ -572,40 +575,43 @@
     display: none;
 }
 
-/* Harga dan tombol tambah */
+/* Harga dan tombol berada di sisi kanan */
 
 .store-category-products .product-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-    margin-top: auto;
+    display: contents;
 }
 
 .store-category-products .product-price {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: end;
+    justify-self: end;
     min-width: 0;
     color: #202020;
-    font-size: 15px;
+    font-size: 19px;
     font-weight: 700;
     line-height: 1.4;
-    overflow-wrap: anywhere;
+    text-align: right;
+    white-space: nowrap;
 }
 
 .store-category-products .add-button {
     display: inline-grid;
-    flex: 0 0 36px;
-    width: 36px;
-    min-width: 36px;
-    height: 36px;
+    grid-column: 3;
+    grid-row: 2;
+    align-self: start;
+    justify-self: end;
+    width: 54px;
+    min-width: 54px;
+    height: 54px;
     place-items: center;
     padding: 0;
     border: 0;
-    border-radius: 11px;
-    background: #111;
+    border-radius: 14px;
+    background: #168342;
     color: #fff;
     font: inherit;
-    font-size: 22px;
+    font-size: 34px;
     font-weight: 500;
     line-height: 1;
     cursor: pointer;
@@ -616,7 +622,7 @@
 }
 
 .store-category-products .add-button:hover:not(:disabled) {
-    background: #333;
+    background: #116b35;
 }
 
 .store-category-products .add-button:active:not(:disabled) {
@@ -737,39 +743,37 @@
     }
 
     .store-category-products .product-card {
-        gap: 14px;
-        min-height: 112px;
-        padding: 12px;
+        grid-template-columns: 112px minmax(0, 1fr) 140px;
+        min-height: 140px;
+        column-gap: 20px;
+        row-gap: 8px;
+        padding: 14px;
     }
-
+    
     .store-category-products .product-image {
-        flex-basis: 88px;
-        width: 88px;
-        height: 88px;
+        width: 112px;
+        height: 112px;
+        border-radius: 14px;
     }
-
-    .store-category-products .product-info {
-        min-height: 88px;
-    }
-
+    
     .store-category-products .product-name {
-        font-size: 16px;
+        font-size: 17px;
     }
-
+    
     .store-category-products .product-variant {
-        font-size: 13px;
+        font-size: 14px;
     }
-
+    
     .store-category-products .product-price {
-        font-size: 16px;
+        font-size: 19px;
+    }
+    
+    .store-category-products .add-button {
+        width: 54px;
+        min-width: 54px;
+        height: 54px;
     }
 
-    .store-category-products .add-button {
-        flex-basis: 40px;
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
-    }
 }
 
 /* =========================================================
@@ -889,91 +893,43 @@
         margin-bottom: 14px;
     }
 
-    .store-category-nav .category-card {
-        min-height: 38px;
-        padding: 8px 14px;
-        font-size: 12px;
-    }
-
-    .store-category-nav .category-all-button {
-        flex-basis: 42px;
-        width: 42px;
-        min-width: 42px;
-        height: 38px;
-    }
-
-    .store-category-nav .category-all-icon svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .store-products {
-        gap: 20px;
-    }
-
-    .store-category-heading {
-        margin-bottom: 9px;
-    }
-
-    .store-category-heading h2 {
-        font-size: 16px;
-    }
-
-    .store-category-count {
-        font-size: 11px;
-    }
-
-    .store-category-products {
-        gap: 9px;
-    }
 
     .store-category-products .product-card {
-        gap: 10px;
+        grid-template-columns: 72px minmax(0, 1fr) 94px;
         min-height: 92px;
-        padding: 8px;
+        column-gap: 10px;
+        row-gap: 4px;
+        padding: 9px;
         border-radius: 12px;
     }
-
+    
     .store-category-products .product-image {
-        flex-basis: 72px;
         width: 72px;
         height: 72px;
         border-radius: 9px;
     }
-
-    .store-category-products .product-info {
-        gap: 4px;
-        min-height: 72px;
-    }
-
+    
     .store-category-products .product-name {
         font-size: 14px;
     }
-
-    .store-category-products .product-variant {
-        font-size: 11px;
-    }
-
+    
+    .store-category-products .product-variant,
     .store-category-products .product-unit {
-        font-size: 11px;
+        font-size: 12px;
     }
-
-    .store-category-products .product-bottom {
-        gap: 6px;
-    }
-
+    
     .store-category-products .product-price {
-        font-size: 13px;
+        font-size: 14px;
+    }
+    
+    .store-category-products .add-button {
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        font-size: 25px;
     }
 
-    .store-category-products .add-button {
-        flex-basis: 32px;
-        width: 32px;
-        min-width: 32px;
-        height: 32px;
-        border-radius: 9px;
-        font-size: 20px;
-    }
 }
 
 /* =========================================================
