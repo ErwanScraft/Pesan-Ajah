@@ -84,8 +84,9 @@ $productStats = $productStmt->fetch();
 /*
  * Pesanan terbaru.
  */
+
 $recentStmt = database()->prepare(
-    'SELECT
+    "SELECT
         id,
         order_number,
         buyer_name,
@@ -96,15 +97,17 @@ $recentStmt = database()->prepare(
     FROM orders
 
     WHERE store_id = :store_id
+      AND status <> 'draft'
 
     ORDER BY created_at DESC, id DESC
 
-    LIMIT 5'
+    LIMIT 5"
 );
 
 $recentStmt->execute([
     'store_id' => $storeId,
 ]);
+
 
 api_json([
     'success' => true,

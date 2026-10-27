@@ -7,9 +7,10 @@ require_once dirname(__DIR__, 2) . '/app/warung_api.php';
 $store = api_store_owner();
 $storeId = (int) $store['store_id'];
 
+
 if (request_method() === 'GET') {
     $stmt = database()->prepare(
-        'SELECT
+        "SELECT
             o.id,
             o.order_number,
             o.buyer_name,
@@ -26,9 +27,9 @@ if (request_method() === 'GET') {
         FROM orders o
 
         WHERE o.store_id = :store_id
-           AND o.status <> 'draft'
+          AND o.status <> 'draft'
 
-        ORDER BY o.created_at DESC, o.id DESC'
+        ORDER BY o.created_at DESC, o.id DESC"
     );
 
     $stmt->execute([
@@ -72,6 +73,7 @@ if (request_method() === 'GET') {
         'orders' => $orders,
     ]);
 }
+
 
 api_verify_csrf();
 
