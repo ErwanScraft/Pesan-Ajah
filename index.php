@@ -114,7 +114,10 @@ $homepageBanners = array_values(array_filter(
     ></script>
 </head>
 
-<body data-marketplace-page="true">
+<body
+    data-marketplace-page="true"
+    data-page="index"
+>
 
     <!-- HEADER -->
     <?php

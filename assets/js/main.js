@@ -3,8 +3,9 @@ import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
 import { showToast } from "./modules/toast.js";
 import { formatRupiah } from "./modules/format.js";
-import { initBannerCarousel } from "./modules/banner.js";
 import { initBuyerMenu } from "./modules/buyer-menu.js";
+
+import { initIndexPage } from "./pages/index.js";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -976,25 +977,6 @@ async function submitCheckout() {
 |--------------------------------------------------------------------------
 */
 
-$("#search-form")?.addEventListener(
-  "submit",
-  (event) => {
-    event.preventDefault();
-
-    catalog?.setQuery($("#search-input").value);
-
-    $("#products")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  },
-);
-
-$("#reset-search")?.addEventListener(
-  "click",
-  () => catalog?.reset(),
-);
-
 cartButton?.addEventListener("click", openCart);
 
 closeCartButton?.addEventListener(
@@ -1083,7 +1065,6 @@ if (currentYear) {
 */
 
 initBuyerMenu();
-initBannerCarousel();
 
 catalog = createCatalog({
   products,
@@ -1101,6 +1082,9 @@ catalog = createCatalog({
 
 catalog.render();
 renderCart();
+
+// Inisialisasi interaksi khusus beranda.
+initIndexPage({ catalog });
 
 async function initializeMarketplace() {
   const results = await Promise.allSettled([
