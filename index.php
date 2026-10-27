@@ -17,29 +17,6 @@ require_once __DIR__ . '/app/bootstrap.php';
 
 $productCategories = require APP_ROOT . '/config/categories.php';
 
-$homepageBanners = [
-    [
-        'image' => '/assets/images/banner_1.webp',
-        'alt' => 'Belanja kebutuhan harian di Pesan Ajah',
-        'url' => '',
-    ],
-    [
-        'image' => '/assets/images/banner_2.webp',
-        'alt' => 'Dasboard Warung',
-        'url' => 'https://www.pesanajah.web.id/warung/login.php',
-    ],
-    [
-        'image' => '/assets/images/banner_3.webp',
-        'alt' => 'Warung Teras Rambutan',
-        'url' => 'https://www.pesanajah.web.id/warung/terasrambutan',
-    ],
-];
-
-$homepageBanners = array_values(array_filter(
-    $homepageBanners,
-    static fn (array $banner): bool => !empty($banner['image'])
-));
-
 ?>
 
 <!doctype html>
@@ -166,9 +143,9 @@ $homepageBanners = array_values(array_filter(
 
                 </div>
 
-                <!-- BANNER -->
+                <!-- BANNER BERANDA -->
                 <section
-                    class="homepage-banner<?= count($homepageBanners) > 1 ? ' has-multiple-slides' : '' ?>"
+                    class="homepage-banner"
                     id="homepage-banner"
                     aria-label="Banner Pesan Ajah"
                     data-banner-carousel
@@ -176,34 +153,7 @@ $homepageBanners = array_values(array_filter(
                     <div
                         class="homepage-banner__track"
                         data-banner-track
-                    >
-                        <?php foreach ($homepageBanners as $index => $banner): ?>
-                            <div
-                                class="homepage-banner__slide"
-                                data-banner-slide
-                                aria-hidden="<?= $index === 0 ? 'false' : 'true' ?>"
-                            >
-                                <?php if (!empty($banner['url'])): ?>
-                                    <a
-                                        href="<?= htmlspecialchars($banner['url'], ENT_QUOTES, 'UTF-8') ?>"
-                                        aria-label="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
-                                    >
-                                        <img
-                                            class="homepage-banner__image"
-                                            src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
-                                            alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
-                                        >
-                                    </a>
-                                <?php else: ?>
-                                    <img
-                                        class="homepage-banner__image"
-                                        src="<?= htmlspecialchars($banner['image'], ENT_QUOTES, 'UTF-8') ?>"
-                                        alt="<?= htmlspecialchars($banner['alt'], ENT_QUOTES, 'UTF-8') ?>"
-                                    >
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                    ></div>
                 </section>
 
             </div>

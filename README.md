@@ -455,7 +455,8 @@ URL akhir dapat bergantung pada aturan routing dan konfigurasi hosting.
 
 ## Arsitektur Aplikasi
 
-Pesan Ajah menggunakan pendekatan modular.
+- Tempatkan logika khusus halaman di `assets/js/pages/` dan data pendukung di `assets/js/data/`.
+- Simpan fungsi di `assets/js/modules/` hanya jika digunakan bersama oleh beberapa halaman.
 
 ### Frontend
 
