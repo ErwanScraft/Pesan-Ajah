@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS orders (
     total INT UNSIGNED
         NOT NULL DEFAULT 0,
     status ENUM(
+        'draft',
         'pending',
         'confirmed',
         'processing',
@@ -196,7 +197,7 @@ CREATE TABLE IF NOT EXISTS orders (
         'in_delivery',
         'completed',
         'cancelled'
-    ) NOT NULL DEFAULT 'pending',
+    ) NOT NULL DEFAULT 'draft',
     buyer_token_hash CHAR(64) NOT NULL,
     delivery_maps_url VARCHAR(500) DEFAULT NULL,
     delivery_latitude DECIMAL(10, 7) DEFAULT NULL,

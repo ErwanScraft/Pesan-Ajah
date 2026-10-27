@@ -1,4 +1,3 @@
-
 /* =========================================================
    PESAN AJAH — CHECKOUT INFO
    File: assets/css/checkout-info.css
@@ -176,7 +175,46 @@
 }
 
 .checkout-info__actions {
-    margin-top: 20px;
+    position: static;
+    display: grid;
+    width: 100%;
+    gap: 8px;
+    margin: 20px 0 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.checkout-info__back {
+    display: flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background var(--transition),
+        border-color var(--transition);
+}
+
+.checkout-info__back:hover {
+    border-color: var(--green);
+    background: var(--green-light);
+}
+
+.checkout-info__back:focus-visible {
+    outline: 3px solid var(--green-light);
+    outline-offset: 3px;
 }
 
 .checkout-info__button {
@@ -306,18 +344,17 @@
      * meskipun daftar produk cukup panjang.
      */
     .checkout-info__actions {
-        position: fixed;
-        z-index: 45;
-        right: 12px;
-        bottom: 12px;
-        left: 12px;
-        margin: 0 auto;
-        width: min(calc(100% - 24px), 456px);
-        padding: 8px;
-        border: 1px solid var(--border);
-        border-radius: calc(var(--radius-md) + 4px);
-        background: var(--white);
-        box-shadow: var(--shadow-md);
+        position: static;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        margin: 18px 0 22px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
     }
 
     .checkout-info__button {
@@ -339,7 +376,7 @@
     }
 
     .checkout-info__tip {
-        margin-bottom: 72px;
+        margin-bottom: 0;
     }
 }
 

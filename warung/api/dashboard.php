@@ -41,7 +41,8 @@ $orderStmt = database()->prepare(
 
     FROM orders
 
-    WHERE store_id = :store_id"
+    WHERE store_id = :store_id
+        AND status <> 'draft'"
 );
 
 $orderStmt->execute([
@@ -54,7 +55,7 @@ $orderStats = $orderStmt->fetch();
  * Total produk dan produk tersedia.
  */
 $productStmt = database()->prepare(
-    'SELECT
+    "SELECT
         COUNT(*) AS total_products,
 
         COALESCE(
@@ -70,7 +71,8 @@ $productStmt = database()->prepare(
 
     FROM products
 
-    WHERE store_id = :store_id'
+    WHERE store_id = :store_id
+        AND status <> 'draft'"
 );
 
 $productStmt->execute([

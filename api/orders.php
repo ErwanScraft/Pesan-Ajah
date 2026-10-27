@@ -213,23 +213,18 @@ $sql = '
         o.delivery_fee,
         o.subtotal,
         o.total,
-        o.status,
         o.created_at,
         o.updated_at,
         s.name AS store_name
-
     FROM orders o
-
     INNER JOIN stores s
         ON s.id = o.store_id
-    
     LEFT JOIN delivery_assignments da
         ON da.order_id = o.id
-
     WHERE o.buyer_token_hash IN (
         ' . implode(', ', $placeholders) . '
     )
-
+    AND o.status <> \'draft\'
     ORDER BY o.created_at DESC, o.id DESC
 ';
 

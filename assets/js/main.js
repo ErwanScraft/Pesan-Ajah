@@ -919,7 +919,7 @@ async function submitCheckout() {
 
     showToast(
       toast,
-      `Pesanan ${result.order_number} tersimpan dengan status menunggu konfirmasi.`,
+      `Detail pesanan ${result.order_number} disimpan. Pesanan belum dikirim ke Seller.`,
     );
 
     if (
@@ -931,6 +931,7 @@ async function submitCheckout() {
           "pesan_ajah_checkout_redirect",
           JSON.stringify({
             order_number: result.order_number,
+            buyer_token: result.buyer_token,
             whatsapp_url: result.whatsapp_url,
             summary: checkoutSummary,
           }),

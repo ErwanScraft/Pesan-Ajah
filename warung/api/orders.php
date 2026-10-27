@@ -26,6 +26,7 @@ if (request_method() === 'GET') {
         FROM orders o
 
         WHERE o.store_id = :store_id
+           AND o.status <> 'draft'
 
         ORDER BY o.created_at DESC, o.id DESC'
     );

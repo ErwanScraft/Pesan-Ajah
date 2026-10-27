@@ -78,6 +78,44 @@ if ($invalidOrder) {
                             'UTF-8'
                         ) ?></strong>
                     </div>
+                    
+                    <!-- Tombol aksi di atas detail pesanan -->
+                    <div class="checkout-info__actions">
+                        <button
+                            class="checkout-info__button"
+                            id="continue-whatsapp"
+                            type="button"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.4A8.4 8.4 0 1 1 21 11.5Z"/>
+                                <path d="M8.5 8.5c.5 2.5 2.5 4.5 5 5l1.2-1.2 2 .8"/>
+                            </svg>
+                            <span>Lanjut kirim pesanan ke Seller</span>
+                        </button>
+                    
+                        <button
+                            class="checkout-info__back"
+                            id="back-to-marketplace"
+                            type="button"
+                        >
+                            Kembali
+                        </button>
+                    
+                        <p
+                            class="checkout-info__error"
+                            id="checkout-error"
+                            role="alert"
+                            hidden
+                        ></p>
+                    </div>
 
                     <section class="checkout-info__details" aria-labelledby="detail-title">
                         <h2 id="detail-title">Detail pesanan</h2>
@@ -118,35 +156,6 @@ if ($invalidOrder) {
                             </div>
                         </div>
                     </section>
-
-                    <div class="checkout-info__actions">
-                        <button
-                            class="checkout-info__button"
-                            id="continue-whatsapp"
-                            type="button"
-                        >
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                aria-hidden="true"
-                            >
-                                <path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.4A8.4 8.4 0 1 1 21 11.5Z"/>
-                                <path d="M8.5 8.5c.5 2.5 2.5 4.5 5 5l1.2-1.2 2 .8"/>
-                            </svg>
-                            <span>Lanjut kirim pesanan ke Seller</span>
-                        </button>
-
-                        <p
-                            class="checkout-info__error"
-                            id="checkout-error"
-                            role="alert"
-                            hidden
-                        ></p>
-                    </div>
 
                     <aside class="checkout-info__tip">
                         <strong>Selanjutnya</strong>
@@ -300,12 +309,12 @@ if ($invalidOrder) {
                         formatRupiah(summary.total);
                 }
 
-                button.addEventListener("click", () => {
+                button.addEventListener("click", async () => {
                     errorElement.hidden = true;
                     errorElement.textContent = "";
-
+                
                     let data;
-
+                
                     try {
                         data = JSON.parse(
                             sessionStorage.getItem(storageKey) || "null"
@@ -313,27 +322,28 @@ if ($invalidOrder) {
                     } catch {
                         data = null;
                     }
-
+                
                     if (
                         !data ||
                         data.order_number !== orderNumber ||
+                        typeof data.buyer_token !== "string" ||
                         typeof data.whatsapp_url !== "string"
                     ) {
                         showError(
-                            "Tautan WhatsApp tidak tersedia. Kembali ke halaman sebelumnya untuk memeriksa proses checkout."
+                            "Informasi pesanan tidak tersedia. Silakan kembali ke beranda."
                         );
                         return;
                     }
-
+                
                     let whatsappUrl;
-
+                
                     try {
                         whatsappUrl = new URL(data.whatsapp_url);
                     } catch {
                         showError("Tautan WhatsApp tidak valid.");
                         return;
                     }
-
+                
                     if (
                         whatsappUrl.protocol !== "https:" ||
                         ![
@@ -345,13 +355,64 @@ if ($invalidOrder) {
                         showError("Tujuan WhatsApp tidak valid.");
                         return;
                     }
-
+                
                     button.disabled = true;
                     button.querySelector("span").textContent =
-                        "Membuka WhatsApp...";
-
-                    window.location.assign(whatsappUrl.href);
+                        "Mengaktifkan pesanan...";
+                
+                    try {
+                        const response = await fetch("/api/activate-order.php", {
+                            method: "POST",
+                            credentials: "same-origin",
+                            cache: "no-store",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json",
+                            },
+                            body: JSON.stringify({
+                                order_number: data.order_number,
+                                buyer_token: data.buyer_token,
+                            }),
+                        });
+                
+                        const result = await response.json();
+                
+                        if (!response.ok || !result.success) {
+                            throw new Error(
+                                result.message || "Pesanan belum dapat diaktifkan."
+                            );
+                        }
+                
+                        if (result.status !== "pending") {
+                            throw new Error("Status pesanan belum berhasil diaktifkan.");
+                        }
+                
+                        button.querySelector("span").textContent =
+                            "Membuka WhatsApp...";
+                
+                        window.location.assign(whatsappUrl.href);
+                    } catch (error) {
+                        showError(
+                            error instanceof Error
+                                ? error.message
+                                : "Terjadi kesalahan. Silakan coba lagi."
+                        );
+                
+                        button.disabled = false;
+                        button.querySelector("span").textContent =
+                            "Lanjut kirim pesanan ke Seller";
+                    }
                 });
+                
+                document
+                    .querySelector("#back-to-marketplace")
+                    .addEventListener("click", () => {
+                        // Menghapus data pengarah lokal agar draft ini
+                        // tidak bisa diaktifkan melalui tombol halaman ini.
+                        sessionStorage.removeItem(storageKey);
+                
+                        window.location.assign("/");
+                    });
 
                 loadCheckoutSummary();
             })();
