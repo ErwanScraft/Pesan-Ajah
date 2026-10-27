@@ -94,7 +94,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 <body
     data-marketplace-page="true"
     data-page="index"
-    data-catalog-loading="true"
 >
 
     <!-- HEADER -->

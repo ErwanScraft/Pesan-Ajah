@@ -9,6 +9,20 @@ import { initIndexPage } from "./pages/index.js";
 
 const $ = (selector) => document.querySelector(selector);
 
+/*
+|--------------------------------------------------------------------------
+| STATUS SKELETON HOMEPAGE
+|--------------------------------------------------------------------------
+|
+| Skeleton hanya diaktifkan ketika JavaScript utama berhasil berjalan.
+| Ini mencegah skeleton tertinggal jika modul gagal dimuat.
+|
+*/
+
+if (document.body.dataset.page === "index") {
+  document.body.setAttribute("data-catalog-loading", "true");
+}
+
 const toast = $("#toast");
 const cartOverlay = $("#cart-overlay");
 const cartButton = $("#cart-trigger");
@@ -367,16 +381,51 @@ async function loadCatalog() {
     catalogUrl.searchParams.set("store_id", storeId);
   }
 
-  const response = await fetch(catalogUrl, {
-    method: "GET",
-    credentials: "same-origin",
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  /*
+   * Batasi waktu tunggu API agar skeleton tidak menggantung
+   * tanpa batas jika server tidak merespons.
+   */
+  const controller = new AbortController();
 
-  const data = await response.json();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, 15000);
+
+  let response;
+
+  try {
+    response = await fetch(catalogUrl, {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(
+        "Pemuatan katalog melewati batas waktu. Silakan coba lagi.",
+      );
+    }
+
+    throw new Error(
+      "Katalog tidak dapat dihubungi. Periksa koneksi internet Anda.",
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+      "Respons katalog tidak valid. Silakan muat ulang halaman.",
+    );
+  }
 
   if (!response.ok || !data.success) {
     throw new Error(
@@ -395,24 +444,23 @@ async function loadCatalog() {
       store: String(product.store_name || "Warung"),
 
       available: Boolean(product.available),
-
       store_is_open: Boolean(product.store_is_open),
 
       store_free_delivery: Boolean(
         product.store_free_delivery,
       ),
-      
+
       store_delivery_discount: Math.max(
         0,
         Number(product.store_delivery_discount) || 0,
       ),
-      
+
       store_latitude:
         product.store_latitude == null ||
         product.store_latitude === ""
           ? null
           : Number(product.store_latitude),
-      
+
       store_longitude:
         product.store_longitude == null ||
         product.store_longitude === ""
@@ -425,8 +473,8 @@ async function loadCatalog() {
   );
 
   /*
-   * Mutasi array yang diimpor, bukan mengganti referensinya.
-   * Cart dan catalog sama-sama memakai array ini.
+   * Pertahankan referensi array agar modul cart dan catalog
+   * tetap menggunakan data produk yang sama.
    */
   products.splice(
     0,
@@ -436,6 +484,10 @@ async function loadCatalog() {
 
   catalogLoaded = true;
 
+  /*
+   * Render ulang kategori, produk, dan keranjang
+   * setelah data API berhasil diterima.
+   */
   catalog.render();
   renderCart();
 
@@ -1087,47 +1139,53 @@ renderCart();
 initIndexPage({ catalog });
 
 async function initializeMarketplace() {
-  const results = await Promise.allSettled([
-    loadCsrfToken(),
-    loadCatalog(),
-  ]);
-
-  const csrfResult = results[0];
-  const catalogResult = results[1];
-
   /*
-   * Katalog gagal dimuat.
+   * CSRF dan katalog berjalan secara independen.
+   * Kegagalan atau keterlambatan CSRF tidak boleh
+   * menahan tampilan katalog.
    */
-  if (catalogResult.status === "rejected") {
+  const csrfPromise = loadCsrfToken().catch((error) => {
+    console.error(
+      "[Pesan Ajah] Token CSRF gagal dimuat:",
+      error,
+    );
+  });
+
+  try {
+    await loadCatalog();
+  } catch (error) {
     console.error(
       "[Pesan Ajah] Katalog gagal dimuat:",
-      catalogResult.reason,
+      error,
     );
 
     showToast(
       toast,
-      catalogResult.reason instanceof Error
-        ? catalogResult.reason.message
+      error instanceof Error
+        ? error.message
         : "Produk belum dapat dimuat. Silakan muat ulang halaman.",
     );
+  } finally {
+    /*
+     * Selalu akhiri skeleton setelah proses katalog selesai,
+     * baik berhasil maupun gagal.
+     */
+    document.body.removeAttribute("data-catalog-loading");
+
+    /*
+     * Render kembali tampilan setelah skeleton dilepas.
+     * Ini memastikan empty state dan kategori mengikuti
+     * kondisi data yang sebenarnya.
+     */
+    catalog?.render();
+    renderCart();
   }
-  
-  // Tampilkan katalog atau empty state setelah loading selesai.
-  document.body.removeAttribute("data-catalog-loading");
 
   /*
-   * Token CSRF gagal dimuat.
-   *
-   * Katalog tetap bisa ditampilkan, tetapi checkout
-   * akan mencoba memuat ulang token sebelum mengirim
-   * pesanan.
+   * Tunggu penyelesaian penanganan CSRF tanpa menjadikannya
+   * syarat untuk menampilkan katalog.
    */
-  if (csrfResult.status === "rejected") {
-    console.error(
-      "[Pesan Ajah] Token CSRF gagal dimuat:",
-      csrfResult.reason,
-    );
-  }
+  await csrfPromise;
 }
 
 initializeMarketplace();
