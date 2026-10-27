@@ -1111,6 +1111,9 @@ async function initializeMarketplace() {
         : "Produk belum dapat dimuat. Silakan muat ulang halaman.",
     );
   }
+  
+  // Tampilkan katalog atau empty state setelah loading selesai.
+  document.body.removeAttribute("data-catalog-loading");
 
   /*
    * Token CSRF gagal dimuat.
