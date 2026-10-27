@@ -39,3 +39,6 @@
 
 /* 8. Tampilan katalog marketplace */
 @import url("./marketplace.css");
+
+/* 9. Skeleton loading */
+@import url("./skeleton.css");

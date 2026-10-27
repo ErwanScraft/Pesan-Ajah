@@ -1,0 +1,290 @@
+
+/* =========================================================
+   PESAN AJAH — SKELETON LOADING
+   File: assets/css/skeleton.css
+
+   Scope:
+   - Skeleton kategori beranda
+   - Skeleton profil warung
+   - Skeleton kartu produk
+   - Animasi dan responsivitas skeleton
+   ========================================================= */
+
+/* =========================================================
+   1. STATUS LOADING BERANDA
+   ========================================================= */
+
+body[data-page="index"][data-catalog-loading="true"] #category-list {
+    display: none;
+}
+
+body[data-page="index"][data-catalog-loading="true"] #product-grid,
+body[data-page="index"][data-catalog-loading="true"] #empty-state {
+    display: none !important;
+}
+
+/* =========================================================
+   2. SKELETON KATEGORI
+   ========================================================= */
+
+.skeleton-category-grid {
+    display: none;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+body[data-page="index"][data-catalog-loading="true"] .skeleton-category-grid {
+    display: grid;
+}
+
+.skeleton-category {
+    display: block;
+    min-width: 0;
+    height: 64px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   3. SKELETON KATALOG
+   ========================================================= */
+
+.catalog-skeleton {
+    display: none;
+    flex-direction: column;
+    gap: 26px;
+    min-width: 0;
+}
+
+body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
+    display: flex;
+}
+
+.catalog-skeleton__store {
+    min-width: 0;
+}
+
+/* Profil warung */
+
+.catalog-skeleton__profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    margin-bottom: 14px;
+}
+
+.skeleton-avatar {
+    display: block;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 14px;
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.catalog-skeleton__identity {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.skeleton-line {
+    display: block;
+    height: 10px;
+    border-radius: 6px;
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-line--name {
+    width: min(180px, 75%);
+    height: 13px;
+}
+
+.skeleton-line--owner {
+    width: min(120px, 55%);
+    height: 9px;
+}
+
+.skeleton-status {
+    display: block;
+    width: 64px;
+    height: 28px;
+    flex: 0 0 64px;
+    border-radius: 999px;
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   4. SKELETON PRODUK
+   ========================================================= */
+
+.catalog-skeleton__products {
+    display: grid;
+    grid-auto-columns: 176px;
+    grid-auto-flow: column;
+    grid-template-rows: 1fr;
+    gap: 13px;
+    min-width: 0;
+    width: 100%;
+    padding: 2px 2px 12px;
+    overflow: hidden;
+}
+
+.catalog-skeleton__product {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--white);
+}
+
+.skeleton-product-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.catalog-skeleton__product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    padding: 11px;
+}
+
+.skeleton-line--product {
+    width: 90%;
+    height: 11px;
+}
+
+.skeleton-line--variant {
+    width: 58%;
+    height: 9px;
+}
+
+.catalog-skeleton__product-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.skeleton-line--price {
+    width: 45%;
+    height: 12px;
+}
+
+.skeleton-add-button {
+    display: block;
+    width: 33px;
+    height: 33px;
+    flex: 0 0 33px;
+    border-radius: 10px;
+    background: var(--surface);
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   5. AKSESIBILITAS
+   ========================================================= */
+
+.catalog-skeleton > .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* =========================================================
+   6. ANIMASI
+   ========================================================= */
+
+@keyframes catalog-skeleton-shimmer {
+    0%,
+    100% {
+        opacity: 0.65;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   7. TABLET
+   ========================================================= */
+
+@media (min-width: 701px) {
+    .catalog-skeleton__products {
+        grid-auto-columns: 190px;
+        gap: 15px;
+    }
+}
+
+/* =========================================================
+   8. MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+    .skeleton-category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .skeleton-category {
+        height: 58px;
+    }
+
+    .catalog-skeleton {
+        gap: 22px;
+    }
+
+    .catalog-skeleton__products {
+        grid-auto-columns: 42vw;
+        gap: 11px;
+    }
+}
+
+/* Ponsel kecil */
+
+@media (max-width: 380px) {
+    .catalog-skeleton__products {
+        grid-auto-columns: 46vw;
+        gap: 9px;
+    }
+
+    .catalog-skeleton__product-info {
+        padding: 9px;
+    }
+}
+
+/* =========================================================
+   9. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-category,
+    .skeleton-avatar,
+    .skeleton-line,
+    .skeleton-status,
+    .skeleton-product-image,
+    .skeleton-add-button {
+        animation: none;
+    }
+}

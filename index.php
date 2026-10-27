@@ -94,6 +94,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 <body
     data-marketplace-page="true"
     data-page="index"
+    data-catalog-loading="true"
 >
 
     <!-- HEADER -->
@@ -165,6 +166,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
             id="categories"
             aria-labelledby="category-title"
         >
+
             <div class="section-heading">
                 <div>
                     <h2 id="category-title">
@@ -173,6 +175,18 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                 </div>
             </div>
 
+            <!-- SKELETON KATEGORI -->
+            <div
+                class="skeleton-category-grid"
+                id="category-loading"
+                aria-hidden="true"
+            >
+                <?php for ($i = 0; $i < 6; $i++): ?>
+                    <span class="skeleton-category"></span>
+                <?php endfor; ?>
+            </div>
+
+            <!-- DAFTAR KATEGORI ASLI -->
             <div
                 class="category-grid"
                 id="category-list"
@@ -184,6 +198,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                     | JSON_HEX_QUOT
                 )) ?>"
             >
+
                 <button
                     class="category-card category-all-button active"
                     type="button"
@@ -192,7 +207,10 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                     title="Semua kategori"
                     aria-pressed="true"
                 >
-                    <span class="category-all-icon" aria-hidden="true">
+                    <span
+                        class="category-all-icon"
+                        aria-hidden="true"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -204,38 +222,131 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                             stroke-linecap="round"
                             stroke-linejoin="round"
                         >
-                            <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
-                            <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
-                            <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
-                            <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+                            <rect
+                                x="3.5"
+                                y="3.5"
+                                width="7"
+                                height="7"
+                                rx="1.5"
+                            />
+                            <rect
+                                x="13.5"
+                                y="3.5"
+                                width="7"
+                                height="7"
+                                rx="1.5"
+                            />
+                            <rect
+                                x="3.5"
+                                y="13.5"
+                                width="7"
+                                height="7"
+                                rx="1.5"
+                            />
+                            <rect
+                                x="13.5"
+                                y="13.5"
+                                width="7"
+                                height="7"
+                                rx="1.5"
+                            />
                         </svg>
                     </span>
                 </button>
+
             </div>
         </section>
 
-        <!-- KATALOG PRODUK -->
+        <!-- KATALOG WARUNG -->
         <section
             class="container section products-section"
             id="products"
         >
+
             <div class="section-heading">
                 <div>
                     <h2>Warung</h2>
                 </div>
             </div>
 
+            <!-- SKELETON KATALOG -->
+            <div
+                class="catalog-skeleton"
+                id="catalog-skeleton"
+                role="status"
+                aria-label="Memuat katalog warung"
+            >
+
+                <span class="sr-only">
+                    Memuat daftar warung...
+                </span>
+
+                <?php for ($store = 0; $store < 2; $store++): ?>
+                    <section
+                        class="catalog-skeleton__store"
+                        aria-hidden="true"
+                    >
+
+                        <!-- PROFIL WARUNG -->
+                        <div class="catalog-skeleton__profile">
+
+                            <span class="skeleton-avatar"></span>
+
+                            <div class="catalog-skeleton__identity">
+                                <span class="skeleton-line skeleton-line--name"></span>
+                                <span class="skeleton-line skeleton-line--owner"></span>
+                            </div>
+
+                            <span class="skeleton-status"></span>
+
+                        </div>
+
+                        <!-- PRODUK WARUNG -->
+                        <div class="catalog-skeleton__products">
+
+                            <?php for ($product = 0; $product < 4; $product++): ?>
+                                <div class="catalog-skeleton__product">
+
+                                    <span class="skeleton-product-image"></span>
+
+                                    <div class="catalog-skeleton__product-info">
+
+                                        <span class="skeleton-line skeleton-line--product"></span>
+
+                                        <span class="skeleton-line skeleton-line--variant"></span>
+
+                                        <div class="catalog-skeleton__product-bottom">
+
+                                            <span class="skeleton-line skeleton-line--price"></span>
+
+                                            <span class="skeleton-add-button"></span>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            <?php endfor; ?>
+
+                        </div>
+                    </section>
+                <?php endfor; ?>
+
+            </div>
+
+            <!-- KATALOG ASLI: DIISI OLEH main.js -->
             <div
                 class="product-grid"
                 id="product-grid"
                 aria-live="polite"
             ></div>
 
+            <!-- KONDISI KATALOG KOSONG -->
             <div
                 class="empty-state"
                 id="empty-state"
                 hidden
             >
+
                 <h3>Belum ada produk</h3>
 
                 <p>
@@ -250,7 +361,9 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                 >
                     Lihat semua produk
                 </button>
+
             </div>
+
         </section>
 
     </main>
