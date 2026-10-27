@@ -5,7 +5,7 @@ import { showToast } from "./modules/toast.js";
 import { formatRupiah } from "./modules/format.js";
 import { initBuyerMenu } from "./modules/buyer-menu.js";
 
-import { initIndexPage } from "./pages/index.js";
+import { initIndexPage } from "./pages/index/main.js";
 
 const $ = (selector) => document.querySelector(selector);
 

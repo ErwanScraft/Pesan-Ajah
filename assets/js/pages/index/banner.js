@@ -1,17 +1,16 @@
-import { homepageBanners } from "../data/banner.js";
+import { homepageBanners } from "../../data/banner.js";
 
 /**
- * Inisialisasi interaksi khusus halaman index.php.
+ * Inisialisasi banner halaman beranda.
  *
- * Pencarian, reset katalog, dan banner beranda
- * dikelola dari file halaman ini.
+ * Tanggung jawab:
+ * - Merender slide dari data banner.
+ * - Menangani autoplay.
+ * - Menyinkronkan slide ketika pengguna menggeser banner.
+ * - Menghentikan autoplay ketika tab tidak aktif.
+ * - Menghormati preferensi reduced motion.
  */
-
-/* =========================================================
-   BANNER BERANDA
-   ========================================================= */
-
-function initHomepageBanner() {
+export function initHomepageBanner() {
   const carousel = document.querySelector("[data-banner-carousel]");
 
   if (!carousel) {
@@ -38,6 +37,7 @@ function initHomepageBanner() {
   }
 
   carousel.hidden = false;
+
   carousel.classList.toggle(
     "has-multiple-slides",
     banners.length > 1,
@@ -213,38 +213,4 @@ function initHomepageBanner() {
 
   updateActiveSlide(0);
   startAutoplay();
-}
-
-/* =========================================================
-   INTERAKSI HALAMAN BERANDA
-   ========================================================= */
-
-export function initIndexPage({ catalog } = {}) {
-  if (document.body.dataset.page !== "index") {
-    return;
-  }
-
-  const searchForm = document.querySelector("#search-form");
-  const searchInput = document.querySelector("#search-input");
-  const resetSearchButton = document.querySelector("#reset-search");
-
-  /* Pencarian produk. */
-  searchForm?.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    catalog?.setQuery(searchInput?.value ?? "");
-
-    document.querySelector("#products")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  });
-
-  /* Tampilkan kembali seluruh produk. */
-  resetSearchButton?.addEventListener("click", () => {
-    catalog?.reset();
-  });
-
-  /* Banner hanya diinisialisasi di halaman beranda. */
-  initHomepageBanner();
 }
