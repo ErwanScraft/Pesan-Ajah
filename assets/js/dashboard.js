@@ -839,6 +839,11 @@ function resetProductForm() {
   }
 
   productForm.reset();
+
+  if (productForm.elements.unit_quantity) {
+    productForm.elements.unit_quantity.value = "1";
+  }
+  
   editingProductId = null;
 
   resetProductImageState();
@@ -862,6 +867,64 @@ function resetProductForm() {
   closeProductModal();
 }
 
+
+function parseProductUnit(unitValue) {
+  const value = String(unitValue || "").trim();
+
+  const match = value.match(
+    /^(\d+(?:[.,]\d+)?)\s+(.+)$/,
+  );
+
+  if (match) {
+    return {
+      quantity: match[1].replace(",", "."),
+      name: match[2].trim(),
+    };
+  }
+
+  // Kompatibilitas produk lama yang hanya menyimpan nama satuan.
+  return {
+    quantity: "1",
+    name: value || "pcs",
+  };
+}
+
+function setProductUnitFields(unitValue) {
+  const quantityInput = productForm?.elements.unit_quantity;
+  const unitSelect = productForm?.elements.unit_name;
+
+  if (!quantityInput || !unitSelect) {
+    return;
+  }
+
+  const parsed = parseProductUnit(unitValue);
+  const unitName = parsed.name;
+
+  quantityInput.value = parsed.quantity;
+
+  /*
+   * Jika produk lama memakai satuan yang tidak ada dalam
+   * daftar pilihan, tambahkan sementara agar data lama
+   * tetap bisa diedit tanpa menghilangkan satuannya.
+   */
+  const existingOption = Array.from(unitSelect.options).find(
+    (option) =>
+      option.value.toLowerCase() === unitName.toLowerCase(),
+  );
+
+  if (!existingOption) {
+    const legacyOption = document.createElement("option");
+
+    legacyOption.value = unitName;
+    legacyOption.textContent = unitName;
+    unitSelect.add(legacyOption);
+  }
+
+  unitSelect.value = existingOption
+    ? existingOption.value
+    : unitName;
+}
+
 function editProduct(id) {
   const product = products.find(
     (item) => item.id === id,
@@ -878,7 +941,7 @@ function editProduct(id) {
   }
   productForm.elements.category.value = product.category;
   productForm.elements.price.value = String(product.price);
-  productForm.elements.unit.value = product.unit;
+  setProductUnitFields(product.unit);
   
   if (productForm.elements.tag) {
     productForm.elements.tag.value = product.tag || "";
@@ -962,12 +1025,14 @@ if (productForm) {
     const wasEditing = editingProductId !== null;
     const formData = new FormData(productForm);
 
+    
     const payload = {
       name: String(formData.get("name") || "").trim(),
       variant: String(formData.get("variant") || "").trim(),
       category: String(formData.get("category") || "").trim(),
       price: Number(formData.get("price")),
-      unit: String(formData.get("unit") || "").trim(),
+      unitQuantity: Number(formData.get("unit_quantity")),
+      unitName: String(formData.get("unit_name") || "").trim(),
       tag: String(formData.get("tag") || "").trim(),
       description: String(
         formData.get("description") || "",
@@ -975,15 +1040,20 @@ if (productForm) {
       available: formData.has("available"),
     };
 
+    payload.unit = `${payload.unitQuantity} ${payload.unitName}`;
+
     if (
       !payload.name ||
       !payload.category ||
-      !payload.unit ||
+      !payload.unitName ||
+      !Number.isFinite(payload.unitQuantity) ||
+      payload.unitQuantity <= 0 ||
+      payload.unitQuantity > 999999 ||
       !Number.isSafeInteger(payload.price) ||
       payload.price < 1
     ) {
       notify("Periksa kembali informasi produk.");
-
+    
       return;
     }
 
@@ -997,6 +1067,11 @@ if (productForm) {
     requestData.set("category", payload.category);
     requestData.set("price", String(payload.price));
     requestData.set("unit", payload.unit);
+    requestData.set(
+      "unit_quantity",
+      String(payload.unitQuantity),
+    );
+    requestData.set("unit_name", payload.unitName);
     requestData.set("tag", payload.tag);
     requestData.set("description", payload.description);
     requestData.set("available", String(payload.available));

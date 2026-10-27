@@ -167,18 +167,58 @@ require __DIR__ . '/_header.php';
                         >
                     </label>
     
+
                     <!-- Satuan -->
-                    <label class="form-field">
+                    <div class="form-field product-unit-field">
                         <span>Satuan</span>
-    
-                        <input
-                            type="text"
-                            name="unit"
-                            maxlength="40"
-                            placeholder="Contoh: 1 kg"
-                            required
-                        >
-                    </label>
+                    
+                        <div class="product-unit-inputs">
+                            <input
+                                type="number"
+                                name="unit_quantity"
+                                min="0.001"
+                                max="999999"
+                                step="0.001"
+                                inputmode="decimal"
+                                placeholder="Jumlah"
+                                aria-label="Jumlah satuan produk"
+                                required
+                            >
+                    
+                            <select
+                                name="unit_name"
+                                aria-label="Jenis satuan produk"
+                                required
+                            >
+                                <option value="picis">Picis</option>
+                                <option value="gelas">Gelas</option>
+                                <option value="gulung">Gulung</option>
+                                <option value="bungkus">Bungkus</option>
+                                <option value="porsi">Porsi</option>
+                                <option value="buah">Buah</option>
+                                <option value="butir">Butir</option>
+                                <option value="botol">Botol</option>
+                                <option value="cup">Cup</option>
+                                <option value="sachet">Sachet</option>
+                                <option value="kotak">Kotak</option>
+                                <option value="ikat">Ikat</option>
+                                <option value="pack">Pack</option>
+                                <option value="pcs">Pcs</option>
+                                <option value="gram">Gram</option>
+                                <option value="kg">Kg</option>
+                                <option value="ml">Ml</option>
+                                <option value="liter">Liter</option>
+                                <option value="meter">Meter</option>
+                                <option value="pasang">Pasang</option>
+                                <option value="ekor">Ekor</option>
+                                <option value="lembar">Lembar</option>
+                            </select>
+                        </div>
+                    
+                        <small class="product-unit-help">
+                            Contoh: 5 picis
+                        </small>
+                    </div>
     
                     <!-- Foto produk -->
                     <div class="form-field product-image-field">

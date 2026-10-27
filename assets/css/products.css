@@ -1325,3 +1325,41 @@ body.products-modal-open {
     transform: translateY(0);
   }
 }
+
+
+/* ---------------------------------------------------------
+   FORM SATUAN PRODUK
+--------------------------------------------------------- */
+
+.products-page .product-unit-field {
+  min-width: 0;
+}
+
+.products-page .product-unit-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.products-page .product-unit-inputs input,
+.products-page .product-unit-inputs select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.products-page .product-unit-help {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .products-page .product-unit-inputs {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    gap: 8px;
+  }
+}
