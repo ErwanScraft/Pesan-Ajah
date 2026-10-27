@@ -327,8 +327,62 @@ removeProductImageCheckbox?.addEventListener("change", () => {
   }
 });
 
+
 const productForm = $("#product-form");
 const productList = $("#manage-products");
+
+const productModal = $("#product-editor-modal");
+const addProductButton = $("#add-product-button");
+
+let productModalPreviousFocus = null;
+
+function openProductModal() {
+  if (!productModal || !productForm) {
+    return;
+  }
+
+  productModalPreviousFocus = document.activeElement;
+
+  productModal.hidden = false;
+  document.body.classList.add("products-modal-open");
+
+  window.requestAnimationFrame(() => {
+    productForm.querySelector('input[name="name"]')?.focus();
+  });
+}
+
+function closeProductModal() {
+  if (!productModal || productModal.hidden) {
+    return;
+  }
+
+  productModal.hidden = true;
+  document.body.classList.remove("products-modal-open");
+
+  if (productModalPreviousFocus instanceof HTMLElement) {
+    productModalPreviousFocus.focus();
+  }
+}
+
+/* Tombol tambah produk */
+addProductButton?.addEventListener("click", () => {
+  resetProductForm();
+  openProductModal();
+});
+
+/* Tombol tutup dan area backdrop */
+productModal
+  ?.querySelectorAll("[data-close-product-modal]")
+  .forEach((button) => {
+    button.addEventListener("click", closeProductModal);
+  });
+
+/* Klik area kosong di dalam overlay menutup modal */
+productModal?.addEventListener("click", (event) => {
+  if (event.target === productModal) {
+    closeProductModal();
+  }
+});
 
 async function loadProducts() {
   const data = await apiRequest(API.products);
@@ -780,10 +834,13 @@ function renderProducts() {
 }
 
 function resetProductForm() {
-  if (!productForm) return;
+  if (!productForm) {
+    return;
+  }
 
   productForm.reset();
   editingProductId = null;
+
   resetProductImageState();
 
   const title = $("#product-form-title");
@@ -801,6 +858,8 @@ function resetProductForm() {
   if (cancel) {
     cancel.hidden = true;
   }
+
+  closeProductModal();
 }
 
 function editProduct(id) {
@@ -862,10 +921,7 @@ function editProduct(id) {
 
   $("#cancel-product").hidden = false;
 
-  productForm.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
+  openProductModal();
 }
 
 async function deleteProduct(id) {
@@ -903,6 +959,7 @@ if (productForm) {
   productForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const wasEditing = editingProductId !== null;
     const formData = new FormData(productForm);
 
     const payload = {
@@ -2012,10 +2069,17 @@ mobileMenu?.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    sidebar?.classList.remove("open");
-    mobileMenu?.setAttribute("aria-expanded", "false");
+  if (event.key !== "Escape") {
+    return;
   }
+
+  if (productModal && !productModal.hidden) {
+    closeProductModal();
+    return;
+  }
+
+  sidebar?.classList.remove("open");
+  mobileMenu?.setAttribute("aria-expanded", "false");
 });
 
 /* =========================================================

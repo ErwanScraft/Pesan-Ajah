@@ -21,20 +21,83 @@ require __DIR__ . '/_header.php';
 
     <!-- Header halaman -->
     <div class="products-page-heading">
-        <h2>Produk</h2>
-
-        <span
-            class="table-caption"
-            id="product-count"
-        >0 produk</span>
+        <div class="products-heading-copy">
+            <h2>Produk</h2>
+            <p>Kelola katalog dan ketersediaan produk warung.</p>
+        </div>
+    
+        <div class="products-heading-actions">
+            <span class="table-caption" id="product-count">0 produk</span>
+    
+            <button
+                class="button button-primary"
+                type="button"
+                id="add-product-button"
+                aria-haspopup="dialog"
+                aria-controls="product-editor-modal"
+            >
+                <span aria-hidden="true">+</span>
+                Tambah produk
+            </button>
+        </div>
     </div>
 
     <!-- Form produk -->
     <section
         class="dashboard-card products-card"
+        aria-labelledby="products-list-title"
+    >
+        <div class="products-list-heading">
+            <h3 id="products-list-title">Daftar produk</h3>
+        </div>
+    
+        <div
+            class="product-manage-list"
+            id="manage-products"
+            aria-live="polite"
+        ></div>
+    </section>
+
+</div>
+
+
+<!-- Modal tambah/edit produk -->
+<div
+    class="products-modal"
+    id="product-editor-modal"
+    hidden
+>
+    <button
+        class="products-modal-backdrop"
+        type="button"
+        data-close-product-modal
+        aria-label="Tutup formulir produk"
+        tabindex="-1"
+    ></button>
+
+    <section
+        class="products-modal-dialog"
+        role="dialog"
+        aria-modal="true"
         aria-labelledby="product-form-title"
     >
+        <header class="products-modal-header">
+            <div>
+                <p class="products-modal-eyebrow">KATALOG WARUNG</p>
+                <h3 class="products-modal-title">Kelola produk</h3>
+            </div>
 
+            <button
+                class="products-modal-close"
+                type="button"
+                data-close-product-modal
+                aria-label="Tutup popup"
+            >
+                &#215;
+            </button>
+        </header>
+
+        <!-- Pindahkan form lama ke sini secara utuh -->
         <form
             class="product-form"
             id="product-form"
@@ -271,20 +334,7 @@ require __DIR__ . '/_header.php';
             </div>
 
         </form>
-
-        <!-- Daftar produk -->
-        <div class="products-list-heading">
-            <h3>Daftar produk</h3>
-        </div>
-
-        <div
-            class="product-manage-list"
-            id="manage-products"
-            aria-live="polite"
-        ></div>
-
     </section>
-
 </div>
 
 <?php require __DIR__ . '/_footer.php'; ?>

@@ -1003,3 +1003,325 @@
     padding-inline: 8px;
   }
 }
+
+
+/* =========================================================
+   PESAN AJAH — MODAL TAMBAH / EDIT PRODUK
+   Scope: hanya halaman warung/produk.php
+   Letakkan di bagian paling bawah products.css
+========================================================= */
+
+/* Heading halaman */
+
+.products-page .products-heading-copy {
+  min-width: 0;
+}
+
+.products-page .products-heading-copy h2 {
+  margin: 0;
+}
+
+.products-page .products-heading-copy p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.products-page .products-heading-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.products-page .products-heading-actions #add-product-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+/* Overlay modal */
+
+.products-page .products-modal[hidden] {
+  display: none !important;
+}
+
+.products-page .products-modal {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 20px;
+  isolation: isolate;
+}
+
+.products-page .products-modal-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgb(14 29 21 / 58%);
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Kotak modal */
+
+.products-page .products-modal-dialog {
+  position: relative;
+  display: flex;
+  width: min(100%, 760px);
+  max-height: min(90vh, 900px);
+  max-height: min(90dvh, 900px);
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
+  animation: products-modal-enter 160ms ease-out;
+}
+
+/* Header popup */
+
+.products-page .products-modal-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+
+.products-page .products-modal-eyebrow {
+  margin: 0 0 4px;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.products-page .products-modal-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+/* Tombol tutup */
+
+.products-page .products-modal-close {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.products-page .products-modal-close:hover {
+  border-color: var(--green);
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.products-page .products-modal-close:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* Area form: scroll di dalam modal, bukan halaman */
+
+.products-page .products-modal-dialog > .product-form {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 22px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0;
+  background: var(--white);
+  -webkit-overflow-scrolling: touch;
+}
+
+.products-page .products-modal-dialog .product-form-heading {
+  margin-bottom: 18px;
+}
+
+.products-page .products-modal-dialog .product-form-grid {
+  gap: 16px;
+}
+
+.products-page .products-modal-dialog .product-image-preview {
+  width: 140px;
+  max-width: 100%;
+}
+
+/* Tombol simpan tetap terlihat saat form digulir */
+
+.products-page .products-modal-dialog .product-form-actions {
+  position: sticky;
+  bottom: -22px;
+  z-index: 1;
+  margin: 20px -22px -22px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+
+/* Cegah halaman belakang ikut bergulir ketika popup aktif */
+
+body.products-modal-open {
+  overflow: hidden;
+}
+
+/* Animasi desktop */
+
+@keyframes products-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Tablet dan mobile */
+
+@media (max-width: 760px) {
+  .products-page .products-modal {
+    align-items: end;
+    padding: 0;
+  }
+
+  .products-page .products-modal-dialog {
+    width: 100%;
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 18px 18px 0 0;
+    animation-name: products-modal-mobile-enter;
+  }
+
+  .products-page .products-modal-header {
+    padding: 15px 16px;
+  }
+
+  .products-page .products-modal-dialog > .product-form {
+    padding: 17px 16px;
+  }
+
+  .products-page .products-modal-dialog .product-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .products-page .products-modal-dialog .product-description-field {
+    grid-column: auto;
+  }
+
+  .products-page .products-modal-dialog .product-form-actions {
+    bottom: -17px;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin: 18px -16px -17px;
+    padding: 12px 16px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .products-page .products-modal-dialog .product-form-actions .button {
+    width: 100%;
+  }
+}
+
+/* Layar ponsel kecil */
+
+@media (max-width: 380px) {
+  .products-page .products-page-heading {
+    align-items: flex-start;
+  }
+
+  .products-page .products-heading-actions {
+    gap: 7px;
+  }
+
+  .products-page .products-heading-actions #add-product-button {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .products-page .products-modal-header {
+    padding: 13px;
+  }
+
+  .products-page .products-modal-dialog > .product-form {
+    padding: 15px 13px;
+  }
+
+  .products-page .products-modal-dialog .product-form-actions {
+    bottom: -15px;
+    margin: 16px -13px -15px;
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+}
+
+/* Hormati preferensi pengurangan animasi */
+
+@media (prefers-reduced-motion: reduce) {
+  .products-page .products-modal-dialog {
+    animation: none;
+  }
+}
+
+@keyframes products-modal-mobile-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
