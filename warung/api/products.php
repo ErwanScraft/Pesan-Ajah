@@ -606,17 +606,32 @@ if ($method === 'POST' || $method === 'PUT') {
 
             $productId = $id;
         }
+
     } catch (Throwable $exception) {
-        /*
-         * Jangan meninggalkan foto baru jika penyimpanan
-         * database gagal.
-         */
+        // Hapus foto baru jika penyimpanan database gagal.
         if ($newImage !== null) {
             delete_product_image_file($newImage);
         }
 
-        throw $exception;
+        // Catat detail di error_log server untuk debugging.
+        error_log(
+            '[Pesan Ajah Product Save] '
+            . 'store_id=' . $storeId
+            . '; operation=' . ($id === null ? 'INSERT' : 'UPDATE')
+            . '; error=' . $exception->getMessage()
+            . '; file=' . $exception->getFile()
+            . '; line=' . $exception->getLine()
+        );
+
+        // Berikan respons JSON yang bisa dibaca JavaScript.
+        api_json([
+            'success' => false,
+            'message' => $id === null
+                ? 'Produk baru gagal disimpan ke database. Periksa error_log hosting.'
+                : 'Perubahan produk gagal disimpan ke database. Periksa error_log hosting.',
+        ], 500);
     }
+
 
     /*
      * Hapus file lama setelah perubahan database berhasil.
