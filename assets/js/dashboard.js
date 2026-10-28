@@ -1,4 +1,10 @@
 import { resolveImageUrl, setImageSource } from "./modules/image.js";
+import {
+  initErrorLogger,
+  captureError,
+} from "./core/error-logger.js";
+
+initErrorLogger();
 
 const $ = (selector) => document.querySelector(selector);
 

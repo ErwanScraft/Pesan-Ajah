@@ -43,6 +43,45 @@ function debug_log_error(array $error): void
     );
 
     error_log($message);
+    
+    if (defined('APP_ROOT')) {
+        $directory = dirname(APP_ROOT) . '/pesan-ajah-logs/php';
+    
+        if (
+            !is_dir($directory)
+            && !@mkdir($directory, 0750, true)
+            && !is_dir($directory)
+        ) {
+            return;
+        }
+    
+        $entry = [
+            'time' => date(DATE_ATOM),
+            'type' => (string) ($error['type'] ?? 'Error'),
+            'message' => (string) ($error['message'] ?? 'Unknown error'),
+            'file' => (string) ($error['file'] ?? 'unknown'),
+            'line' => (int) ($error['line'] ?? 0),
+        ];
+    
+        $json = json_encode(
+            $entry,
+            JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+            | JSON_INVALID_UTF8_SUBSTITUTE
+        );
+    
+        if ($json !== false) {
+            $file = $directory . '/php-' . date('Y-m-d') . '.log';
+    
+            if (!is_file($file) || filesize($file) < 5 * 1024 * 1024) {
+                @file_put_contents(
+                    $file,
+                    $json . PHP_EOL,
+                    FILE_APPEND | LOCK_EX
+                );
+            }
+        }
+    }
 
     if (!empty($error['trace'])) {
         error_log((string) $error['trace']);

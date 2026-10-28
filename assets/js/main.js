@@ -7,6 +7,12 @@ import { initBuyerMenu } from "./modules/buyer-menu.js";
 
 import { initIndexPage } from "./pages/index/main.js";
 
+import {
+  initErrorLogger,
+} from "./core/error-logger.js";
+
+initErrorLogger();
+
 const $ = (selector) => document.querySelector(selector);
 
 /*

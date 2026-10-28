@@ -4,6 +4,8 @@
  * API request, notifikasi, format harga, dan helper tombol tetap
  * menggunakan implementasi bersama dari dashboard.js.
  */
+import { captureError } from "../../core/error-logger.js";
+ 
 export async function initWarungProducts({
   $,
   API,
@@ -818,8 +820,13 @@ export async function initWarungProducts({
             body: requestData,
           });
         } catch (error) {
+          captureError(error, {
+            type: "api",
+            source: API.products,
+          });
+        
           console.error("Gagal menghubungi API produk:", error);
-
+        
           throw new Error(
             "Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.",
           );
@@ -849,6 +856,17 @@ export async function initWarungProducts({
             response.status,
             responseText.slice(0, 1000),
           );
+          
+          captureError(
+            new Error(
+              `API produk mengembalikan respons non-JSON (HTTP ${response.status}).`,
+            ),
+            {
+              type: "api",
+              source: API.products,
+              http_status: response.status,
+            },
+          );
 
           throw new Error(
             response.status >= 500
@@ -858,6 +876,19 @@ export async function initWarungProducts({
         }
 
         if (!response.ok || data.success === false) {
+        
+          captureError(
+            new Error(
+              data.message ||
+                `Produk gagal disimpan (HTTP ${response.status}).`,
+            ),
+            {
+              type: "api",
+              source: API.products,
+              http_status: response.status,
+            },
+          );
+        
           throw new Error(
             data.message ||
               `Produk gagal disimpan (HTTP ${response.status}).`,
