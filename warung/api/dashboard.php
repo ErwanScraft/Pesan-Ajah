@@ -71,8 +71,7 @@ $productStmt = database()->prepare(
 
     FROM products
 
-    WHERE store_id = :store_id
-        AND status <> 'draft'"
+    WHERE store_id = :store_id"
 );
 
 $productStmt->execute([
