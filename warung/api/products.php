@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/app/warung_api.php';
+require_once APP_ROOT . '/app/image_upload.php';
 
 $store = api_store_owner();
 $storeId = (int) $store['store_id'];
@@ -153,13 +154,13 @@ function upload_product_image(): ?string
 
     $mime = (string) ($imageInfo['mime'] ?? '');
 
-    $extensions = [
-        'image/jpeg' => 'jpg',
-        'image/png' => 'png',
-        'image/webp' => 'webp',
+    $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
     ];
-
-    if (!isset($extensions[$mime])) {
+    
+    if (!in_array($mime, $allowedMimeTypes, true)) {
         api_json([
             'success' => false,
             'message' => 'Format foto harus JPG, PNG, atau WebP.',
@@ -186,19 +187,35 @@ function upload_product_image(): ?string
         ], 500);
     }
 
-    $filename = bin2hex(random_bytes(16))
-        . '.'
-        . $extensions[$mime];
-
-    $destination = $directory . $filename;
-
-    if (!move_uploaded_file($temporaryPath, $destination)) {
+    if (
+        !function_exists('imagecreatefromstring')
+        || !function_exists('imagewebp')
+    ) {
         api_json([
             'success' => false,
-            'message' => 'Foto gagal disimpan ke server.',
+            'message' => 'Server belum mendukung konversi WebP.',
         ], 500);
     }
-
+    
+    $filename = bin2hex(random_bytes(16)) . '.webp';
+    
+    $destination = $directory . $filename;
+    
+    if (
+        !save_uploaded_image_as_webp(
+            $temporaryPath,
+            $destination,
+            80
+        )
+    ) {
+        @unlink($destination);
+    
+        api_json([
+            'success' => false,
+            'message' => 'Foto gagal dikonversi menjadi WebP.',
+        ], 422);
+    }
+    
     return PRODUCT_IMAGE_DIRECTORY . $filename;
 }
 

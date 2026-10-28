@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/app/warung_api.php';
+require_once dirname(__DIR__, 2) . '/app/image_upload.php';
 
 $store = api_store_owner();
 
@@ -87,15 +88,15 @@ if (
 $finfo = new finfo(FILEINFO_MIME_TYPE);
 $mimeType = $finfo->file($file['tmp_name']);
 
-$allowedTypes = [
-    'image/jpeg' => 'jpg',
-    'image/png' => 'png',
-    'image/webp' => 'webp',
+$allowedMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
 ];
 
 if (
     !is_string($mimeType)
-    || !isset($allowedTypes[$mimeType])
+    || !in_array($mimeType, $allowedMimeTypes, true)
     || ($imageInfo['mime'] ?? '') !== $mimeType
 ) {
     api_json([
@@ -133,9 +134,17 @@ if (
     ], 500);
 }
 
-$filename = bin2hex(random_bytes(16))
-    . '.'
-    . $allowedTypes[$mimeType];
+if (
+    !function_exists('imagecreatefromstring')
+    || !function_exists('imagewebp')
+) {
+    api_json([
+        'success' => false,
+        'message' => 'Server belum mendukung konversi WebP.',
+    ], 500);
+}
+
+$filename = bin2hex(random_bytes(16)) . '.webp';
 
 $absolutePath = $absoluteDirectory
     . DIRECTORY_SEPARATOR
@@ -143,11 +152,19 @@ $absolutePath = $absoluteDirectory
 
 $relativePath = $relativeDirectory . '/' . $filename;
 
-if (!move_uploaded_file($file['tmp_name'], $absolutePath)) {
+if (
+    !save_uploaded_image_as_webp(
+        $file['tmp_name'],
+        $absolutePath,
+        80
+    )
+) {
+    @unlink($absolutePath);
+
     api_json([
         'success' => false,
-        'message' => 'Gambar gagal disimpan.',
-    ], 500);
+        'message' => 'Ikon gagal dikonversi menjadi WebP.',
+    ], 422);
 }
 
 try {

@@ -255,6 +255,10 @@ Untuk menjalankan aplikasi, siapkan:
 - Browser modern dengan dukungan JavaScript ES Modules.
 - Hosting yang mengizinkan aplikasi mengakses database dan direktori
   penyimpanan upload.
+- Ekstensi PHP `fileinfo` untuk validasi gambar upload.
+- Ekstensi PHP `gd` dengan dukungan WebP untuk konversi gambar.
+- Semua gambar produk dan ikon warung yang diunggah melalui
+  endpoint terkait disimpan dalam format WebP.
 
 Versi PHP yang digunakan harus mendukung sintaks yang dipakai aplikasi,
 termasuk fitur PHP modern seperti `str_contains()` dan `str_starts_with()`.
