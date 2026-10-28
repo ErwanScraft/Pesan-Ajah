@@ -628,32 +628,82 @@ function renderProducts() {
      HELPER: TOGGLE KETERSEDIAAN
   ------------------------------------------------------- */
 
-  async function updateAvailability(
-    product,
-    checkbox,
-    availabilityText,
-  ) {
-    const previousValue = product.available;
-    const nextValue = checkbox.checked;
-
-    if (previousValue === nextValue) {
+  function renderAvailabilityButton(button, product) {
+    const available = product.available;
+  
+    button.classList.toggle("is-available", available);
+    button.classList.toggle("is-unavailable", !available);
+  
+    button.setAttribute(
+      "aria-label",
+      available
+        ? `Tandai ${product.name} sebagai habis`
+        : `Tandai ${product.name} sebagai tersedia`,
+    );
+  
+    button.title = available
+      ? "Tersedia — klik untuk menandai habis"
+      : "Habis — klik untuk mengaktifkan";
+  
+    button.innerHTML = available
+      ? `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path
+            d="m8 12 2.5 2.5L16.5 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      `
+      : `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path
+            d="m9 9 6 6m0-6-6 6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      `;
+  }
+  
+  async function updateAvailability(product, button) {
+    if (button.disabled) {
       return;
     }
-
-    checkbox.disabled = true;
-
-    availabilityText.textContent = "Menyimpan...";
-
+  
+    const previousValue = product.available;
+    const nextValue = !previousValue;
+  
+    button.disabled = true;
+    button.classList.add("is-saving");
+    button.title = "Menyimpan perubahan...";
+    button.setAttribute(
+      "aria-label",
+      `Menyimpan status produk ${product.name}`,
+    );
+  
     try {
-      /*
-       * Gunakan POST JSON.
-       *
-       * Endpoint products.php menganggap POST dengan ID
-       * sebagai operasi pembaruan produk.
-       *
-       * Ini juga menghindari masalah server/cPanel yang
-       * membatasi HTTP PUT.
-       */
       await postJSON(API.products, {
         id: product.id,
         name: product.name,
@@ -665,60 +715,32 @@ function renderProducts() {
         tag: product.tag || "",
         available: nextValue,
       });
-
-      /*
-       * Jangan menganggap status tersimpan sebelum server
-       * mengembalikan respons berhasil.
-       */
+  
       product.available = nextValue;
-
-      availabilityText.textContent = nextValue
-        ? "Tersedia"
-        : "Habis";
-
-      statusText.textContent = nextValue
-        ? "Stok tersedia"
-        : "Stok habis";
-
-      statusText.classList.toggle(
-        "is-available",
-        nextValue,
-      );
-
-      statusText.classList.toggle(
-        "is-unavailable",
-        !nextValue,
-      );
-
+  
+      renderAvailabilityButton(button, product);
+  
       notify(
         nextValue
           ? "Produk berhasil diaktifkan."
           : "Produk ditandai habis.",
       );
-
-      /*
-       * Muat ulang dari database untuk memastikan status
-       * yang tampil sesuai dengan data server.
-       */
+  
+      // Sinkronkan tampilan dengan data terbaru dari server.
       await loadProducts();
     } catch (error) {
-      /*
-       * Kembalikan checkbox ke status sebelumnya apabila
-       * permintaan gagal.
-       */
-      checkbox.checked = previousValue;
-
-      availabilityText.textContent = previousValue
-        ? "Tersedia"
-        : "Habis";
-
+      // Pertahankan status sebelumnya jika penyimpanan gagal.
+      product.available = previousValue;
+      renderAvailabilityButton(button, product);
+  
       notify(
         error instanceof Error
           ? error.message
           : "Status produk gagal diperbarui.",
       );
     } finally {
-      checkbox.disabled = false;
+      button.disabled = false;
+      button.classList.remove("is-saving");
     }
   }
 
@@ -740,44 +762,19 @@ function renderProducts() {
     actions.className = "manage-actions";
 
     /*
-     * Toggle ketersediaan.
+     * Tombol ikon ketersediaan produk.
      */
-    const availabilityLabel = document.createElement("label");
+    const availabilityButton = document.createElement("button");
 
-    availabilityLabel.className = "availability-control";
+    availabilityButton.type = "button";
+    availabilityButton.className = "availability-icon";
 
-    const checkbox = document.createElement("input");
+    renderAvailabilityButton(availabilityButton, product);
 
-    checkbox.type = "checkbox";
-    checkbox.checked = product.available;
-
-    checkbox.setAttribute(
-      "aria-label",
-      `Ubah ketersediaan ${product.name}`,
-    );
-
-    const availabilityText = document.createElement("span");
-
-    availabilityText.textContent = product.available
-      ? "Tersedia"
-      : "Habis";
-
-    const statusText = info.querySelector(
-      ".product-stock-status",
-    );
-
-    checkbox.addEventListener("change", () => {
-      updateAvailability(
-        product,
-        checkbox,
-        availabilityText,
-      );
+    availabilityButton.addEventListener("click", () => {
+      updateAvailability(product, availabilityButton);
     });
 
-    availabilityLabel.append(
-      checkbox,
-      availabilityText,
-    );
 
     const editButton = createIconButton(
       `Edit ${product.name}`,
@@ -793,7 +790,7 @@ function renderProducts() {
     );
 
     actions.append(
-      availabilityLabel,
+      availabilityButton,
       editButton,
       deleteButton,
     );

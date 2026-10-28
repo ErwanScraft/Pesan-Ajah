@@ -317,8 +317,9 @@
 }
 
 
+
 /* =========================================================
-   7. STATUS KETERSEDIAAN
+   7. IKON KETERSEDIAAN PRODUK
 ========================================================= */
 
 .products-page .manage-actions {
@@ -328,88 +329,82 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 7px;
 }
 
-.products-page .availability-control {
-  display: inline-flex;
+.products-page .availability-icon {
+  display: inline-grid;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
   min-height: 36px;
-  align-items: center;
-  gap: 8px;
-  margin: 0 auto 0 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 650;
-  line-height: 1.4;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.products-page .availability-control input[type="checkbox"] {
-  position: relative;
-  appearance: none;
-  -webkit-appearance: none;
-  width: 34px;
-  height: 20px;
-  flex: 0 0 34px;
+  flex: 0 0 36px;
+  place-items: center;
   margin: 0;
-  border: 1px solid #d4d8d3;
-  border-radius: 999px;
-  background: #e7e9e6;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: #f0f7f1;
+  color: #187346;
   cursor: pointer;
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease;
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
 }
 
-.products-page .availability-control input[type="checkbox"]::before {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 14%);
-  content: "";
-  transition: transform 160ms ease;
+.products-page .availability-icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
-.products-page .availability-control input[type="checkbox"]:checked {
-  border-color: var(--green);
-  background: var(--green);
+.products-page .availability-icon.is-available {
+  border-color: #d5ead9;
+  background: #eff8f0;
+  color: #187346;
 }
 
-.products-page .availability-control input[type="checkbox"]:checked::before {
-  transform: translateX(14px);
+.products-page .availability-icon.is-available:hover:not(:disabled) {
+  border-color: #acd5b5;
+  background: #e0f2e3;
 }
 
-.products-page .availability-control input[type="checkbox"]:focus-visible {
+.products-page .availability-icon.is-unavailable {
+  border-color: #f0d9d6;
+  background: #fff3f1;
+  color: #c33d32;
+}
+
+.products-page .availability-icon.is-unavailable:hover:not(:disabled) {
+  border-color: #e8b9b3;
+  background: #ffe7e3;
+}
+
+.products-page .availability-icon:focus-visible {
   outline: 3px solid rgb(18 107 70 / 20%);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
-.products-page .availability-control input[type="checkbox"]:disabled {
+.products-page .availability-icon:disabled {
   cursor: wait;
-  opacity: 0.65;
+  opacity: 0.55;
 }
 
-.products-page .availability-control:has(input:checked) span {
-  color: var(--green);
+.products-page .availability-icon.is-saving {
+  animation: availability-pulse 800ms ease-in-out infinite alternate;
 }
 
-.products-page .availability-control:has(input:not(:checked)) span {
-  color: var(--danger);
-}
+@keyframes availability-pulse {
+  from {
+    opacity: 0.55;
+  }
 
-.products-page .availability-control:has(input:disabled) {
-  cursor: wait;
-  opacity: 0.75;
+  to {
+    opacity: 1;
+  }
 }
-
 
 /* =========================================================
    8. TOMBOL EDIT DAN HAPUS
@@ -1039,9 +1034,16 @@ body.products-modal-open {
     gap: 6px;
   }
 
-  .products-page .product-category-card .availability-control {
-    gap: 5px;
-    margin: 0;
+  .products-page .product-category-card .manage-actions {
+    gap: 6px;
+  }
+
+  .products-page .product-category-card .availability-icon {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    flex-basis: 34px;
   }
 
   .products-page .product-category-card .manage-actions .icon-action {
@@ -1122,24 +1124,22 @@ body.products-modal-open {
     font-size: 10px;
   }
 
-  .products-page .product-category-card .availability-control {
-    gap: 4px;
-    font-size: 10px;
+  .products-page .product-category-card .manage-actions {
+    gap: 5px;
   }
 
-  .products-page .availability-control input[type="checkbox"] {
+  .products-page .product-category-card .availability-icon {
     width: 30px;
-    height: 18px;
+    min-width: 30px;
+    height: 32px;
+    min-height: 32px;
     flex-basis: 30px;
+    border-radius: 8px;
   }
 
-  .products-page .availability-control input[type="checkbox"]::before {
-    width: 12px;
-    height: 12px;
-  }
-
-  .products-page .availability-control input[type="checkbox"]:checked::before {
-    transform: translateX(12px);
+  .products-page .product-category-card .availability-icon svg {
+    width: 17px;
+    height: 17px;
   }
 
   .products-page .product-category-card .manage-actions .icon-action {
@@ -1221,23 +1221,22 @@ body.products-modal-open {
     gap: 4px;
   }
 
-  .products-page .product-category-card .availability-control {
-    font-size: 9px;
+  .products-page .product-category-card .manage-actions {
+    gap: 4px;
   }
 
-  .products-page .availability-control input[type="checkbox"] {
-    width: 27px;
-    height: 17px;
-    flex-basis: 27px;
+  .products-page .product-category-card .availability-icon {
+    width: 28px;
+    min-width: 28px;
+    height: 30px;
+    min-height: 30px;
+    flex-basis: 28px;
+    padding: 0;
   }
 
-  .products-page .availability-control input[type="checkbox"]::before {
-    width: 11px;
-    height: 11px;
-  }
-
-  .products-page .availability-control input[type="checkbox"]:checked::before {
-    transform: translateX(10px);
+  .products-page .product-category-card .availability-icon svg {
+    width: 16px;
+    height: 16px;
   }
 
   .products-page .product-category-card .manage-actions .icon-action {
