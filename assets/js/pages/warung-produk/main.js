@@ -804,33 +804,63 @@ export async function initWarungProducts({
       }
 
       try {
-        const response = await fetch(API.products, {
-          method: "POST",
-          credentials: "same-origin",
-          cache: "no-store",
-          headers: {
-            Accept: "application/json",
-            "X-CSRF-Token": csrfToken,
-          },
-          body: requestData,
-        });
-
-        let data;
+        let response;
 
         try {
-          data = await response.json();
+          response = await fetch(API.products, {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: {
+              Accept: "application/json",
+              "X-CSRF-Token": csrfToken,
+            },
+            body: requestData,
+          });
+        } catch (error) {
+          console.error("Gagal menghubungi API produk:", error);
+
+          throw new Error(
+            "Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.",
+          );
+        }
+
+        // Baca respons sebagai teks terlebih dahulu agar error PHP
+        // yang menghasilkan HTML tidak disamarkan menjadi JSON error.
+        const responseText = await response.text();
+        let data = null;
+
+        try {
+          data = responseText
+            ? JSON.parse(responseText)
+            : null;
         } catch {
-          throw new Error("Respons server tidak valid.");
+          data = null;
+        }
+
+        if (response.status === 401) {
+          window.location.href = "/warung/login.php";
+          return;
+        }
+
+        if (!data || typeof data !== "object") {
+          console.error(
+            "API produk mengembalikan respons non-JSON:",
+            response.status,
+            responseText.slice(0, 1000),
+          );
+
+          throw new Error(
+            response.status >= 500
+              ? `Server gagal menyimpan produk (HTTP ${response.status}). Periksa error log PHP di hosting.`
+              : `Respons server tidak valid (HTTP ${response.status}). Muat ulang halaman dan coba lagi.`,
+          );
         }
 
         if (!response.ok || data.success === false) {
-          if (response.status === 401) {
-            window.location.href = "/warung/login.php";
-            return;
-          }
-
           throw new Error(
-            data.message || "Produk gagal disimpan.",
+            data.message ||
+              `Produk gagal disimpan (HTTP ${response.status}).`,
           );
         }
 
@@ -843,6 +873,8 @@ export async function initWarungProducts({
             : "Produk berhasil ditambahkan.",
         );
       } catch (error) {
+        console.error("Proses penyimpanan produk gagal:", error);
+
         notify(
           error instanceof Error
             ? error.message
