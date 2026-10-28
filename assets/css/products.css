@@ -1363,3 +1363,384 @@ body.products-modal-open {
     gap: 8px;
   }
 }
+
+/* =========================================================
+   PRODUCT UI REFINEMENT
+   Scope: warung/produk.php
+========================================================= */
+
+/* Header halaman lebih sederhana */
+
+.products-page {
+  gap: 16px;
+}
+
+.products-page .products-heading-copy p {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.products-page .products-heading-actions {
+  gap: 8px;
+}
+
+.products-page .products-heading-actions .table-caption {
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.products-page .products-heading-actions #add-product-button {
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 9px;
+}
+
+/* Jarak daftar kategori */
+
+.products-page .product-manage-list {
+  gap: 16px;
+  padding: 0 16px 16px;
+}
+
+.products-page .product-category-group {
+  gap: 8px;
+}
+
+.products-page .product-category-heading h4 {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.products-page .product-category-count {
+  padding: 4px 8px;
+  border: 0;
+  background: #f4f5f3;
+  font-weight: 600;
+}
+
+/* Card produk lebih bersih */
+
+.products-page .product-category-card {
+  border-radius: 12px;
+}
+
+.products-page .product-category-card .manage-row {
+  min-height: 72px;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.products-page .product-category-card .manage-row:hover {
+  background: #fafbf9;
+}
+
+.products-page .manage-product {
+  gap: 11px;
+}
+
+.products-page .manage-product-thumbnail {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  flex-basis: 48px;
+  border-radius: 9px;
+  background: #f7f8f6;
+}
+
+.products-page .manage-product > span:last-child {
+  gap: 3px;
+}
+
+.products-page .manage-product strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.products-page .manage-product small {
+  font-size: 11px;
+}
+
+/* Status Habis / Tersedia */
+
+.products-page .manage-actions {
+  gap: 8px;
+}
+
+.products-page .availability-control {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.products-page .availability-control input[type="checkbox"] {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 34px;
+  height: 20px;
+  flex: 0 0 34px;
+  margin: 0;
+  border: 1px solid #d4d8d3;
+  border-radius: 999px;
+  background: #e7e9e6;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.products-page .availability-control input[type="checkbox"]::before {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 14%);
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.products-page .availability-control input[type="checkbox"]:checked {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.products-page .availability-control input[type="checkbox"]:checked::before {
+  transform: translateX(14px);
+}
+
+.products-page .availability-control input[type="checkbox"]:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 20%);
+  outline-offset: 3px;
+}
+
+.products-page .availability-control input[type="checkbox"]:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.products-page .availability-control:has(input:checked) span {
+  color: var(--green);
+}
+
+.products-page .availability-control:has(input:not(:checked)) span {
+  color: var(--danger);
+}
+
+/* Tombol edit dan hapus berupa ikon */
+
+.products-page .manage-actions .icon-action {
+  display: inline-grid;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: #5c655e;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.products-page .manage-actions .icon-action svg {
+  display: block;
+  width: 17px;
+  height: 17px;
+}
+
+.products-page .manage-actions .icon-action:hover:not(:disabled) {
+  border-color: #b9c8bc;
+  background: #f5f8f5;
+  color: var(--green-dark);
+}
+
+.products-page .manage-actions .icon-action.danger-action {
+  border-color: #eee0de;
+  background: #fff;
+  color: var(--danger);
+}
+
+.products-page .manage-actions .icon-action.danger-action:hover:not(:disabled) {
+  border-color: #e7bdb8;
+  background: #fff3f1;
+  color: var(--danger);
+}
+
+.products-page .manage-actions .icon-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Fokus keyboard */
+
+.products-page .manage-actions .icon-action:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 20%);
+  outline-offset: 2px;
+}
+
+/* Tablet dan ponsel */
+
+@media (max-width: 760px) {
+  .products-page .product-manage-list {
+    padding: 0 12px 12px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    width: auto;
+    min-width: 0;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    gap: 5px;
+    margin: 0;
+  }
+
+  .products-page .product-category-card .manage-actions .icon-action {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    flex-basis: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-page .product-manage-list {
+    padding: 0 8px 8px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    gap: 8px;
+    padding: 11px 9px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    gap: 8px;
+  }
+
+  .products-page .product-category-card .manage-product-thumbnail {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    flex-basis: 42px;
+  }
+
+  .products-page .product-category-card .manage-product strong {
+    font-size: 12px;
+  }
+
+  .products-page .product-category-card .manage-product small {
+    font-size: 10px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .products-page .availability-control input[type="checkbox"] {
+    width: 30px;
+    height: 18px;
+    flex-basis: 30px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]::before {
+    width: 12px;
+    height: 12px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]:checked::before {
+    transform: translateX(12px);
+  }
+
+  .products-page .product-category-card .manage-actions .icon-action {
+    width: 30px;
+    min-width: 30px;
+    height: 32px;
+    min-height: 32px;
+    flex-basis: 30px;
+    border-radius: 8px;
+  }
+
+  .products-page .manage-actions .icon-action svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .products-page .product-category-card .manage-row {
+    gap: 6px;
+    padding-inline: 7px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    gap: 6px;
+  }
+
+  .products-page .product-category-card .manage-product-thumbnail {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    flex-basis: 36px;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    gap: 4px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    font-size: 9px;
+  }
+
+  .products-page .availability-control input[type="checkbox"] {
+    width: 27px;
+    height: 17px;
+    flex-basis: 27px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]::before {
+    width: 11px;
+    height: 11px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]:checked::before {
+    transform: translateX(10px);
+  }
+}

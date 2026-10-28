@@ -106,6 +106,52 @@ function createButton(text, callback, className = "table-action") {
   return button;
 }
 
+function createIconButton(
+  label,
+  icon,
+  callback,
+  className = "table-action",
+) {
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.className = `table-action icon-action ${className}`;
+  button.setAttribute("aria-label", label);
+  button.title = label;
+
+  const icons = {
+    edit: `
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        focusable="false">
+        <path d="M12 20h9"
+          fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L9 17l-4 1 1-4Z"
+          fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round"/>
+      </svg>
+    `,
+    delete: `
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        focusable="false">
+        <path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14"
+          fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round"/>
+        <path d="M10 10v6m4-6v6"
+          fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    `,
+  };
+
+  button.innerHTML = icons[icon] || "";
+  button.addEventListener("click", callback);
+
+  return button;
+}
+
 /* =========================================================
    DASHBOARD STATISTIK
 ========================================================= */
@@ -568,17 +614,7 @@ function renderProducts() {
     metadata.textContent =
       `${product.unit || "-"} · ${formatRupiah(product.price)}`;
 
-    const status = document.createElement("small");
-
-    status.className = product.available
-      ? "product-stock-status is-available"
-      : "product-stock-status is-unavailable";
-
-    status.textContent = product.available
-      ? "Stok tersedia"
-      : "Stok habis";
-
-    details.append(name, variant, metadata, status);
+    details.append(name, variant, metadata);
 
     info.append(
       createProductThumbnail(product),
@@ -595,7 +631,6 @@ function renderProducts() {
   async function updateAvailability(
     product,
     checkbox,
-    statusText,
     availabilityText,
   ) {
     const previousValue = product.available;
@@ -735,7 +770,6 @@ function renderProducts() {
       updateAvailability(
         product,
         checkbox,
-        statusText,
         availabilityText,
       );
     });
@@ -745,21 +779,17 @@ function renderProducts() {
       availabilityText,
     );
 
-    /*
-     * Tombol edit.
-     */
-    const editButton = createButton(
-      "Edit",
+    const editButton = createIconButton(
+      `Edit ${product.name}`,
+      "edit",
       () => editProduct(product.id),
     );
-
-    /*
-     * Tombol hapus.
-     */
-    const deleteButton = createButton(
-      "Hapus",
+    
+    const deleteButton = createIconButton(
+      `Hapus ${product.name}`,
+      "delete",
       () => deleteProduct(product.id),
-      "table-action danger-action",
+      "danger-action",
     );
 
     actions.append(
