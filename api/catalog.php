@@ -107,7 +107,6 @@ try {
           AND u.is_active = 1
           AND u.role = 'warung'
 
-          AND p.is_available = 1
     ";
 
     $params = [];

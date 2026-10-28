@@ -247,6 +247,10 @@ export function createCatalog({
   function createProductImage(product) {
     const container = document.createElement("div");
     container.className = "product-image";
+    
+    if (!product.is_available) {
+      container.classList.add("is-sold-out");
+    }
 
     const placeholder = document.createElement("span");
 
@@ -288,6 +292,16 @@ export function createCatalog({
     }
 
     container.append(placeholder);
+    
+    if (!product.is_available) {
+      const soldOutLabel = document.createElement("span");
+    
+      soldOutLabel.className = "product-sold-out-label";
+      soldOutLabel.textContent = "HABIS";
+      soldOutLabel.setAttribute("aria-label", "Produk habis");
+    
+      container.append(soldOutLabel);
+    }
 
     if (product.tag) {
       const tag = document.createElement("span");

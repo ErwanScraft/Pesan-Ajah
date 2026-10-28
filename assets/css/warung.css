@@ -712,6 +712,36 @@
     object-position: center;
 }
 
+/* =========================================================
+   STATUS PRODUK HABIS — HALAMAN WARUNG
+   ========================================================= */
+
+.store-page .product-image.is-sold-out .product-photo {
+    filter: grayscale(100%);
+}
+
+.store-page .product-image.is-sold-out .product-image-placeholder {
+    filter: grayscale(100%);
+}
+
+.store-page .product-sold-out-label {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: #ffffff;
+    background: rgb(0 0 0 / 42%);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    text-align: center;
+    pointer-events: none;
+}
+
 .product-image-placeholder {
     display: flex;
     align-items: center;
