@@ -302,36 +302,38 @@ export async function initWarungProducts({
     function createProductThumbnail(product) {
       const thumbnail = document.createElement("div");
       thumbnail.className = "manage-product-thumbnail";
-
+    
       const placeholder = document.createElement("span");
       placeholder.className = "manage-product-image-placeholder";
       placeholder.textContent = "Tanpa foto";
-
+    
       const image = document.createElement("img");
-
+    
       image.alt = product.name
         ? `Foto ${product.name}`
         : "Foto produk";
-
+    
       image.loading = "lazy";
       image.decoding = "async";
       image.hidden = true;
-
+    
       thumbnail.append(image, placeholder);
-
+    
       function showPlaceholder() {
         image.hidden = true;
         image.removeAttribute("src");
         placeholder.hidden = false;
       }
-
+    
+      // Ambil URL melalui helper yang sudah digunakan aplikasi.
       const imageUrl = resolveImageUrl(product.image);
-
+    
       if (!imageUrl) {
         showPlaceholder();
         return thumbnail;
       }
-
+    
+      // Tampilkan gambar setelah berhasil dimuat.
       image.addEventListener(
         "load",
         () => {
@@ -340,13 +342,23 @@ export async function initWarungProducts({
         },
         { once: true },
       );
-
-      image.addEventListener("error", showPlaceholder, {
-        once: true,
-      });
-
+    
+      // Jika URL gambar gagal dimuat, tampilkan placeholder.
+      image.addEventListener(
+        "error",
+        showPlaceholder,
+        { once: true },
+      );
+    
+      // Pasang URL setelah event listener terdaftar.
       image.src = imageUrl;
-
+    
+      // Menangani gambar yang sudah selesai dimuat dari cache.
+      if (image.complete && image.naturalWidth > 0) {
+        image.hidden = false;
+        placeholder.hidden = true;
+      }
+    
       return thumbnail;
     }
 
