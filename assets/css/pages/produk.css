@@ -1,0 +1,1262 @@
+/* =========================================================
+   PESAN AJAH — HALAMAN KELOLA PRODUK
+   File: assets/css/pages/produk.css
+   Digunakan oleh: warung/produk.php
+
+   Cakupan:
+   - Header halaman produk
+   - Daftar produk berdasarkan kategori
+   - Thumbnail dan informasi produk
+   - Kontrol ketersediaan serta tombol aksi
+   - Modal tambah/edit produk
+   - Form, satuan, dan pratinjau gambar
+   - Responsivitas halaman produk
+
+   Catatan:
+   - Tombol umum tetap menggunakan components.css.
+   - Layout dashboard tetap menggunakan dashboard.css.
+   - Seluruh aturan khusus dibatasi pada .products-page,
+     kecuali body.products-modal-open untuk penguncian scroll.
+========================================================= */
+
+
+/* =========================================================
+   1. DASAR HALAMAN
+========================================================= */
+
+.products-page,
+.products-page * {
+  box-sizing: border-box;
+}
+
+.products-page {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.products-page button:focus-visible,
+.products-page input:focus-visible,
+.products-page select:focus-visible,
+.products-page textarea:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 22%);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   2. HEADER HALAMAN
+========================================================= */
+
+.products-page-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.products-page .products-heading-copy {
+  min-width: 0;
+}
+
+.products-page .products-heading-copy h2,
+.products-page-heading h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+}
+
+.products-page .products-heading-copy p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.products-page .products-heading-actions {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.products-page .products-heading-actions .table-caption {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.products-page .products-heading-actions #add-product-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+/* =========================================================
+   3. KARTU DAN JUDUL DAFTAR PRODUK
+========================================================= */
+
+.products-page .products-card {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 16px);
+  background: var(--white);
+}
+
+.products-page .products-list-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  background: var(--white);
+}
+
+.products-page .products-list-heading h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   4. DAFTAR DAN KELOMPOK KATEGORI
+========================================================= */
+
+.products-page .product-manage-list {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px 16px;
+}
+
+.products-page .product-category-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.products-page .product-category-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+}
+
+.products-page .product-category-heading h4 {
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.products-page .product-category-count {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #f4f5f3;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.products-page .product-category-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+
+/* =========================================================
+   5. BARIS PRODUK
+========================================================= */
+
+.products-page .product-category-card .manage-row {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--white);
+  box-shadow: none;
+  transition: background 150ms ease;
+}
+
+.products-page .product-category-card .manage-row:last-child {
+  border-bottom: 0;
+}
+
+.products-page .product-category-card .manage-row:hover {
+  background: #fafbf9;
+}
+
+
+/* =========================================================
+   6. INFORMASI PRODUK DAN THUMBNAIL
+========================================================= */
+
+.products-page .manage-product {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 11px;
+}
+
+.products-page .manage-product-thumbnail {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  flex: 0 0 48px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f7f8f6;
+  color: var(--muted);
+}
+
+.products-page .manage-product-thumbnail > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.products-page .manage-product-thumbnail > img[hidden] {
+  display: none !important;
+}
+
+.products-page .manage-product-thumbnail > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  place-items: center;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.products-page .manage-product-thumbnail > span[hidden] {
+  display: none !important;
+}
+
+.products-page .manage-product > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.products-page .manage-product strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.products-page .manage-product small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.products-page .manage-product-variant[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   7. STATUS KETERSEDIAAN
+========================================================= */
+
+.products-page .manage-actions {
+  display: flex;
+  min-width: 0;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.products-page .availability-control {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.products-page .availability-control input[type="checkbox"] {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 34px;
+  height: 20px;
+  flex: 0 0 34px;
+  margin: 0;
+  border: 1px solid #d4d8d3;
+  border-radius: 999px;
+  background: #e7e9e6;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.products-page .availability-control input[type="checkbox"]::before {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 14%);
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.products-page .availability-control input[type="checkbox"]:checked {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.products-page .availability-control input[type="checkbox"]:checked::before {
+  transform: translateX(14px);
+}
+
+.products-page .availability-control input[type="checkbox"]:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 20%);
+  outline-offset: 3px;
+}
+
+.products-page .availability-control input[type="checkbox"]:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.products-page .availability-control:has(input:checked) span {
+  color: var(--green);
+}
+
+.products-page .availability-control:has(input:not(:checked)) span {
+  color: var(--danger);
+}
+
+.products-page .availability-control:has(input:disabled) {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   8. TOMBOL EDIT DAN HAPUS
+========================================================= */
+
+.products-page .manage-actions .icon-action {
+  display: inline-grid;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: #5c655e;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.products-page .manage-actions .icon-action svg {
+  display: block;
+  width: 17px;
+  height: 17px;
+}
+
+.products-page .manage-actions .icon-action:hover:not(:disabled) {
+  border-color: #b9c8bc;
+  background: #f5f8f5;
+  color: var(--green-dark);
+}
+
+.products-page .manage-actions .icon-action.danger-action {
+  border-color: #eee0de;
+  background: #fff;
+  color: var(--danger);
+}
+
+.products-page .manage-actions .icon-action.danger-action:hover:not(:disabled) {
+  border-color: #e7bdb8;
+  background: #fff3f1;
+  color: var(--danger);
+}
+
+.products-page .manage-actions .icon-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.products-page .manage-actions .icon-action:focus-visible {
+  outline: 3px solid rgb(18 107 70 / 20%);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   9. STATUS DAN DAFTAR KOSONG
+========================================================= */
+
+.products-page .product-stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.products-page .product-stock-status.is-available {
+  color: var(--green);
+}
+
+.products-page .product-stock-status.is-unavailable {
+  color: var(--danger);
+}
+
+.products-page .product-empty {
+  margin: 0;
+  padding: 34px 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+
+/* =========================================================
+   10. MODAL TAMBAH / EDIT PRODUK
+========================================================= */
+
+.products-page .products-modal[hidden] {
+  display: none !important;
+}
+
+.products-page .products-modal {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 20px;
+  isolation: isolate;
+}
+
+.products-page .products-modal-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgb(14 29 21 / 58%);
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.products-page .products-modal-dialog {
+  position: relative;
+  display: flex;
+  width: min(100%, 760px);
+  max-height: min(90vh, 900px);
+  max-height: min(90dvh, 900px);
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
+  animation: products-modal-enter 160ms ease-out;
+}
+
+.products-page .products-modal-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+
+.products-page .products-modal-eyebrow {
+  margin: 0 0 4px;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.products-page .products-modal-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.products-page .products-modal-close {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.products-page .products-modal-close:hover {
+  border-color: var(--green);
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.products-page .products-modal-close:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   11. FORM PRODUK DI DALAM MODAL
+========================================================= */
+
+.products-page .products-modal-dialog > .product-form {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 22px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0;
+  background: var(--white);
+  -webkit-overflow-scrolling: touch;
+}
+
+.products-page .product-form-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.products-page .product-form-heading h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+}
+
+.products-page .products-modal-dialog .product-form-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.products-page .form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.products-page .form-field > span {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.products-page .form-field > span small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.products-page .form-field input:not([type="checkbox"]):not([type="file"]),
+.products-page .form-field select,
+.products-page .form-field textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.products-page .form-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.products-page .form-field input::placeholder,
+.products-page .form-field textarea::placeholder {
+  color: #9aa39b;
+  opacity: 1;
+}
+
+.products-page .form-field input:focus,
+.products-page .form-field select:focus,
+.products-page .form-field textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgb(18 107 70 / 10%);
+}
+
+.products-page .form-field input:focus-visible,
+.products-page .form-field select:focus-visible,
+.products-page .form-field textarea:focus-visible {
+  outline: none;
+}
+
+.products-page .form-field input:disabled,
+.products-page .form-field select:disabled,
+.products-page .form-field textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.products-page .product-description-field {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   12. SATUAN PRODUK
+========================================================= */
+
+.products-page .product-unit-field {
+  min-width: 0;
+}
+
+.products-page .product-unit-inputs {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 10px;
+}
+
+.products-page .product-unit-inputs input,
+.products-page .product-unit-inputs select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.products-page .product-unit-help {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   13. FOTO PRODUK
+========================================================= */
+
+.products-page .product-image-field {
+  min-width: 0;
+}
+
+.products-page .product-image-editor {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.products-page .product-image-preview {
+  position: relative;
+  display: grid;
+  width: 140px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  place-items: center;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: #f7f9f6;
+  color: var(--muted);
+}
+
+.products-page .product-image-preview > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.products-page .product-image-preview > img[hidden] {
+  display: none !important;
+}
+
+.products-page .product-image-preview > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  place-items: center;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.products-page .product-image-preview > span[hidden] {
+  display: none !important;
+}
+
+.products-page .product-image-actions {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.products-page .product-image-picker {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.products-page .product-image-picker:hover {
+  border-color: var(--green);
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.products-page .product-image-actions button[hidden],
+.products-page .product-form-actions [hidden],
+.products-page .product-remove-image-option[hidden] {
+  display: none !important;
+}
+
+.products-page .form-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   14. CHECKBOX FORM
+========================================================= */
+
+.products-page .form-checkbox {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.products-page .form-checkbox input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  margin: 0;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+.products-page .product-availability {
+  margin-top: 20px;
+}
+
+.products-page .product-remove-image-option {
+  margin-top: 2px;
+}
+
+
+/* =========================================================
+   15. TOMBOL AKSI FORM
+========================================================= */
+
+.products-page .product-form-actions {
+  position: sticky;
+  bottom: -22px;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 20px -22px -22px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+
+.products-page .product-form-actions .button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 17px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+/* =========================================================
+   16. SCROLL DAN ANIMASI MODAL
+========================================================= */
+
+body.products-modal-open {
+  overflow: hidden;
+}
+
+@keyframes products-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes products-modal-mobile-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   17. TABLET DAN MOBILE
+========================================================= */
+
+@media (max-width: 760px) {
+  .products-page {
+    gap: 14px;
+  }
+
+  .products-page .products-modal {
+    align-items: end;
+    padding: 0;
+  }
+
+  .products-page .products-modal-dialog {
+    width: 100%;
+    max-height: 94vh;
+    max-height: 94dvh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 18px 18px 0 0;
+    animation-name: products-modal-mobile-enter;
+  }
+
+  .products-page .products-modal-header {
+    padding: 15px 16px;
+  }
+
+  .products-page .products-modal-dialog > .product-form {
+    padding: 17px 16px;
+  }
+
+  .products-page .products-modal-dialog .product-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .products-page .products-modal-dialog .product-description-field {
+    grid-column: auto;
+  }
+
+  .products-page .products-modal-dialog .product-form-actions {
+    bottom: -17px;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin: 18px -16px -17px;
+    padding: 12px 16px
+      calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .products-page .products-modal-dialog .product-form-actions .button {
+    width: 100%;
+  }
+
+  .products-page .product-manage-list {
+    padding: 0 12px 12px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    width: auto;
+    min-width: 0;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    gap: 5px;
+    margin: 0;
+  }
+
+  .products-page .product-category-card .manage-actions .icon-action {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    flex-basis: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-page-heading h2 {
+    font-size: 18px;
+  }
+
+  .products-page .products-heading-actions {
+    gap: 7px;
+  }
+
+  .products-page .products-heading-actions .table-caption {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .products-page .products-heading-actions #add-product-button {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .products-page .products-list-heading {
+    padding: 16px;
+  }
+
+  .products-page .product-manage-list {
+    padding: 0 8px 8px;
+  }
+
+  .products-page .product-category-group {
+    gap: 8px;
+  }
+
+  .products-page .product-category-heading h4 {
+    font-size: 12px;
+  }
+
+  .products-page .product-category-count {
+    padding: 4px 7px;
+    font-size: 9px;
+  }
+
+  .products-page .product-category-card {
+    border-radius: 11px;
+  }
+
+  .products-page .product-category-card .manage-row {
+    gap: 8px;
+    padding: 11px 9px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    gap: 8px;
+  }
+
+  .products-page .product-category-card .manage-product-thumbnail {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    flex-basis: 42px;
+  }
+
+  .products-page .product-category-card .manage-product strong {
+    font-size: 12px;
+  }
+
+  .products-page .product-category-card .manage-product small {
+    font-size: 10px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .products-page .availability-control input[type="checkbox"] {
+    width: 30px;
+    height: 18px;
+    flex-basis: 30px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]::before {
+    width: 12px;
+    height: 12px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]:checked::before {
+    transform: translateX(12px);
+  }
+
+  .products-page .product-category-card .manage-actions .icon-action {
+    width: 30px;
+    min-width: 30px;
+    height: 32px;
+    min-height: 32px;
+    flex-basis: 30px;
+    border-radius: 8px;
+  }
+
+  .products-page .manage-actions .icon-action svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .products-page .product-unit-inputs {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    gap: 8px;
+  }
+
+  .products-page .products-modal-header {
+    padding: 15px 16px;
+  }
+
+  .products-page .products-modal-dialog > .product-form {
+    padding: 17px 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .products-page .products-page-heading {
+    align-items: flex-start;
+  }
+
+  .products-page .products-heading-actions {
+    gap: 6px;
+  }
+
+  .products-page .products-heading-actions #add-product-button {
+    padding: 8px;
+    font-size: 10px;
+  }
+
+  .products-page .products-modal-header {
+    padding: 13px;
+  }
+
+  .products-page .products-modal-dialog > .product-form {
+    padding: 15px 13px;
+  }
+
+  .products-page .products-modal-dialog .product-form-actions {
+    bottom: -15px;
+    margin: 16px -13px -15px;
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .products-page .product-category-card .manage-row {
+    gap: 6px;
+    padding-inline: 7px;
+  }
+
+  .products-page .product-category-card .manage-product {
+    gap: 6px;
+  }
+
+  .products-page .product-category-card .manage-product-thumbnail {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    flex-basis: 36px;
+  }
+
+  .products-page .product-category-card .manage-actions {
+    gap: 4px;
+  }
+
+  .products-page .product-category-card .availability-control {
+    font-size: 9px;
+  }
+
+  .products-page .availability-control input[type="checkbox"] {
+    width: 27px;
+    height: 17px;
+    flex-basis: 27px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]::before {
+    width: 11px;
+    height: 11px;
+  }
+
+  .products-page .availability-control input[type="checkbox"]:checked::before {
+    transform: translateX(10px);
+  }
+
+  .products-page .product-category-card .manage-actions .icon-action {
+    padding-inline: 0;
+  }
+}
+
+
+/* =========================================================
+   18. PREFERENSI AKSESIBILITAS
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .products-page *,
+  .products-page *::before,
+  .products-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

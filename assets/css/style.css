@@ -42,3 +42,6 @@
 
 /* 9. Skeleton loading */
 @import url("./skeleton.css");
+
+/* 10. Halaman dashboard produk */
+@import url("./pages/produk.css");
