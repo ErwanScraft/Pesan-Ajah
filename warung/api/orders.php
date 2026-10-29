@@ -92,6 +92,91 @@ $id = api_positive_id($input['id'] ?? null);
 $action = $input['action'] ?? null;
 
 /*
+ * Batalkan pesanan.
+ * Warung hanya dapat membatalkan pesanan yang
+ * masih menunggu atau sudah dikonfirmasi.
+ */
+if ($action === 'cancel') {
+    $db = database();
+
+    try {
+        $db->beginTransaction();
+
+        $stmt = $db->prepare(
+            'SELECT id, status
+             FROM orders
+             WHERE id = :id
+               AND store_id = :store_id
+             FOR UPDATE'
+        );
+
+        $stmt->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        $order = $stmt->fetch();
+
+        if (!$order) {
+            $db->rollBack();
+
+            api_json([
+                'success' => false,
+                'message' => 'Pesanan tidak ditemukan.',
+            ], 404);
+        }
+
+        if (!in_array(
+            (string) $order['status'],
+            ['pending', 'confirmed'],
+            true
+        )) {
+            $db->rollBack();
+
+            api_json([
+                'success' => false,
+                'message' => 'Pesanan tidak dapat dibatalkan pada tahap ini.',
+            ], 422);
+        }
+
+        $update = $db->prepare(
+            'UPDATE orders
+             SET status = :status
+             WHERE id = :id
+               AND store_id = :store_id'
+        );
+
+        $update->execute([
+            'status' => 'cancelled',
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        $db->commit();
+
+        api_json([
+            'success' => true,
+            'message' => 'Pesanan berhasil dibatalkan.',
+            'status' => 'cancelled',
+        ]);
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        error_log(
+            '[Pesan Ajah] Gagal membatalkan pesanan: '
+            . $exception->getMessage()
+        );
+
+        api_json([
+            'success' => false,
+            'message' => 'Pesanan gagal dibatalkan.',
+        ], 500);
+    }
+}
+
+/*
  * Hapus riwayat pesanan.
  * Hanya pesanan berstatus completed milik warung
  * yang sedang login yang dapat dihapus.

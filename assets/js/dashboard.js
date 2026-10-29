@@ -630,6 +630,20 @@ function renderOrders() {
     
       footer.append(actionButton);
     }
+
+    const currentStatus = String(order.status || "").toLowerCase();
+    
+    if (["pending", "confirmed"].includes(currentStatus)) {
+      const cancelButton = createButton(
+        "Batalkan",
+        async () => {
+          await cancelOrder(order);
+        },
+        "button button-danger order-cancel-button",
+      );
+    
+      footer.append(cancelButton);
+    }
     
     const orderStatus = String(order.status || "").toLowerCase();
     
@@ -700,6 +714,46 @@ async function changeOrderStatus(order, status) {
     );
   }
 }
+
+async function cancelOrder(order) {
+  const status = String(order.status || "").toLowerCase();
+
+  if (!["pending", "confirmed"].includes(status)) {
+    notify("Pesanan tidak dapat dibatalkan pada tahap ini.");
+    return;
+  }
+
+  const orderLabel = order.order_number || order.id;
+
+  if (
+    !window.confirm(
+      `Batalkan pesanan #${orderLabel}? Pesanan yang dibatalkan akan masuk ke riwayat.`,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    await postJSON(API.orders, {
+      action: "cancel",
+      id: order.id,
+    });
+
+    await Promise.all([
+      loadOrders(),
+      loadDashboard(),
+    ]);
+
+    notify("Pesanan berhasil dibatalkan.");
+  } catch (error) {
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Pesanan gagal dibatalkan.",
+    );
+  }
+}
+
 
 async function deleteOrderHistory(order) {
   const status = String(order.status || "").toLowerCase();

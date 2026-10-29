@@ -133,7 +133,7 @@ require __DIR__ . '/_header.php';
                 data-order-filter="completed"
                 aria-pressed="false"
             >
-                Selesai
+                Riwayat
             </button>
         </div>
 
