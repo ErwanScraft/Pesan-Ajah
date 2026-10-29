@@ -101,16 +101,12 @@ if ($storeName !== '') {
 $metaDescription = $storeDescription !== ''
     ? $storeDescription
     : 'Pesan produk dari ' . $storeName . ' melalui Pesan Ajah.';
-    
+
 $siteUrl = 'https://pesanajah.web.id';
 
-$shareImageUrl = $siteUrl . '/assets/images/logo.webp';
-
-if ($storeIconUrl !== null) {
-    $shareImageUrl = preg_match('~^https?://~i', $storeIconUrl)
-        ? $storeIconUrl
-        : $siteUrl . '/' . ltrim($storeIconUrl, '/');
-}
+$shareImageUrl = $storeIconUrl !== null
+    ? $siteUrl . $storeIconUrl
+    : $siteUrl . '/assets/images/logo.webp';
 
 $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
 
