@@ -13,48 +13,72 @@ $activePage = 'pengaturan';
 
 require __DIR__ . '/_header.php';
 
+$isOpen = (bool) ($store['is_open'] ?? false);
+$freeDelivery = (bool) ($store['free_delivery'] ?? false);
+$iconImage = $store['icon_image'] ?? '';
+
 ?>
 
 <div class="settings-page">
 
     <header class="settings-page-heading">
-        <h2>Pengaturan warung</h2>
+        <div>
+            <h2>Pengaturan</h2>
+            <p>Kelola profil dan status warung.</p>
+        </div>
+
+        <span class="settings-page-badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10h18M5 10v10h14V10M3 10l2-6h14l2 6M9 20v-6h6v6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"/>
+            </svg>
+            Warung
+        </span>
     </header>
 
-    <!-- Status operasional -->
     <div class="settings-status-grid">
 
         <section
-            class="dashboard-card settings-status-card"
+            class="settings-status-card"
             aria-labelledby="store-status-heading"
         >
             <div class="settings-status-copy">
-                <h3 id="store-status-heading">Status warung</h3>
-
+                <h3 id="store-status-heading">Status Warung</h3>
                 <p id="store-toggle-text">
-                    <?= (bool) ($store['is_open'] ?? false)
-                        ? 'Warung sedang buka'
-                        : 'Warung sedang tutup' ?>
+                    <?= $isOpen ? 'Buka' : 'Tutup' ?>
                 </p>
             </div>
 
             <label
-                class="switch-label settings-switch"
+                class="settings-status-control"
                 for="store-open-toggle"
             >
-                <span class="settings-switch-label">
-                    Terima pesanan
+                <span class="settings-status-indicator <?= $isOpen ? 'is-active' : '' ?>"
+                    aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="m7 12 3.2 3.2L17 8.5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="9"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"/>
+                    </svg>
                 </span>
 
                 <input
                     type="checkbox"
                     id="store-open-toggle"
-                    <?= (bool) ($store['is_open'] ?? false)
-                        ? 'checked'
-                        : '' ?>
+                    aria-label="Terima pesanan"
+                    <?= $isOpen ? 'checked' : '' ?>
                 >
-
-                <span class="switch" aria-hidden="true"></span>
             </label>
 
             <p
@@ -66,36 +90,46 @@ require __DIR__ . '/_header.php';
         </section>
 
         <section
-            class="dashboard-card settings-status-card"
+            class="settings-status-card"
             aria-labelledby="free-delivery-heading"
         >
             <div class="settings-status-copy">
-                <h3 id="free-delivery-heading">Gratis ongkir</h3>
-
+                <h3 id="free-delivery-heading">Gratis Ongkir</h3>
                 <p id="free-delivery-toggle-text">
-                    <?= (bool) ($store['free_delivery'] ?? false)
-                        ? 'Aktif'
-                        : 'Tidak aktif' ?>
+                    <?= $freeDelivery ? 'Aktif' : 'Nonaktif' ?>
                 </p>
             </div>
 
             <label
-                class="switch-label settings-switch"
+                class="settings-status-control"
                 for="free-delivery-toggle"
             >
-                <span class="settings-switch-label">
-                    Aktifkan promo
+                <span class="settings-status-indicator"
+                    aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 7h11v11H3zM14 11h4l3 3v4h-7"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"/>
+                        <circle cx="7.5" cy="18" r="1.8"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"/>
+                        <circle cx="17.5" cy="18" r="1.8"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"/>
+                    </svg>
                 </span>
 
                 <input
                     type="checkbox"
                     id="free-delivery-toggle"
-                    <?= (bool) ($store['free_delivery'] ?? false)
-                        ? 'checked'
-                        : '' ?>
+                    aria-label="Aktifkan gratis ongkir"
+                    <?= $freeDelivery ? 'checked' : '' ?>
                 >
-
-                <span class="switch" aria-hidden="true"></span>
             </label>
 
             <p
@@ -108,63 +142,59 @@ require __DIR__ . '/_header.php';
 
     </div>
 
-    <!-- Profil warung -->
     <section
-        class="dashboard-card settings-profile-card"
-        aria-labelledby="store-profile-heading"
+        class="settings-profile-card"
+        aria-label="Profil warung"
     >
-        <div class="settings-section-heading">
-            <h3 id="store-profile-heading">Profil warung</h3>
-        </div>
-
         <form
             class="store-settings-form"
             id="store-settings-form"
         >
 
-            <!-- Ikon warung -->
             <section
                 class="store-icon-section"
                 aria-labelledby="store-icon-heading"
             >
-                <div class="store-icon-layout">
+                <div class="store-icon-preview">
 
-                    <div class="store-icon-preview">
+                    <img
+                        id="store-icon-preview"
+                        src="<?= !empty($iconImage)
+                            ? e(url($iconImage))
+                            : '' ?>"
+                        alt="Pratinjau ikon warung"
+                        <?= empty($iconImage) ? 'hidden' : '' ?>
+                    >
 
-                        <img
-                            id="store-icon-preview"
-                            src="<?= !empty($store['icon_image'])
-                                ? e(url($store['icon_image']))
-                                : '' ?>"
-                            alt="Pratinjau ikon warung"
-                            <?= empty($store['icon_image'])
-                                ? 'hidden'
-                                : '' ?>
-                        >
-
-                        <div
-                            id="store-icon-placeholder"
-                            <?= !empty($store['icon_image'])
-                                ? 'hidden'
-                                : '' ?>
-                        >
-                            <span aria-hidden="true">+</span>
-                            <small>Ikon warung</small>
-                        </div>
-
+                    <div
+                        id="store-icon-placeholder"
+                        <?= !empty($iconImage) ? 'hidden' : '' ?>
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 10h18M5 10v10h14V10M3 10l2-6h14l2 6M9 20v-6h6v6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"/>
+                        </svg>
                     </div>
 
-                    <div class="store-icon-controls">
+                </div>
 
-                        <h4 id="store-icon-heading">
-                            Ikon warung
-                        </h4>
+                <div class="store-icon-controls">
+                    <h3 id="store-icon-heading">Ikon Warung</h3>
 
+                    <p class="store-icon-hint">
+                        JPG, PNG, WebP · 2 MB
+                    </p>
+
+                    <div class="store-icon-actions">
                         <label
                             class="button button-outline"
                             for="store-icon-input"
                         >
-                            Pilih gambar
+                            Pilih Gambar
                         </label>
 
                         <input
@@ -174,154 +204,155 @@ require __DIR__ . '/_header.php';
                             hidden
                         >
 
-                        <small class="muted">
-                            JPG, PNG, WebP · Maks. 2 MB
-                        </small>
-
                         <button
                             class="button button-primary"
                             id="save-store-icon"
                             type="button"
                             disabled
                         >
-                            Simpan ikon
+                            Simpan Ikon
                         </button>
-
-                        <p
-                            id="store-icon-feedback"
-                            class="store-icon-feedback muted"
-                            role="status"
-                            aria-live="polite"
-                        ></p>
-
                     </div>
 
+                    <p
+                        id="store-icon-feedback"
+                        class="store-icon-feedback muted"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
                 </div>
             </section>
 
-            <!-- Informasi warung -->
-            <div class="product-form-grid">
+            <div class="settings-fields-grid">
 
                 <label class="form-field">
-                    <span>Nama warung</span>
-
+                    <span>Nama Warung</span>
                     <input
                         name="name"
                         maxlength="80"
                         autocomplete="organization"
+                        placeholder="Nama warung"
                         value="<?= e($store['name'] ?? '') ?>"
                         required
                     >
                 </label>
 
                 <label class="form-field">
-                    <span>Nama pemilik</span>
-
+                    <span>Nama Pemilik</span>
                     <input
                         name="owner_name"
                         maxlength="80"
                         autocomplete="name"
+                        placeholder="Nama pemilik"
                         value="<?= e($store['owner_name'] ?? '') ?>"
                         required
                     >
                 </label>
 
                 <label class="form-field">
-                    <span>Nomor WhatsApp</span>
-
+                    <span>WhatsApp</span>
                     <input
                         name="phone"
                         type="tel"
                         maxlength="25"
                         autocomplete="tel"
+                        placeholder="08xxxxxxxxxx"
                         value="<?= e($store['phone'] ?? '') ?>"
                     >
                 </label>
 
                 <label class="form-field">
-                    <span>Alamat warung</span>
-
+                    <span>Alamat</span>
                     <input
                         name="address"
                         maxlength="180"
                         autocomplete="street-address"
+                        placeholder="Alamat warung"
                         value="<?= e($store['address'] ?? '') ?>"
                         required
                     >
                 </label>
 
-                <label class="form-field store-location-field">
-                    <span>Latitude</span>
+            </div>
 
-                    <input
-                        name="latitude"
-                        type="number"
-                        min="-90"
-                        max="90"
-                        step="any"
-                        inputmode="decimal"
-                        placeholder="-7.0000000"
-                    >
-                </label>
+            <section class="settings-location-card"
+                aria-labelledby="store-location-heading">
 
-                <label class="form-field store-location-field">
-                    <span>Longitude</span>
-
-                    <input
-                        name="longitude"
-                        type="number"
-                        min="-180"
-                        max="180"
-                        step="any"
-                        inputmode="decimal"
-                        placeholder="110.0000000"
-                    >
-                </label>
-
-                <div class="store-location-actions">
+                <div class="settings-location-heading">
+                    <div>
+                        <h3 id="store-location-heading">Lokasi GPS</h3>
+                        <p>Latitude &amp; Longitude</p>
+                    </div>
 
                     <button
                         class="button button-outline"
                         id="get-store-location"
                         type="button"
                     >
-                        Ambil lokasi GPS
+                        Ambil Lokasi
                     </button>
+                </div>
 
-                    <p
-                        id="store-location-feedback"
-                        class="muted"
-                        role="status"
-                        aria-live="polite"
-                    ></p>
+                <div class="settings-fields-grid settings-coordinates-grid">
+
+                    <label class="form-field">
+                        <span>Latitude</span>
+                        <input
+                            name="latitude"
+                            type="number"
+                            min="-90"
+                            max="90"
+                            step="any"
+                            inputmode="decimal"
+                            placeholder="-7.xxxxxx"
+                        >
+                    </label>
+
+                    <label class="form-field">
+                        <span>Longitude</span>
+                        <input
+                            name="longitude"
+                            type="number"
+                            min="-180"
+                            max="180"
+                            step="any"
+                            inputmode="decimal"
+                            placeholder="110.xxxxxx"
+                        >
+                    </label>
 
                 </div>
 
-                <label class="form-field store-description-field">
-                    <span>Deskripsi <small>(opsional)</small></span>
+                <p
+                    id="store-location-feedback"
+                    class="settings-inline-feedback muted"
+                    role="status"
+                    aria-live="polite"
+                ></p>
 
-                    <textarea
-                        name="description"
-                        maxlength="500"
-                        rows="3"
-                        placeholder="Deskripsi singkat warung"
-                    ><?= e($store['description'] ?? '') ?></textarea>
-                </label>
+            </section>
 
-            </div>
+            <label class="form-field settings-description-field">
+                <span>Deskripsi <small>(opsional)</small></span>
+                <textarea
+                    name="description"
+                    maxlength="500"
+                    rows="4"
+                    placeholder="Deskripsi singkat warung"
+                ><?= e($store['description'] ?? '') ?></textarea>
+            </label>
 
-            <!-- Aksi formulir -->
-            <div class="product-form-actions">
+            <div class="settings-form-footer">
 
                 <button
-                    class="button button-primary"
+                    class="button button-primary settings-save-button"
                     type="submit"
                 >
-                    Simpan perubahan
+                    Simpan Perubahan
                 </button>
 
                 <button
-                    class="button button-outline"
+                    class="button button-outline settings-reset-button"
                     id="reset-store-settings"
                     type="button"
                 >

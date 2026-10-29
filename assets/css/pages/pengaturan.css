@@ -7,78 +7,153 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
+  padding-bottom: 12px;
 }
 
 .settings-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin: 0;
 }
 
 .settings-page-heading h2 {
   margin: 0;
   color: var(--text);
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: -0.45px;
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.8px;
+  line-height: 1.25;
 }
 
-/* Status warung dan gratis ongkir */
+.settings-page-heading p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.settings-page-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-page-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* =========================================================
+   STATUS WARUNG
+========================================================= */
 
 .settings-status-grid {
   display: grid;
   min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.settings-page .dashboard-card {
-  margin: 0;
+  gap: 16px;
 }
 
 .settings-status-card {
+  position: relative;
   display: flex;
   min-width: 0;
+  min-height: 112px;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 16px;
-  padding: 20px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
 }
 
 .settings-status-copy {
   min-width: 0;
 }
 
-.settings-status-copy h3,
-.settings-section-heading h3 {
+.settings-status-copy h3 {
   margin: 0;
   color: var(--text);
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.4;
 }
 
 .settings-status-copy p {
-  margin: 5px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
-.settings-switch {
-  gap: 10px;
+.settings-status-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
 }
 
-.settings-switch-label {
-  color: var(--text);
-  font-size: 11px;
-  font-weight: 650;
+.settings-status-indicator {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.settings-status-indicator svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.settings-status-indicator.is-active {
+  color: #218653;
+}
+
+.settings-status-control input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.settings-status-control:focus-within {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.settings-status-control:has(input:checked)
+  .settings-status-indicator {
+  color: #218653;
 }
 
 .settings-feedback {
+  grid-column: 1 / -1;
   width: 100%;
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -87,64 +162,124 @@
   display: none;
 }
 
-/* Profil warung */
+/* =========================================================
+   FORM PROFIL
+========================================================= */
 
-.settings-section-heading {
-  padding: 20px 22px 0;
+.settings-profile-card {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .store-settings-form {
+  display: flex;
   min-width: 0;
-  padding: 20px 22px 22px;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0;
 }
 
-.store-settings-form .product-form-grid {
-  gap: 16px;
+.settings-fields-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 18px;
+}
+
+.store-settings-form .form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+}
+
+.store-settings-form .form-field > span {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.store-settings-form .form-field > span small {
+  color: var(--muted);
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.store-settings-form .form-field input,
+.store-settings-form .form-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.store-settings-form .form-field input::placeholder,
+.store-settings-form .form-field textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+.store-settings-form .form-field input:focus,
+.store-settings-form .form-field textarea:focus {
+  border-color: var(--text);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(0 0 0 / 5%);
 }
 
 .store-settings-form .form-field textarea {
-  min-height: 88px;
+  min-height: 128px;
   resize: vertical;
 }
 
-.store-description-field {
-  grid-column: 1 / -1;
+.settings-description-field {
+  width: 100%;
 }
 
-/* Ikon warung */
+/* =========================================================
+   IKON WARUNG
+========================================================= */
 
 .store-icon-section {
   display: flex;
   min-width: 0;
   align-items: center;
-  margin-bottom: 22px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-}
-
-.store-icon-layout {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  grid-template-columns: 88px minmax(0, 1fr);
-  align-items: center;
-  gap: 18px;
+  gap: 22px;
+  margin: 0;
+  padding: 0 0 24px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
 }
 
 .store-icon-preview {
   display: grid;
-  width: 88px;
-  height: 88px;
-  flex: 0 0 88px;
+  width: 104px;
+  height: 104px;
+  flex: 0 0 104px;
   overflow: hidden;
   place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--white);
+  border: 0;
+  border-radius: 24px;
+  background: var(--surface);
   color: var(--muted);
-  text-align: center;
 }
 
 .store-icon-preview img {
@@ -159,22 +294,16 @@
   display: none !important;
 }
 
-.store-icon-preview div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 6px;
+.store-icon-preview > div {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
 }
 
-.store-icon-preview div span {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.store-icon-preview div small {
-  font-size: 9px;
-  line-height: 1.4;
+.store-icon-preview svg {
+  width: 42px;
+  height: 42px;
 }
 
 .store-icon-controls {
@@ -182,33 +311,46 @@
   min-width: 0;
   align-items: flex-start;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
 }
 
-.store-icon-controls h4 {
-  margin: 0 0 2px;
+.store-icon-controls h3 {
+  margin: 0;
   color: var(--text);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
-.store-icon-controls > small {
-  font-size: 10px;
+.store-icon-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
   line-height: 1.5;
 }
 
-.store-icon-controls #save-store-icon {
-  min-width: 130px;
+.store-icon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
-.store-icon-controls #save-store-icon:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+.store-icon-actions .button {
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.store-icon-actions #save-store-icon:disabled {
+  display: none;
 }
 
 .store-icon-feedback {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -217,146 +359,385 @@
   display: none;
 }
 
-/* Lokasi warung */
+/* =========================================================
+   LOKASI GPS
+========================================================= */
 
-.store-location-actions {
+.settings-location-card {
   display: flex;
   min-width: 0;
-  grid-column: 1 / -1;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
 }
 
-.store-location-actions p {
+.settings-location-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-location-heading h3 {
   margin: 0;
-  font-size: 11px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.settings-location-heading p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.settings-location-heading .button {
+  min-height: 42px;
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-coordinates-grid {
+  gap: 18px;
+}
+
+.settings-inline-feedback {
+  margin: -8px 0 0;
+  font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-/* Tombol dan pesan formulir */
+.settings-inline-feedback:empty {
+  display: none;
+}
 
-.store-settings-form .product-form-actions {
-  align-items: center;
+/* =========================================================
+   TOMBOL SIMPAN
+========================================================= */
+
+.settings-form-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.settings-form-footer .settings-save-button {
+  width: 100%;
+  min-height: 54px;
+  justify-content: center;
+  border: 1px solid #171717;
+  border-radius: 999px;
+  background: #171717;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  box-shadow: none;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.settings-form-footer .settings-save-button:hover {
+  border-color: #303030;
+  background: #303030;
+}
+
+.settings-form-footer .settings-save-button:active {
+  transform: scale(0.99);
+}
+
+.settings-form-footer .settings-reset-button {
+  align-self: center;
+  min-height: 36px;
+  padding: 6px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .store-settings-help {
-  margin: 12px 0 0;
-  font-size: 11px;
+  margin: -12px 0 0;
+  font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-/* Tablet dan ponsel */
+.store-settings-help:empty {
+  display: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media (max-width: 700px) {
   .settings-page {
-    gap: 14px;
+    gap: 20px;
+  }
+
+  .settings-page-heading h2 {
+    font-size: 24px;
+  }
+
+  .settings-page-heading p {
+    margin-top: 5px;
+    font-size: 13px;
+  }
+
+  .settings-page-badge {
+    gap: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .settings-page-badge svg {
+    width: 19px;
+    height: 19px;
   }
 
   .settings-status-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .settings-status-card {
-    padding: 16px;
+    min-height: 100px;
+    gap: 8px;
+    padding: 15px;
+    border-radius: 20px;
   }
 
-  .settings-section-heading {
-    padding: 16px 16px 0;
+  .settings-status-copy h3 {
+    font-size: 13px;
+  }
+
+  .settings-status-copy p {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+
+  .settings-status-control {
+    width: 30px;
+    height: 30px;
+  }
+
+  .settings-status-indicator {
+    width: 28px;
+    height: 28px;
+  }
+
+  .settings-status-indicator svg {
+    width: 24px;
+    height: 24px;
   }
 
   .store-settings-form {
-    padding: 16px;
+    gap: 20px;
   }
 
-  .store-settings-form .product-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
+  .settings-fields-grid {
+    gap: 17px 12px;
+  }
+
+  .store-settings-form .form-field {
+    gap: 7px;
+  }
+
+  .store-settings-form .form-field > span {
+    font-size: 13px;
   }
 
   .store-settings-form .form-field input,
-  .store-settings-form .form-field select,
   .store-settings-form .form-field textarea {
-    font-size: 16px;
+    min-height: 50px;
+    padding: 12px 14px;
+    border-radius: 13px;
+    font-size: 14px;
   }
 
-  .store-description-field {
-    grid-column: auto;
+  .store-settings-form .form-field textarea {
+    min-height: 120px;
   }
 
   .store-icon-section {
-    padding: 12px;
+    gap: 15px;
+    padding-bottom: 20px;
   }
 
-  .store-icon-layout {
-    grid-template-columns: 68px minmax(0, 1fr);
-    align-items: start;
+  .store-icon-preview {
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
+    border-radius: 20px;
+  }
+
+  .store-icon-preview svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .store-icon-controls {
+    gap: 7px;
+  }
+
+  .store-icon-controls h3 {
+    font-size: 17px;
+  }
+
+  .store-icon-hint {
+    font-size: 12px;
+  }
+
+  .store-icon-actions {
+    gap: 7px;
+  }
+
+  .store-icon-actions .button {
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .settings-location-card {
+    gap: 17px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .settings-location-heading {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .settings-location-heading h3 {
+    font-size: 16px;
+  }
+
+  .settings-location-heading p {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+
+  .settings-location-heading .button {
+    min-height: 38px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .settings-coordinates-grid {
+    gap: 14px 12px;
+  }
+
+  .settings-form-footer {
+    padding-top: 20px;
+  }
+
+  .settings-form-footer .settings-save-button {
+    min-height: 50px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-page-heading {
+    align-items: flex-start;
+  }
+
+  .settings-page-heading h2 {
+    font-size: 22px;
+  }
+
+  .settings-page-badge {
+    padding: 7px 9px;
+  }
+
+  .settings-status-card {
+    min-height: 92px;
+    padding: 12px 10px;
+    border-radius: 17px;
+  }
+
+  .settings-status-copy h3 {
+    font-size: 12px;
+  }
+
+  .settings-status-copy p {
+    font-size: 11px;
+  }
+
+  .settings-status-control {
+    width: 26px;
+    height: 26px;
+  }
+
+  .settings-status-indicator,
+  .settings-status-indicator svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .store-icon-section {
     gap: 12px;
   }
 
   .store-icon-preview {
     width: 68px;
     height: 68px;
-    border-radius: 12px;
+    flex-basis: 68px;
+    border-radius: 16px;
   }
 
-  .store-icon-controls {
-    gap: 8px;
+  .store-icon-controls h3 {
+    font-size: 15px;
   }
 
-  .store-icon-controls .button {
-    max-width: 100%;
-    white-space: normal;
+  .store-icon-hint {
+    font-size: 11px;
   }
 
-  .store-icon-controls #save-store-icon {
-    width: 100%;
-    min-width: 0;
+  .store-icon-actions .button {
+    padding: 8px 12px;
   }
 
-  .store-settings-form .product-form-actions {
-    align-items: stretch;
-    flex-direction: column;
+  .settings-location-card {
+    padding: 13px;
   }
 
-  .store-settings-form .product-form-actions .button {
-    width: 100%;
+  .settings-location-heading {
+    flex-wrap: wrap;
+  }
+
+  .settings-location-heading .button {
+    padding: 8px 11px;
+  }
+
+  .settings-coordinates-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-form-footer .settings-save-button {
+    min-height: 48px;
   }
 }
 
-/* Ponsel berlayar sempit */
-
-@media (max-width: 380px) {
-  .store-status-card {
-    padding: 14px;
-  }
-
-  .settings-status-card {
-    gap: 12px;
-  }
-
-  .store-icon-section {
-    padding: 10px;
-  }
-
-  .store-icon-layout {
-    grid-template-columns: 58px minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .store-icon-preview {
-    width: 58px;
-    height: 58px;
-  }
-
-  .settings-section-heading {
-    padding: 14px 14px 0;
-  }
-
-  .store-settings-form {
-    padding: 14px;
+@media (prefers-reduced-motion: reduce) {
+  .store-settings-form .form-field input,
+  .store-settings-form .form-field textarea,
+  .settings-form-footer .settings-save-button {
+    transition: none;
   }
 }

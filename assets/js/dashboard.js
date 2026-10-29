@@ -820,14 +820,14 @@ function updateSettingLabels(settings) {
 
   if (openText) {
     openText.textContent = settings.is_open
-      ? "Warung sedang buka"
-      : "Warung sedang tutup";
+      ? "Buka"
+      : "Tutup";
   }
 
   if (freeText) {
     freeText.textContent = settings.free_delivery
-      ? "Gratis ongkir aktif"
-      : "Gratis ongkir tidak aktif";
+      ? "Aktif"
+      : "Nonaktif";
   }
 }
 
