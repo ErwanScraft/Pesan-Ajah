@@ -704,10 +704,15 @@ export async function initWarungProducts({
   }
 
   async function deleteProduct(id) {
-    const product = products.find((item) => item.id === id);
-
-    if (!product) return;
-
+    const product = products.find(
+      (item) => Number(item.id) === Number(id),
+    );
+  
+    if (!product) {
+      notify("Produk tidak ditemukan.");
+      return;
+    }
+  
     if (
       !window.confirm(
         `Hapus produk "${product.name}" dari katalog?`,
@@ -715,16 +720,23 @@ export async function initWarungProducts({
     ) {
       return;
     }
-
+  
     try {
-      await postJSON(API.products, { id }, "DELETE");
-
+      await postJSON(API.products, {
+        action: "delete",
+        id: Number(product.id),
+      });
+  
       await loadProducts();
       resetProductForm();
-
+  
       notify("Produk berhasil dihapus.");
     } catch (error) {
-      notify(error.message);
+      notify(
+        error instanceof Error
+          ? error.message
+          : "Produk gagal dihapus.",
+      );
     }
   }
 

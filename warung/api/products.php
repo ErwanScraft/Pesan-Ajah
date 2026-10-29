@@ -457,6 +457,115 @@ $input = $isMultipart
     ? $_POST
     : api_json_input();
 
+
+/*
+|--------------------------------------------------------------------------
+| DELETE PRODUCT — POST action
+|--------------------------------------------------------------------------
+*/
+
+$isDeleteProduct = $method === 'DELETE'
+    || (
+        $method === 'POST'
+        && ($input['action'] ?? '') === 'delete'
+    );
+
+if ($isDeleteProduct) {
+    $id = api_positive_id($input['id'] ?? null);
+    $db = database();
+
+    $find = $db->prepare(
+        'SELECT image
+         FROM products
+         WHERE id = :id
+           AND store_id = :store_id
+         LIMIT 1'
+    );
+
+    $find->execute([
+        'id' => $id,
+        'store_id' => $storeId,
+    ]);
+
+    $product = $find->fetch();
+
+    if (!$product) {
+        api_json([
+            'success' => false,
+            'message' => 'Produk tidak ditemukan atau bukan milik warung ini.',
+        ], 404);
+    }
+
+    try {
+        $db->beginTransaction();
+
+        /*
+         * Lepaskan referensi produk dari riwayat pesanan.
+         * Snapshot nama dan harga tidak dihapus.
+         */
+        $detach = $db->prepare(
+            'UPDATE order_items
+             SET product_id = NULL
+             WHERE product_id = :product_id'
+        );
+
+        $detach->execute([
+            'product_id' => $id,
+        ]);
+
+        $delete = $db->prepare(
+            'DELETE FROM products
+             WHERE id = :id
+               AND store_id = :store_id'
+        );
+
+        $delete->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        if ($delete->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Produk tidak berhasil dihapus dari database.'
+            );
+        }
+
+        $db->commit();
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        error_log(
+            '[Pesan Ajah Product Delete] '
+            . 'store_id=' . $storeId
+            . '; product_id=' . $id
+            . '; error=' . $exception->getMessage()
+            . '; file=' . $exception->getFile()
+            . '; line=' . $exception->getLine()
+        );
+
+        api_json([
+            'success' => false,
+            'message' => 'Produk gagal dihapus. Periksa error_log hosting.',
+        ], 500);
+    }
+
+    /*
+     * Hapus foto setelah transaksi database berhasil.
+     */
+    if (!empty($product['image'])) {
+        delete_product_image_file(
+            (string) $product['image']
+        );
+    }
+
+    api_json([
+        'success' => true,
+        'message' => 'Produk berhasil dihapus.',
+    ]);
+}
+
 /*
 |--------------------------------------------------------------------------
 | POST — Tambah produk atau edit produk dengan foto
