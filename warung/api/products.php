@@ -499,38 +499,25 @@ if ($isDeleteProduct) {
     try {
         $db->beginTransaction();
 
-        /*
-         * Lepaskan referensi produk dari riwayat pesanan.
-         * Snapshot nama dan harga tidak dihapus.
-         */
-        $detach = $db->prepare(
-            'UPDATE order_items
-             SET product_id = NULL
-             WHERE product_id = :product_id'
-        );
-
-        $detach->execute([
-            'product_id' => $id,
-        ]);
-
         $delete = $db->prepare(
             'DELETE FROM products
              WHERE id = :id
                AND store_id = :store_id'
         );
-
+        
         $delete->execute([
             'id' => $id,
             'store_id' => $storeId,
         ]);
-
+        
         if ($delete->rowCount() !== 1) {
             throw new RuntimeException(
                 'Produk tidak berhasil dihapus dari database.'
             );
         }
-
+        
         $db->commit();
+
     } catch (Throwable $exception) {
         if ($db->inTransaction()) {
             $db->rollBack();
@@ -760,117 +747,6 @@ if ($method === 'POST' || $method === 'PUT') {
         'id' => $productId,
         'image' => $imageToSave,
     ], $id === null ? 201 : 200);
-}
-
-/*
-|--------------------------------------------------------------------------
-| DELETE — Hapus produk
-|--------------------------------------------------------------------------
-*/
-
-
-if ($method === 'DELETE') {
-    $id = api_positive_id($input['id'] ?? null);
-
-    $db = database();
-
-    /*
-     * Pastikan produk dimiliki oleh warung yang sedang login.
-     */
-    $find = $db->prepare(
-        'SELECT image
-         FROM products
-         WHERE id = :id
-           AND store_id = :store_id
-         LIMIT 1'
-    );
-
-    $find->execute([
-        'id' => $id,
-        'store_id' => $storeId,
-    ]);
-
-    $product = $find->fetch();
-
-    if (!$product) {
-        api_json([
-            'success' => false,
-            'message' => 'Produk tidak ditemukan.',
-        ], 404);
-    }
-
-    try {
-        $db->beginTransaction();
-
-        /*
-         * Lepaskan referensi produk dari riwayat pesanan.
-         * Snapshot nama, varian, harga, dan subtotal tetap utuh.
-         */
-        $detach = $db->prepare(
-            'UPDATE order_items
-             SET product_id = NULL
-             WHERE product_id = :product_id'
-        );
-
-        $detach->execute([
-            'product_id' => $id,
-        ]);
-
-        /*
-         * Hapus produk milik warung yang sedang login.
-         */
-        $delete = $db->prepare(
-            'DELETE FROM products
-             WHERE id = :id
-               AND store_id = :store_id'
-        );
-
-        $delete->execute([
-            'id' => $id,
-            'store_id' => $storeId,
-        ]);
-
-        if ($delete->rowCount() !== 1) {
-            throw new RuntimeException(
-                'Produk tidak berhasil dihapus.'
-            );
-        }
-
-        $db->commit();
-
-    } catch (Throwable $exception) {
-        if ($db->inTransaction()) {
-            $db->rollBack();
-        }
-
-        error_log(
-            '[Pesan Ajah Product Delete] '
-            . 'store_id=' . $storeId
-            . '; product_id=' . $id
-            . '; error=' . $exception->getMessage()
-            . '; file=' . $exception->getFile()
-            . '; line=' . $exception->getLine()
-        );
-
-        api_json([
-            'success' => false,
-            'message' => 'Produk gagal dihapus. Silakan coba lagi atau periksa error_log hosting.',
-        ], 500);
-    }
-
-    /*
-     * Hapus foto setelah transaksi database berhasil.
-     */
-    if (!empty($product['image'])) {
-        delete_product_image_file(
-            (string) $product['image']
-        );
-    }
-
-    api_json([
-        'success' => true,
-        'message' => 'Produk berhasil dihapus.',
-    ]);
 }
 
 header('Allow: GET, POST, PUT, DELETE');
