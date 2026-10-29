@@ -681,53 +681,58 @@ try {
      */
     $db->commit();
 
+
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     | FORMAT PESAN WHATSAPP
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     */
-    
+
+    $separator = '━━━━━━━━━━━━━━━━━━━━━';
     $message = [];
-    
-    $message[] = '*PESAN AJAH';
-    $message[] = 'PESANAN BARU*';
+
+    // Header
+    $message[] = '🔔 *PESANAN BARU — PESAN AJAH*';
     $message[] = '';
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*INFORMASI PESANAN*';
-    $message[] = 'No. Pesanan: ' . $orderNumber;
-    $message[] = 'Status: Menunggu konfirmasi';
+    $message[] = $separator;
+    $message[] = '📋 *DETAIL PESANAN*';
+    $message[] = '• *No. Pesanan:* `' . $orderNumber . '`';
+    $message[] = '• *Status:* Menunggu Konfirmasi';
     $message[] = '';
-    
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*DATA PEMBELI*';
-    $message[] = 'Nama: ' . $buyerName;
-    $message[] = 'WhatsApp: ' . $buyerPhone;
+
+    // Pembeli
+    $message[] = '👤 *PEMBELI*';
+    $message[] = '• *Nama:* ' . $buyerName;
+    $message[] = '• *WhatsApp:* +' . $buyerPhoneNormalized;
+    $message[] = '• *Catatan:* '
+        . ($buyerNote !== '' ? $buyerNote : '-');
     $message[] = '';
-    
-    if ($buyerNote !== '') {
-        $message[] = '━━━━━━━━━━━━━━━━━━';
-        $message[] = '*CATATAN PEMBELI*';
-        $message[] = $buyerNote;
-        $message[] = '';
-    }
-    
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*INFORMASI PENGAMBILAN*';
-    
+
+    // Pengiriman
+    $message[] = '📍 *PENGIRIMAN*';
+
     if ($deliveryMethod === 'delivery') {
-        $message[] = 'Metode: Diantar ke alamat';
-        $message[] = '';
-        $message[] = '*Alamat:*';
-        $message[] = $deliveryAddress;
-    
+        $message[] = '• *Metode:* Diantar ke Alamat';
+        $message[] = '• *Alamat:* '
+            . ($deliveryAddress !== '' ? $deliveryAddress : '-');
+
         if ($buyerMapsUrl !== null && $buyerMapsUrl !== '') {
-            $message[] = '';
-            $message[] = '*Lokasi Google Maps:*';
-            $message[] = $buyerMapsUrl;
-        }
-    
-        if ($deliveryDistanceKm !== null) {
-            $message[] = 'Jarak garis lurus: '
+            $mapsLine = '• *Maps:* ' . $buyerMapsUrl;
+
+            if ($deliveryDistanceKm !== null) {
+                $mapsLine .= ' *('
+                    . number_format(
+                        $deliveryDistanceKm,
+                        2,
+                        ',',
+                        '.'
+                    )
+                    . ' km)*';
+            }
+
+            $message[] = $mapsLine;
+        } elseif ($deliveryDistanceKm !== null) {
+            $message[] = '• *Jarak:* '
                 . number_format(
                     $deliveryDistanceKm,
                     2,
@@ -737,64 +742,66 @@ try {
                 . ' km';
         }
     } else {
-        $message[] = 'Metode: Ambil sendiri di warung';
+        $message[] = '• *Metode:* Ambil Sendiri di Warung';
     }
-    
+
     $message[] = '';
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*RINCIAN PRODUK*';
+    $message[] = $separator;
+
+    // Rincian produk
+    $message[] = '🛍️ *RINCIAN PRODUK*';
     $message[] = '';
-    
+
     foreach ($orderItems as $index => $item) {
-        $message[] = '*' . ($index + 1) . '. '
-            . $item['product_name'] . '*';
-    
-        if (!empty($item['product_variant'])) {
-            $message[] = '   Varian: '
-                . $item['product_variant'];
-        }
-    
-        $message[] = '   Jumlah: '
-            . $item['quantity'] . ' x '
-            . checkout_rupiah((float) $item['price']);
-    
-        $message[] = '   Subtotal: '
-            . checkout_rupiah((float) $item['subtotal']);
-    
+        $productName = (string) $item['product_name'];
+        $variant = trim((string) ($item['product_variant'] ?? ''));
+
+        $message[] = ($index + 1) . ') *' . $productName . '*'
+            . ($variant !== '' ? ' (' . $variant . ')' : '');
+
+        $message[] = '    ' . $item['quantity']
+            . 'x @' . checkout_rupiah((float) $item['price'])
+            . ' = *' . checkout_rupiah((float) $item['subtotal']) . '*';
+
         $message[] = '';
     }
-    
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*RINGKASAN PEMBAYARAN*';
-    $message[] = 'Subtotal: ' . checkout_rupiah($subtotal);
-    
+
+    $message[] = $separator;
+
+    // Ringkasan pembayaran
+    $message[] = '💰 *RINGKASAN PEMBAYARAN*';
+    $message[] = '• Subtotal: ' . checkout_rupiah($subtotal);
+
     if ($deliveryMethod === 'delivery') {
-        $message[] = 'Ongkir standar: '
+        $ongkirLine = '• Ongkir: '
             . checkout_rupiah($deliveryFeeOriginal);
-    
+
         if ($deliveryDiscount > 0) {
-            $message[] = 'Diskon ongkir: -'
-                . checkout_rupiah($deliveryDiscount);
+            $ongkirLine .= ' *(Diskon -'
+                . checkout_rupiah($deliveryDiscount)
+                . ')*';
         }
-    
-        $message[] = 'Ongkir dibayar: '
+
+        $message[] = $ongkirLine;
+        $message[] = '• *Total Ongkir:* '
             . checkout_rupiah($deliveryFee);
     }
-    
+
     $message[] = '';
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*TOTAL PEMBAYARAN*';
-    $message[] = '*' . checkout_rupiah($total) . '*';
+    $message[] = '💳 *TOTAL AKHIR:* *'
+        . checkout_rupiah($total) . '*';
+
+    $message[] = $separator;
     $message[] = '';
-    $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = 'Pesanan telah tercatat di Pesan Ajah.';
-    $message[] = 'Mohon konfirmasi pesanan ini.';
-    $message[] = 'Terima kasih.';
-    
+    $message[] = '_Pesanan telah tercatat di sistem Pesan Ajah._';
+    $message[] = '_Mohon segera konfirmasi pesanan ini. Terima kasih!_';
+
+    $messageText = implode("\n", $message);
+
     $whatsappUrl = 'https://wa.me/'
         . $sellerPhone
         . '?text='
-        . rawurlencode(implode("\n", $message));
+        . rawurlencode($messageText);
     
     checkout_json([
         'success' => true,
