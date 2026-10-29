@@ -18,6 +18,7 @@ if (request_method() === 'GET') {
             o.delivery_method,
             o.delivery_address,
             o.delivery_fee,
+            o.notes AS buyer_note,
             o.subtotal,
             o.total,
             o.status,
