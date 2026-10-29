@@ -139,8 +139,14 @@ $buyerNote = trim(
         : ''
 );
 
-$deliveryMethod = $input['delivery_method'] ?? '';
+if (mb_strlen($buyerNote, 'UTF-8') > 500) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Catatan pembeli maksimal 500 karakter.',
+    ], 422);
+}
 
+$deliveryMethod = $input['delivery_method'] ?? '';
 
 $deliveryAddress = trim(
     is_string($input['delivery_address'] ?? null)
@@ -674,81 +680,89 @@ try {
 
     /*
     |--------------------------------------------------------------------------
-    | BUAT PESAN WHATSAPP
+    | FORMAT PESAN WHATSAPP
     |--------------------------------------------------------------------------
     */
     
     $message = [];
     
-    $message[] = '*PESAN AJAH | PESANAN BARU*';
+    $message[] = '*PESAN AJAH';
+    $message[] = 'PESANAN BARU*';
+    $message[] = '';
     $message[] = '━━━━━━━━━━━━━━━━━━';
+    $message[] = '*INFORMASI PESANAN*';
+    $message[] = 'No. Pesanan: ' . $orderNumber;
+    $message[] = 'Status: Menunggu konfirmasi';
     $message[] = '';
-    $message[] = '*No. Pesanan:*';
-    $message[] = $orderNumber;
-    $message[] = '';
-    $message[] = '*Data Pembeli*';
     
+    $message[] = '━━━━━━━━━━━━━━━━━━';
+    $message[] = '*DATA PEMBELI*';
     $message[] = 'Nama: ' . $buyerName;
     $message[] = 'WhatsApp: ' . $buyerPhone;
     $message[] = '';
     
     if ($buyerNote !== '') {
-        $message[] = '*Catatan Pembeli untuk Penjual*';
+        $message[] = '━━━━━━━━━━━━━━━━━━';
+        $message[] = '*CATATAN PEMBELI*';
         $message[] = $buyerNote;
         $message[] = '';
     }
     
-    $message[] = '*Metode Pesanan*';
-    
-    if (mb_strlen($buyerNote, 'UTF-8') > 500) {
-        checkout_json([
-            'success' => false,
-            'message' => 'Catatan pembeli maksimal 500 karakter.',
-        ], 422);
-    }
-
+    $message[] = '━━━━━━━━━━━━━━━━━━';
+    $message[] = '*INFORMASI PENGAMBILAN*';
     
     if ($deliveryMethod === 'delivery') {
-        $message[] = 'Diantar ke alamat';
-    
+        $message[] = 'Metode: Diantar ke alamat';
         $message[] = '';
-        $message[] = '*Alamat Pengantaran*';
+        $message[] = '*Alamat:*';
         $message[] = $deliveryAddress;
     
         if ($buyerMapsUrl !== null && $buyerMapsUrl !== '') {
             $message[] = '';
-            $message[] = '*Lokasi Google Maps*';
+            $message[] = '*Lokasi Google Maps:*';
             $message[] = $buyerMapsUrl;
         }
-        
+    
         if ($deliveryDistanceKm !== null) {
             $message[] = 'Jarak garis lurus: '
-                . number_format($deliveryDistanceKm, 2, ',', '.')
+                . number_format(
+                    $deliveryDistanceKm,
+                    2,
+                    ',',
+                    '.'
+                )
                 . ' km';
         }
-
     } else {
-        $message[] = 'Ambil sendiri di warung';
+        $message[] = 'Metode: Ambil sendiri di warung';
     }
     
     $message[] = '';
     $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*Rincian Produk*';
+    $message[] = '*RINCIAN PRODUK*';
     $message[] = '';
     
     foreach ($orderItems as $index => $item) {
-        $message[] = ($index + 1) . '. ' . $item['product_name'];
+        $message[] = '*' . ($index + 1) . '. '
+            . $item['product_name'] . '*';
+    
         if (!empty($item['product_variant'])) {
-            $message[] = '   Varian: ' . $item['product_variant'];
+            $message[] = '   Varian: '
+                . $item['product_variant'];
         }
-        $message[] = '   ' . $item['quantity']
-            . ' x ' . checkout_rupiah((float) $item['price'])
-            . ' = ' . checkout_rupiah((float) $item['subtotal']);
+    
+        $message[] = '   Jumlah: '
+            . $item['quantity'] . ' x '
+            . checkout_rupiah((float) $item['price']);
+    
+        $message[] = '   Subtotal: '
+            . checkout_rupiah((float) $item['subtotal']);
+    
         $message[] = '';
     }
     
     $message[] = '━━━━━━━━━━━━━━━━━━';
-    $message[] = '*Ringkasan Pembayaran*';
+    $message[] = '*RINGKASAN PEMBAYARAN*';
     $message[] = 'Subtotal: ' . checkout_rupiah($subtotal);
     
     if ($deliveryMethod === 'delivery') {
@@ -765,12 +779,12 @@ try {
     }
     
     $message[] = '';
-    $message[] = '*TOTAL: ' . checkout_rupiah($total) . '*';
+    $message[] = '━━━━━━━━━━━━━━━━━━';
+    $message[] = '*TOTAL PEMBAYARAN*';
+    $message[] = '*' . checkout_rupiah($total) . '*';
     $message[] = '';
     $message[] = '━━━━━━━━━━━━━━━━━━';
     $message[] = 'Pesanan telah tercatat di Pesan Ajah.';
-    $message[] = 'Status: Menunggu konfirmasi';
-    $message[] = '';
     $message[] = 'Mohon konfirmasi pesanan ini.';
     $message[] = 'Terima kasih.';
     
