@@ -45,3 +45,6 @@
 
 /* 10. Halaman dashboard produk */
 @import url("./pages/produk.css");
+
+/* 11. Halaman pengaturan warung */
+@import url("./pages/pengaturan.css");
