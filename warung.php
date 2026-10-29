@@ -101,6 +101,18 @@ if ($storeName !== '') {
 $metaDescription = $storeDescription !== ''
     ? $storeDescription
     : 'Pesan produk dari ' . $storeName . ' melalui Pesan Ajah.';
+    
+$siteUrl = 'https://pesanajah.web.id';
+
+$shareImageUrl = $siteUrl . '/assets/images/logo.webp';
+
+if ($storeIconUrl !== null) {
+    $shareImageUrl = preg_match('~^https?://~i', $storeIconUrl)
+        ? $storeIconUrl
+        : $siteUrl . '/' . ltrim($storeIconUrl, '/');
+}
+
+$storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
 
 ?>
 <!doctype html>
@@ -114,19 +126,10 @@ $metaDescription = $storeDescription !== ''
     <meta name="description" content="<?= e($metaDescription) ?>">
     <meta name="robots" content="index, follow">
 
-    <!-- Preview WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Pesan Ajah">
     <meta property="og:title" content="<?= e($storeName) ?> — Pesan Ajah">
     <meta property="og:description" content="<?= e($metaDescription) ?>">
-    <meta property="og:image" content="<?= e($shareImageUrl) ?>">
-    <meta property="og:url" content="<?= e($storePageUrl) ?>">
-    <meta property="og:image:alt" content="Logo <?= e($storeName) ?>">
-
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="<?= e($storeName) ?>">
-    <meta name="twitter:description" content="<?= e($metaDescription) ?>">
-    <meta name="twitter:image" content="<?= e($shareImageUrl) ?>">
 
     <title><?= e($storeName) ?> — Pesan Ajah</title>
 
