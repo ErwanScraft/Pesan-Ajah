@@ -4,6 +4,11 @@ import {
   captureError,
 } from "./core/error-logger.js";
 
+import {
+  showToast,
+  confirmAction,
+} from "./modules/toast.js";
+
 initErrorLogger();
 
 const $ = (selector) => document.querySelector(selector);
@@ -63,22 +68,8 @@ async function postJSON(url, body, method = "POST") {
   });
 }
 
-function notify(message) {
-  const toast = $("#toast");
-
-  if (!toast) {
-    window.alert(message);
-    return;
-  }
-
-  toast.textContent = message;
-  toast.classList.add("show");
-
-  window.clearTimeout(notify.timeout);
-
-  notify.timeout = window.setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
+function notify(message, type = "info") {
+  showToast($("#toast"), message, 3500, type);
 }
 
 function formatRupiah(value) {
@@ -686,11 +677,14 @@ async function changeOrderStatus(order, status) {
     return;
   }
 
-  if (
-    !window.confirm(
-      `Yakin ingin ${action} pesanan ${order.order_number}?`,
-    )
-  ) {
+  const confirmed = await confirmAction({
+    title: "Konfirmasi pesanan",
+    message: `Yakin ingin ${action} pesanan ${order.order_number || order.id}?`,
+    confirmText: "Ya, lanjutkan",
+    cancelText: "Batal",
+  });
+
+  if (!confirmed) {
     return;
   }
 
@@ -724,12 +718,16 @@ async function cancelOrder(order) {
   }
 
   const orderLabel = order.order_number || order.id;
+  
+  const confirmed = await confirmAction({
+    title: "Batalkan pesanan?",
+    message: `Pesanan #${orderLabel} akan dibatalkan dan masuk ke riwayat.`,
+    confirmText: "Ya, batalkan",
+    cancelText: "Kembali",
+    danger: true,
+  });
 
-  if (
-    !window.confirm(
-      `Batalkan pesanan #${orderLabel}? Pesanan yang dibatalkan akan masuk ke riwayat.`,
-    )
-  ) {
+  if (!confirmed) {
     return;
   }
 
@@ -767,11 +765,15 @@ async function deleteOrderHistory(order) {
 
   const orderLabel = order.order_number || order.id;
 
-  if (
-    !window.confirm(
-      `Hapus riwayat pesanan #${orderLabel}? Tindakan ini tidak dapat dibatalkan.`,
-    )
-  ) {
+  const confirmed = await confirmAction({
+    title: "Hapus riwayat pesanan?",
+    message: `Riwayat pesanan #${orderLabel} akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`,
+    confirmText: "Hapus riwayat",
+    cancelText: "Batal",
+    danger: true,
+  });
+
+  if (!confirmed) {
     return;
   }
 
