@@ -659,10 +659,16 @@ if ($method === 'POST' || $method === 'PUT') {
 |--------------------------------------------------------------------------
 */
 
+
 if ($method === 'DELETE') {
     $id = api_positive_id($input['id'] ?? null);
 
-    $find = database()->prepare(
+    $db = database();
+
+    /*
+     * Pastikan produk dimiliki oleh warung yang sedang login.
+     */
+    $find = $db->prepare(
         'SELECT image
          FROM products
          WHERE id = :id
@@ -684,18 +690,69 @@ if ($method === 'DELETE') {
         ], 404);
     }
 
-    $delete = database()->prepare(
-        'DELETE FROM products
-         WHERE id = :id
-           AND store_id = :store_id'
-    );
+    try {
+        $db->beginTransaction();
 
-    $delete->execute([
-        'id' => $id,
-        'store_id' => $storeId,
-    ]);
+        /*
+         * Lepaskan referensi produk dari riwayat pesanan.
+         * Snapshot nama, varian, harga, dan subtotal tetap utuh.
+         */
+        $detach = $db->prepare(
+            'UPDATE order_items
+             SET product_id = NULL
+             WHERE product_id = :product_id'
+        );
 
-    if ($product['image']) {
+        $detach->execute([
+            'product_id' => $id,
+        ]);
+
+        /*
+         * Hapus produk milik warung yang sedang login.
+         */
+        $delete = $db->prepare(
+            'DELETE FROM products
+             WHERE id = :id
+               AND store_id = :store_id'
+        );
+
+        $delete->execute([
+            'id' => $id,
+            'store_id' => $storeId,
+        ]);
+
+        if ($delete->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Produk tidak berhasil dihapus.'
+            );
+        }
+
+        $db->commit();
+
+    } catch (Throwable $exception) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        error_log(
+            '[Pesan Ajah Product Delete] '
+            . 'store_id=' . $storeId
+            . '; product_id=' . $id
+            . '; error=' . $exception->getMessage()
+            . '; file=' . $exception->getFile()
+            . '; line=' . $exception->getLine()
+        );
+
+        api_json([
+            'success' => false,
+            'message' => 'Produk gagal dihapus. Silakan coba lagi atau periksa error_log hosting.',
+        ], 500);
+    }
+
+    /*
+     * Hapus foto setelah transaksi database berhasil.
+     */
+    if (!empty($product['image'])) {
         delete_product_image_file(
             (string) $product['image']
         );
