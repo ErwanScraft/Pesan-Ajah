@@ -106,22 +106,28 @@ $metaDescription = $storeDescription !== ''
 <!doctype html>
 <html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="color-scheme" content="light">
-
-    <meta name="description" content="<?= e($metaDescription) ?>">
-    <meta name="robots" content="index, follow">
-
+<?php
+    $siteUrl = 'https://pesanajah.web.id';
+    
+    $shareImageUrl = $storeIconUrl !== null
+        ? $siteUrl . $storeIconUrl
+        : $siteUrl . '/assets/images/logo.webp';
+    
+    $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
+    ?>
+    
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Pesan Ajah">
-    <meta property="og:title" content="<?= e($storeName) ?> — Pesan Ajah">
+    <meta property="og:title" content="<?= e($storeName) ?>">
     <meta property="og:description" content="<?= e($metaDescription) ?>">
-
-    <title><?= e($storeName) ?> — Pesan Ajah</title>
-
-    <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
+    <meta property="og:image" content="<?= e($shareImageUrl) ?>">
+    <meta property="og:url" content="<?= e($storePageUrl) ?>">
+    
+    <meta property="og:image:alt" content="Logo <?= e($storeName) ?>">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<?= e($storeName) ?>">
+    <meta name="twitter:description" content="<?= e($metaDescription) ?>">
+    <meta name="twitter:image" content="<?= e($shareImageUrl) ?>">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/warung.css">
 </head>
