@@ -98,24 +98,12 @@ try {
     }
 
     if ($order['status'] === 'pending') {
-        // Permintaan ulang tidak membuat status berubah lagi.
         $db->commit();
-        
-        /*
-         * Kirim notifikasi hanya setelah transaksi aktivasi berhasil.
-         * Kegagalan push tidak membatalkan pesanan.
-         */
-        send_store_order_push(
-            $db,
-            (int) $order['store_id'],
-            (string) $order['order_number'],
-            (string) $order['buyer_name']
-        );
-        
+    
         activate_order_json([
             'success' => true,
             'status' => 'pending',
-            'message' => 'Pesanan berhasil diaktifkan.',
+            'message' => 'Pesanan sudah aktif.',
         ]);
     }
 
@@ -146,12 +134,24 @@ try {
     }
 
     $db->commit();
-
+    
+    /*
+     * Kirim notifikasi setelah draft berhasil menjadi pending.
+     * Kegagalan push tidak membatalkan pesanan.
+     */
+    send_store_order_push(
+        $db,
+        (int) $order['store_id'],
+        (string) $order['order_number'],
+        (string) $order['buyer_name']
+    );
+    
     activate_order_json([
         'success' => true,
         'status' => 'pending',
         'message' => 'Pesanan berhasil diaktifkan.',
     ]);
+
 } catch (Throwable $exception) {
     if ($db->inTransaction()) {
         $db->rollBack();

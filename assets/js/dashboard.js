@@ -107,42 +107,7 @@ async function initializePushNotifications() {
     return;
   }
 
-  try {
-    const registration = await navigator.serviceWorker.register(
-      "/service-worker.js",
-      { scope: "/" },
-    );
-  
-    const existingSubscription =
-      await registration.pushManager.getSubscription();
-  
-    if (
-      existingSubscription &&
-      Notification.permission === "granted"
-    ) {
-      const subscriptionData = existingSubscription.toJSON();
-  
-      await postJSON(API.push, {
-        action: "subscribe",
-        endpoint: subscriptionData.endpoint,
-        keys: subscriptionData.keys,
-        contentEncoding: "aes128gcm",
-      });
-  
-      button.textContent = "Notifikasi aktif";
-      return;
-    }
-  } catch (error) {
-    console.error(
-      "[Pesan Ajah] Service Worker gagal didaftarkan:",
-      error,
-    );
-  
-    button.disabled = true;
-    button.textContent = "Notifikasi tidak tersedia";
-    return;
-  }
-
+  // Pasang event klik langsung, tanpa menunggu Service Worker.
   button.addEventListener("click", async () => {
     const originalText = button.textContent;
 
@@ -150,30 +115,44 @@ async function initializePushNotifications() {
     button.textContent = "Mengaktifkan...";
 
     try {
-      const permission = await Notification.requestPermission();
+      const permission =
+        Notification.permission === "granted"
+          ? "granted"
+          : await Notification.requestPermission();
 
       if (permission !== "granted") {
-        throw new Error("Izin notifikasi belum diberikan.");
+        throw new Error(
+          "Izin notifikasi belum diberikan.",
+        );
       }
 
-      const registration = await navigator.serviceWorker.ready;
+      const registration =
+        await navigator.serviceWorker.register(
+          "/service-worker.js",
+          { scope: "/" },
+        );
+
+      await navigator.serviceWorker.ready;
 
       const keyResponse = await apiRequest(API.push);
 
       if (!keyResponse.public_key) {
-        throw new Error("Kunci notifikasi tidak tersedia.");
+        throw new Error(
+          "Kunci notifikasi tidak tersedia.",
+        );
       }
 
       let subscription =
         await registration.pushManager.getSubscription();
 
       if (!subscription) {
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            keyResponse.public_key,
-          ),
-        });
+        subscription =
+          await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+              keyResponse.public_key,
+            ),
+          });
       }
 
       const subscriptionData = subscription.toJSON();
@@ -186,7 +165,11 @@ async function initializePushNotifications() {
       });
 
       button.textContent = "Notifikasi aktif";
-      notify("Notifikasi pesanan berhasil diaktifkan.", "success");
+
+      notify(
+        "Notifikasi pesanan berhasil diaktifkan.",
+        "success",
+      );
     } catch (error) {
       console.error(
         "[Pesan Ajah] Aktivasi push gagal:",
@@ -204,6 +187,38 @@ async function initializePushNotifications() {
       button.disabled = false;
     }
   });
+
+  // Sinkronkan subscription lama jika izin sudah diberikan.
+  if (Notification.permission === "granted") {
+    try {
+      const registration =
+        await navigator.serviceWorker.register(
+          "/service-worker.js",
+          { scope: "/" },
+        );
+
+      const subscription =
+        await registration.pushManager.getSubscription();
+
+      if (subscription) {
+        const subscriptionData = subscription.toJSON();
+
+        await postJSON(API.push, {
+          action: "subscribe",
+          endpoint: subscriptionData.endpoint,
+          keys: subscriptionData.keys,
+          contentEncoding: "aes128gcm",
+        });
+
+        button.textContent = "Notifikasi aktif";
+      }
+    } catch (error) {
+      console.error(
+        "[Pesan Ajah] Sinkronisasi subscription gagal:",
+        error,
+      );
+    }
+  }
 }
 
 function notify(message, type = "info") {
