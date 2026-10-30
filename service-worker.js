@@ -1,3 +1,21 @@
+/* =========================================================
+   SERVICE WORKER LIFECYCLE
+========================================================= */
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    clients.claim(),
+  );
+});
+
+/* =========================================================
+   PUSH NOTIFICATION
+========================================================= */
+
 self.addEventListener("push", (event) => {
   let data = {};
 
@@ -28,6 +46,10 @@ self.addEventListener("push", (event) => {
   );
 });
 
+/* =========================================================
+   NOTIFICATION CLICK
+========================================================= */
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
@@ -36,6 +58,8 @@ self.addEventListener("notificationclick", (event) => {
     self.location.origin,
   );
 
+  // Pastikan URL hanya mengarah ke halaman Warung
+  // dalam domain Pesan Ajah.
   if (
     targetUrl.origin !== self.location.origin
     || !targetUrl.pathname.startsWith("/warung/")
@@ -44,30 +68,30 @@ self.addEventListener("notificationclick", (event) => {
   }
 
   event.waitUntil(
-    clients.matchAll({
-      type: "window",
-      includeUncontrolled: true,
-    }).then(async (windowClients) => {
-      // Prioritaskan tab Dashboard Warung.
-      const warungClient = windowClients.find((client) => {
+    (async () => {
+      const windowClients = await clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      // Jika halaman Pesanan sudah terbuka,
+      // aktifkan tab tersebut.
+      const existingClient = windowClients.find((client) => {
         const clientUrl = new URL(client.url);
 
         return (
-          clientUrl.origin === self.location.origin
-          && clientUrl.pathname.startsWith("/warung/")
+          clientUrl.origin === targetUrl.origin
+          && clientUrl.pathname === targetUrl.pathname
         );
       });
 
-      if (warungClient) {
-        if (warungClient.url !== targetUrl.href) {
-          await warungClient.navigate(targetUrl.href);
-        }
-
-        return warungClient.focus();
+      if (existingClient) {
+        await existingClient.focus();
+        return;
       }
 
-      // Jika Dashboard Warung belum terbuka, buka tab baru.
-      return clients.openWindow(targetUrl.href);
-    }),
+      // Jika belum ada, buka Chrome menuju halaman Pesanan.
+      await clients.openWindow(targetUrl.href);
+    })(),
   );
 });
