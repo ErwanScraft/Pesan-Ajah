@@ -36,7 +36,10 @@ self.addEventListener("notificationclick", (event) => {
     self.location.origin,
   );
 
-  if (targetUrl.origin !== self.location.origin) {
+  if (
+    targetUrl.origin !== self.location.origin
+    || !targetUrl.pathname.startsWith("/warung/")
+  ) {
     return;
   }
 
@@ -44,13 +47,26 @@ self.addEventListener("notificationclick", (event) => {
     clients.matchAll({
       type: "window",
       includeUncontrolled: true,
-    }).then((windowClients) => {
-      for (const client of windowClients) {
-        if (new URL(client.url).origin === self.location.origin) {
-          return client.navigate(targetUrl.href).then(() => client.focus());
+    }).then(async (windowClients) => {
+      // Prioritaskan tab Dashboard Warung.
+      const warungClient = windowClients.find((client) => {
+        const clientUrl = new URL(client.url);
+
+        return (
+          clientUrl.origin === self.location.origin
+          && clientUrl.pathname.startsWith("/warung/")
+        );
+      });
+
+      if (warungClient) {
+        if (warungClient.url !== targetUrl.href) {
+          await warungClient.navigate(targetUrl.href);
         }
+
+        return warungClient.focus();
       }
 
+      // Jika Dashboard Warung belum terbuka, buka tab baru.
       return clients.openWindow(targetUrl.href);
     }),
   );
