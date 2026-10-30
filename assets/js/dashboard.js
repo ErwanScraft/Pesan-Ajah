@@ -21,6 +21,7 @@ const API = {
   products: "/warung/api/products.php",
   orders: "/warung/api/orders.php",
   settings: "/warung/api/settings.php",
+  push: "/warung/api/push-subscription.php",
 };
 
 async function apiRequest(url, options = {}) {
@@ -65,6 +66,143 @@ async function postJSON(url, body, method = "POST") {
   return apiRequest(url, {
     method,
     body: JSON.stringify(body),
+  });
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+
+  return Uint8Array.from(
+    [...rawData].map((char) => char.charCodeAt(0)),
+  );
+}
+
+async function initializePushNotifications() {
+  const button = $("#push-enable-button");
+
+  if (!button) {
+    return;
+  }
+
+  const supported =
+    "serviceWorker" in navigator &&
+    "PushManager" in window &&
+    "Notification" in window;
+
+  if (!supported) {
+    button.disabled = true;
+    button.textContent = "Notifikasi tidak didukung";
+    return;
+  }
+
+  if (Notification.permission === "denied") {
+    button.disabled = true;
+    button.textContent = "Izin notifikasi diblokir";
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.register(
+      "/service-worker.js",
+      { scope: "/" },
+    );
+  
+    const existingSubscription =
+      await registration.pushManager.getSubscription();
+  
+    if (
+      existingSubscription &&
+      Notification.permission === "granted"
+    ) {
+      const subscriptionData = existingSubscription.toJSON();
+  
+      await postJSON(API.push, {
+        action: "subscribe",
+        endpoint: subscriptionData.endpoint,
+        keys: subscriptionData.keys,
+        contentEncoding: "aes128gcm",
+      });
+  
+      button.textContent = "Notifikasi aktif";
+      return;
+    }
+  } catch (error) {
+    console.error(
+      "[Pesan Ajah] Service Worker gagal didaftarkan:",
+      error,
+    );
+  
+    button.disabled = true;
+    button.textContent = "Notifikasi tidak tersedia";
+    return;
+  }
+
+  button.addEventListener("click", async () => {
+    const originalText = button.textContent;
+
+    button.disabled = true;
+    button.textContent = "Mengaktifkan...";
+
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        throw new Error("Izin notifikasi belum diberikan.");
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+
+      const keyResponse = await apiRequest(API.push);
+
+      if (!keyResponse.public_key) {
+        throw new Error("Kunci notifikasi tidak tersedia.");
+      }
+
+      let subscription =
+        await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            keyResponse.public_key,
+          ),
+        });
+      }
+
+      const subscriptionData = subscription.toJSON();
+
+      await postJSON(API.push, {
+        action: "subscribe",
+        endpoint: subscriptionData.endpoint,
+        keys: subscriptionData.keys,
+        contentEncoding: "aes128gcm",
+      });
+
+      button.textContent = "Notifikasi aktif";
+      notify("Notifikasi pesanan berhasil diaktifkan.", "success");
+    } catch (error) {
+      console.error(
+        "[Pesan Ajah] Aktivasi push gagal:",
+        error,
+      );
+
+      notify(
+        error instanceof Error
+          ? error.message
+          : "Notifikasi gagal diaktifkan.",
+        "error",
+      );
+
+      button.textContent = originalText;
+      button.disabled = false;
+    }
   });
 }
 
@@ -904,5 +1042,7 @@ async function initializeDashboard() {
     notify(error.message);
   }
 }
+
+initializePushNotifications();
 
 initializeDashboard();

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
+require_once dirname(__DIR__) . '/app/web_push.php';
 
 require_method('POST');
 
@@ -68,7 +69,12 @@ try {
     $db->beginTransaction();
 
     $stmt = $db->prepare(
-        'SELECT id, status
+        'SELECT
+            id,
+            store_id,
+            order_number,
+            buyer_name,
+            status
          FROM orders
          WHERE order_number = :order_number
            AND buyer_token_hash = :token_hash
@@ -94,11 +100,22 @@ try {
     if ($order['status'] === 'pending') {
         // Permintaan ulang tidak membuat status berubah lagi.
         $db->commit();
-
+        
+        /*
+         * Kirim notifikasi hanya setelah transaksi aktivasi berhasil.
+         * Kegagalan push tidak membatalkan pesanan.
+         */
+        send_store_order_push(
+            $db,
+            (int) $order['store_id'],
+            (string) $order['order_number'],
+            (string) $order['buyer_name']
+        );
+        
         activate_order_json([
             'success' => true,
             'status' => 'pending',
-            'message' => 'Pesanan sudah aktif.',
+            'message' => 'Pesanan berhasil diaktifkan.',
         ]);
     }
 

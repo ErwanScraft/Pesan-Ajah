@@ -230,6 +230,14 @@ $storeInitial = function_exists('mb_substr')
 
                     <h1><?= e($pageTitle) ?></h1>
                 </div>
+                
+                <button
+                    class="button button-outline"
+                    id="push-enable-button"
+                    type="button"
+                >
+                    Aktifkan notifikasi
+                </button>
 
                 <a
                     class="button button-outline"
