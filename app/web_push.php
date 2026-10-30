@@ -59,6 +59,13 @@ function send_store_order_push(
         ]);
 
         $subscriptions = $stmt->fetchAll();
+        
+        error_log(
+            '[Pesan Ajah Push] Subscription ditemukan: '
+            . count($subscriptions)
+            . ' untuk store_id: '
+            . $storeId
+        );
 
         if (!$subscriptions) {
             return;
@@ -107,6 +114,17 @@ function send_store_order_push(
                     $payload,
                     ['TTL' => 60]
                 );
+                
+                if (!$report->isSuccess()) {
+                    error_log(
+                        '[Pesan Ajah Push] Pengiriman gagal: '
+                        . $report->getReason()
+                    );
+                } else {
+                    error_log(
+                        '[Pesan Ajah Push] Notifikasi berhasil dikirim ke push service.'
+                    );
+                }
 
                 if ($report->isSubscriptionExpired()) {
                     $deleteStmt->execute([
