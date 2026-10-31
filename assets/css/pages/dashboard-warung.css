@@ -597,3 +597,32 @@
     min-height: 82px;
   }
 }
+
+/* =========================================================
+   FILTER PERIODE STATISTIK
+========================================================= */
+
+.overview-period-select {
+  min-width: 105px;
+  min-height: 34px;
+  padding: 6px 30px 6px 11px;
+  border: 1px solid var(--border, #e8ece8);
+  border-radius: 9px;
+  outline: none;
+  background-color: #fff;
+  color: var(--text, #202820);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.overview-period-select:focus {
+  border-color: var(--green, #237a45);
+  box-shadow: 0 0 0 3px rgba(35, 122, 69, 0.1);
+}
+
+.overview-period-select:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

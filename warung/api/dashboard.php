@@ -7,12 +7,32 @@ require_once dirname(__DIR__, 2) . '/app/warung_api.php';
 require_method('GET');
 
 $store = api_store_owner();
-
 $storeId = (int) $store['store_id'];
 
 /*
- * Statistik pesanan hari ini.
+ * Periode statistik:
+ * - all   : seluruh pesanan (default)
+ * - today : pesanan hari ini
  */
+$period = $_GET['period'] ?? 'all';
+
+if (!is_string($period) || !in_array($period, ['all', 'today'], true)) {
+    api_json([
+        'success' => false,
+        'message' => 'Periode statistik tidak valid.',
+    ], 422);
+}
+
+/*
+ * Filter tanggal hanya ditambahkan untuk periode hari ini.
+ * Tidak menggunakan DATE(created_at) agar index created_at
+ * tetap dapat dimanfaatkan oleh database.
+ */
+$dateCondition = $period === 'today'
+    ? 'AND created_at >= CURRENT_DATE()
+       AND created_at < CURRENT_DATE() + INTERVAL 1 DAY'
+    : '';
+
 $orderStmt = database()->prepare(
     "SELECT
         COUNT(*) AS total_orders,
@@ -20,7 +40,11 @@ $orderStmt = database()->prepare(
         COALESCE(
             SUM(
                 CASE
-                    WHEN status IN ('pending', 'confirmed', 'processing')
+                    WHEN status IN (
+                        'pending',
+                        'confirmed',
+                        'processing'
+                    )
                     THEN 1
                     ELSE 0
                 END
@@ -54,7 +78,7 @@ $orderStmt = database()->prepare(
 
     WHERE store_id = :store_id
         AND status <> 'draft'
-        AND DATE(created_at) = CURRENT_DATE()"
+        {$dateCondition}"
 );
 
 $orderStmt->execute([
@@ -64,8 +88,7 @@ $orderStmt->execute([
 $orderStats = $orderStmt->fetch();
 
 /*
- * Total produk dan produk tersedia.
- * Tetap dipertahankan agar struktur API lama tidak kehilangan data.
+ * Statistik produk tidak bergantung pada periode pesanan.
  */
 $productStmt = database()->prepare(
     "SELECT
@@ -94,7 +117,8 @@ $productStmt->execute([
 $productStats = $productStmt->fetch();
 
 /*
- * Lima pesanan terbaru.
+ * Riwayat selalu mengambil lima pesanan terbaru,
+ * terlepas dari filter statistik.
  */
 $recentStmt = database()->prepare(
     "SELECT
@@ -123,13 +147,15 @@ $recentStmt->execute([
 api_json([
     'success' => true,
 
+    'period' => $period,
+
     'stats' => [
         'total_orders' => (int) $orderStats['total_orders'],
         'pending_orders' => (int) $orderStats['pending_orders'],
         'completed_orders' => (int) $orderStats['completed_orders'],
         'total_products' => (int) $productStats['total_products'],
         'available_products' => (int) $productStats['available_products'],
-        'completed_revenue' => (float) $orderStats['completed_revenue'],
+        'completed_revenue' => (int) $orderStats['completed_revenue'],
         'is_open' => (bool) $store['is_open'],
         'free_delivery' => (bool) $store['free_delivery'],
     ],

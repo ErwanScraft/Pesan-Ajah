@@ -136,11 +136,20 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
     <section class="overview-section">
         <div class="overview-heading">
             <div>
-                <h2>Statistik Warung</h2>
-                <p>Ringkasan aktivitas hari ini.</p>
+                <h2>Statistik</h2>
+                <p id="dashboard-period-description">
+                    Seluruh Pesanan.
+                </p>
             </div>
 
-            <span class="overview-period">Hari ini</span>
+            <select
+                class="overview-period-select"
+                id="dashboard-period"
+                aria-label="Periode statistik"
+            >
+                <option value="all" selected>Semua</option>
+                <option value="today">Hari Ini</option>
+            </select>
         </div>
 
         <div class="overview-stat-grid">
