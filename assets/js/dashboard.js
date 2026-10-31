@@ -741,9 +741,9 @@ function renderOrders() {
     
     const orderStatus = String(order.status || "").toLowerCase();
     
-    if (["completed", "cancelled"].includes(orderStatus)) {
+    if (orderStatus === "cancelled") {
       const deleteButton = createButton(
-        "Hapus riwayat",
+        "Hapus",
         async () => {
           await deleteOrderHistory(order);
         },
@@ -862,10 +862,8 @@ async function cancelOrder(order) {
 async function deleteOrderHistory(order) {
   const status = String(order.status || "").toLowerCase();
 
-  if (!["completed", "cancelled"].includes(status)) {
-    notify(
-      "Hanya pesanan selesai atau dibatalkan yang dapat dihapus.",
-    );
+  if (status !== "cancelled") {
+    notify("Hanya pesanan dibatalkan yang dapat dihapus.");
     return;
   }
 

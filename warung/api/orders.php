@@ -214,12 +214,12 @@ if ($action === 'delete') {
 
         $status = (string) $order['status'];
         
-        if (!in_array($status, ['completed', 'cancelled'], true)) {
+        if ($status !== 'cancelled') {
             $db->rollBack();
         
             api_json([
                 'success' => false,
-                'message' => 'Hanya pesanan selesai atau dibatalkan yang dapat dihapus.',
+                'message' => 'Pesanan selesai tidak dapat dihapus.',
             ], 422);
         }
         
@@ -262,7 +262,7 @@ if ($action === 'delete') {
             'DELETE FROM orders
              WHERE id = :id
                AND store_id = :store_id
-               AND status IN (\'completed\', \'cancelled\')'
+               AND status = \'cancelled\'
         );
         
         $deleteOrder->execute([
