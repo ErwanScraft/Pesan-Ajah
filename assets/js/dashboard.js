@@ -303,60 +303,233 @@ function createIconButton(
 }
 
 /* =========================================================
-   DASHBOARD STATISTIK
+   DASHBOARD WARUNG
 ========================================================= */
+
+function dashboardOrderStatus(status) {
+  const labels = {
+    pending: "Menunggu",
+    confirmed: "Dikonfirmasi",
+    processing: "Diproses",
+    ready_for_pickup: "Siap Diambil",
+    ready_for_driver: "Menunggu Driver",
+    in_delivery: "Diantar",
+    completed: "Selesai",
+    cancelled: "Dibatalkan",
+  };
+
+  return labels[String(status || "").toLowerCase()]
+    || "Tidak diketahui";
+}
+
+function dashboardStatusClass(status) {
+  const value = String(status || "").toLowerCase();
+
+  if (value === "completed") {
+    return "is-completed";
+  }
+
+  if (value === "cancelled") {
+    return "is-cancelled";
+  }
+
+  if (["pending", "ready_for_pickup", "ready_for_driver"].includes(value)) {
+    return "is-pending";
+  }
+
+  return "is-processing";
+}
+
+function formatDashboardOrderTime(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(String(value).replace(" ", "T"));
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function renderRecentOrders(recentOrders) {
+  const target = $("#recent-orders");
+
+  if (!target) {
+    return;
+  }
+
+  target.replaceChildren();
+
+  if (!Array.isArray(recentOrders) || recentOrders.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "overview-empty";
+
+    const title = document.createElement("strong");
+    title.textContent = "Belum ada pesanan";
+
+    const description = document.createElement("span");
+    description.textContent = "Pesanan pelanggan akan muncul di sini.";
+
+    empty.append(title, description);
+    target.append(empty);
+
+    return;
+  }
+
+  for (const order of recentOrders) {
+    const card = document.createElement("a");
+
+    card.className = "overview-order-card";
+    card.href = "/warung/pesanan.php";
+
+    const main = document.createElement("div");
+    main.className = "overview-order-main";
+
+    const orderNumber = document.createElement("strong");
+    orderNumber.className = "overview-order-number";
+    orderNumber.textContent = order.order_number || "Pesanan";
+
+    const buyer = document.createElement("span");
+    buyer.className = "overview-order-buyer";
+    buyer.textContent = order.buyer_name || "Pelanggan";
+
+    const time = document.createElement("span");
+    time.className = "overview-order-time";
+    time.textContent = formatDashboardOrderTime(order.created_at);
+
+    const details = document.createElement("div");
+    details.className = "overview-order-details";
+
+    const status = document.createElement("span");
+    status.className = `overview-order-status ${dashboardStatusClass(order.status)}`;
+    status.textContent = dashboardOrderStatus(order.status);
+
+    const total = document.createElement("strong");
+    total.className = "overview-order-total";
+    total.textContent = formatRupiah(order.total);
+
+    main.append(orderNumber, buyer, time);
+    details.append(status, total);
+    card.append(main, details);
+
+    target.append(card);
+  }
+}
+
+async function updateStoreStatus(button) {
+  if (!button || button.disabled) {
+    return;
+  }
+
+  const currentStatus = button.dataset.isOpen === "1";
+  const nextStatus = !currentStatus;
+
+  button.disabled = true;
+  button.textContent = "Menyimpan...";
+
+  try {
+    const data = await postJSON(API.settings, {
+      is_open: nextStatus,
+    });
+
+    notify(
+      data.message || "Status warung berhasil diperbarui.",
+      "success",
+    );
+
+    await loadDashboard();
+  } catch (error) {
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Status warung gagal diperbarui.",
+      "error",
+    );
+
+    button.disabled = false;
+    button.textContent = currentStatus
+      ? "Tutup Warung"
+      : "Buka Warung";
+  }
+}
 
 async function loadDashboard() {
   const data = await apiRequest(API.dashboard);
-  const stats = data.stats;
+  const stats = data.stats || {};
 
   const orders = $("#stat-orders");
   const pending = $("#stat-pending");
-  const products = $("#stat-products");
-  const status = $("#store-status-label");
+  const completed = $("#stat-completed");
+  const revenue = $("#stat-revenue");
 
   if (orders) {
-    orders.textContent = String(stats.total_orders);
+    orders.textContent = String(stats.total_orders ?? 0);
   }
 
   if (pending) {
-    pending.textContent = String(stats.pending_orders);
+    pending.textContent = String(stats.pending_orders ?? 0);
   }
 
-  if (products) {
-    products.textContent = String(stats.available_products);
+  if (completed) {
+    completed.textContent = String(stats.completed_orders ?? 0);
   }
-
-  if (status) {
-    status.textContent = stats.is_open ? "Buka" : "Tutup";
-  }
-
-  const revenue = $("#stat-revenue");
 
   if (revenue) {
     revenue.textContent = formatRupiah(
-      stats.completed_revenue,
+      stats.completed_revenue ?? 0,
     );
   }
 
-  const recent = $("#recent-orders");
+  const isOpen = Boolean(stats.is_open);
 
-  if (recent) {
-    recent.replaceChildren();
+  const statusCard = $("#operation-status-card");
+  const statusLabel = $("#store-status-label");
+  const statusDescription = $("#store-status-description");
+  const toggleButton = $("#store-toggle-button");
 
-    for (const order of data.recent_orders) {
-      const row = document.createElement("tr");
+  if (statusCard) {
+    statusCard.classList.toggle("is-open", isOpen);
+    statusCard.classList.toggle("is-closed", !isOpen);
+  }
 
-      row.append(
-        createCell(order.order_number, "order-id"),
-        createCell(order.buyer_name),
-        createCell(formatRupiah(order.total)),
-        createCell(order.status),
-      );
+  if (statusLabel) {
+    statusLabel.textContent = isOpen
+      ? "Warung Sedang Buka"
+      : "Warung Sedang Tutup";
+  }
 
-      recent.append(row);
+  if (statusDescription) {
+    statusDescription.textContent = isOpen
+      ? "Pelanggan dapat melakukan pemesanan."
+      : "Warung tidak menerima pesanan baru.";
+  }
+
+  if (toggleButton) {
+    toggleButton.dataset.isOpen = isOpen ? "1" : "0";
+    toggleButton.textContent = isOpen
+      ? "Tutup Warung"
+      : "Buka Warung";
+
+    toggleButton.classList.toggle("is-open", !isOpen);
+    toggleButton.classList.toggle("is-close", isOpen);
+    toggleButton.disabled = false;
+
+    if (toggleButton.dataset.bound !== "1") {
+      toggleButton.addEventListener("click", () => {
+        updateStoreStatus(toggleButton);
+      });
+
+      toggleButton.dataset.bound = "1";
     }
   }
+
+  renderRecentOrders(data.recent_orders);
 }
 
 /* =========================================================

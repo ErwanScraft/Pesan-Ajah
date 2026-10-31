@@ -48,3 +48,6 @@
 
 /* 11. Halaman pengaturan warung */
 @import url("./pages/pengaturan.css");
+
+/* 12. Dashboard awal warung */
+@import url("./pages/dashboard-warung.css");

@@ -11,7 +11,7 @@ $store = api_store_owner();
 $storeId = (int) $store['store_id'];
 
 /*
- * Total pesanan dan pesanan yang masih memerlukan tindakan.
+ * Statistik pesanan hari ini.
  */
 $orderStmt = database()->prepare(
     "SELECT
@@ -32,6 +32,17 @@ $orderStmt = database()->prepare(
             SUM(
                 CASE
                     WHEN status = 'completed'
+                    THEN 1
+                    ELSE 0
+                END
+            ),
+            0
+        ) AS completed_orders,
+
+        COALESCE(
+            SUM(
+                CASE
+                    WHEN status = 'completed'
                     THEN total
                     ELSE 0
                 END
@@ -42,7 +53,8 @@ $orderStmt = database()->prepare(
     FROM orders
 
     WHERE store_id = :store_id
-        AND status <> 'draft'"
+        AND status <> 'draft'
+        AND DATE(created_at) = CURRENT_DATE()"
 );
 
 $orderStmt->execute([
@@ -53,6 +65,7 @@ $orderStats = $orderStmt->fetch();
 
 /*
  * Total produk dan produk tersedia.
+ * Tetap dipertahankan agar struktur API lama tidak kehilangan data.
  */
 $productStmt = database()->prepare(
     "SELECT
@@ -81,9 +94,8 @@ $productStmt->execute([
 $productStats = $productStmt->fetch();
 
 /*
- * Pesanan terbaru.
+ * Lima pesanan terbaru.
  */
-
 $recentStmt = database()->prepare(
     "SELECT
         id,
@@ -91,12 +103,13 @@ $recentStmt = database()->prepare(
         buyer_name,
         total,
         status,
+        delivery_method,
         created_at
 
     FROM orders
 
     WHERE store_id = :store_id
-      AND status <> 'draft'
+        AND status <> 'draft'
 
     ORDER BY created_at DESC, id DESC
 
@@ -107,17 +120,18 @@ $recentStmt->execute([
     'store_id' => $storeId,
 ]);
 
-
 api_json([
     'success' => true,
 
     'stats' => [
         'total_orders' => (int) $orderStats['total_orders'],
         'pending_orders' => (int) $orderStats['pending_orders'],
+        'completed_orders' => (int) $orderStats['completed_orders'],
         'total_products' => (int) $productStats['total_products'],
         'available_products' => (int) $productStats['available_products'],
         'completed_revenue' => (float) $orderStats['completed_revenue'],
         'is_open' => (bool) $store['is_open'],
+        'free_delivery' => (bool) $store['free_delivery'],
     ],
 
     'recent_orders' => $recentStmt->fetchAll(),
