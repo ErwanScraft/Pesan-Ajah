@@ -309,6 +309,7 @@ $allowedStatuses = [
     'processing',
     'ready_for_pickup',
     'ready_for_driver',
+    'completed',
 ];
 
 if (
@@ -369,7 +370,9 @@ try {
         'processing' => $method === 'pickup'
             ? ['ready_for_pickup']
             : ['ready_for_driver'],
-        'ready_for_pickup' => [],
+        'ready_for_pickup' => $method === 'pickup'
+            ? ['completed']
+            : [],
         'ready_for_driver' => [],
         'in_delivery' => [],
         'completed' => [],
@@ -397,6 +400,7 @@ try {
     if (
         ($status === 'ready_for_pickup' && $method !== 'pickup')
         || ($status === 'ready_for_driver' && $method !== 'delivery')
+        || ($status === 'completed' && $method !== 'pickup')
     ) {
         $db->rollBack();
 

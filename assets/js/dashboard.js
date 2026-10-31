@@ -369,6 +369,13 @@ function nextOrderStatus(order) {
       label: "Siapkan untuk driver",
     };
   }
+  
+  if (status === "ready_for_pickup" && method === "pickup") {
+    return {
+      value: "completed",
+      label: "Sudah diambil",
+    };
+  }
 
   return null;
 }
@@ -764,6 +771,7 @@ async function changeOrderStatus(order, status) {
     processing: "memproses",
     ready_for_pickup: "menandai pesanan siap diambil",
     ready_for_driver: "menyiapkan pesanan untuk driver",
+    completed: "menandai pesanan sudah diambil",
   };
 
   const action = labels[status];
@@ -774,7 +782,9 @@ async function changeOrderStatus(order, status) {
   }
 
   const confirmed = await confirmAction({
-    title: "Konfirmasi pesanan",
+    title: status === "completed"
+      ? "Selesaikan pesanan?"
+      : "Konfirmasi pesanan",
     message: `Yakin ingin ${action} pesanan ${order.order_number || order.id}?`,
     confirmText: "Ya, lanjutkan",
     cancelText: "Batal",
