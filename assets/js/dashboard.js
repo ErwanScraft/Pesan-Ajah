@@ -800,10 +800,7 @@ async function changeOrderStatus(order, status) {
       status,
     });
 
-    await Promise.all([
-      loadOrders(),
-      loadDashboard(),
-    ]);
+    await loadOrders();
 
     notify("Status pesanan berhasil diperbarui.");
   } catch (error) {
@@ -843,10 +840,7 @@ async function cancelOrder(order) {
       id: order.id,
     });
 
-    await Promise.all([
-      loadOrders(),
-      loadDashboard(),
-    ]);
+    await loadOrders();
 
     notify("Pesanan berhasil dibatalkan.");
   } catch (error) {
@@ -887,10 +881,7 @@ async function deleteOrderHistory(order) {
       id: order.id,
     });
 
-    await Promise.all([
-      loadOrders(),
-      loadDashboard(),
-    ]);
+    await loadOrders();
 
     notify("Riwayat pesanan berhasil dihapus.");
   } catch (error) {

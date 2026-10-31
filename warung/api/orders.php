@@ -259,10 +259,10 @@ if ($action === 'delete') {
          * dan statusnya tetap dapat dihapus.
          */
         $deleteOrder = $db->prepare(
-            'DELETE FROM orders
+            "DELETE FROM orders
              WHERE id = :id
                AND store_id = :store_id
-               AND status = \'cancelled\'
+               AND status = 'cancelled'"
         );
         
         $deleteOrder->execute([
