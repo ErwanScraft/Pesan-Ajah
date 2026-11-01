@@ -128,7 +128,7 @@ function estimateDelivery(product) {
 
   return {
     distance,
-    fee: 2000 + Math.ceil(distance / 0.5) * 1000,
+    fee: 2000 + Math.floor(distance / 0.5 + 1e-9) * 1000,
   };
 
 }

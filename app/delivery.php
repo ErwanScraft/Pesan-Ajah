@@ -49,6 +49,6 @@ function delivery_fee_from_distance(float $km): int
         );
     }
 
-    return (int) ceil($km / 0.5) * 1000;
+    return (int) floor(($km / 0.5) + 1e-9) * 1000;
 }
 
