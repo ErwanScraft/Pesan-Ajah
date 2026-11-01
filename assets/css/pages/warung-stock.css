@@ -43,6 +43,70 @@
   font-weight: 700;
 }
 
+/* =========================================================
+   FILTER KATEGORI STOCK
+========================================================= */
+
+.stock-category-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border, #ededed);
+}
+
+.stock-category-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.stock-category-filter {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid var(--border, #e5e5e5);
+  border-radius: 999px;
+  background: var(--white, #fff);
+  color: var(--text-muted, #777);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.stock-category-filter.active {
+  border-color: var(--primary, #176b45);
+  background: var(--primary, #176b45);
+  color: #fff;
+}
+
+.stock-category-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgb(128 128 128 / 12%);
+  font-size: 0.68rem;
+}
+
+.stock-category-filter.active .stock-category-count {
+  background: rgb(255 255 255 / 20%);
+  color: #fff;
+}
+
 .stock-list {
   display: flex;
   flex-direction: column;
@@ -193,6 +257,17 @@
 
   .stock-list-heading {
     padding: 15px;
+  }
+  
+  .stock-category-filters {
+    gap: 7px;
+    padding: 12px;
+  }
+  
+  .stock-category-filter {
+    min-height: 32px;
+    padding: 6px 11px;
+    font-size: 0.74rem;
   }
 
   .stock-item {

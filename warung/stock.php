@@ -29,6 +29,21 @@ require __DIR__ . '/_header.php';
         <div class="stock-list-heading">
             <h3>Daftar Stock Produk</h3>
         </div>
+        
+        <div
+            class="stock-category-filters"
+            id="stock-category-filters"
+            aria-label="Filter kategori produk"
+        >
+            <button
+                type="button"
+                class="stock-category-filter active"
+                data-category="all"
+                aria-pressed="true"
+            >
+                Semua
+            </button>
+        </div>
 
         <div
             class="stock-list"

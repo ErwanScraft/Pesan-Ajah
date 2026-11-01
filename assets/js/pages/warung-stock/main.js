@@ -7,6 +7,10 @@ export async function initWarungStock({
   resolveImageUrl,
 }) {
   const container = $("#manage-stock");
+  
+  const categoryFilters = $("#stock-category-filters");
+  
+  let selectedCategory = "all";
 
   if (!container) {
     return;
@@ -258,10 +262,103 @@ export async function initWarungStock({
 
     return row;
   }
+  
+  function getProductCategory(product) {
+    return String(product.category || "").trim() || "Lainnya";
+  }
+  
+  function renderCategoryFilters() {
+    if (!categoryFilters) {
+      return;
+    }
+  
+    const categoryCounts = new Map();
+  
+    products.forEach((product) => {
+      const category = getProductCategory(product);
+  
+      categoryCounts.set(
+        category,
+        (categoryCounts.get(category) || 0) + 1,
+      );
+    });
+  
+    const categories = [...categoryCounts.keys()].sort(
+      (a, b) => a.localeCompare(b, "id-ID"),
+    );
+  
+    const fragment = document.createDocumentFragment();
+  
+    function createFilter(category, label, count) {
+      const button = createElement(
+        "button",
+        "stock-category-filter",
+        label,
+      );
+  
+      button.type = "button";
+      button.dataset.category = category;
+  
+      if (selectedCategory === category) {
+        button.classList.add("active");
+      }
+  
+      button.setAttribute(
+        "aria-pressed",
+        String(selectedCategory === category),
+      );
+  
+      if (count !== null) {
+        const badge = createElement(
+          "span",
+          "stock-category-count",
+          count,
+        );
+  
+        button.append(badge);
+      }
+  
+      button.addEventListener("click", () => {
+        selectedCategory = category;
+  
+        renderCategoryFilters();
+        renderProducts();
+      });
+  
+      return button;
+    }
+  
+    const totalButton = createFilter(
+      "all",
+      "Semua",
+      products.length,
+    );
+  
+    fragment.append(totalButton);
+  
+    categories.forEach((category) => {
+      fragment.append(
+        createFilter(
+          category,
+          category,
+          categoryCounts.get(category),
+        ),
+      );
+    });
+  
+    categoryFilters.replaceChildren(fragment);
+  }
 
   function renderProducts() {
     container.replaceChildren();
 
+    const filteredProducts = selectedCategory === "all"
+      ? products
+      : products.filter(
+          (product) =>
+            getProductCategory(product) === selectedCategory,
+        );
+    
     if (products.length === 0) {
       container.append(
         createElement(
@@ -273,10 +370,22 @@ export async function initWarungStock({
 
       return;
     }
+    
+    if (filteredProducts.length === 0) {
+      container.append(
+        createElement(
+          "div",
+          "stock-empty",
+          "Tidak ada produk dalam kategori ini.",
+        ),
+      );
+    
+      return;
+    }
 
     const fragment = document.createDocumentFragment();
 
-    products.forEach((product) => {
+    filteredProducts.forEach((product) => {
       fragment.append(createStockRow(product));
     });
 
@@ -300,7 +409,18 @@ export async function initWarungStock({
       products = Array.isArray(data.products)
         ? data.products
         : [];
-
+      
+      if (
+        selectedCategory !== "all"
+        && !products.some(
+          (product) =>
+            getProductCategory(product) === selectedCategory,
+        )
+      ) {
+        selectedCategory = "all";
+      }
+      
+      renderCategoryFilters();
       renderProducts();
 
     } catch (error) {
