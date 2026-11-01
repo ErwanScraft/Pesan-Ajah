@@ -83,6 +83,52 @@ function urlBase64ToUint8Array(base64String) {
   );
 }
 
+
+async function initializeOneSignalPush() {
+  const appId = document.body.dataset.onesignalAppId;
+  const storeId = document.body.dataset.storeId;
+
+  if (!appId || !storeId) {
+    throw new Error(
+      "Konfigurasi OneSignal belum tersedia.",
+    );
+  }
+
+  if (!window.__pesanAjahOneSignalPromise) {
+    window.__pesanAjahOneSignalPromise = new Promise(
+      (resolve, reject) => {
+        window.OneSignalDeferred =
+          window.OneSignalDeferred || [];
+
+        window.OneSignalDeferred.push(async (OneSignal) => {
+          try {
+            await OneSignal.init({
+              appId,
+
+              serviceWorkerPath:
+                "/onesignal/OneSignalSDKWorker.js",
+
+              serviceWorkerParam: {
+                scope: "/onesignal/",
+              },
+            });
+
+            await OneSignal.login(
+              `store_${storeId}`,
+            );
+
+            resolve(OneSignal);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+    );
+  }
+
+  return window.__pesanAjahOneSignalPromise;
+}
+
 async function initializePushNotifications() {
   const button = $("#push-enable-button");
 
@@ -107,7 +153,6 @@ async function initializePushNotifications() {
     return;
   }
 
-  // Pasang event klik langsung, tanpa menunggu Service Worker.
   button.addEventListener("click", async () => {
     const originalText = button.textContent;
 
@@ -126,6 +171,10 @@ async function initializePushNotifications() {
         );
       }
 
+      /*
+       * KANAL 1: WEB PUSH LAMA
+       * Tetap menggunakan service-worker.js root.
+       */
       const registration =
         await navigator.serviceWorker.register(
           "/service-worker.js",
@@ -138,7 +187,7 @@ async function initializePushNotifications() {
 
       if (!keyResponse.public_key) {
         throw new Error(
-          "Kunci notifikasi tidak tersedia.",
+          "Kunci Web Push tidak tersedia.",
         );
       }
 
@@ -149,9 +198,11 @@ async function initializePushNotifications() {
         subscription =
           await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              keyResponse.public_key,
-            ),
+
+            applicationServerKey:
+              urlBase64ToUint8Array(
+                keyResponse.public_key,
+              ),
           });
       }
 
@@ -164,12 +215,46 @@ async function initializePushNotifications() {
         contentEncoding: "aes128gcm",
       });
 
+      /*
+       * KANAL 2: ONESIGNAL
+       * Jika gagal, Web Push tetap aktif.
+       */
+      try {
+        const OneSignal =
+          await initializeOneSignalPush();
+
+        if (!OneSignal.User.PushSubscription.optedIn) {
+          await OneSignal.User.PushSubscription.optIn();
+        }
+
+      } catch (oneSignalError) {
+        console.error(
+          "[Pesan Ajah] OneSignal gagal diaktifkan:",
+          oneSignalError,
+        );
+
+        button.textContent = "Web Push aktif";
+
+        notify(
+          "Web Push aktif, tetapi OneSignal gagal diaktifkan: "
+            + (
+              oneSignalError instanceof Error
+                ? oneSignalError.message
+                : "Periksa konfigurasi OneSignal."
+            ),
+          "error",
+        );
+
+        return;
+      }
+
       button.textContent = "Notifikasi aktif";
 
       notify(
-        "Notifikasi pesanan berhasil diaktifkan.",
+        "Web Push dan OneSignal berhasil diaktifkan.",
         "success",
       );
+
     } catch (error) {
       console.error(
         "[Pesan Ajah] Aktivasi push gagal:",
@@ -188,7 +273,10 @@ async function initializePushNotifications() {
     }
   });
 
-  // Sinkronkan subscription lama jika izin sudah diberikan.
+  /*
+   * Sinkronisasi subscription Web Push lama.
+   * Tidak otomatis mengaktifkan OneSignal tanpa tindakan pengguna.
+   */
   if (Notification.permission === "granted") {
     try {
       const registration =
@@ -210,8 +298,9 @@ async function initializePushNotifications() {
           contentEncoding: "aes128gcm",
         });
 
-        button.textContent = "Notifikasi aktif";
+        button.textContent = "Web Push aktif";
       }
+
     } catch (error) {
       console.error(
         "[Pesan Ajah] Sinkronisasi subscription gagal:",

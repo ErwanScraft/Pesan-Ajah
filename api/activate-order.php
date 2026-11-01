@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
-require_once dirname(__DIR__) . '/app/web_push.php';
+require_once dirname(__DIR__) . '/app/order_notifications.php';
 
 require_method('POST');
 
@@ -139,7 +139,7 @@ try {
      * Kirim notifikasi setelah draft berhasil menjadi pending.
      * Kegagalan push tidak membatalkan pesanan.
      */
-    send_store_order_push(
+    send_store_order_notifications(
         $db,
         (int) $order['store_id'],
         (string) $order['order_number'],

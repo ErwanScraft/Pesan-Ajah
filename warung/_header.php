@@ -58,6 +58,15 @@ $storeInitial = function_exists('mb_substr')
         rel="stylesheet"
         href="<?= e(url('assets/css/style.css')) ?>"
     >
+    
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+    </script>
+    
+    <script
+        src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+        defer
+    ></script>
 
     <script
         type="module"
@@ -70,6 +79,7 @@ $storeInitial = function_exists('mb_substr')
     data-page="<?= e($pageKey) ?>"
     data-store-id="<?= e($store['store_id'] ?? '') ?>"
     data-csrf-token="<?= e(csrf_token()) ?>"
+    data-onesignal-app-id="<?= e(env('ONESIGNAL_APP_ID', '')) ?>"
     data-category-order="<?= e(json_encode(
         $productCategories,
         JSON_UNESCAPED_UNICODE
