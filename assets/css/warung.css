@@ -1,48 +1,32 @@
 /* =========================================================
-   PESAN AJAH — HALAMAN WARUNG
+   PESAN AJAH — PUBLIC STORE PAGE
    File: assets/css/warung.css
 
-   Kompatibel dengan:
-   - warung.php
-   - assets/js/modules/catalog.js
-   - assets/css/base.css
-
-   Tanggung jawab:
-   - Tampilan halaman warung
-   - Identitas dan detail warung
-   - Navigasi kategori
-   - Kartu produk
-   - Tampilan mobile, tablet, dan desktop
-
-   Semua warna menggunakan token base.css.
+   Scope:
+   - Store banner and identity
+   - Store status and information
+   - Search and category navigation
+   - Product cards
+   - Responsive desktop, tablet and mobile
    ========================================================= */
 
-
-/* =========================================================
-   1. HALAMAN UTAMA
-   ========================================================= */
+/* 1. PAGE FOUNDATION */
 
 .store-page {
-    --store-bg: var(--cream);
     --store-surface: var(--white);
-    --store-surface-soft: var(--surface);
+    --store-soft: var(--surface);
     --store-text: var(--text);
     --store-muted: var(--muted);
     --store-border: var(--border);
     --store-brand: var(--green);
     --store-brand-dark: var(--green-dark);
     --store-brand-light: var(--green-light);
-    --store-danger: var(--danger);
 
-    width: min(
-        calc(100% - (var(--page-gutter) * 2)),
-        var(--container-width)
-    );
+    width: min(var(--container-width), calc(100% - 40px));
     min-width: 0;
     margin-inline: auto;
-    padding-bottom: 40px;
+    padding: 18px 0 56px;
     color: var(--store-text);
-    font-family: inherit;
 }
 
 .store-page *,
@@ -58,14 +42,8 @@
 }
 
 .store-page button,
-.store-page input,
-.store-page select,
-.store-page textarea {
+.store-page input {
     font: inherit;
-}
-
-.store-page button {
-    -webkit-tap-highlight-color: transparent;
 }
 
 .store-page a {
@@ -84,26 +62,21 @@
     overflow-wrap: anywhere;
 }
 
-.store-page button:focus-visible,
-.store-page a:focus-visible,
-.store-page input:focus-visible {
-    outline: 2px solid var(--store-brand);
+.store-page :where(button, a, input):focus-visible {
+    outline: 3px solid rgb(23 107 69 / 24%);
     outline-offset: 3px;
 }
 
-
-/* =========================================================
-   2. BANNER WARUNG
-   ========================================================= */
+/* 2. BANNER */
 
 .store-banner {
     position: relative;
+    isolation: isolate;
     width: 100%;
     overflow: hidden;
-    isolation: isolate;
-    background: var(--store-surface-soft);
+    background: var(--store-soft);
     border: 1px solid var(--store-border);
-    border-radius: var(--radius-xl);
+    border-radius: 20px;
 }
 
 .store-banner img {
@@ -116,51 +89,56 @@
 
 .store-banner::after {
     position: absolute;
-    inset: 0;
+    inset: 45% 0 0;
     z-index: 1;
     content: "";
     pointer-events: none;
     background: linear-gradient(
         180deg,
-        transparent 60%,
-        rgb(0 0 0 / 10%) 100%
+        transparent,
+        rgb(20 32 24 / 13%)
     );
 }
 
-
-/* =========================================================
-   3. IDENTITAS WARUNG
-   ========================================================= */
+/* 3. STORE IDENTITY */
 
 .store-identity {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
+    width: min(760px, calc(100% - 48px));
     min-width: 0;
-    margin: 22px 0 20px;
+    margin: -42px 0 20px 28px;
+    padding: 14px 20px;
+    background: var(--store-surface);
+    border: 1px solid var(--store-border);
+    border-radius: 17px;
+    box-shadow: 0 8px 26px rgb(28 45 32 / 9%);
 }
 
 .store-identity-logo {
     display: flex;
-    flex: 0 0 76px;
+    flex: 0 0 82px;
     align-items: center;
     justify-content: center;
-    width: 76px;
-    height: 76px;
+    width: 82px;
+    height: 82px;
     overflow: hidden;
     color: var(--store-brand-dark);
     background: var(--store-brand-light);
-    border: 1px solid var(--store-border);
-    border-radius: var(--radius-lg);
-    font-size: 1.65rem;
-    font-weight: 750;
+    border: 4px solid var(--store-surface);
+    border-radius: 15px;
+    box-shadow: 0 0 0 1px var(--store-border);
+    font-size: 1.7rem;
+    font-weight: 800;
 }
 
 .store-identity-logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: inherit;
 }
 
 .store-identity-text {
@@ -171,51 +149,47 @@
 .store-identity-text h1 {
     margin: 0;
     color: var(--store-text);
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    font-weight: 750;
-    line-height: 1.3;
-    letter-spacing: -0.025em;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.035em;
 }
 
 .store-identity-text p {
     margin: 5px 0 0;
     color: var(--store-muted);
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.45;
 }
 
-
-/* =========================================================
-   4. DETAIL WARUNG
-   ========================================================= */
+/* 4. STORE DETAILS */
 
 .store-details {
-    margin-bottom: 26px;
-    padding: 18px;
+    margin: 0 0 30px;
+    padding: 17px 20px;
     background: var(--store-surface);
     border: 1px solid var(--store-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    border-radius: 15px;
 }
 
 .store-details > h2 {
-    margin: 0 0 16px;
+    margin: 0 0 12px;
     color: var(--store-text);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 750;
-    line-height: 1.4;
 }
 
 .store-detail-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 22px;
+    grid-template-columns: minmax(170px, 0.7fr) minmax(0, 1.7fr);
+    align-items: center;
+    gap: 15px 28px;
     min-width: 0;
 }
 
 .store-detail-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 11px;
     min-width: 0;
 }
@@ -229,7 +203,7 @@
     height: 38px;
     color: var(--store-brand-dark);
     background: var(--store-brand-light);
-    border-radius: var(--radius-md);
+    border-radius: 11px;
 }
 
 .store-detail-icon svg {
@@ -249,40 +223,35 @@
 
 .store-detail-label {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     color: var(--store-muted);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.4;
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1.35;
 }
 
 .store-detail-content p {
     margin: 0;
     color: var(--store-text);
-    font-size: 0.875rem;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
+    font-size: 0.84rem;
+    line-height: 1.5;
 }
-
-
-/* Status warung */
 
 .store-status {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    max-width: 100%;
-    padding: 5px 10px;
+    padding: 4px 10px;
     border-radius: 999px;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1.4;
 }
 
 .store-status-dot {
-    flex: 0 0 7px;
     width: 7px;
     height: 7px;
+    flex: 0 0 7px;
     background: currentColor;
     border-radius: 50%;
 }
@@ -293,12 +262,9 @@
 }
 
 .store-status.is-closed {
-    color: var(--store-danger);
-    background: var(--store-surface-soft);
+    color: var(--danger);
+    background: #fff0f0;
 }
-
-
-/* Alamat dan tombol Google Maps */
 
 .store-address-row {
     display: flex;
@@ -311,44 +277,37 @@
 .store-address-row p {
     flex: 1;
     min-width: 0;
-    margin: 0;
     overflow-wrap: anywhere;
 }
 
 .store-maps-button {
     display: inline-flex;
-    flex: 0 0 38px;
+    flex: 0 0 36px;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    padding: 0;
+    width: 36px;
+    height: 36px;
     color: var(--store-brand-dark);
     background: var(--store-brand-light);
-    border: 1px solid var(--store-brand-light);
-    border-radius: var(--radius-md);
-    transition:
-        background var(--transition),
-        border-color var(--transition);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: background var(--transition), border-color var(--transition);
 }
 
 .store-maps-button:hover {
-    background: var(--store-surface-soft);
+    background: var(--store-surface);
     border-color: var(--store-border);
 }
 
 .store-maps-button svg {
-    width: 19px;
-    height: 19px;
+    width: 18px;
+    height: 18px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
-
-
-/* Informasi gratis ongkir */
 
 .store-detail-delivery {
     display: flex;
@@ -359,9 +318,8 @@
     padding-top: 13px;
     color: var(--store-brand-dark);
     border-top: 1px solid var(--store-border);
-    font-size: 0.8125rem;
-    font-weight: 650;
-    line-height: 1.5;
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 .store-detail-delivery svg {
@@ -375,10 +333,7 @@
     stroke-linejoin: round;
 }
 
-
-/* =========================================================
-   5. KATALOG DAN JUDUL PRODUK
-   ========================================================= */
+/* 5. CATALOG AND SEARCH */
 
 .store-catalog {
     min-width: 0;
@@ -389,32 +344,25 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    min-width: 0;
-    margin-bottom: 15px;
+    margin: 0 0 15px;
 }
 
 .store-catalog-heading h2 {
     margin: 0;
     color: var(--store-text);
-    font-size: 1.25rem;
-    font-weight: 750;
-    line-height: 1.35;
-    letter-spacing: -0.02em;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
 }
-
-
-/* =========================================================
-   6. PENCARIAN PRODUK
-   ========================================================= */
 
 .store-search-form {
     display: flex;
     align-items: stretch;
     gap: 8px;
-    width: 100%;
-    max-width: 620px;
+    width: min(100%, 620px);
     min-width: 0;
-    margin: 0 0 18px;
+    margin: 0 0 17px;
 }
 
 .store-search-form input,
@@ -422,30 +370,25 @@
     flex: 1 1 auto;
     width: 100%;
     min-width: 0;
-    min-height: 44px;
-    padding: 0 14px;
+    min-height: 46px;
+    padding: 0 15px;
     color: var(--store-text);
     background: var(--store-surface);
     border: 1px solid var(--store-border);
-    border-radius: var(--radius-md);
-    outline: none;
-    font-size: 0.875rem;
+    border-radius: 12px;
     appearance: none;
-    transition:
-        background var(--transition),
-        border-color var(--transition),
-        box-shadow var(--transition);
+    transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .store-search-form input::placeholder {
     color: var(--store-muted);
-    opacity: 0.85;
+    opacity: 0.8;
 }
 
 .store-search-form input:focus {
-    background: var(--store-surface);
     border-color: var(--store-brand);
     box-shadow: 0 0 0 3px var(--store-brand-light);
+    outline: none;
 }
 
 .store-search-form button {
@@ -453,79 +396,71 @@
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    min-height: 44px;
-    padding: 0 17px;
+    min-height: 46px;
+    padding: 0 20px;
     color: var(--white);
     background: var(--store-brand);
     border: 1px solid var(--store-brand);
-    border-radius: var(--radius-md);
-    font-size: 0.875rem;
-    font-weight: 650;
-    white-space: nowrap;
+    border-radius: 12px;
+    font-size: 0.86rem;
+    font-weight: 700;
     cursor: pointer;
-    transition:
-        background var(--transition),
-        border-color var(--transition),
-        transform var(--transition);
+    transition: background var(--transition), transform var(--transition);
 }
 
 .store-search-form button:hover {
     background: var(--store-brand-dark);
-    border-color: var(--store-brand-dark);
 }
 
 .store-search-form button:active {
     transform: scale(0.98);
 }
 
-
-/* =========================================================
-   7. NAVIGASI KATEGORI
-   Dibuat secara dinamis oleh catalog.js
-   ========================================================= */
+/* 6. CATEGORY NAVIGATION */
 
 .store-category-nav {
+    position: sticky;
+    top: 72px;
+    z-index: 5;
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
     min-width: 0;
-    margin: 0 0 22px;
-    padding: 2px 0 7px;
+    margin: 0 0 23px;
+    padding: 9px 0;
     overflow-x: auto;
     overflow-y: hidden;
+    background: var(--cream);
     overscroll-behavior-x: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--store-border) transparent;
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+}
+
+.store-category-nav::-webkit-scrollbar {
+    display: none;
 }
 
 .store-category-nav > * {
     flex: 0 0 auto;
 }
 
-
-/* Tombol kategori umum */
-
 .store-category-nav .category-card {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 39px;
-    padding: 0 15px;
+    min-height: 38px;
+    padding: 0 16px;
     color: var(--store-muted);
     background: var(--store-surface);
     border: 1px solid var(--store-border);
     border-radius: 999px;
-    font-size: 0.8125rem;
+    font-size: 0.8rem;
     font-weight: 650;
     line-height: 1.2;
     white-space: nowrap;
     cursor: pointer;
-    transition:
-        color var(--transition),
-        background var(--transition),
-        border-color var(--transition);
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
 }
 
 .store-category-nav .category-card:hover {
@@ -540,9 +475,6 @@
     border-color: var(--store-brand);
 }
 
-
-/* Tombol kategori Semua berbentuk ikon */
-
 .store-category-nav .category-all-button {
     position: sticky;
     left: 0;
@@ -553,17 +485,14 @@
     justify-content: center;
     width: 40px;
     min-width: 40px;
-    height: 39px;
+    height: 38px;
     padding: 0;
     color: var(--store-muted);
     background: var(--store-surface);
     border: 1px solid var(--store-border);
-    border-radius: var(--radius-md);
+    border-radius: 11px;
     cursor: pointer;
-    transition:
-        color var(--transition),
-        background var(--transition),
-        border-color var(--transition);
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
 }
 
 .store-category-nav .category-all-button:hover {
@@ -578,22 +507,16 @@
 }
 
 .store-category-nav .category-all-button svg {
-    display: block;
     width: 19px;
     height: 19px;
-    max-width: none;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.7;
+    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 
-
-/* =========================================================
-   8. KELOMPOK KATEGORI PRODUK
-   Dibuat oleh catalog.js pada #product-grid
-   ========================================================= */
+/* 7. PRODUCT GROUPS */
 
 .store-products {
     min-width: 0;
@@ -601,8 +524,8 @@
 
 .store-category-section {
     min-width: 0;
-    margin: 0 0 25px;
-    scroll-margin-top: 90px;
+    margin: 0 0 28px;
+    scroll-margin-top: 135px;
 }
 
 .store-category-heading {
@@ -611,7 +534,7 @@
     justify-content: space-between;
     gap: 12px;
     min-width: 0;
-    margin: 0 0 11px;
+    margin: 0 0 13px;
 }
 
 .store-category-heading > div {
@@ -622,84 +545,56 @@
 .store-category-heading h2 {
     margin: 0;
     color: var(--store-text);
-    font-size: 1rem;
-    font-weight: 750;
-    line-height: 1.4;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.35;
 }
-
-
-/* Jumlah produk tidak ditampilkan */
 
 .store-category-count,
 .store-product-total {
     display: none !important;
 }
 
-
-/* Daftar produk vertikal */
-
 .store-category-products {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
     min-width: 0;
 }
 
-
-/* =========================================================
-   9. KARTU PRODUK
-   Struktur aktual dari catalog.js:
-
-   article.product-card
-   ├── div.product-image
-   │   ├── img.product-photo
-   │   ├── span.product-image-placeholder
-   │   └── span.product-tag (opsional)
-   └── div.product-info
-       ├── h3.product-name
-       ├── span.product-variant (opsional)
-       ├── span.product-unit
-       └── div.product-bottom
-           ├── span.product-price
-           └── button.add-button
-   ========================================================= */
+/* 8. PRODUCT CARD */
 
 .product-card {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: center;
-    gap: 12px;
-    width: 100%;
+    gap: 14px;
     min-width: 0;
-    padding: 11px;
+    padding: 12px;
     background: var(--store-surface);
     border: 1px solid var(--store-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    transition:
-        border-color var(--transition),
-        box-shadow var(--transition);
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgb(28 45 32 / 3%);
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
 .product-card:hover {
-    border-color: var(--store-border);
-    box-shadow: var(--shadow-md);
+    border-color: #cbd9cd;
+    box-shadow: 0 8px 20px rgb(28 45 32 / 7%);
+    transform: translateY(-1px);
 }
-
-
-/* Gambar produk */
 
 .product-image {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 76px;
-    height: 76px;
+    width: 92px;
+    height: 92px;
     min-width: 0;
     overflow: hidden;
-    background: var(--store-surface-soft);
-    border-radius: var(--radius-md);
+    background: var(--store-soft);
+    border-radius: 12px;
 }
 
 .product-image img,
@@ -712,14 +607,7 @@
     object-position: center;
 }
 
-/* =========================================================
-   STATUS PRODUK HABIS — HALAMAN WARUNG
-   ========================================================= */
-
-.store-page .product-image.is-sold-out .product-photo {
-    filter: grayscale(100%);
-}
-
+.store-page .product-image.is-sold-out .product-photo,
 .store-page .product-image.is-sold-out .product-image-placeholder {
     filter: grayscale(100%);
 }
@@ -732,11 +620,11 @@
     align-items: center;
     justify-content: center;
     padding: 6px;
-    color: #ffffff;
-    background: rgb(0 0 0 / 42%);
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 1px;
+    color: #fff;
+    background: rgb(0 0 0 / 43%);
+    font-size: 0.78rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
     line-height: 1.2;
     text-align: center;
     pointer-events: none;
@@ -748,36 +636,30 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 5px;
+    padding: 6px;
     color: var(--store-muted);
-    font-size: 0.625rem;
+    font-size: 0.65rem;
     line-height: 1.35;
     text-align: center;
 }
 
-
-/* Label produk jika tersedia */
-
 .product-tag {
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: 6px;
+    left: 6px;
     z-index: 1;
-    max-width: calc(100% - 10px);
-    padding: 3px 5px;
+    max-width: calc(100% - 12px);
+    padding: 3px 6px;
     overflow: hidden;
     color: var(--store-brand-dark);
     background: var(--store-brand-light);
-    border-radius: var(--radius-sm);
-    font-size: 0.625rem;
-    font-weight: 700;
+    border-radius: 6px;
+    font-size: 0.62rem;
+    font-weight: 750;
     line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
-
-/* Informasi produk */
 
 .product-info {
     display: flex;
@@ -792,8 +674,8 @@
     margin: 0;
     overflow: hidden;
     color: var(--store-text);
-    font-size: 0.9375rem;
-    font-weight: 700;
+    font-size: 0.93rem;
+    font-weight: 750;
     line-height: 1.4;
     overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
@@ -804,8 +686,7 @@
     display: block;
     margin: 0;
     color: var(--store-muted);
-    font-size: 0.78125rem;
-    font-weight: 400;
+    font-size: 0.78rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
 }
@@ -814,21 +695,18 @@
     display: block;
     margin: 0;
     color: var(--store-muted);
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
 }
-
-
-/* Harga dan tombol tambah */
 
 .product-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 9px;
     min-width: 0;
-    margin-top: 6px;
+    margin-top: 7px;
 }
 
 .product-price {
@@ -837,43 +715,36 @@
     min-width: 0;
     margin: 0;
     color: var(--store-brand-dark);
-    font-size: 0.9375rem;
-    font-weight: 750;
-    line-height: 1.4;
+    font-size: 0.96rem;
+    font-weight: 850;
+    line-height: 1.35;
     overflow-wrap: anywhere;
     font-variant-numeric: tabular-nums;
 }
 
-
-/* Tombol + */
-
 .add-button {
     display: inline-flex;
-    flex: 0 0 36px;
+    flex: 0 0 38px;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    min-width: 36px;
-    height: 36px;
-    min-height: 36px;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
     padding: 0;
     color: var(--white);
     background: var(--store-brand);
     border: 1px solid var(--store-brand);
-    border-radius: var(--radius-md);
-    font-size: 1.125rem;
-    font-weight: 600;
+    border-radius: 11px;
+    font-size: 1.15rem;
+    font-weight: 750;
     line-height: 1;
     cursor: pointer;
-    transition:
-        background var(--transition),
-        border-color var(--transition),
-        transform var(--transition);
+    transition: background var(--transition), transform var(--transition);
 }
 
 .add-button:hover {
     background: var(--store-brand-dark);
-    border-color: var(--store-brand-dark);
 }
 
 .add-button:active {
@@ -882,38 +753,34 @@
 
 .add-button:disabled {
     color: var(--store-muted);
-    background: var(--store-surface-soft);
+    background: var(--store-soft);
     border-color: var(--store-border);
     cursor: not-allowed;
     opacity: 0.8;
 }
 
-
-/* =========================================================
-   10. KONDISI KATALOG KOSONG
-   ========================================================= */
+/* 9. EMPTY STATE */
 
 .store-empty {
-    padding: 28px 18px;
+    padding: 34px 20px;
     text-align: center;
     background: var(--store-surface);
     border: 1px dashed var(--store-border);
-    border-radius: var(--radius-lg);
+    border-radius: 15px;
 }
 
 .store-empty h3 {
     margin: 0 0 7px;
     color: var(--store-text);
-    font-size: 0.9375rem;
-    font-weight: 750;
-    line-height: 1.4;
+    font-size: 0.98rem;
+    font-weight: 800;
 }
 
 .store-empty p {
     max-width: 360px;
-    margin: 0 auto 15px;
+    margin: 0 auto 16px;
     color: var(--store-muted);
-    font-size: 0.8125rem;
+    font-size: 0.84rem;
     line-height: 1.6;
 }
 
@@ -922,10 +789,10 @@
     align-items: center;
     justify-content: center;
     min-height: 40px;
-    padding: 0 15px;
-    border-radius: var(--radius-md);
-    font-size: 0.8125rem;
-    font-weight: 650;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 0.83rem;
+    font-weight: 700;
 }
 
 .store-empty .button-outline {
@@ -939,237 +806,106 @@
     border-color: var(--store-brand-light);
 }
 
+/* 10. TABLET */
 
-/* =========================================================
-   11. TABLET
-   ========================================================= */
-
-@media (min-width: 700px) {
+@media (max-width: 900px) {
     .store-page {
-        width: min(
-            calc(100% - 48px),
-            var(--container-width)
-        );
-        padding-bottom: 52px;
-    }
-
-    .store-banner img {
-        aspect-ratio: 16 / 5;
-    }
-
-    .store-identity {
-        gap: 18px;
-        margin-top: 26px;
-        margin-bottom: 22px;
-    }
-
-    .store-identity-logo {
-        flex-basis: 86px;
-        width: 86px;
-        height: 86px;
-    }
-
-    .store-details {
-        padding: 20px;
-    }
-
-    .store-detail-list {
-        gap: 20px 28px;
-    }
-
-    .store-search-form {
-        margin-bottom: 20px;
-    }
-
-    .store-category-nav {
-        margin-bottom: 26px;
-    }
-
-    .store-category-section {
-        margin-bottom: 30px;
-    }
-
-    .store-category-heading {
-        margin-bottom: 13px;
-    }
-
-    .store-category-heading h2 {
-        font-size: 1.0625rem;
+        width: calc(100% - 32px);
     }
 
     .store-category-products {
+        gap: 10px;
+    }
+
+    .product-card {
+        grid-template-columns: 78px minmax(0, 1fr);
         gap: 11px;
-    }
-
-    .product-card {
-        grid-template-columns: 84px minmax(0, 1fr);
-        gap: 14px;
-        padding: 13px;
+        padding: 10px;
     }
 
     .product-image {
-        width: 84px;
-        height: 84px;
-    }
-
-    .product-name {
-        font-size: 1rem;
-    }
-
-    .product-variant {
-        font-size: 0.8125rem;
-    }
-
-    .product-price {
-        font-size: 1rem;
-    }
-
-    .add-button {
-        flex-basis: 38px;
-        width: 38px;
-        min-width: 38px;
-        height: 38px;
-        min-height: 38px;
+        width: 78px;
+        height: 78px;
     }
 }
 
+/* 11. MOBILE */
 
-/* =========================================================
-   12. DESKTOP
-   ========================================================= */
-
-@media (min-width: 1000px) {
+@media (max-width: 640px) {
     .store-page {
-        padding-bottom: 60px;
+        width: calc(100% - 24px);
+        padding: 10px 0 36px;
     }
-
-    .store-banner img {
-        aspect-ratio: 16 / 4.5;
-    }
-
-    .store-identity-logo {
-        flex-basis: 92px;
-        width: 92px;
-        height: 92px;
-    }
-
-    .store-details {
-        padding: 22px 24px;
-    }
-
-    .store-detail-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px 36px;
-    }
-
-    .store-category-nav {
-        gap: 9px;
-    }
-
-    .store-category-nav .category-card {
-        padding-inline: 17px;
-    }
-
-    .store-category-products {
-        gap: 12px;
-    }
-
-    .product-card {
-        grid-template-columns: 88px minmax(0, 1fr);
-        gap: 16px;
-        padding: 14px;
-    }
-
-    .product-image {
-        width: 88px;
-        height: 88px;
-    }
-}
-
-
-/* =========================================================
-   13. MOBILE
-   ========================================================= */
-
-@media (max-width: 699px) {
-    .store-page {
-        width: calc(100% - 28px);
-        padding-bottom: 30px;
-    }
-
-    /* Banner */
 
     .store-banner {
-        border-radius: var(--radius-lg);
+        border-radius: 14px;
     }
 
     .store-banner img {
-        aspect-ratio: 16 / 6;
-        min-height: 100px;
+        aspect-ratio: 16 / 6.3;
+        min-height: 104px;
     }
-
-    /* Identitas warung */
 
     .store-identity {
         gap: 12px;
-        margin: 17px 0 16px;
+        width: calc(100% - 24px);
+        margin: -29px 0 16px 12px;
+        padding: 10px 12px;
+        border-radius: 13px;
     }
 
     .store-identity-logo {
-        flex-basis: 64px;
-        width: 64px;
-        height: 64px;
-        border-radius: var(--radius-md);
-        font-size: 1.375rem;
+        flex-basis: 62px;
+        width: 62px;
+        height: 62px;
+        border-width: 3px;
+        border-radius: 11px;
+        font-size: 1.35rem;
     }
 
     .store-identity-text h1 {
-        font-size: 1.2rem;
-        line-height: 1.35;
+        font-size: 1.12rem;
     }
 
     .store-identity-text p {
-        margin-top: 4px;
-        font-size: 0.8rem;
+        margin-top: 3px;
+        font-size: 0.78rem;
     }
 
-    /* Detail warung */
-
     .store-details {
-        margin-bottom: 21px;
+        margin-bottom: 23px;
         padding: 14px;
-        border-radius: var(--radius-md);
+        border-radius: 13px;
     }
 
     .store-details > h2 {
-        margin-bottom: 13px;
-        font-size: 0.9375rem;
+        margin-bottom: 11px;
+        font-size: 0.9rem;
     }
 
     .store-detail-list {
         grid-template-columns: minmax(0, 1fr);
-        gap: 14px;
+        gap: 13px;
     }
 
     .store-detail-item {
-        gap: 10px;
+        gap: 9px;
     }
 
     .store-detail-icon {
-        flex-basis: 35px;
-        width: 35px;
-        height: 35px;
-        border-radius: var(--radius-sm);
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
     }
 
     .store-detail-icon svg {
-        width: 18px;
-        height: 18px;
+        width: 17px;
+        height: 17px;
     }
 
     .store-detail-content p {
-        font-size: 0.8125rem;
-        line-height: 1.55;
+        font-size: 0.8rem;
     }
 
     .store-address-row {
@@ -1177,87 +913,69 @@
     }
 
     .store-maps-button {
-        flex-basis: 36px;
-        width: 36px;
-        height: 36px;
-        border-radius: var(--radius-sm);
-    }
-
-    .store-maps-button svg {
-        width: 18px;
-        height: 18px;
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
     }
 
     .store-detail-delivery {
         gap: 8px;
         padding-top: 11px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
-
-    /* Judul katalog */
 
     .store-catalog-heading {
         margin-bottom: 12px;
     }
 
     .store-catalog-heading h2 {
-        font-size: 1.125rem;
+        font-size: 1.15rem;
     }
-
-    /* Pencarian */
 
     .store-search-form {
         gap: 7px;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .store-search-form input,
     .store-search-form input[type="search"] {
-        min-height: 42px;
-        padding-inline: 11px;
-        font-size: 0.8125rem;
-        border-radius: var(--radius-md);
+        min-height: 43px;
+        padding-inline: 12px;
+        border-radius: 10px;
+        font-size: 0.8rem;
     }
 
     .store-search-form button {
-        min-height: 42px;
-        padding-inline: 13px;
-        font-size: 0.8125rem;
-        border-radius: var(--radius-md);
+        min-height: 43px;
+        padding-inline: 14px;
+        border-radius: 10px;
+        font-size: 0.8rem;
     }
-
-    /* Kategori horizontal */
 
     .store-category-nav {
+        top: 60px;
         gap: 7px;
-        margin-bottom: 19px;
-        padding: 2px 0 7px;
-    }
-
-    .store-category-nav .category-all-button {
-        flex-basis: 38px;
-        width: 38px;
-        min-width: 38px;
-        height: 37px;
-        border-radius: var(--radius-sm);
-    }
-
-    .store-category-nav .category-all-button svg {
-        width: 18px;
-        height: 18px;
+        margin-bottom: 17px;
+        padding: 8px 0;
     }
 
     .store-category-nav .category-card {
-        min-height: 37px;
-        padding-inline: 12px;
-        font-size: 0.78125rem;
+        min-height: 35px;
+        padding-inline: 13px;
+        font-size: 0.76rem;
     }
 
-    /* Kelompok kategori */
+    .store-category-nav .category-all-button {
+        flex-basis: 36px;
+        width: 36px;
+        min-width: 36px;
+        height: 35px;
+        border-radius: 9px;
+    }
 
     .store-category-section {
         margin-bottom: 22px;
-        scroll-margin-top: 75px;
+        scroll-margin-top: 112px;
     }
 
     .store-category-heading {
@@ -1265,58 +983,48 @@
     }
 
     .store-category-heading h2 {
-        font-size: 0.9375rem;
+        font-size: 0.95rem;
     }
 
     .store-category-products {
+        grid-template-columns: minmax(0, 1fr);
         gap: 9px;
     }
 
-    /* Kartu produk */
-
     .product-card {
-        grid-template-columns: 66px minmax(0, 1fr);
-        gap: 10px;
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 11px;
         padding: 9px;
-        border-radius: var(--radius-md);
+        border-radius: 12px;
+    }
+
+    .product-card:hover {
+        transform: none;
     }
 
     .product-image {
-        width: 66px;
-        height: 66px;
-        border-radius: var(--radius-sm);
-    }
-
-    .product-image-placeholder {
-        padding: 4px;
-        font-size: 0.6rem;
+        width: 76px;
+        height: 76px;
+        border-radius: 9px;
     }
 
     .product-tag {
         top: 4px;
         left: 4px;
-        max-width: calc(100% - 8px);
-        padding: 3px 4px;
-        font-size: 0.575rem;
-    }
-
-    .product-info {
-        gap: 3px;
+        padding: 3px 5px;
+        font-size: 0.57rem;
     }
 
     .product-name {
-        font-size: 0.875rem;
-        line-height: 1.4;
+        font-size: 0.86rem;
     }
 
     .product-variant {
-        font-size: 0.75rem;
-        line-height: 1.4;
+        font-size: 0.73rem;
     }
 
     .product-unit {
-        font-size: 0.7rem;
-        line-height: 1.4;
+        font-size: 0.69rem;
     }
 
     .product-bottom {
@@ -1325,138 +1033,81 @@
     }
 
     .product-price {
-        font-size: 0.875rem;
-    }
-
-    .add-button {
-        flex-basis: 33px;
-        width: 33px;
-        min-width: 33px;
-        height: 33px;
-        min-height: 33px;
-        border-radius: var(--radius-sm);
-        font-size: 1.0625rem;
-    }
-
-    /* Kondisi kosong */
-
-    .store-empty {
-        padding: 23px 13px;
-        border-radius: var(--radius-md);
-    }
-
-    .store-empty h3 {
         font-size: 0.9rem;
     }
 
-    .store-empty p {
-        font-size: 0.8rem;
+    .add-button {
+        flex-basis: 34px;
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+        min-height: 34px;
+        border-radius: 9px;
+    }
+
+    .store-empty {
+        padding: 26px 14px;
+        border-radius: 12px;
     }
 }
 
-
-/* =========================================================
-   14. MOBILE KECIL
-   ========================================================= */
+/* 12. VERY SMALL SCREENS */
 
 @media (max-width: 359px) {
     .store-page {
-        width: calc(100% - 20px);
-    }
-
-    .store-banner img {
-        aspect-ratio: 16 / 7;
-        min-height: 90px;
+        width: calc(100% - 18px);
     }
 
     .store-identity {
-        gap: 10px;
+        width: calc(100% - 16px);
+        margin-left: 8px;
+        gap: 9px;
+        padding: 9px;
     }
 
     .store-identity-logo {
-        flex-basis: 56px;
-        width: 56px;
-        height: 56px;
-        font-size: 1.2rem;
+        flex-basis: 54px;
+        width: 54px;
+        height: 54px;
     }
 
     .store-identity-text h1 {
-        font-size: 1.05rem;
+        font-size: 1rem;
     }
 
     .store-details {
         padding: 11px;
     }
 
-    .store-search-form {
-        gap: 5px;
-    }
-
-    .store-search-form input,
-    .store-search-form input[type="search"] {
-        padding-inline: 8px;
-        font-size: 0.75rem;
-    }
-
-    .store-search-form button {
-        padding-inline: 9px;
-        font-size: 0.75rem;
-    }
-
-    .store-category-nav {
-        gap: 6px;
-    }
-
-    .store-category-nav .category-all-button {
-        flex-basis: 35px;
-        width: 35px;
-        min-width: 35px;
-        height: 35px;
-    }
-
-    .store-category-nav .category-card {
-        min-height: 35px;
-        padding-inline: 10px;
-        font-size: 0.75rem;
-    }
-
     .product-card {
-        grid-template-columns: 56px minmax(0, 1fr);
-        gap: 8px;
+        grid-template-columns: 66px minmax(0, 1fr);
+        gap: 9px;
         padding: 8px;
     }
 
     .product-image {
-        width: 56px;
-        height: 56px;
+        width: 66px;
+        height: 66px;
     }
 
     .product-name {
-        font-size: 0.8125rem;
-    }
-
-    .product-variant,
-    .product-unit {
-        font-size: 0.6875rem;
+        font-size: 0.81rem;
     }
 
     .product-price {
-        font-size: 0.8125rem;
+        font-size: 0.84rem;
     }
 
     .add-button {
-        flex-basis: 30px;
-        width: 30px;
-        min-width: 30px;
-        height: 30px;
-        min-height: 30px;
+        flex-basis: 32px;
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        min-height: 32px;
     }
 }
 
-
-/* =========================================================
-   15. AKSESIBILITAS
-   ========================================================= */
+/* 13. ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
     .store-page *,
