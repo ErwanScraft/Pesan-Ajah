@@ -115,7 +115,106 @@ try {
             'message' => 'Pesanan tidak dapat diaktifkan dari status saat ini.',
         ], 409);
     }
-
+    
+    /*
+    |---------------------------------------------------------------------------
+    | PENGURANGAN STOCK OTOMATIS
+    |--------------------------------------------------------------------------
+    | Hanya dilakukan ketika draft berubah menjadi pending.
+    | Produk dengan stock_quantity NULL tidak dibatasi.
+    */
+    
+    $itemStmt = $db->prepare(
+        'SELECT
+            product_id,
+            SUM(quantity) AS total_quantity
+    
+        FROM order_items
+    
+        WHERE order_id = :order_id
+          AND product_id IS NOT NULL
+    
+        GROUP BY product_id
+    
+        ORDER BY product_id ASC'
+    );
+    
+    $itemStmt->execute([
+        'order_id' => (int) $order['id'],
+    ]);
+    
+    $orderItems = $itemStmt->fetchAll();
+    
+    $productStmt = $db->prepare(
+        'SELECT
+            id,
+            name,
+            is_available,
+            stock_quantity
+    
+        FROM products
+    
+        WHERE id = :product_id
+    
+        LIMIT 1
+    
+        FOR UPDATE'
+    );
+    
+    $deductStmt = $db->prepare(
+        'UPDATE products
+    
+         SET stock_quantity = stock_quantity - :quantity
+    
+         WHERE id = :product_id
+           AND stock_quantity IS NOT NULL
+           AND stock_quantity >= :quantity'
+    );
+    
+    foreach ($orderItems as $item) {
+        $productId = (int) $item['product_id'];
+        $quantity = (int) $item['total_quantity'];
+    
+        $productStmt->execute([
+            'product_id' => $productId,
+        ]);
+    
+        $product = $productStmt->fetch();
+    
+        if (!$product || !(bool) $product['is_available']) {
+            throw new RuntimeException(
+                'Salah satu produk pesanan sudah tidak tersedia.'
+            );
+        }
+    
+        // NULL berarti stok tidak dibatasi.
+        if ($product['stock_quantity'] === null) {
+            continue;
+        }
+    
+        $currentStock = (int) $product['stock_quantity'];
+    
+        if ($currentStock < $quantity) {
+            throw new RuntimeException(
+                'Stock '
+                . $product['name']
+                . ' tidak mencukupi. Stock tersisa: '
+                . $currentStock
+            );
+        }
+    
+        $deductStmt->execute([
+            'quantity' => $quantity,
+            'product_id' => $productId,
+        ]);
+    
+        if ($deductStmt->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Stock produk gagal diperbarui.'
+            );
+        }
+    }
+    
     $update = $db->prepare(
         "UPDATE orders
          SET status = 'pending'
@@ -151,6 +250,16 @@ try {
         'status' => 'pending',
         'message' => 'Pesanan berhasil diaktifkan.',
     ]);
+
+} catch (RuntimeException $exception) {
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
+
+    activate_order_json([
+        'success' => false,
+        'message' => $exception->getMessage(),
+    ], 409);
 
 } catch (Throwable $exception) {
     if ($db->inTransaction()) {

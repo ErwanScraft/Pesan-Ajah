@@ -1,0 +1,257 @@
+/* =========================================================
+   PESAN AJAH — WARUNG STOCK
+========================================================= */
+
+.stock-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.stock-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.stock-page-heading h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.stock-page-heading p {
+  margin: 6px 0 0;
+  color: var(--text-muted, #777);
+  font-size: 0.88rem;
+}
+
+.stock-card {
+  overflow: hidden;
+}
+
+.stock-list-heading {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border, #e8e8e8);
+}
+
+.stock-list-heading h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.stock-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-item {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border, #ededed);
+}
+
+.stock-item:last-child {
+  border-bottom: 0;
+}
+
+.stock-item-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f3f5f3;
+  color: #929992;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.stock-item-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stock-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 5px;
+}
+
+.stock-item-name {
+  overflow: hidden;
+  color: var(--text, #222);
+  font-size: 0.94rem;
+  font-weight: 650;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-item-unit {
+  color: var(--text-muted, #888);
+  font-size: 0.78rem;
+}
+
+.stock-item-controls {
+  display: grid;
+  grid-template-columns: 88px 38px 38px;
+  align-items: center;
+  gap: 7px;
+}
+
+.stock-quantity-input {
+  width: 100%;
+  height: 38px;
+  min-width: 0;
+  padding: 0 8px;
+  border: 1px solid var(--border, #dedede);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text, #222);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  text-align: center;
+  outline: none;
+}
+
+.stock-quantity-input:focus {
+  border-color: var(--primary, #176b45);
+  box-shadow: 0 0 0 3px rgb(23 107 69 / 10%);
+}
+
+.stock-adjust-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.stock-adjust-button:active {
+  transform: scale(0.94);
+}
+
+.stock-adjust-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stock-decrease {
+  background: #dc4b4b;
+}
+
+.stock-increase {
+  background: var(--primary, #176b45);
+}
+
+.stock-loading,
+.stock-empty {
+  padding: 30px 20px;
+  color: var(--text-muted, #888);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .stock-page {
+    gap: 14px;
+  }
+
+  .stock-page-heading h2 {
+    font-size: 1.05rem;
+  }
+
+  .stock-page-heading p {
+    font-size: 0.8rem;
+  }
+
+  .stock-list-heading {
+    padding: 15px;
+  }
+
+  .stock-item {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .stock-item-image {
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+  }
+
+  .stock-item-name {
+    font-size: 0.82rem;
+  }
+
+  .stock-item-unit {
+    font-size: 0.7rem;
+  }
+
+  .stock-item-controls {
+    grid-template-columns: 58px 32px 32px;
+    gap: 4px;
+  }
+
+  .stock-quantity-input {
+    height: 34px;
+    padding: 0 3px;
+    font-size: 0.82rem;
+  }
+
+  .stock-adjust-button {
+    width: 32px;
+    height: 34px;
+    border-radius: 7px;
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .stock-item {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 7px;
+    padding: 10px 8px;
+  }
+
+  .stock-item-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stock-item-controls {
+    grid-template-columns: 48px 29px 29px;
+    gap: 3px;
+  }
+
+  .stock-adjust-button {
+    width: 29px;
+  }
+}

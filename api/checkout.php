@@ -511,15 +511,16 @@ try {
             name,
             variant,
             price,
-            is_available
-
+            is_available,
+            stock_quantity
+    
         FROM products
-
+    
         WHERE id = :product_id
           AND store_id = :store_id
-
+    
         LIMIT 1
-
+    
         FOR UPDATE'
     );
 
@@ -537,6 +538,17 @@ try {
         if (!$product || !(bool) $product['is_available']) {
             throw new RuntimeException(
                 'Produk tidak ditemukan atau sudah habis.'
+            );
+        }
+        
+        if (
+            $product['stock_quantity'] !== null
+            && (int) $product['stock_quantity'] < $quantity
+        ) {
+            throw new RuntimeException(
+                'Stock produk '
+                . $product['name']
+                . ' tidak mencukupi.'
             );
         }
 

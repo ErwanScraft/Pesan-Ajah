@@ -22,6 +22,7 @@ const API = {
   orders: "/warung/api/orders.php",
   settings: "/warung/api/settings.php",
   push: "/warung/api/push-subscription.php",
+  stock: "/warung/api/stock.php",
 };
 
 async function apiRequest(url, options = {}) {
@@ -1091,6 +1092,21 @@ async function initializeDashboard() {
         postJSON,
         notify,
         csrfToken,
+      });
+    }
+    
+    if (page === "stock") {
+      const { initWarungStock } = await import(
+        "./pages/warung-stock/main.js"
+      );
+    
+      await initWarungStock({
+        $,
+        API,
+        apiRequest,
+        postJSON,
+        notify,
+        resolveImageUrl,
       });
     }
 

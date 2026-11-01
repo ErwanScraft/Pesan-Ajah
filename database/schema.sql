@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS products (
     tag VARCHAR(40) DEFAULT NULL,
     is_available TINYINT(1)
         NOT NULL DEFAULT 1,
+    stock_quantity INT UNSIGNED DEFAULT NULL,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP
         NOT NULL DEFAULT CURRENT_TIMESTAMP,

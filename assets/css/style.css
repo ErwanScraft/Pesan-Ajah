@@ -1,4 +1,3 @@
-
 /* =========================================================
    PESAN AJAH — GLOBAL CSS ENTRY POINT
 
@@ -51,3 +50,6 @@
 
 /* 12. Dashboard awal warung */
 @import url("./pages/dashboard-warung.css");
+
+/* 13. Manajemen stock warung */
+@import url("./pages/warung-stock.css");

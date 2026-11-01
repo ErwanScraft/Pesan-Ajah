@@ -80,6 +80,7 @@ try {
             p.category,
             p.price,
             p.unit,
+            p.stock_quantity,
             p.image,
             p.tag,
             p.is_available,
@@ -157,9 +158,18 @@ try {
          */
         $product['store'] = $product['store_name'];
 
+        $product['stock_quantity'] =
+            $product['stock_quantity'] === null
+                ? null
+                : (int) $product['stock_quantity'];
+        
         $product['available'] =
             $product['is_available']
-            && $product['store_is_open'];
+            && $product['store_is_open']
+            && (
+                $product['stock_quantity'] === null
+                || $product['stock_quantity'] > 0
+            );
 
         /*
          * Foto produk berasal dari kolom products.image.

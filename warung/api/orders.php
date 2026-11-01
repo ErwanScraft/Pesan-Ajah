@@ -146,6 +146,90 @@ if ($action === 'cancel') {
              WHERE id = :id
                AND store_id = :store_id'
         );
+        
+        /*
+        |---------------------------------------------------------------------------
+        | KEMBALIKAN STOCK PESANAN
+        |--------------------------------------------------------------------------
+        | Stok hanya dikembalikan untuk produk yang menggunakan
+        | pengelolaan stok (stock_quantity tidak NULL).
+        */
+        
+        $itemStmt = $db->prepare(
+            'SELECT
+                product_id,
+                SUM(quantity) AS total_quantity
+        
+            FROM order_items
+        
+            WHERE order_id = :order_id
+              AND product_id IS NOT NULL
+        
+            GROUP BY product_id
+        
+            ORDER BY product_id ASC'
+        );
+        
+        $itemStmt->execute([
+            'order_id' => $id,
+        ]);
+        
+        $orderItems = $itemStmt->fetchAll();
+        
+        $productStmt = $db->prepare(
+            'SELECT
+                id,
+                stock_quantity
+        
+            FROM products
+        
+            WHERE id = :product_id
+              AND store_id = :store_id
+        
+            LIMIT 1
+        
+            FOR UPDATE'
+        );
+        
+        $restoreStmt = $db->prepare(
+            'UPDATE products
+        
+             SET stock_quantity = stock_quantity + :quantity
+        
+             WHERE id = :product_id
+               AND store_id = :store_id
+               AND stock_quantity IS NOT NULL'
+        );
+        
+        foreach ($orderItems as $item) {
+            $productId = (int) $item['product_id'];
+            $quantity = (int) $item['total_quantity'];
+        
+            $productStmt->execute([
+                'product_id' => $productId,
+                'store_id' => $storeId,
+            ]);
+        
+            $product = $productStmt->fetch();
+        
+            if (!$product || $product['stock_quantity'] === null) {
+                continue;
+            }
+        
+            $currentStock = (int) $product['stock_quantity'];
+        
+            if ($currentStock > 2147483647 - $quantity) {
+                throw new RuntimeException(
+                    'Pengembalian stock melebihi batas.'
+                );
+            }
+        
+            $restoreStmt->execute([
+                'quantity' => $quantity,
+                'product_id' => $productId,
+                'store_id' => $storeId,
+            ]);
+        }
 
         $update->execute([
             'status' => 'cancelled',

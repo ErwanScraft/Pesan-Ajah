@@ -43,3 +43,14 @@ RewriteRule ^warung/([A-Za-z0-9_-]+)/?$ warung.php?slug=$1 [QSA,L,NC]
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+
+# =========================================================
+# CSS CACHE VALIDATION
+# =========================================================
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.css$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
