@@ -71,9 +71,9 @@ if (request_is_post()) {
     if (
         $deliveryDiscount === false
         || $deliveryDiscount < 0
-        || $deliveryDiscount > 100000000
+        || $deliveryDiscount > 2000
     ) {
-        $errors[] = 'Diskon ongkir harus berupa nominal Rp0 sampai Rp100.000.000.';
+        $errors[] = 'Diskon ongkir harus berupa nominal Rp0 sampai Rp2.000.';
     }
 
     $newPassword = (string) ($_POST['new_password'] ?? '');
@@ -429,16 +429,15 @@ if (request_is_post()) {
                             name="delivery_discount"
                             type="number"
                             min="0"
-                            max="100000000"
+                            max="2000"
                             step="1000"
                             value="<?= e((string) ($store['delivery_discount'] ?? 0)) ?>"
                             required
                         >
                     
                         <small class="muted">
-                            Diskon diterapkan pada tarif ongkir standar.
-                            Nilai diskon tidak dapat melebihi ongkir.
-                            Isi 0 jika tidak ada diskon.
+                            Diskon hanya mengurangi ongkir awal Rp2.000.
+                            Biaya tambahan berdasarkan jarak tidak mendapatkan diskon.
                         </small>
                     </label>
 

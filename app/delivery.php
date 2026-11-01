@@ -32,11 +32,14 @@ function delivery_distance_km(
 }
 
 /**
- * Tarif ongkir berdasarkan jarak:
- * 0–1 km       = Rp2.000
- * >1–2 km      = Rp3.000
- * >2–3 km      = Rp4.000
- * dan seterusnya.
+ * Ongkir awal sebelum diskon.
+ */
+const DELIVERY_BASE_FEE = 2000;
+
+/**
+ * Biaya tambahan berdasarkan jarak:
+ * Setiap 500 meter = Rp1.000.
+ * Perhitungan dimulai dari 0 meter.
  */
 function delivery_fee_from_distance(float $km): int
 {
@@ -46,6 +49,6 @@ function delivery_fee_from_distance(float $km): int
         );
     }
 
-    return max(2, (int) ceil($km) + 1) * 1000;
+    return (int) ceil($km / 0.5) * 1000;
 }
 

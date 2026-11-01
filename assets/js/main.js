@@ -128,7 +128,7 @@ function estimateDelivery(product) {
 
   return {
     distance,
-    fee: Math.max(2, Math.ceil(distance) + 1) * 1000,
+    fee: 2000 + Math.ceil(distance / 0.5) * 1000,
   };
 
 }
@@ -153,7 +153,7 @@ function getDeliveryFee() {
 
   const discount = Math.min(
     Math.max(0, Number(product.store_delivery_discount) || 0),
-    estimate.fee,
+    2000,
   );
 
   return estimate.fee - discount;
@@ -194,7 +194,7 @@ function renderCart() {
           0,
           Number(product?.store_delivery_discount) || 0,
         ),
-        estimate.fee,
+        2000,
       );
   
       const finalFee = estimate.fee - discount;

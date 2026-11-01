@@ -402,9 +402,12 @@ try {
                 $deliveryLongitude
             );
     
-            $deliveryFeeOriginal = delivery_fee_from_distance(
+            $distanceFee = delivery_fee_from_distance(
                 $deliveryDistanceKm
             );
+    
+            $deliveryFeeOriginal = DELIVERY_BASE_FEE
+                + $distanceFee;
         }
     
         if ($isFreeDelivery) {
@@ -417,13 +420,15 @@ try {
                 (int) ($store['delivery_discount'] ?? 0)
             );
     
+            // Diskon hanya berlaku untuk ongkir awal.
             $deliveryDiscount = min(
                 $configuredDiscount,
-                $deliveryFeeOriginal
+                DELIVERY_BASE_FEE
             );
     
-            $deliveryFee = $deliveryFeeOriginal
-                - $deliveryDiscount;
+            $deliveryFee = (
+                DELIVERY_BASE_FEE - $deliveryDiscount
+            ) + ($deliveryFeeOriginal - DELIVERY_BASE_FEE);
         }
     }
 
