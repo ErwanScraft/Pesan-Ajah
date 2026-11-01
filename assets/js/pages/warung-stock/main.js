@@ -348,6 +348,92 @@ export async function initWarungStock({
   
     categoryFilters.replaceChildren(fragment);
   }
+  
+  function getProductCategory(product) {
+    return String(product.category || "").trim() || "Lainnya";
+  }
+  
+  function renderCategoryFilters() {
+    if (!categoryFilters) {
+      return;
+    }
+  
+    const categoryCounts = new Map();
+  
+    products.forEach((product) => {
+      const category = getProductCategory(product);
+  
+      categoryCounts.set(
+        category,
+        (categoryCounts.get(category) || 0) + 1,
+      );
+    });
+  
+    const categories = [...categoryCounts.keys()].sort(
+      (a, b) => a.localeCompare(b, "id-ID"),
+    );
+  
+    const fragment = document.createDocumentFragment();
+  
+    function createFilter(category, label, count) {
+      const button = createElement(
+        "button",
+        "stock-category-filter",
+        label,
+      );
+  
+      button.type = "button";
+      button.dataset.category = category;
+  
+      if (selectedCategory === category) {
+        button.classList.add("active");
+      }
+  
+      button.setAttribute(
+        "aria-pressed",
+        String(selectedCategory === category),
+      );
+  
+      if (count !== null) {
+        const badge = createElement(
+          "span",
+          "stock-category-count",
+          count,
+        );
+  
+        button.append(badge);
+      }
+  
+      button.addEventListener("click", () => {
+        selectedCategory = category;
+  
+        renderCategoryFilters();
+        renderProducts();
+      });
+  
+      return button;
+    }
+  
+    const totalButton = createFilter(
+      "all",
+      "Semua",
+      products.length,
+    );
+  
+    fragment.append(totalButton);
+  
+    categories.forEach((category) => {
+      fragment.append(
+        createFilter(
+          category,
+          category,
+          categoryCounts.get(category),
+        ),
+      );
+    });
+  
+    categoryFilters.replaceChildren(fragment);
+  }
 
   function renderProducts() {
     container.replaceChildren();

@@ -14,15 +14,16 @@ if ($method === 'GET') {
         'SELECT
             id,
             name,
+            category,
             unit,
             image,
             stock_quantity,
             is_available
-
+    
         FROM products
-
+    
         WHERE store_id = :store_id
-
+    
         ORDER BY name ASC, id ASC'
     );
 
