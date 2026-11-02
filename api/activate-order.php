@@ -164,11 +164,11 @@ try {
     $deductStmt = $db->prepare(
         'UPDATE products
     
-         SET stock_quantity = stock_quantity - :quantity
+         SET stock_quantity = stock_quantity - :deduct_quantity
     
          WHERE id = :product_id
            AND stock_quantity IS NOT NULL
-           AND stock_quantity >= :quantity'
+           AND stock_quantity >= :check_quantity'
     );
     
     foreach ($orderItems as $item) {
@@ -204,8 +204,9 @@ try {
         }
     
         $deductStmt->execute([
-            'quantity' => $quantity,
+            'deduct_quantity' => $quantity,
             'product_id' => $productId,
+            'check_quantity' => $quantity,
         ]);
     
         if ($deductStmt->rowCount() !== 1) {
