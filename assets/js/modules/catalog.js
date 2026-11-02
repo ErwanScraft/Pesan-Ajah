@@ -408,13 +408,13 @@ export function createCatalog({
   
     bottom.append(price, addButton);
   
-    info.append(name);
-  
-    if (product.variant) {
-      info.append(variant);
-    }
-  
-    info.append(unit, stock, bottom);
+    info.append(
+      name,
+      variant,
+      unit,
+      stock,
+      bottom,
+    );
   
     card.append(image, info);
   
