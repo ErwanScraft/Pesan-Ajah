@@ -130,8 +130,15 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
     <title><?= e($storeName) ?> — Pesan Ajah</title>
 
     <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/warung.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
+    
+    <link
+        rel="stylesheet"
+        href="/assets/css/warung.css?v=<?= asset_version('assets/css/warung.css') ?>"
+    >
 </head>
 
 <body

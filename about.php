@@ -21,8 +21,15 @@ $pageDescription = 'Pesan Ajah menghubungkan pelanggan dengan warung lokal melal
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
 
     <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/about.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
+    
+    <link
+        rel="stylesheet"
+        href="/assets/css/about.css?v=<?= asset_version('assets/css/about.css') ?>"
+    >
 </head>
 
 <body class="about-page">

@@ -56,7 +56,7 @@ $storeInitial = function_exists('mb_substr')
 
     <link
         rel="stylesheet"
-        href="<?= e(url('assets/css/style.css')) ?>"
+        href="<?= e(url('assets/css/style.css')) ?>?v=<?= asset_version('assets/css/style.css') ?>"
     >
     
     <script>

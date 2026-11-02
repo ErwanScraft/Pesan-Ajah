@@ -44,13 +44,12 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-
 # =========================================================
 # CSS CACHE VALIDATION
 # =========================================================
 
 <IfModule mod_headers.c>
     <FilesMatch "\.css$">
-        Header set Cache-Control "no-cache, must-revalidate"
+        Header always set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
 </IfModule>

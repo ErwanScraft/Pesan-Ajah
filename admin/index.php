@@ -54,7 +54,10 @@ $error = flash('error');
         href="/assets/images/logo.webp"
     >
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
 
     <style>
         .admin-shell {

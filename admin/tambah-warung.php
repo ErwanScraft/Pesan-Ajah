@@ -306,7 +306,10 @@ if (request_is_post()) {
 
     <title>Tambah Warung — Pesan Ajah</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
 
     <style>
         .page {

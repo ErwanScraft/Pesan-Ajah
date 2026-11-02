@@ -351,7 +351,10 @@ function driver_status_label(string $status): string
     <meta name="theme-color" content="#176b45">
     <title>Pesanan Delivery — Anter Ajah</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
 
     <style>
         .delivery-shell {

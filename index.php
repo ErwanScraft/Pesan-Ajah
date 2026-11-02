@@ -77,12 +77,12 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
     <link
         rel="stylesheet"
-        href="/assets/css/style.css"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
     >
-
+    
     <link
         rel="stylesheet"
-        href="/assets/css/store.css"
+        href="/assets/css/store.css?v=<?= asset_version('assets/css/store.css') ?>"
     >
 
     <script

@@ -15,7 +15,10 @@ $driver = require_driver();
 
     <title>Dashboard Driver — Anter Ajah</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
 
     <style>
         .driver-shell {

@@ -253,6 +253,32 @@ function url(string $path = ''): string
     return APP_URL . '/' . ltrim($path, '/');
 }
 
+/**
+ * Menghasilkan versi asset berdasarkan waktu modifikasi file.
+ *
+ * Digunakan untuk menghindari penggunaan CSS versi lama
+ * setelah file diperbarui atau diganti.
+ *
+ * Contoh:
+ * asset_version('assets/css/style.css')
+ */
+function asset_version(string $path): string
+{
+    $filePath = APP_ROOT . '/' . ltrim($path, '/');
+
+    if (!is_file($filePath)) {
+        return '1';
+    }
+
+    clearstatcache(true, $filePath);
+
+    $modifiedAt = filemtime($filePath);
+
+    return $modifiedAt !== false
+        ? (string) $modifiedAt
+        : '1';
+}
+
 function redirect(string $path, int $statusCode = 302): never
 {
     if (

@@ -74,7 +74,10 @@ if (request_is_post()) {
         href="/assets/images/logo.webp"
     >
 
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
 
     <style>
         .auth-page {

@@ -31,8 +31,15 @@ if ($invalidOrder) {
     <title>Detail Pesanan — Pesan Ajah</title>
 
     <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/checkout-info.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
+    
+    <link
+        rel="stylesheet"
+        href="/assets/css/checkout-info.css?v=<?= asset_version('assets/css/checkout-info.css') ?>"
+    >
 </head>
 
 <body>

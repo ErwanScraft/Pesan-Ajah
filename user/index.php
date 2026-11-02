@@ -18,8 +18,15 @@ header('Cache-Control: no-store, private');
     <title>Pesanan Saya — Pesan Ajah</title>
 
     <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/buyer-dashboard.css">
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
+    >
+    
+    <link
+        rel="stylesheet"
+        href="/assets/css/buyer-dashboard.css?v=<?= asset_version('assets/css/buyer-dashboard.css') ?>"
+    >
 
     <script type="module" src="/assets/js/buyer-dashboard.js"></script>
 </head>
