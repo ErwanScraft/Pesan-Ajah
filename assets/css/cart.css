@@ -1,17 +1,18 @@
+
 /* =========================================================
-   PESAN AJAH — CART
+   PESAN AJAH — CART & CHECKOUT DRAWER
    File: assets/css/cart.css
 
    Komponen:
-   - Overlay dan drawer keranjang
-   - Formulir pembeli dan lokasi
-   - Daftar produk dan kontrol jumlah
-   - Catatan pembeli
+   - Overlay dan drawer
+   - Header dan empty state
+   - Produk keranjang
+   - Form pemesan
+   - Detail tempat dan Google Maps
+   - Catatan pesanan
    - Metode pesanan
    - Ringkasan pembayaran
    - Tombol checkout
-
-   Semua selector dibatasi ke #cart-overlay.
    ========================================================= */
 
 
@@ -25,22 +26,22 @@
     --cart-primary-light: #edf7f0;
 
     --cart-text: #202820;
-    --cart-muted: #747d74;
+    --cart-muted: #788078;
 
-    --cart-border: #e5eae4;
-    --cart-border-light: #edf1ec;
+    --cart-border: #e7ebe6;
+    --cart-border-light: #eff2ee;
 
     --cart-surface: #f7f9f6;
-    --cart-white: #fff;
+    --cart-white: #ffffff;
 
     --cart-danger: #b42318;
     --cart-danger-light: #fff1f0;
 
-    --cart-radius-sm: 8px;
-    --cart-radius-md: 12px;
-    --cart-radius-lg: 16px;
+    --cart-radius-sm: 10px;
+    --cart-radius-md: 14px;
+    --cart-radius-lg: 20px;
 
-    --cart-shadow: 0 12px 40px rgb(20 35 25 / 12%);
+    --cart-shadow: 0 16px 50px rgb(20 35 25 / 14%);
     --cart-transition: 180ms ease;
 
     position: fixed;
@@ -54,7 +55,7 @@
     padding: 0;
 
     color: var(--cart-text);
-    background: rgb(17 24 19 / 45%);
+    background: rgb(17 24 19 / 48%);
 
     opacity: 0;
     visibility: hidden;
@@ -72,10 +73,7 @@
 }
 
 #cart-overlay[hidden],
-#cart-overlay .cart-empty[hidden],
-#cart-overlay .cart-footer[hidden],
-#cart-overlay .delivery-address-section[hidden],
-#cart-overlay .preview-location-link[hidden] {
+#cart-overlay [hidden] {
     display: none !important;
 }
 
@@ -100,7 +98,7 @@
     display: flex;
     flex-direction: column;
 
-    width: min(100%, 480px);
+    width: min(100%, 490px);
     max-width: 100%;
     height: 100%;
     max-height: 100vh;
@@ -119,7 +117,7 @@
 
     box-shadow: var(--cart-shadow);
 
-    transform: translateX(24px);
+    transform: translateX(30px);
     transition: transform 240ms ease;
 }
 
@@ -142,14 +140,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
 
     flex: 0 0 auto;
 
     min-width: 0;
-    min-height: 82px;
+    min-height: 76px;
 
-    padding: 18px 24px;
+    padding: 16px 22px;
 
     background: var(--cart-white);
     border-bottom: 1px solid var(--cart-border);
@@ -165,24 +163,14 @@
 
     color: var(--cart-text);
 
-    font-size: 21px;
-    font-weight: 750;
-    line-height: 1.3;
-    letter-spacing: -0.4px;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: -0.45px;
 }
 
 #cart-overlay .cart-header-content p {
-    margin: 5px 0 0;
-
-    color: var(--cart-muted);
-
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-#cart-overlay #cart-count {
-    color: var(--cart-primary);
-    font-weight: 700;
+    display: none;
 }
 
 #cart-overlay .cart-close {
@@ -202,30 +190,26 @@
     background: var(--cart-surface);
 
     border: 1px solid var(--cart-border);
-    border-radius: 50%;
+    border-radius: 12px;
 
     cursor: pointer;
 
     transition:
         color var(--cart-transition),
         background var(--cart-transition),
-        border-color var(--cart-transition),
-        transform var(--cart-transition);
+        border-color var(--cart-transition);
 }
 
 #cart-overlay .cart-close svg {
     display: block;
-    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
 }
 
 #cart-overlay .cart-close:hover {
     color: var(--cart-primary);
     background: var(--cart-primary-light);
     border-color: #c8e1d0;
-}
-
-#cart-overlay .cart-close:active {
-    transform: scale(0.96);
 }
 
 
@@ -241,7 +225,7 @@
     min-width: 0;
     min-height: 0;
 
-    padding: 20px 24px 28px;
+    padding: 22px 22px 28px;
 
     overflow-x: hidden;
     overflow-y: auto;
@@ -264,10 +248,6 @@
 #cart-overlay .cart-content::-webkit-scrollbar-thumb {
     background: #cbd5cc;
     border-radius: 999px;
-}
-
-#cart-overlay .cart-content::-webkit-scrollbar-thumb:hover {
-    background: #aab8ad;
 }
 
 
@@ -297,18 +277,18 @@
     width: 76px;
     height: 76px;
 
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 
     color: var(--cart-primary);
     background: var(--cart-primary-light);
 
-    border-radius: 50%;
+    border-radius: 22px;
 }
 
 #cart-overlay .cart-empty-icon svg {
     display: block;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
 }
 
 #cart-overlay .cart-empty h3 {
@@ -316,19 +296,9 @@
 
     color: var(--cart-text);
 
-    font-size: 19px;
-    font-weight: 750;
+    font-size: 18px;
+    font-weight: 800;
     line-height: 1.4;
-}
-
-#cart-overlay .cart-empty p {
-    max-width: 270px;
-    margin: 9px 0 0;
-
-    color: var(--cart-muted);
-
-    font-size: 14px;
-    line-height: 1.7;
 }
 
 
@@ -339,7 +309,7 @@
 #cart-overlay .cart-footer {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 25px;
 
     flex: 0 0 auto;
 
@@ -361,16 +331,12 @@
 
 #cart-overlay .cart-section-heading {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
 
     min-width: 0;
-    margin: 0 0 16px;
-}
-
-#cart-overlay .cart-section-heading > div {
-    min-width: 0;
+    margin: 0 0 14px;
 }
 
 #cart-overlay .cart-section-heading h3 {
@@ -378,32 +344,19 @@
 
     color: var(--cart-text);
 
-    font-size: 16px;
-    font-weight: 750;
-    line-height: 1.4;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.45;
     letter-spacing: -0.2px;
 }
 
-#cart-overlay .cart-section-heading p {
-    margin: 4px 0 0;
-
-    color: var(--cart-muted);
-
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-/*
- * Elemen ini dipertahankan untuk kompatibilitas markup.
- * Jumlah produk utama sudah ditampilkan pada header.
- */
 #cart-overlay .cart-item-count {
     display: none;
 }
 
 
 /* =========================================================
-   8. BUYER FORM
+   8. FORM
    ========================================================= */
 
 #cart-overlay .checkout-form {
@@ -413,7 +366,7 @@
 }
 
 #cart-overlay .checkout-form .cart-section-heading {
-    margin-bottom: 17px;
+    margin-bottom: 16px;
 }
 
 #cart-overlay .form-field {
@@ -437,7 +390,7 @@
     color: var(--cart-text);
 
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1.5;
 }
 
@@ -448,16 +401,16 @@
 
     width: 100%;
     min-width: 0;
-    min-height: 46px;
+    min-height: 47px;
 
     margin: 0;
-    padding: 12px 13px;
+    padding: 12px 14px;
 
     color: var(--cart-text);
     background: var(--cart-white);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-sm);
+    border-radius: 11px;
 
     font-family: inherit;
     font-size: 14px;
@@ -467,13 +420,12 @@
 
     transition:
         border-color var(--cart-transition),
-        box-shadow var(--cart-transition),
-        background var(--cart-transition);
+        box-shadow var(--cart-transition);
 }
 
 #cart-overlay .form-field input::placeholder,
 #cart-overlay .form-field textarea::placeholder {
-    color: #9aa39b;
+    color: #a0a8a0;
     opacity: 1;
 }
 
@@ -490,17 +442,17 @@
     box-shadow: 0 0 0 3px rgb(23 107 69 / 10%);
 }
 
+#cart-overlay .form-field textarea {
+    min-height: 88px;
+    resize: vertical;
+}
+
 #cart-overlay .form-field input:disabled,
 #cart-overlay .form-field textarea:disabled,
 #cart-overlay .form-field select:disabled {
     color: var(--cart-muted);
     background: var(--cart-surface);
     cursor: not-allowed;
-}
-
-#cart-overlay .form-field textarea {
-    min-height: 88px;
-    resize: vertical;
 }
 
 #cart-overlay .form-field input[aria-invalid="true"],
@@ -510,47 +462,67 @@
     box-shadow: 0 0 0 3px rgb(180 35 24 / 8%);
 }
 
+#cart-overlay .muted {
+    color: var(--cart-muted);
+}
+
 
 /* =========================================================
-   9. DELIVERY ADDRESS & MAP
+   9. LOCATION & PLACE DETAILS
    ========================================================= */
 
 #cart-overlay .delivery-address-section {
     min-width: 0;
+    margin-top: 5px;
+}
+
+#cart-overlay #delivery-address {
+    min-height: 82px;
+}
+
+#cart-overlay #delivery-address-hint {
+    display: block;
+
     margin-top: 2px;
+
+    color: var(--cart-muted);
+
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.65;
 }
 
 #cart-overlay .location-picker {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 9px;
+    gap: 10px;
 
     min-width: 0;
-    margin-top: 10px;
+    margin-top: 13px;
 }
 
 #cart-overlay .location-picker .location-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 9px;
 
     width: 100%;
-    min-height: 43px;
+    min-height: 47px;
 
     margin: 0;
-    padding: 10px 14px;
+    padding: 11px 15px;
 
     color: var(--cart-primary);
-    background: var(--cart-white);
+    background: var(--cart-primary-light);
 
-    border: 1px solid #cbded0;
-    border-radius: var(--cart-radius-sm);
+    border: 1px solid #c9e2d1;
+    border-radius: 11px;
 
     font-family: inherit;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1.5;
 
     cursor: pointer;
@@ -561,15 +533,21 @@
         border-color var(--cart-transition);
 }
 
+#cart-overlay .location-button svg {
+    flex: 0 0 19px;
+    width: 19px;
+    height: 19px;
+}
+
 #cart-overlay .location-picker .location-button:hover {
-    color: var(--cart-primary-hover);
-    background: var(--cart-primary-light);
-    border-color: #a8cfb4;
+    color: var(--cart-white);
+    background: var(--cart-primary);
+    border-color: var(--cart-primary);
 }
 
 #cart-overlay .location-picker .location-button:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
+    cursor: wait;
 }
 
 #cart-overlay .location-status {
@@ -577,8 +555,8 @@
 
     color: var(--cart-muted);
 
-    font-size: 12px;
-    line-height: 1.6;
+    font-size: 11px;
+    line-height: 1.65;
     overflow-wrap: anywhere;
 }
 
@@ -586,9 +564,18 @@
     display: none;
 }
 
+#cart-overlay .location-status.is-success {
+    color: var(--cart-primary);
+}
+
+#cart-overlay .location-status.is-error {
+    color: var(--cart-danger);
+}
+
 #cart-overlay .preview-location-link {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
 
     width: fit-content;
     max-width: 100%;
@@ -598,7 +585,7 @@
     color: var(--cart-primary);
 
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1.6;
 
     text-decoration: none;
@@ -606,13 +593,12 @@
 }
 
 #cart-overlay .preview-location-link:hover {
-    color: var(--cart-primary-hover);
     text-decoration: underline;
 }
 
 
 /* =========================================================
-   10. SELECTED PRODUCTS
+   10. PRODUCT LIST
    ========================================================= */
 
 #cart-overlay .cart-products-section {
@@ -624,7 +610,7 @@
 #cart-overlay .cart-items {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 11px;
 
     width: 100%;
     min-width: 0;
@@ -633,59 +619,70 @@
     padding: 0;
 }
 
-#cart-overlay .cart-items > *,
-#cart-overlay .cart-item {
-    min-width: 0;
-}
-
-#cart-overlay .cart-items > .cart-item,
 #cart-overlay .cart-item {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    align-items: center;
     gap: 13px;
 
     min-width: 0;
 
     margin: 0;
-    padding: 13px;
+    padding: 12px;
 
     background: var(--cart-white);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-md);
+    border-radius: 14px;
 
     transition: border-color var(--cart-transition);
 }
 
-#cart-overlay .cart-items > .cart-item:hover,
 #cart-overlay .cart-item:hover {
-    border-color: #d3dfd5;
+    border-color: #d2dfd4;
 }
 
 #cart-overlay .cart-item-image {
-    display: block;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     width: 76px;
     height: 76px;
 
-    object-fit: cover;
-    object-position: center;
+    overflow: hidden;
 
     background: var(--cart-surface);
-    border-radius: var(--cart-radius-sm);
+    border-radius: 11px;
 }
 
-#cart-overlay .cart-item img {
+#cart-overlay .cart-item-image img {
     display: block;
-    max-width: 100%;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
 }
 
-#cart-overlay .cart-item-info {
+#cart-overlay .cart-item-image-placeholder {
+    padding: 5px;
+
+    color: var(--cart-muted);
+
+    font-size: 9px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+#cart-overlay .cart-item-details {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 5px;
+    gap: 4px;
 
     min-width: 0;
 }
@@ -697,105 +694,30 @@
     color: var(--cart-text);
 
     font-size: 13px;
-    font-weight: 700;
-    line-height: 1.5;
+    font-weight: 750;
+    line-height: 1.45;
 
     overflow-wrap: anywhere;
+}
+
+#cart-overlay .cart-item-variant {
+    color: var(--cart-muted);
+
+    font-size: 11px;
+    line-height: 1.4;
 }
 
 #cart-overlay .cart-item-price {
     max-width: 100%;
-    margin: 0;
+    margin: 2px 0 0;
 
     color: var(--cart-primary);
 
     font-size: 13px;
-    font-weight: 750;
+    font-weight: 800;
     line-height: 1.5;
 
     overflow-wrap: anywhere;
-}
-
-#cart-overlay .cart-item-description {
-    margin: 0;
-
-    color: var(--cart-muted);
-
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-#cart-overlay .cart-item-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    width: 100%;
-    min-width: 0;
-
-    margin-top: 7px;
-}
-
-
-/* Tampilan produk yang memakai emoji */
-
-#cart-overlay .cart-item-emoji {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 76px;
-    height: 76px;
-    min-width: 0;
-
-    overflow: hidden;
-
-    color: var(--cart-primary);
-    background: var(--cart-surface);
-
-    border-radius: var(--cart-radius-sm);
-
-    font-size: 32px;
-    line-height: 1;
-}
-
-/*
- * Markup produk berbasis emoji:
- * gambar/emoji di kolom pertama, informasi di kolom kedua.
- */
-#cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) {
-    grid-template-columns: 56px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    column-gap: 12px;
-    row-gap: 10px;
-}
-
-#cart-overlay .cart-items > .cart-item > .cart-item-emoji {
-    grid-column: 1;
-    grid-row: 1;
-
-    width: 56px;
-    height: 56px;
-
-    font-size: 27px;
-}
-
-#cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) > .cart-item-info,
-#cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) > div:nth-child(2) {
-    grid-column: 2;
-    grid-row: 1;
-
-    min-width: 0;
-}
-
-#cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) > .quantity-control {
-    grid-column: 2;
-    grid-row: 2;
-
-    justify-self: start;
-    align-self: start;
 }
 
 
@@ -809,20 +731,18 @@
     gap: 0;
 
     width: fit-content;
-    max-width: 100%;
     min-width: 0;
-    min-height: 32px;
+    min-height: 34px;
 
     overflow: hidden;
 
     background: var(--cart-white);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-sm);
+    border-radius: 9px;
 }
 
-#cart-overlay .quantity-control button,
-#cart-overlay .quantity-button {
+#cart-overlay .quantity-control button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -832,7 +752,6 @@
     width: 32px;
     min-width: 32px;
     height: 32px;
-    min-height: 32px;
 
     margin: 0;
     padding: 0;
@@ -841,10 +760,9 @@
     background: var(--cart-white);
 
     border: 0;
-    border-radius: 0;
 
     font-family: inherit;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     line-height: 1;
 
@@ -855,30 +773,26 @@
         background var(--cart-transition);
 }
 
-#cart-overlay .quantity-control button:hover,
-#cart-overlay .quantity-button:hover {
+#cart-overlay .quantity-control button:hover {
     color: var(--cart-primary);
     background: var(--cart-primary-light);
 }
 
-#cart-overlay .quantity-control button:disabled,
-#cart-overlay .quantity-button:disabled {
+#cart-overlay .quantity-control button:disabled {
     color: #aab2ab;
     background: var(--cart-surface);
     cursor: not-allowed;
 }
 
-#cart-overlay .quantity-value,
-#cart-overlay .quantity-control input,
 #cart-overlay .quantity-control span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 34px;
+    flex: 0 0 30px;
 
-    width: 34px;
-    min-width: 34px;
+    width: 30px;
+    min-width: 30px;
     height: 32px;
 
     margin: 0;
@@ -887,64 +801,14 @@
     color: var(--cart-text);
     background: var(--cart-white);
 
-    border: 0;
-    border-radius: 0;
-
-    font-family: inherit;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1;
-    text-align: center;
-}
-
-#cart-overlay .quantity-control input:focus {
-    box-shadow: none;
 }
 
 
 /* =========================================================
-   12. REMOVE PRODUCT
-   ========================================================= */
-
-#cart-overlay .cart-item-remove,
-#cart-overlay .remove-cart-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-
-    min-height: 32px;
-
-    margin: 0;
-    padding: 5px 7px;
-
-    color: var(--cart-danger);
-    background: transparent;
-
-    border: 0;
-    border-radius: var(--cart-radius-sm);
-
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.4;
-
-    cursor: pointer;
-
-    transition:
-        color var(--cart-transition),
-        background var(--cart-transition);
-}
-
-#cart-overlay .cart-item-remove:hover,
-#cart-overlay .remove-cart-item:hover {
-    color: #8f1d14;
-    background: var(--cart-danger-light);
-}
-
-
-/* =========================================================
-   13. BUYER NOTE
+   12. BUYER NOTE
    ========================================================= */
 
 #cart-overlay .buyer-note-section {
@@ -962,13 +826,12 @@
 }
 
 #cart-overlay #buyer-note {
-    min-height: 84px;
-    resize: vertical;
+    min-height: 78px;
 }
 
 
 /* =========================================================
-   14. FULFILLMENT METHOD
+   13. FULFILLMENT METHOD
    ========================================================= */
 
 #cart-overlay .fulfillment-section {
@@ -978,8 +841,8 @@
 }
 
 #cart-overlay .fulfillment-options {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
 
     min-width: 0;
@@ -997,21 +860,21 @@
 #cart-overlay .fulfillment-option {
     position: relative;
 
-    display: grid;
-    grid-template-columns: 20px 38px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 
     min-width: 0;
-    min-height: 72px;
+    min-height: 125px;
 
     margin: 0;
-    padding: 13px;
+    padding: 14px;
 
     background: var(--cart-white);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-md);
+    border-radius: 13px;
 
     cursor: pointer;
 
@@ -1032,6 +895,10 @@
 }
 
 #cart-overlay .fulfillment-option input[type="radio"] {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+
     width: 17px;
     height: 17px;
     min-width: 17px;
@@ -1051,22 +918,19 @@
     height: 38px;
 
     color: var(--cart-primary);
-    background: var(--cart-white);
+    background: var(--cart-primary-light);
 
     border: 1px solid var(--cart-border-light);
-    border-radius: var(--cart-radius-sm);
+    border-radius: 11px;
 }
 
 #cart-overlay .fulfillment-option-icon svg {
     display: block;
 
-    flex: 0 0 20px;
-
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
 
     color: inherit;
-    overflow: visible;
 }
 
 #cart-overlay .fulfillment-copy {
@@ -1081,63 +945,56 @@
     color: var(--cart-text);
 
     font-size: 13px;
-    font-weight: 750;
+    font-weight: 800;
     line-height: 1.4;
 
     overflow-wrap: anywhere;
 }
 
 #cart-overlay .fulfillment-copy small {
+    display: block;
+
     color: var(--cart-muted);
 
-    font-size: 11px;
-    font-weight: 400;
+    font-size: 10px;
     line-height: 1.5;
-
-    overflow-wrap: anywhere;
 }
 
 #cart-overlay .fulfillment-price {
     max-width: 100%;
 
-    color: var(--cart-text);
+    color: var(--cart-primary);
 
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 800;
     line-height: 1.5;
 
-    text-align: right;
     overflow-wrap: anywhere;
 }
 
-#cart-overlay .fulfillment-option:has(input[type="radio"]:checked) .fulfillment-price {
-    color: var(--cart-primary);
-}
-
-
-/* Harga awal saat warung menyediakan ongkir */
-
 #cart-overlay .delivery-price-original {
+    display: block;
+
     color: var(--cart-muted);
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
 
     text-decoration: line-through;
-    text-decoration-thickness: 1px;
 }
 
-/* Harga ongkir setelah diskon */
-
 #cart-overlay .delivery-price-discount {
+    display: block;
+
     color: var(--cart-primary);
+
     font-size: 12px;
-    font-weight: 750;
+    font-weight: 800;
 }
 
 
 /* =========================================================
-   15. PAYMENT SUMMARY
+   14. PAYMENT SUMMARY
    ========================================================= */
 
 #cart-overlay .order-summary {
@@ -1150,16 +1007,16 @@
     background: var(--cart-surface);
 
     border: 1px solid var(--cart-border);
-    border-radius: var(--cart-radius-md);
+    border-radius: 15px;
 }
 
 #cart-overlay .order-summary h3 {
-    margin: 0 0 16px;
+    margin: 0 0 17px;
 
     color: var(--cart-text);
 
-    font-size: 15px;
-    font-weight: 750;
+    font-size: 14px;
+    font-weight: 800;
     line-height: 1.5;
 }
 
@@ -1167,7 +1024,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
 
     min-width: 0;
     margin: 0 0 12px;
@@ -1197,7 +1054,7 @@
     color: var(--cart-text);
 
     font-size: 12px;
-    font-weight: 650;
+    font-weight: 700;
     line-height: 1.6;
 
     text-align: right;
@@ -1206,14 +1063,14 @@
 
 #cart-overlay .total-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 14px;
 
     min-width: 0;
 
-    margin-top: 17px;
-    padding-top: 16px;
+    margin-top: 16px;
+    padding-top: 15px;
 
     border-top: 1px dashed #d6ded6;
 }
@@ -1225,7 +1082,7 @@
     color: var(--cart-text);
 
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 750;
     line-height: 1.5;
 }
 
@@ -1236,9 +1093,9 @@
 
     color: var(--cart-primary);
 
-    font-size: 20px;
-    font-weight: 800;
-    line-height: 1.4;
+    font-size: 21px;
+    font-weight: 850;
+    line-height: 1.35;
     letter-spacing: -0.4px;
 
     text-align: right;
@@ -1251,7 +1108,7 @@
     color: var(--cart-muted);
 
     font-size: 11px;
-    line-height: 1.7;
+    line-height: 1.65;
 
     overflow-wrap: anywhere;
 }
@@ -1260,13 +1117,9 @@
     display: none;
 }
 
-#cart-overlay .muted {
-    color: var(--cart-muted);
-}
-
 
 /* =========================================================
-   16. CHECKOUT BUTTON
+   15. CHECKOUT BUTTON
    ========================================================= */
 
 #cart-overlay .checkout-actions {
@@ -1289,16 +1142,20 @@
 
     width: 100%;
     min-width: 0;
-    min-height: 49px;
+    min-height: 51px;
 
     margin: 0;
     padding: 13px 18px;
 
-    border-radius: var(--cart-radius-sm);
+    color: var(--cart-white);
+    background: var(--cart-primary);
+
+    border: 1px solid var(--cart-primary);
+    border-radius: 12px;
 
     font-family: inherit;
     font-size: 14px;
-    font-weight: 750;
+    font-weight: 800;
     line-height: 1.5;
 
     text-align: center;
@@ -1306,40 +1163,27 @@
 
     cursor: pointer;
 
+    box-shadow: 0 4px 12px rgb(23 107 69 / 13%);
+
     transition:
-        color var(--cart-transition),
         background var(--cart-transition),
         border-color var(--cart-transition),
         box-shadow var(--cart-transition),
         transform var(--cart-transition);
 }
 
-#cart-overlay .checkout-actions .button-primary,
-#cart-overlay #checkout-button {
-    color: var(--cart-white);
-    background: var(--cart-primary);
-
-    border: 1px solid var(--cart-primary);
-
-    box-shadow: 0 3px 8px rgb(23 107 69 / 12%);
-}
-
-#cart-overlay .checkout-actions .button-primary:hover,
-#cart-overlay #checkout-button:hover {
-    color: var(--cart-white);
+#cart-overlay .checkout-actions button:hover {
     background: var(--cart-primary-hover);
-
     border-color: var(--cart-primary-hover);
 
-    box-shadow: 0 5px 12px rgb(23 107 69 / 18%);
+    box-shadow: 0 5px 15px rgb(23 107 69 / 18%);
 }
 
 #cart-overlay .checkout-actions button:active {
     transform: translateY(1px);
 }
 
-#cart-overlay .checkout-actions button:disabled,
-#cart-overlay #checkout-button:disabled {
+#cart-overlay .checkout-actions button:disabled {
     color: #f5f6f5;
     background: #9aa79e;
 
@@ -1347,12 +1191,11 @@
     box-shadow: none;
 
     cursor: not-allowed;
-    transform: none;
 }
 
 
 /* =========================================================
-   17. ACCESSIBILITY
+   16. ACCESSIBILITY
    ========================================================= */
 
 #cart-overlay .visually-hidden {
@@ -1386,7 +1229,7 @@
 
 
 /* =========================================================
-   18. TABLET
+   17. TABLET
    ========================================================= */
 
 @media (min-width: 601px) and (max-width: 768px) {
@@ -1394,27 +1237,18 @@
         width: min(100%, 460px);
     }
 
-    #cart-overlay .cart-header {
-        min-height: 76px;
-        padding: 16px 20px;
-    }
-
     #cart-overlay .cart-content {
-        padding: 18px 20px 24px;
+        padding: 20px;
     }
 
     #cart-overlay .cart-footer {
         gap: 22px;
     }
-
-    #cart-overlay .order-summary {
-        padding: 16px;
-    }
 }
 
 
 /* =========================================================
-   19. MOBILE
+   18. MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
@@ -1425,29 +1259,18 @@
     }
 
     #cart-overlay .cart-drawer {
-        display: flex;
-        flex-direction: column;
-
         width: 100%;
         max-width: 600px;
 
-        height: min(88vh, 760px);
-        height: min(88dvh, 760px);
+        height: min(90vh, 780px);
+        height: min(90dvh, 780px);
 
-        max-height: 88vh;
-        max-height: 88dvh;
+        max-height: 90vh;
+        max-height: 90dvh;
 
         min-height: 0;
 
-        margin: 0;
-        padding: 0;
-
-        overflow: hidden;
-
-        background: var(--cart-white);
-
-        border-radius: 20px 20px 0 0;
-        box-shadow: var(--cart-shadow);
+        border-radius: 21px 21px 0 0;
 
         transform: translateY(100%);
         transition: transform 280ms ease;
@@ -1461,23 +1284,14 @@
     }
 
     #cart-overlay .cart-header {
-        flex-shrink: 0;
+        min-height: 68px;
+        padding: 13px 16px;
 
-        min-height: 72px;
-        padding: 14px 16px;
-
-        gap: 12px;
-
-        border-radius: 20px 20px 0 0;
+        border-radius: 21px 21px 0 0;
     }
 
     #cart-overlay #cart-title {
         font-size: 19px;
-    }
-
-    #cart-overlay .cart-header-content p {
-        margin-top: 3px;
-        font-size: 12px;
     }
 
     #cart-overlay .cart-close {
@@ -1490,7 +1304,7 @@
         flex: 1 1 auto;
         min-height: 0;
 
-        padding: 16px 16px 22px;
+        padding: 17px 16px 24px;
 
         overflow-x: hidden;
         overflow-y: auto;
@@ -1500,27 +1314,17 @@
     }
 
     #cart-overlay .cart-footer {
-        flex-shrink: 0;
-        gap: 20px;
+        gap: 22px;
     }
 
     #cart-overlay .cart-section-heading {
-        gap: 8px;
-        margin-bottom: 13px;
-    }
-
-    #cart-overlay .cart-section-heading h3 {
-        font-size: 15px;
+        margin-bottom: 12px;
     }
 
     #cart-overlay .form-field {
         margin-bottom: 13px;
     }
 
-    /*
-     * Ukuran 16px mencegah zoom otomatis saat input
-     * difokuskan di sebagian browser ponsel.
-     */
     #cart-overlay .form-field input,
     #cart-overlay .form-field textarea,
     #cart-overlay .form-field select {
@@ -1529,34 +1333,27 @@
     }
 
     #cart-overlay .form-field textarea {
-        min-height: 84px;
+        min-height: 80px;
     }
 
     #cart-overlay .cart-items {
-        gap: 10px;
+        gap: 9px;
     }
 
-    #cart-overlay .cart-items > .cart-item,
     #cart-overlay .cart-item {
+        grid-template-columns: 60px minmax(0, 1fr);
         gap: 10px;
+
         padding: 10px;
     }
 
-    #cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) {
-        grid-template-columns: 48px minmax(0, 1fr);
-        column-gap: 10px;
-        row-gap: 9px;
-    }
-
-    #cart-overlay .cart-items > .cart-item > .cart-item-emoji {
-        width: 48px;
-        height: 48px;
-        font-size: 24px;
-    }
-
     #cart-overlay .cart-item-image {
-        width: 56px;
-        height: 56px;
+        width: 60px;
+        height: 60px;
+    }
+
+    #cart-overlay .cart-item-details {
+        grid-column: 2;
     }
 
     #cart-overlay .cart-item-name {
@@ -1567,45 +1364,23 @@
         font-size: 12px;
     }
 
-    #cart-overlay .cart-item-controls {
-        gap: 6px;
+    #cart-overlay .cart-item > .quantity-control {
+        grid-column: 2;
+        justify-self: start;
     }
 
     #cart-overlay .fulfillment-option {
-        grid-template-columns: 18px 32px minmax(0, 1fr);
-        gap: 9px;
-
-        min-height: 66px;
-        padding: 11px;
-    }
-
-    #cart-overlay .fulfillment-option-icon {
-        width: 32px;
-        height: 32px;
-    }
-
-    #cart-overlay .fulfillment-option-icon svg {
-        flex-basis: 19px;
-        width: 19px;
-        height: 19px;
+        min-height: 120px;
+        padding: 12px;
     }
 
     #cart-overlay .fulfillment-copy strong {
         font-size: 12px;
     }
 
-    #cart-overlay .fulfillment-copy small {
-        font-size: 10px;
-    }
-
-    #cart-overlay .fulfillment-price {
-        grid-column: 3;
-        justify-self: start;
-
-        margin-top: 2px;
-
-        font-size: 11px;
-        text-align: left;
+    #cart-overlay .fulfillment-option input[type="radio"] {
+        top: 12px;
+        right: 12px;
     }
 
     #cart-overlay .order-summary {
@@ -1617,31 +1392,20 @@
     }
 
     #cart-overlay .checkout-actions {
-        padding-top: 10px;
         padding-bottom: max(8px, env(safe-area-inset-bottom));
     }
 
     #cart-overlay .checkout-actions button {
-        min-height: 48px;
+        min-height: 49px;
     }
 }
 
 
 /* =========================================================
-   20. SMALL MOBILE
+   19. SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 380px) {
-    #cart-overlay .cart-drawer {
-        height: 92vh;
-        height: 92dvh;
-
-        max-height: 92vh;
-        max-height: 92dvh;
-
-        border-radius: 16px 16px 0 0;
-    }
-
     #cart-overlay .cart-header {
         padding-right: 13px;
         padding-left: 13px;
@@ -1652,46 +1416,22 @@
         padding-left: 12px;
     }
 
-    #cart-overlay .cart-footer {
-        gap: 18px;
+    #cart-overlay .fulfillment-options {
+        gap: 8px;
     }
 
-    #cart-overlay .cart-items > .cart-item:has(> .cart-item-emoji) {
-        grid-template-columns: 42px minmax(0, 1fr);
-        column-gap: 9px;
-        row-gap: 8px;
-
-        padding: 9px;
+    #cart-overlay .fulfillment-option {
+        padding: 10px;
     }
 
-    #cart-overlay .cart-items > .cart-item > .cart-item-emoji {
-        width: 42px;
-        height: 42px;
-        font-size: 22px;
+    #cart-overlay .fulfillment-option input[type="radio"] {
+        top: 10px;
+        right: 10px;
     }
 
-    #cart-overlay .cart-item-image {
-        width: 48px;
-        height: 48px;
-    }
-
-    #cart-overlay .quantity-control button,
-    #cart-overlay .quantity-button {
-        flex-basis: 29px;
-
-        width: 29px;
-        min-width: 29px;
-        height: 30px;
-    }
-
-    #cart-overlay .quantity-value,
-    #cart-overlay .quantity-control input,
-    #cart-overlay .quantity-control span {
-        flex-basis: 30px;
-
-        width: 30px;
-        min-width: 30px;
-        height: 30px;
+    #cart-overlay .fulfillment-option-icon {
+        width: 34px;
+        height: 34px;
     }
 
     #cart-overlay .summary-row,
@@ -1711,7 +1451,7 @@
 
 
 /* =========================================================
-   21. SHORT VIEWPORTS
+   20. SHORT VIEWPORTS
    ========================================================= */
 
 @media (max-width: 600px) and (max-height: 560px) {
@@ -1724,9 +1464,9 @@
     }
 
     #cart-overlay .cart-header {
-        min-height: 60px;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        min-height: 58px;
+        padding-top: 9px;
+        padding-bottom: 9px;
     }
 
     #cart-overlay .cart-content {
@@ -1735,13 +1475,13 @@
     }
 
     #cart-overlay .cart-footer {
-        gap: 14px;
+        gap: 16px;
     }
 }
 
 
 /* =========================================================
-   22. REDUCED MOTION
+   21. REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1755,144 +1495,5 @@
         scroll-behavior: auto;
         transition: none !important;
         animation: none !important;
-    }
-}
-
-
-/* =========================================================
-   23. CLEAN CART UI
-   ========================================================= */
-
-/* Hilangkan teks jumlah item yang berulang di header. */
-#cart-overlay .cart-header-content p {
-    display: none;
-}
-
-/* Hilangkan subteks metode pesanan yang tidak diperlukan. */
-#cart-overlay .fulfillment-copy small {
-    display: none;
-}
-
-/* Ringkas petunjuk alamat; label dan tombol lokasi tetap ada. */
-#cart-overlay #delivery-address-hint {
-    display: none;
-}
-
-/* Judul bagian dibuat lebih ringkas. */
-#cart-overlay .cart-section-heading {
-    margin-bottom: 12px;
-}
-
-#cart-overlay .cart-footer {
-    gap: 20px;
-}
-
-#cart-overlay .cart-content {
-    padding-top: 18px;
-    padding-bottom: 24px;
-}
-
-/* Ruang kosong keranjang lebih proporsional. */
-#cart-overlay .cart-empty {
-    min-height: 240px;
-}
-
-@media (max-width: 600px) {
-    #cart-overlay .cart-content {
-        padding: 16px 16px 24px;
-    }
-
-    #cart-overlay .cart-footer {
-        gap: 18px;
-    }
-}
-
-
-/* =========================================================
-   CLEAN CHECKOUT — PESAN AJAH
-   ========================================================= */
-
-#cart-overlay .cart-footer {
-    gap: 26px;
-}
-
-#cart-overlay .cart-section-heading {
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-#cart-overlay .cart-section-heading h3 {
-    font-size: 15px;
-    letter-spacing: -0.15px;
-}
-
-#cart-overlay .checkout-form .form-field {
-    margin-bottom: 14px;
-}
-
-#cart-overlay .form-field > label {
-    font-size: 13px;
-}
-
-#cart-overlay .form-field input,
-#cart-overlay .form-field textarea {
-    border-radius: 10px;
-}
-
-#cart-overlay .form-field textarea {
-    min-height: 76px;
-}
-
-#cart-overlay .fulfillment-options {
-    gap: 10px;
-}
-
-#cart-overlay .fulfillment-option {
-    border-radius: 12px;
-    padding: 14px;
-}
-
-#cart-overlay .order-summary {
-    padding: 18px;
-    border-radius: 14px;
-    background: var(--cart-surface);
-}
-
-#cart-overlay .order-summary h3 {
-    margin-top: 0;
-    margin-bottom: 16px;
-}
-
-#cart-overlay .total-row {
-    margin-top: 14px;
-    padding-top: 14px;
-}
-
-#cart-overlay .checkout-actions {
-    padding-top: 2px;
-}
-
-#cart-overlay #checkout-button {
-    min-height: 50px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-}
-
-@media (max-width: 600px) {
-    #cart-overlay .cart-footer {
-        gap: 22px;
-    }
-
-    #cart-overlay .cart-section-heading {
-        margin-bottom: 12px;
-    }
-
-    #cart-overlay .order-summary {
-        padding: 16px;
-    }
-
-    #cart-overlay #checkout-button {
-        min-height: 48px;
     }
 }

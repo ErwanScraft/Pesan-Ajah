@@ -143,81 +143,99 @@
                         >
                     </div>
 
-                    <!-- Detail alamat opsional -->
-                    <div
-                        class="delivery-address-section"
-                        id="delivery-address-section"
-                    >
-                        <div class="form-field">
-                            <label for="delivery-address">
-                                Detail alamat
-                                <span class="muted">(opsional)</span>
-                            </label>
-
-                            <textarea
-                                id="delivery-address"
-                                name="delivery_address"
-                                placeholder="Dusun, RT/RW, patokan rumah, warna pagar"
-                                rows="3"
-                                maxlength="255"
-                                aria-describedby="delivery-address-hint"
-                            ></textarea>
-
-                            <small
-                                id="delivery-address-hint"
-                                class="muted"
-                            >
-                                Lokasi GPS tetap digunakan untuk menghitung ongkir.
-                            </small>
-                        </div>
-
-                        <div class="location-picker">
-                            <button
-                                class="button button-outline location-button"
-                                id="use-location-button"
-                                type="button"
-                            >
-                                Gunakan lokasi saya
-                            </button>
-
-                            <p
-                                class="location-status"
-                                id="location-status"
-                                role="status"
-                                aria-live="polite"
-                            ></p>
-
-                            <input
-                                type="hidden"
-                                id="delivery-maps-url"
-                                name="delivery_maps_url"
-                            >
-
-                            <input
-                                type="hidden"
-                                id="delivery-latitude"
-                                name="delivery_latitude"
-                            >
-
-                            <input
-                                type="hidden"
-                                id="delivery-longitude"
-                                name="delivery_longitude"
-                            >
-
-                            <a
-                                class="preview-location-link"
-                                id="preview-location-link"
-                                href="#"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                hidden
-                            >
-                                Lihat lokasi di Google Maps
-                            </a>
-                        </div>
+                <!-- Detail tempat / rumah -->
+                <div
+                    class="delivery-address-section"
+                    id="delivery-address-section"
+                >
+                    <div class="form-field">
+                        <label for="delivery-address">
+                            Detail tempat / rumah
+                            <span class="muted">(opsional)</span>
+                        </label>
+                
+                        <textarea
+                            id="delivery-address"
+                            name="delivery_address"
+                            placeholder="Contoh: Rumah pagar hitam, samping masjid, nomor 12"
+                            rows="3"
+                            maxlength="255"
+                            aria-describedby="delivery-address-hint"
+                        ></textarea>
+                
+                        <small
+                            id="delivery-address-hint"
+                            class="muted"
+                        >
+                            Alamat dan titik pengantaran menggunakan lokasi Google Maps.
+                            Isi patokan tambahan agar kurir lebih mudah menemukan rumah.
+                        </small>
                     </div>
-                </section>
+                
+                    <div class="location-picker">
+                        <button
+                            class="button button-outline location-button"
+                            id="use-location-button"
+                            type="button"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                                <circle
+                                    cx="12"
+                                    cy="9"
+                                    r="2.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.7"
+                                />
+                            </svg>
+                            Gunakan lokasi saya
+                        </button>
+                
+                        <p
+                            class="location-status"
+                            id="location-status"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
+                
+                        <input
+                            type="hidden"
+                            id="delivery-maps-url"
+                            name="delivery_maps_url"
+                        >
+                
+                        <input
+                            type="hidden"
+                            id="delivery-latitude"
+                            name="delivery_latitude"
+                        >
+                
+                        <input
+                            type="hidden"
+                            id="delivery-longitude"
+                            name="delivery_longitude"
+                        >
+                
+                        <a
+                            class="preview-location-link"
+                            id="preview-location-link"
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            hidden
+                        >
+                            Lihat lokasi di Google Maps
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Catatan pesanan -->
                 <section
