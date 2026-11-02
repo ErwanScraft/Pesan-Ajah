@@ -346,7 +346,6 @@ export function createCatalog({
   
     variant.className = "product-variant";
     variant.textContent = product.variant || "";
-    variant.hidden = !product.variant;
   
     const unit = document.createElement("span");
   
@@ -357,17 +356,21 @@ export function createCatalog({
   
     stock.className = "product-stock";
   
-    if (product.stock_quantity === null) {
-      stock.textContent = "Stok tersedia";
-      stock.classList.add("is-unlimited");
-    } else if (product.stock_quantity === 0) {
+    if (product.stock_quantity === 0) {
       stock.textContent = "Stok habis";
       stock.classList.add("is-out");
+    } else if (!product.is_available) {
+      stock.textContent = "Produk tidak tersedia";
+      stock.classList.add("is-out");
+    } else if (product.stock_quantity === null) {
+      stock.textContent = "Stok tersedia";
+      stock.classList.add("is-unlimited");
     } else {
       stock.textContent =
         `Stok ${new Intl.NumberFormat("id-ID").format(
           product.stock_quantity,
         )}`;
+    
       stock.classList.add(
         product.stock_quantity <= 5 ? "is-low" : "is-available",
       );

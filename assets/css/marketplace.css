@@ -414,13 +414,12 @@
 
 .marketplace-store-products .product-info {
     display: grid;
-
     grid-template-columns: minmax(0, 1fr);
 
     grid-template-rows:
-        2.8em
-        1.4em
-        1.4em
+        36px
+        14px
+        14px
         22px
         34px;
 
@@ -433,7 +432,6 @@
     padding: 11px;
 }
 
-
 /* =========================================================
    11. PRODUCT NAME
    ========================================================= */
@@ -443,7 +441,7 @@
 
     width: 100%;
     min-width: 0;
-    height: 2.8em;
+    height: 36px;
     margin: 0;
 
     overflow: hidden;
@@ -451,7 +449,7 @@
     color: var(--text);
     font-size: 12px;
     font-weight: 700;
-    line-height: 1.4;
+    line-height: 18px;
 
     overflow-wrap: anywhere;
 
@@ -469,13 +467,13 @@
 
     width: 100%;
     min-width: 0;
-    height: 1.4em;
+    height: 14px;
 
     overflow: hidden;
 
     color: var(--muted);
     font-size: 10px;
-    line-height: 1.4;
+    line-height: 14px;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -497,13 +495,13 @@
 
     width: 100%;
     min-width: 0;
-    height: 1.4em;
+    height: 14px;
 
     overflow: hidden;
 
     color: var(--muted);
     font-size: 10px;
-    line-height: 1.4;
+    line-height: 14px;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -735,18 +733,20 @@
 
     .marketplace-store-products .product-info {
         grid-template-rows:
-            2.8em
-            1.4em
-            1.4em
+            34px
+            14px
+            14px
             22px
             32px;
-
+    
         gap: 6px;
         padding: 9px;
     }
 
     .marketplace-store-products .product-name {
+        height: 34px;
         font-size: 12px;
+        line-height: 17px;
     }
 
     .marketplace-store-products .product-stock {
