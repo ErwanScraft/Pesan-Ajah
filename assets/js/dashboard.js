@@ -25,6 +25,7 @@ const API = {
   settings: "/warung/api/settings.php",
   push: "/warung/api/push-subscription.php",
   stock: "/warung/api/stock.php",
+  cashier: "/warung/api/cashier.php",
 };
 
 async function apiRequest(url, options = {}) {
@@ -1109,6 +1110,22 @@ async function initializeDashboard() {
         postJSON,
         notify,
         resolveImageUrl,
+      });
+    }
+    
+    if (page === "kasir") {
+      const { initWarungKasir } = await import(
+        "./pages/kasir/main.js"
+      );
+    
+      await initWarungKasir({
+        $,
+        API,
+        apiRequest,
+        postJSON,
+        notify,
+        resolveImageUrl,
+        formatRupiah,
       });
     }
 

@@ -55,3 +55,6 @@
 
 /* 13. Manajemen stock warung */
 @import url("./pages/warung-stock.css");
+
+/* 14. Kasir warung */
+@import url("./pages/kasir.css");

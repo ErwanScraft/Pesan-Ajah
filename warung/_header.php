@@ -160,6 +160,15 @@ $storeInitial = function_exists('mb_substr')
                     <span aria-hidden="true">▤</span>
                     Stock
                 </a>
+                
+                <a
+                    class="side-link <?= $activePage === 'kasir' ? 'active' : '' ?>"
+                    href="<?= e(url('warung/kasir.php')) ?>"
+                    <?= $activePage === 'kasir' ? 'aria-current="page"' : '' ?>
+                >
+                    <span aria-hidden="true">▣</span>
+                    Kasir
+                </a>
 
                 <a
                     class="side-link <?= $activePage === 'pengaturan' ? 'active' : '' ?>"

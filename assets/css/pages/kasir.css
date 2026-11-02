@@ -1,0 +1,746 @@
+/* =========================================================
+   PESAN AJAH — KASIR WARUNG
+========================================================= */
+
+.cashier-page {
+  display: grid;
+  gap: 22px;
+  width: 100%;
+  min-width: 0;
+}
+
+.cashier-heading,
+.cashier-section-heading,
+.cashier-panel-heading,
+.cashier-receipt-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cashier-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.cashier-heading p,
+.cashier-section-heading p,
+.cashier-panel-heading p,
+.cashier-receipt-heading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.cashier-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid #dcecdf;
+  border-radius: 999px;
+  background: #f0f8f1;
+  color: #287744;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.cashier-status span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2e9b55;
+}
+
+.cashier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: 20px;
+}
+
+.cashier-catalog,
+.cashier-panel,
+.cashier-manual,
+.cashier-receipt {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.cashier-catalog {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.cashier-section-heading h3,
+.cashier-panel-heading h3,
+.cashier-payment h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cashier-search {
+  display: flex;
+  min-height: 43px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #fafcf9;
+}
+
+.cashier-search > span {
+  color: var(--muted);
+  font-size: 22px;
+}
+
+.cashier-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.cashier-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  scrollbar-width: none;
+}
+
+.cashier-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.cashier-categories button {
+  min-height: 34px;
+  flex: 0 0 auto;
+  padding: 6px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cashier-categories button.active {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+.cashier-products {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cashier-product-card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #fff;
+  transition: border-color 160ms ease;
+}
+
+.cashier-product-card:hover {
+  border-color: #b7d6c0;
+}
+
+.cashier-product-image {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1.35 / 1;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 9px;
+  background: #f1f4f0;
+  color: #929992;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.cashier-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cashier-product-info {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.cashier-product-info > strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cashier-product-info > small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cashier-product-price {
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.cashier-stock-info {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.cashier-add-button {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: var(--green);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.cashier-add-button:disabled {
+  background: #a7aea8;
+}
+
+.cashier-product-card.is-unavailable {
+  opacity: 0.65;
+}
+
+.cashier-product-card.is-unavailable .cashier-product-image img {
+  filter: grayscale(1);
+}
+
+.cashier-sold-out {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 5px;
+  background: rgb(30 35 30 / 78%);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cashier-empty,
+.cashier-loading {
+  grid-column: 1 / -1;
+  padding: 35px 15px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ITEM MANUAL */
+
+.cashier-manual {
+  display: grid;
+  gap: 16px;
+  padding: 17px;
+  background: #fbfcfa;
+  box-shadow: none;
+}
+
+.cashier-manual-icon {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.cashier-manual form {
+  display: grid;
+  gap: 12px;
+}
+
+.cashier-manual-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 12px;
+}
+
+.cashier-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.cashier-field > span {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.cashier-field input {
+  width: 100%;
+  min-width: 0;
+  height: 41px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.cashier-field input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgb(23 107 69 / 9%);
+}
+
+.cashier-manual-submit {
+  width: 100%;
+  min-height: 40px;
+  font-size: 11px;
+}
+
+/* KERANJANG */
+
+.cashier-panel {
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 17px;
+  padding: 18px;
+}
+
+.cashier-clear {
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.cashier-cart {
+  display: grid;
+  max-height: 400px;
+  gap: 11px;
+  overflow-y: auto;
+}
+
+.cashier-cart-empty {
+  display: grid;
+  min-height: 160px;
+  align-content: center;
+  justify-items: center;
+  gap: 7px;
+  padding: 15px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.cashier-cart-empty > span {
+  color: #a4afa5;
+  font-size: 27px;
+}
+
+.cashier-cart-empty strong {
+  font-size: 12px;
+}
+
+.cashier-cart-empty p {
+  margin: 0;
+  font-size: 10px;
+}
+
+.cashier-cart-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cashier-cart-info {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.cashier-cart-info strong {
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.cashier-cart-info small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.cashier-cart-info b {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.cashier-quantity-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+}
+
+.cashier-quantity-controls button {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.cashier-quantity-controls span {
+  min-width: 14px;
+  font-size: 11px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.cashier-summary {
+  display: grid;
+  gap: 10px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.cashier-summary-row,
+.cashier-change {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cashier-summary-row span,
+.cashier-change span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.cashier-summary-row strong {
+  font-size: 12px;
+}
+
+.cashier-grand-total strong {
+  color: var(--green);
+  font-size: 20px;
+  font-weight: 850;
+}
+
+/* PEMBAYARAN */
+
+.cashier-payment {
+  display: grid;
+  gap: 13px;
+}
+
+.cashier-payment-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.cashier-payment-option {
+  display: grid;
+  min-width: 0;
+  min-height: 65px;
+  align-content: center;
+  padding: 9px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.cashier-payment-option.active {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+.cashier-payment-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cashier-payment-option span {
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.cashier-payment-option strong {
+  font-size: 11px;
+}
+
+.cashier-payment-option small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.cashier-cash-field {
+  display: grid;
+  gap: 11px;
+}
+
+.cashier-change {
+  padding: 11px;
+  border-radius: 9px;
+  background: #f0f8f1;
+}
+
+.cashier-change strong {
+  color: var(--green);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.cashier-checkout-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--green);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cashier-checkout-button span {
+  font-size: 18px;
+}
+
+.cashier-checkout-button:disabled {
+  background: #aab6ac;
+}
+
+.cashier-payment-note {
+  margin: -5px 0 0;
+  font-size: 9px;
+  text-align: center;
+}
+
+/* STRUK */
+
+.cashier-receipt {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.cashier-receipt-heading h3 {
+  margin: 0;
+  color: var(--green);
+  font-size: 17px;
+}
+
+.cashier-receipt-check {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.cashier-receipt-store {
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.cashier-receipt-list,
+.cashier-receipt-summary {
+  display: grid;
+  gap: 10px;
+  margin-top: 13px;
+  padding-block: 13px;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+}
+
+.cashier-receipt-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+}
+
+.cashier-receipt-item strong {
+  text-align: right;
+}
+
+.cashier-receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+  .cashier-layout {
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 14px;
+  }
+
+  .cashier-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cashier-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cashier-panel {
+    position: static;
+    order: 2;
+  }
+
+  .cashier-catalog {
+    order: 1;
+  }
+
+  .cashier-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .cashier-page {
+    gap: 15px;
+  }
+
+  .cashier-heading h2 {
+    font-size: 18px;
+  }
+
+  .cashier-catalog {
+    gap: 13px;
+    padding: 13px;
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .cashier-product-card {
+    gap: 8px;
+    padding: 8px;
+    border-radius: 11px;
+  }
+
+  .cashier-product-image {
+    aspect-ratio: 1.2 / 1;
+  }
+
+  .cashier-product-info > strong {
+    font-size: 11px;
+  }
+
+  .cashier-product-price {
+    font-size: 12px;
+  }
+
+  .cashier-add-button {
+    right: 8px;
+    bottom: 8px;
+    width: 27px;
+    height: 27px;
+  }
+
+  .cashier-manual {
+    padding: 13px;
+  }
+
+  .cashier-panel {
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .cashier-receipt {
+    padding: 15px;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #cashier-receipt,
+  #cashier-receipt * {
+    visibility: visible !important;
+  }
+
+  #cashier-receipt {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .cashier-receipt-actions {
+    display: none !important;
+  }
+}
