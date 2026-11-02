@@ -317,6 +317,9 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <script type="module" src="/assets/js/main.js"></script>
+    <script
+        type="module"
+        src="/assets/js/main.js?v=<?= asset_version('assets/js/main.js') ?>"
+    ></script>
 </body>
 </html>

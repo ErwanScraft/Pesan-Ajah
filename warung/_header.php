@@ -70,7 +70,7 @@ $storeInitial = function_exists('mb_substr')
 
     <script
         type="module"
-        src="<?= e(url('assets/js/dashboard.js')) ?>"
+        src="<?= e(url('assets/js/dashboard.js')) ?>?v=<?= asset_version('assets/js/dashboard.js') ?>"
     ></script>
 </head>
 

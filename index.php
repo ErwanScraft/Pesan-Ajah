@@ -87,7 +87,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
     <script
         type="module"
-        src="/assets/js/main.js"
+        src="/assets/js/main.js?v=<?= asset_version('assets/js/main.js') ?>"
     ></script>
 </head>
 

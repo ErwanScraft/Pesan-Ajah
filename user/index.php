@@ -28,7 +28,10 @@ header('Cache-Control: no-store, private');
         href="/assets/css/buyer-dashboard.css?v=<?= asset_version('assets/css/buyer-dashboard.css') ?>"
     >
 
-    <script type="module" src="/assets/js/buyer-dashboard.js"></script>
+    <script
+        type="module"
+        src="/assets/js/buyer-dashboard.js?v=<?= asset_version('assets/js/buyer-dashboard.js') ?>"
+    ></script>
 </head>
 <body>
     <?php
