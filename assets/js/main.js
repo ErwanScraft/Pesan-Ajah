@@ -1,3 +1,5 @@
+// Version: 1
+
 import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";

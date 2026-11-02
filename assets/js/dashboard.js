@@ -1,3 +1,5 @@
+// version: 1
+
 import { resolveImageUrl, setImageSource } from "./modules/image.js";
 import {
   initErrorLogger,
