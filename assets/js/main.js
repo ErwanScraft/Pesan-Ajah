@@ -583,10 +583,15 @@ function updateLocationPreview() {
 
 function toggleDeliveryFields() {
   const section = $("#delivery-address-section");
+  const phoneField = $("#buyer-phone-field");
   const isDelivery = selectedFulfillment() === "delivery";
 
   if (section) {
     section.hidden = !isDelivery;
+  }
+
+  if (phoneField) {
+    phoneField.hidden = !isDelivery;
   }
 
   const address = $("#delivery-address");
@@ -734,8 +739,11 @@ async function submitCheckout() {
 
   const buyerName = $("#buyer-name")?.value.trim() ?? "";
   const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
-
+  
   const deliveryMethod = selectedFulfillment();
+  
+  const validatedBuyerPhone =
+    deliveryMethod === "delivery" ? buyerPhone : "";
 
   const deliveryAddress =
     $("#delivery-address")?.value.trim() ?? "";
@@ -785,8 +793,11 @@ async function submitCheckout() {
     return;
   }
 
-  if (!buyerPhone || buyerPhone.length > 25) {
-    showToast(toast, "Nomor WhatsApp wajib diisi.");
+  if (
+    deliveryMethod === "delivery" &&
+    (!validatedBuyerPhone || validatedBuyerPhone.length > 25)
+  ) {
+    showToast(toast, "Nomor Whatsapp belum kamu isi lo.");
     $("#buyer-phone")?.focus();
     return;
   }
@@ -843,7 +854,7 @@ async function submitCheckout() {
 
       
       buyer_name: buyerName,
-      buyer_phone: buyerPhone,
+      buyer_phone: validatedBuyerPhone,
       buyer_note: $("#buyer-note")?.value.trim() ?? "",
       
       delivery_method: deliveryMethod,

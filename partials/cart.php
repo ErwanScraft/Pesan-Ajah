@@ -127,11 +127,11 @@
                         >
                     </div>
 
-                    <div class="form-field">
+                    <div class="form-field" id="buyer-phone-field">
                         <label for="buyer-phone">
                             Nomor WhatsApp
                         </label>
-
+                    
                         <input
                             type="tel"
                             id="buyer-phone"
@@ -140,7 +140,6 @@
                             autocomplete="tel"
                             inputmode="tel"
                             maxlength="20"
-                            required
                         >
                     </div>
 

@@ -127,8 +127,6 @@ $buyerPhone = trim(
         : ''
 );
 
-$buyerPhoneNormalized = checkout_phone($buyerPhone);
-
 $buyerNote = trim(
     is_string($input['buyer_note'] ?? null)
         ? str_replace(
@@ -147,6 +145,10 @@ if (mb_strlen($buyerNote, 'UTF-8') > 500) {
 }
 
 $deliveryMethod = $input['delivery_method'] ?? '';
+
+$buyerPhoneNormalized = $deliveryMethod === 'delivery'
+    ? checkout_phone($buyerPhone)
+    : null;
 
 $deliveryAddress = trim(
     is_string($input['delivery_address'] ?? null)
@@ -169,7 +171,10 @@ if (
     $storeId === false
     || $buyerName === ''
     || mb_strlen($buyerName, 'UTF-8') > 100
-    || $buyerPhoneNormalized === null
+    || (
+        $deliveryMethod === 'delivery'
+        && $buyerPhoneNormalized === null
+    )
     || !in_array($deliveryMethod, ['delivery', 'pickup'], true)
     || !is_array($items)
     || count($items) < 1
@@ -720,7 +725,11 @@ try {
     // Pembeli
     $message[] = '👤 *PEMBELI*';
     $message[] = '• *Nama:* ' . $buyerName;
-    $message[] = '• *WhatsApp:* +' . $buyerPhoneNormalized;
+    
+    if ($buyerPhoneNormalized !== null) {
+        $message[] = '• *WhatsApp:* +' . $buyerPhoneNormalized;
+    }
+    
     $message[] = '• *Catatan:* '
         . ($buyerNote !== '' ? $buyerNote : '-');
     $message[] = '';

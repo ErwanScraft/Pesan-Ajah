@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS buyers (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    phone VARCHAR(25) NOT NULL,
+    phone VARCHAR(25) DEFAULT NULL,
     delivery_address VARCHAR(255) DEFAULT NULL,
     delivery_maps_url VARCHAR(500) DEFAULT NULL,
     delivery_latitude DECIMAL(10, 7) DEFAULT NULL,
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS orders (
     buyer_id BIGINT UNSIGNED DEFAULT NULL,
     order_number VARCHAR(50) NOT NULL,
     buyer_name VARCHAR(100) NOT NULL,
-    buyer_phone VARCHAR(25) NOT NULL,
+    buyer_phone VARCHAR(25) DEFAULT NULL,
     delivery_method ENUM('delivery', 'pickup')
         NOT NULL DEFAULT 'delivery',
     delivery_address VARCHAR(255) DEFAULT NULL,
