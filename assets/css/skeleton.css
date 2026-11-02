@@ -1,21 +1,21 @@
-
 /* =========================================================
    PESAN AJAH — SKELETON LOADING
    File: assets/css/skeleton.css
 
    Scope:
-   - Skeleton kategori beranda
+   - Skeleton kategori marketplace
    - Skeleton profil warung
-   - Skeleton kartu produk
-   - Animasi dan responsivitas skeleton
+   - Skeleton produk
+   - Responsive layout
    ========================================================= */
 
+
 /* =========================================================
-   1. STATUS LOADING BERANDA
+   1. LOADING STATE
    ========================================================= */
 
 body[data-page="index"][data-catalog-loading="true"] #category-list {
-    display: none;
+    display: none !important;
 }
 
 body[data-page="index"][data-catalog-loading="true"] #product-grid,
@@ -24,36 +24,69 @@ body[data-page="index"][data-catalog-loading="true"] #empty-state {
 }
 
 body[data-page="index"][data-catalog-loading="true"] .skeleton-category-grid {
-    display: grid;
+    display: flex;
 }
 
 body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     display: flex;
 }
 
+
 /* =========================================================
    2. SKELETON KATEGORI
+   Mengikuti horizontal pill navigation
    ========================================================= */
 
 .skeleton-category-grid {
     display: none;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 12px;
-}
+    align-items: center;
+    gap: 9px;
 
-body[data-page="index"][data-catalog-loading="true"] .skeleton-category-grid {
-    display: grid;
+    width: 100%;
+    min-width: 0;
+
+    padding: 3px 2px 8px;
+
+    overflow: hidden;
 }
 
 .skeleton-category {
     display: block;
-    min-width: 0;
-    height: 64px;
+    flex: 0 0 auto;
+
+    width: 76px;
+    height: 38px;
+
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    border-radius: 999px;
+
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
+
+/* Tombol Semua */
+
+.skeleton-category--all {
+    display: grid;
+    flex-basis: 42px;
+
+    width: 42px;
+    min-width: 42px;
+    height: 38px;
+
+    place-items: center;
+
+    border-radius: 12px;
+    background: var(--surface);
+}
+
+.skeleton-category--all svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.25;
+}
+
 
 /* =========================================================
    3. SKELETON KATALOG
@@ -62,51 +95,73 @@ body[data-page="index"][data-catalog-loading="true"] .skeleton-category-grid {
 .catalog-skeleton {
     display: none;
     flex-direction: column;
-    gap: 26px;
-    min-width: 0;
-}
+    gap: 30px;
 
-body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
-    display: flex;
+    width: 100%;
+    min-width: 0;
 }
 
 .catalog-skeleton__store {
+    width: 100%;
     min-width: 0;
 }
 
-/* Profil warung */
+
+/* =========================================================
+   4. PROFIL WARUNG
+   Mengikuti marketplace-store-header
+   ========================================================= */
 
 .catalog-skeleton__profile {
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 12px;
+
+    width: 100%;
     min-width: 0;
+
     margin-bottom: 14px;
 }
 
+/* Avatar */
+
 .skeleton-avatar {
     display: block;
-    width: 46px;
-    height: 46px;
-    flex: 0 0 46px;
+
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+
+    border: 1px solid var(--border);
     border-radius: 14px;
+
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
+
+/* Identitas warung */
 
 .catalog-skeleton__identity {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    gap: 7px;
+    justify-content: center;
+    gap: 5px;
+
     min-width: 0;
 }
 
+/* Skeleton text */
+
 .skeleton-line {
     display: block;
+
     height: 10px;
+
     border-radius: 6px;
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
@@ -120,107 +175,213 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     height: 9px;
 }
 
+/* Status warung */
+
 .skeleton-status {
     display: block;
+
     width: 64px;
     height: 28px;
     flex: 0 0 64px;
+
     border-radius: 999px;
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
+
 /* =========================================================
-   4. SKELETON PRODUK
+   5. DAFTAR PRODUK WARUNG
+   Mengikuti marketplace-store-products
    ========================================================= */
 
 .catalog-skeleton__products {
     display: grid;
-    grid-auto-columns: 176px;
+
+    grid-auto-columns: 178px;
     grid-auto-flow: column;
     grid-template-rows: 1fr;
+
     gap: 13px;
-    min-width: 0;
+
     width: 100%;
+    min-width: 0;
+
     padding: 2px 2px 12px;
+
     overflow: hidden;
 }
 
+
+/* =========================================================
+   6. KARTU PRODUK
+   ========================================================= */
+
 .catalog-skeleton__product {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
     min-width: 0;
+    height: 100%;
+
     overflow: hidden;
+
     border: 1px solid var(--border);
-    border-radius: 13px;
+    border-radius: 15px;
+
     background: var(--white);
+    box-shadow: var(--shadow-sm);
 }
+
+
+/* =========================================================
+   7. GAMBAR PRODUK
+   Mengikuti aspect-ratio 4:3
+   ========================================================= */
 
 .skeleton-product-image {
     display: block;
+
     width: 100%;
     aspect-ratio: 4 / 3;
+    flex: 0 0 auto;
+
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
+
+/* =========================================================
+   8. INFORMASI PRODUK
+   Mengikuti lima slot product-info aktual
+
+   Nama     : 36px
+   Varian   : 14px
+   Satuan   : 14px
+   Stok     : 22px
+   Harga/+  : 34px
+   ========================================================= */
+
 .catalog-skeleton__product-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+
+    grid-template-rows:
+        36px
+        14px
+        14px
+        22px
+        34px;
+
+    gap: 6px;
+
+    width: 100%;
     min-width: 0;
+    min-height: 0;
+
     padding: 11px;
 }
+
+
+/* =========================================================
+   9. NAMA PRODUK
+   ========================================================= */
 
 .skeleton-line--product {
     width: 90%;
     height: 11px;
+
+    align-self: start;
+    margin-top: 3px;
 }
+
+
+/* =========================================================
+   10. VARIAN PRODUK
+   ========================================================= */
 
 .skeleton-line--variant {
     width: 58%;
     height: 9px;
 }
 
+
+/* =========================================================
+   11. SATUAN PRODUK
+   ========================================================= */
+
+.skeleton-line--unit {
+    width: 40%;
+    height: 9px;
+}
+
+
+/* =========================================================
+   12. STOCK PRODUK
+   Mengikuti product-stock
+   ========================================================= */
+
+.skeleton-stock {
+    display: block;
+
+    width: 62px;
+    max-width: 100%;
+    height: 22px;
+
+    border-radius: 6px;
+
+    background: var(--surface);
+
+    animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   13. HARGA DAN TOMBOL TAMBAH
+   ========================================================= */
+
 .catalog-skeleton__product-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-top: 5px;
+
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+
+    margin: 0;
+    padding: 0;
 }
+
+/* Harga */
 
 .skeleton-line--price {
     width: 45%;
     height: 12px;
 }
 
+/* Tombol tambah */
+
 .skeleton-add-button {
     display: block;
-    width: 33px;
-    height: 33px;
-    flex: 0 0 33px;
+
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+
     border-radius: 10px;
     background: var(--surface);
+
     animation: catalog-skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
-/* =========================================================
-   5. AKSESIBILITAS
-   ========================================================= */
-
-.catalog-skeleton > .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
 
 /* =========================================================
-   6. ANIMASI
+   14. ANIMASI
    ========================================================= */
 
 @keyframes catalog-skeleton-shimmer {
@@ -234,8 +395,9 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     }
 }
 
+
 /* =========================================================
-   7. TABLET
+   15. TABLET
    ========================================================= */
 
 @media (min-width: 701px) {
@@ -245,18 +407,30 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     }
 }
 
+
 /* =========================================================
-   8. MOBILE
+   16. MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
     .skeleton-category-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
+        gap: 8px;
+        padding-top: 3px;
+        padding-bottom: 7px;
     }
 
     .skeleton-category {
-        height: 58px;
+        height: 36px;
+    }
+
+    .skeleton-category--all {
+        flex-basis: 40px;
+
+        width: 40px;
+        min-width: 40px;
+        height: 36px;
+
+        border-radius: 11px;
     }
 
     .catalog-skeleton {
@@ -269,7 +443,10 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     }
 }
 
-/* Ponsel kecil */
+
+/* =========================================================
+   17. MOBILE KECIL
+   ========================================================= */
 
 @media (max-width: 380px) {
     .catalog-skeleton__products {
@@ -282,8 +459,31 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     }
 }
 
+
 /* =========================================================
-   9. REDUCED MOTION
+   18. ACCESSIBILITY
+   ========================================================= */
+
+.catalog-skeleton > .sr-only {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    padding: 0;
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   19. REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -292,6 +492,7 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     .skeleton-line,
     .skeleton-status,
     .skeleton-product-image,
+    .skeleton-stock,
     .skeleton-add-button {
         animation: none;
     }

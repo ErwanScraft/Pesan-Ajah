@@ -184,7 +184,26 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                 id="category-loading"
                 aria-hidden="true"
             >
-                <?php for ($i = 0; $i < 6; $i++): ?>
+                <span class="skeleton-category skeleton-category--all">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+                    </svg>
+                </span>
+            
+                <?php for ($i = 0; $i < 5; $i++): ?>
                     <span class="skeleton-category"></span>
                 <?php endfor; ?>
             </div>
@@ -314,17 +333,27 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
                                     <div class="catalog-skeleton__product-info">
 
+                                        <!-- Nama produk -->
                                         <span class="skeleton-line skeleton-line--product"></span>
-
+                                    
+                                        <!-- Varian -->
                                         <span class="skeleton-line skeleton-line--variant"></span>
-
+                                    
+                                        <!-- Satuan -->
+                                        <span class="skeleton-line skeleton-line--unit"></span>
+                                    
+                                        <!-- Stock -->
+                                        <span class="skeleton-stock"></span>
+                                    
+                                        <!-- Harga dan tombol tambah -->
                                         <div class="catalog-skeleton__product-bottom">
-
+                                    
                                             <span class="skeleton-line skeleton-line--price"></span>
-
+                                    
                                             <span class="skeleton-add-button"></span>
-
+                                    
                                         </div>
+                                    
                                     </div>
 
                                 </div>
