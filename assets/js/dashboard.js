@@ -1,4 +1,4 @@
-// version: 1
+// version: 2
 
 import { resolveImageUrl, setImageSource } from "./modules/image.js";
 import {

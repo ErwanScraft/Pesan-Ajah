@@ -1,4 +1,4 @@
-// Version: 1
+// Version: 2
 
 import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
