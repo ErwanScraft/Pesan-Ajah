@@ -446,6 +446,12 @@ async function loadCatalog() {
       id: Number(product.id),
       store_id: Number(product.store_id),
       price: Number(product.price),
+      stock_quantity:
+        product.stock_quantity == null
+          ? null
+          : Math.max(0, Number(product.stock_quantity) || 0),
+      
+      is_available: Boolean(product.is_available),
 
       store: String(product.store_name || "Warung"),
 

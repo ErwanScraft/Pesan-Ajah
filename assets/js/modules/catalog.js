@@ -247,24 +247,27 @@ export function createCatalog({
   function createProductImage(product) {
     const container = document.createElement("div");
     container.className = "product-image";
-    
-    if (!product.is_available) {
+  
+    const isOutOfStock = product.stock_quantity === 0;
+    const isUnavailable = !product.is_available;
+  
+    if (isOutOfStock || isUnavailable) {
       container.classList.add("is-sold-out");
     }
-
+  
     const placeholder = document.createElement("span");
-
+  
     placeholder.className = "product-image-placeholder";
     placeholder.textContent = "Foto belum tersedia";
-
+  
     const image = document.createElement("img");
-
+  
     image.className = "product-photo";
     image.alt = product.name || "Foto produk";
     image.loading = "lazy";
     image.decoding = "async";
     image.hidden = true;
-
+  
     image.addEventListener(
       "error",
       () => {
@@ -273,7 +276,7 @@ export function createCatalog({
       },
       { once: true },
     );
-
+  
     if (product.image) {
       const validSource = setImageSource(
         image,
@@ -283,35 +286,38 @@ export function createCatalog({
           placeholder.hidden = false;
         },
       );
-
+  
       if (validSource) {
         image.hidden = false;
         placeholder.hidden = true;
         container.append(image);
       }
     }
-
+  
     container.append(placeholder);
-    
-    if (!product.is_available) {
+  
+    if (isOutOfStock || isUnavailable) {
       const soldOutLabel = document.createElement("span");
-    
+  
       soldOutLabel.className = "product-sold-out-label";
-      soldOutLabel.textContent = "HABIS";
-      soldOutLabel.setAttribute("aria-label", "Produk habis");
-    
+      soldOutLabel.textContent = isOutOfStock
+        ? "STOK HABIS"
+        : "TIDAK TERSEDIA";
+  
+      soldOutLabel.setAttribute("aria-hidden", "true");
+  
       container.append(soldOutLabel);
     }
-
+  
     if (product.tag) {
       const tag = document.createElement("span");
-
+  
       tag.className = "product-tag";
       tag.textContent = product.tag;
-
+  
       container.append(tag);
     }
-
+  
     return container;
   }
 
@@ -323,69 +329,95 @@ export function createCatalog({
 
   function createProductCard(product) {
     const card = document.createElement("article");
-
+  
     card.className = "product-card";
-
+  
     const image = createProductImage(product);
-
+  
     const info = document.createElement("div");
     info.className = "product-info";
-
+  
     const name = document.createElement("h3");
-
+  
     name.className = "product-name";
     name.textContent = product.name || "Produk";
-    
+  
     const variant = document.createElement("span");
-    
+  
     variant.className = "product-variant";
     variant.textContent = product.variant || "";
     variant.hidden = !product.variant;
-    
+  
     const unit = document.createElement("span");
-    
+  
     unit.className = "product-unit";
     unit.textContent = product.unit || "";
-
+  
+    const stock = document.createElement("span");
+  
+    stock.className = "product-stock";
+  
+    if (product.stock_quantity === null) {
+      stock.textContent = "Stok tersedia";
+      stock.classList.add("is-unlimited");
+    } else if (product.stock_quantity === 0) {
+      stock.textContent = "Stok habis";
+      stock.classList.add("is-out");
+    } else {
+      stock.textContent =
+        `Stok ${new Intl.NumberFormat("id-ID").format(
+          product.stock_quantity,
+        )}`;
+      stock.classList.add(
+        product.stock_quantity <= 5 ? "is-low" : "is-available",
+      );
+    }
+  
     const bottom = document.createElement("div");
     bottom.className = "product-bottom";
-
+  
     const price = document.createElement("span");
-
+  
     price.className = "product-price";
     price.textContent = formatRupiah(product.price);
-
+  
     const addButton = document.createElement("button");
-
+  
     addButton.className = "add-button";
     addButton.type = "button";
     addButton.dataset.add = String(product.id);
-
+  
     addButton.setAttribute(
       "aria-label",
       `Tambah ${product.name}`,
     );
-
+  
     addButton.disabled = !product.available;
-
+  
     addButton.title = product.available
       ? "Tambah ke keranjang"
-      : "Produk habis atau warung tutup";
-
+      : product.stock_quantity === 0
+        ? "Stock produk habis"
+        : !product.is_available
+          ? "Produk tidak tersedia"
+          : "Warung sedang tutup";
+  
     addButton.textContent = product.available
       ? String(cart.quantityFor(product.id) || "+")
       : "–";
-
+  
     bottom.append(price, addButton);
+  
     info.append(name);
-
+  
     if (product.variant) {
       info.append(variant);
     }
-    
-    info.append(unit, bottom);
+  
+    info.append(unit, stock, bottom);
+  
     card.append(image, info);
-
+  
     return card;
   }
   
