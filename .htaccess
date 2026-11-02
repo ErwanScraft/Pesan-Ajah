@@ -5,6 +5,30 @@ DirectoryIndex index.php
 RewriteEngine On
 
 # =========================================================
+# PESAN AJAH — MAINTENANCE MODE
+# =========================================================
+
+ErrorDocument 503 /maintenance.php
+
+# Aktif jika file .maintenance tersedia
+RewriteCond %{DOCUMENT_ROOT}/.maintenance -f
+
+# IP yang diperbolehkan melewati maintenance
+RewriteCond %{REMOTE_ADDR} !^(?:127\.0\.0\.1|::1|GANTI_DENGAN_IP_ANDA|IP_KEDUA)$
+
+# Halaman maintenance tetap dapat diakses
+RewriteCond %{REQUEST_URI} !^/maintenance\.php$ [NC]
+
+# Aset tetap dapat diakses
+RewriteCond %{REQUEST_URI} !^/assets/ [NC]
+
+# Service worker tetap dapat diakses
+RewriteCond %{REQUEST_URI} !^/service-worker\.js$ [NC]
+
+# Aktifkan maintenance
+RewriteRule ^ - [R=503,L]
+
+# =========================================================
 # PESAN AJAH — PROTECTION
 # =========================================================
 
