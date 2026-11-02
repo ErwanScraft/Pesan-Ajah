@@ -520,64 +520,20 @@ async function loadCatalog() {
 */
 
 function setLocationStatus(message, type = "") {
-  const element = $("#location-status");
+  const button = $("#use-location-button");
 
-  if (!element) {
+  if (!button) {
     return;
   }
-
-  element.textContent = message;
-  element.classList.remove("is-success", "is-error");
 
   if (type === "success") {
-    element.classList.add("is-success");
+    button.textContent = "Lokasi Dipilih";
   } else if (type === "error") {
-    element.classList.add("is-error");
-  }
-}
-
-function updateLocationPreview() {
-  const urlInput = $("#delivery-maps-url");
-  const preview = $("#preview-location-link");
-
-  if (!urlInput || !preview) {
-    return;
-  }
-
-  const value = urlInput.value.trim();
-
-  if (!value) {
-    preview.hidden = true;
-    preview.removeAttribute("href");
-    return;
-  }
-
-  try {
-    const url = new URL(value);
-
-    const allowedHosts = [
-      "google.com",
-      "www.google.com",
-      "maps.google.com",
-      "maps.app.goo.gl",
-      "goo.gl",
-    ];
-
-    const validHost =
-      allowedHosts.includes(url.hostname.toLowerCase()) ||
-      url.hostname.toLowerCase().endsWith(".google.com");
-
-    if (url.protocol !== "https:" || !validHost) {
-      preview.hidden = true;
-      preview.removeAttribute("href");
-      return;
-    }
-
-    preview.href = url.href;
-    preview.hidden = false;
-  } catch {
-    preview.hidden = true;
-    preview.removeAttribute("href");
+    button.textContent = "Pilih Ulang Lokasi";
+  } else if (message.includes("Meminta izin")) {
+    button.textContent = "Mencari Lokasi...";
+  } else {
+    button.textContent = "Pilih Lokasi";
   }
 }
 
@@ -609,7 +565,6 @@ function toggleDeliveryFields() {
     if (latitude) latitude.value = "";
     if (longitude) longitude.value = "";
 
-    updateLocationPreview();
     setLocationStatus("Lokasi tidak diperlukan untuk ambil sendiri.");
   } else {
     setLocationStatus("Belum ada lokasi yang dipilih.");
@@ -688,8 +643,6 @@ async function useCurrentLocation() {
     $("#delivery-maps-url").value =
       `https://maps.google.com/?q=${latitude},${longitude}`;
 
-    updateLocationPreview();
-
     setLocationStatus(
       `Lokasi berhasil dipilih: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}.`,
       "success",
@@ -714,7 +667,7 @@ async function useCurrentLocation() {
   } finally {
     if (button) {
       button.disabled = false;
-      button.textContent = "Gunakan Lokasi Saya";
+      button.textContent = "Pilih Lokasi";
     }
   }
 }
@@ -1069,11 +1022,6 @@ $("#empty-cart-close")?.addEventListener(
 $("#use-location-button")?.addEventListener(
   "click",
   useCurrentLocation,
-);
-
-$("#delivery-maps-url")?.addEventListener(
-  "input",
-  updateLocationPreview,
 );
 
 fulfillmentInputs.forEach((input) => {

@@ -196,15 +196,8 @@
                                     stroke-width="1.7"
                                 />
                             </svg>
-                            Gunakan lokasi saya
+                            Pilih Lokasi
                         </button>
-                
-                        <p
-                            class="location-status"
-                            id="location-status"
-                            role="status"
-                            aria-live="polite"
-                        ></p>
                 
                         <input
                             type="hidden"
@@ -224,16 +217,6 @@
                             name="delivery_longitude"
                         >
                 
-                        <a
-                            class="preview-location-link"
-                            id="preview-location-link"
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            hidden
-                        >
-                            Lihat lokasi di Google Maps
-                        </a>
                     </div>
                 </div>
 
