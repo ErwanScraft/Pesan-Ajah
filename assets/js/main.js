@@ -36,44 +36,12 @@ const toast = $("#toast");
 
 let catalog;
 let cartPage;
-let csrfToken = "";
 
 /*
  * Array products berasal dari modul data lama.
  * Array ini diisi dengan data hasil API MySQL.
  */
 const cart = createCart(products);
-
-let catalog;
-let csrfToken = "";
-let catalogLoaded = false;
-
-/*
-|--------------------------------------------------------------------------
-| Muat CSRF dan katalog dari MySQL
-|--------------------------------------------------------------------------
-*/
-
-async function loadCsrfToken() {
-  const response = await fetch("/api/csrf.php", {
-    method: "GET",
-    credentials: "same-origin",
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  const data = await response.json();
-
-  if (!response.ok || !data.success || !data.csrf_token) {
-    throw new Error(
-      data.message || "Token keamanan tidak dapat dimuat.",
-    );
-  }
-
-  csrfToken = data.csrf_token;
-}
 
 async function loadCatalog() {
   const storeId = document.body.dataset.storeId;
@@ -194,14 +162,16 @@ async function loadCatalog() {
     ...normalizedProducts,
   );
 
-  catalogLoaded = true;
-
   /*
-   * Render ulang kategori, produk, dan keranjang
-   * setelah data API berhasil diterima.
+   * Render ulang katalog setelah data API berhasil diterima.
    */
   catalog.render();
-  renderCart();
+  
+  /*
+   * Beri tahu modul keranjang bahwa katalog sudah siap.
+   * Status ini digunakan untuk mengaktifkan tombol checkout.
+   */
+  cartPage.setCatalogLoaded(true);
 
   if (normalizedProducts.length === 0) {
     showToast(
@@ -218,6 +188,12 @@ if (currentYear) {
     new Date().getFullYear(),
   );
 }
+
+/*
+|--------------------------------------------------------------------------
+| Inisialisasi
+|--------------------------------------------------------------------------
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -256,18 +232,6 @@ cartPage.render();
 initIndexPage({ catalog });
 
 async function initializeMarketplace() {
-  /*
-   * CSRF dan katalog berjalan secara independen.
-   * Kegagalan atau keterlambatan CSRF tidak boleh
-   * menahan tampilan katalog.
-   */
-  const csrfPromise = loadCsrfToken().catch((error) => {
-    console.error(
-      "[Pesan Ajah] Token CSRF gagal dimuat:",
-      error,
-    );
-  });
-
   try {
     await loadCatalog();
   } catch (error) {
@@ -290,19 +254,11 @@ async function initializeMarketplace() {
     document.body.removeAttribute("data-catalog-loading");
 
     /*
-     * Render kembali tampilan setelah skeleton dilepas.
-     * Ini memastikan empty state dan kategori mengikuti
-     * kondisi data yang sebenarnya.
+     * Render ulang tampilan setelah skeleton dilepas.
      */
     catalog?.render();
     cartPage?.render();
   }
-
-  /*
-   * Tunggu penyelesaian penanganan CSRF tanpa menjadikannya
-   * syarat untuk menampilkan katalog.
-   */
-  await csrfPromise;
 }
 
 initializeMarketplace();

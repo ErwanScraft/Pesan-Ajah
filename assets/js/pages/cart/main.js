@@ -1,8 +1,7 @@
-import { showToast } from "../../modules/toast.js";
-
 export function initCartPage({
   products,
   cart,
+  showToast,
   formatRupiah,
   onCatalogRender,
 }) {
