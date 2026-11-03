@@ -305,6 +305,127 @@
   font-weight: 600;
 }
 
+/* =========================================================
+   GRAFIK PENJUALAN — AREA / MOUNTAIN CHART
+========================================================= */
+
+.overview-chart-card {
+  display: grid;
+  min-width: 0;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid var(--border, #e8ece8);
+  border-radius: 18px;
+  background: var(--white, #fff);
+  box-shadow: var(--shadow-sm, 0 4px 16px rgba(20, 40, 25, 0.04));
+}
+
+.overview-chart-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.overview-chart-heading h3 {
+  margin: 0;
+  color: var(--text, #202820);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.overview-chart-heading p {
+  margin: 5px 0 0;
+  color: var(--muted, #748078);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.overview-chart-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eaf6ed;
+  color: #237a45;
+}
+
+.overview-chart-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.overview-chart-container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 190px;
+  aspect-ratio: 640 / 250;
+}
+
+.overview-chart-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.overview-chart-loading,
+.overview-chart-empty {
+  display: flex;
+  width: 100%;
+  min-height: 190px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: var(--muted, #748078);
+  font-size: 12px;
+  text-align: center;
+}
+
+.overview-chart-empty {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.overview-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted, #748078);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.overview-chart-legend > span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #20a464;
+}
+
+@media (max-width: 600px) {
+  .overview-chart-card {
+    gap: 14px;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: none;
+  }
+
+  .overview-chart-container {
+    min-height: 165px;
+  }
+
+  .overview-chart-loading,
+  .overview-chart-empty {
+    min-height: 165px;
+  }
+}
+
 /* RIWAYAT PESANAN */
 
 .overview-text-link {

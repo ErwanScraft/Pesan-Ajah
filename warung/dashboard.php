@@ -153,6 +153,47 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
         </div>
 
         <div class="overview-stat-grid">
+        
+            <!-- GRAFIK PENJUALAN -->
+            <div class="overview-chart-card">
+                <div class="overview-chart-heading">
+                    <div>
+                        <h3>Tren Penjualan</h3>
+                        <p id="sales-chart-summary">
+                            Penjualan 7 hari terakhir
+                        </p>
+                    </div>
+    
+                    <span class="overview-chart-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M3 17h18M5 14l4-4 4 3 6-8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </span>
+                </div>
+    
+                <div
+                    class="overview-chart-container"
+                    id="sales-chart"
+                    role="img"
+                    aria-label="Grafik gunung penjualan tujuh hari terakhir"
+                >
+                    <div class="overview-chart-loading">
+                        Memuat grafik...
+                    </div>
+                </div>
+    
+                <div class="overview-chart-legend">
+                    <span></span>
+                    Penjualan selesai
+                </div>
+            </div>
 
             <article class="overview-stat-card">
                 <span class="overview-stat-icon green">

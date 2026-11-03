@@ -88,6 +88,34 @@ $orderStmt->execute([
 $orderStats = $orderStmt->fetch();
 
 /*
+ * Grafik penjualan tujuh hari terakhir.
+ * Hanya menghitung pesanan yang sudah selesai.
+ */
+$chartStmt = database()->prepare(
+    "SELECT
+        DATE_FORMAT(created_at, '%Y-%m-%d') AS order_date,
+        COUNT(*) AS total_orders,
+        COALESCE(SUM(total), 0) AS total_revenue
+
+    FROM orders
+
+    WHERE store_id = :store_id
+        AND status = 'completed'
+        AND created_at >= CURRENT_DATE - INTERVAL 6 DAY
+        AND created_at < CURRENT_DATE + INTERVAL 1 DAY
+
+    GROUP BY DATE(created_at)
+
+    ORDER BY order_date ASC"
+);
+
+$chartStmt->execute([
+    'store_id' => $storeId,
+]);
+
+$salesChart = $chartStmt->fetchAll();
+
+/*
  * Statistik produk tidak bergantung pada periode pesanan.
  */
 $productStmt = database()->prepare(
@@ -159,6 +187,15 @@ api_json([
         'is_open' => (bool) $store['is_open'],
         'free_delivery' => (bool) $store['free_delivery'],
     ],
+    
+    'sales_chart' => array_map(
+        static fn(array $row): array => [
+            'date' => (string) $row['order_date'],
+            'orders' => (int) $row['total_orders'],
+            'revenue' => (int) $row['total_revenue'],
+        ],
+        $salesChart
+    ),
 
     'recent_orders' => $recentStmt->fetchAll(),
 ]);
