@@ -106,12 +106,51 @@ function send_store_onesignal(
             return;
         }
 
+        $result = json_decode($response, true);
+
+        if (!is_array($result)) {
+            error_log(
+                '[OneSignal] Respons API tidak valid. '
+                . 'Store ID: '
+                . $storeId
+                . ' | Response: '
+                . $response
+            );
+
+            return;
+        }
+
+        $notificationId = $result['id'] ?? null;
+        $recipients = isset($result['recipients'])
+            ? (int) $result['recipients']
+            : null;
+
+        if ($recipients === 0) {
+            error_log(
+                '[OneSignal] Tidak ada perangkat penerima. '
+                . 'Store ID: '
+                . $storeId
+                . ' | Order: '
+                . $orderNumber
+                . ' | Notification ID: '
+                . ($notificationId ?? 'N/A')
+                . ' | Response: '
+                . $response
+            );
+
+            return;
+        }
+
         error_log(
-            '[OneSignal] Notifikasi berhasil dikirim. '
+            '[OneSignal] Permintaan notifikasi diterima API. '
             . 'Store ID: '
             . $storeId
             . ' | Order: '
             . $orderNumber
+            . ' | Recipients: '
+            . ($recipients ?? 'Tidak tersedia')
+            . ' | Notification ID: '
+            . ($notificationId ?? 'N/A')
         );
 
     } catch (Throwable $exception) {

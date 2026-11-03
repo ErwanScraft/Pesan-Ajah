@@ -87,7 +87,6 @@ function urlBase64ToUint8Array(base64String) {
   );
 }
 
-
 async function initializeOneSignalPush() {
   const appId = document.body.dataset.onesignalAppId;
   const storeId = document.body.dataset.storeId;
@@ -117,9 +116,7 @@ async function initializeOneSignalPush() {
               },
             });
 
-            await OneSignal.login(
-              `store_${storeId}`,
-            );
+            await OneSignal.login(`store_${storeId}`);
 
             resolve(OneSignal);
           } catch (error) {
@@ -127,10 +124,47 @@ async function initializeOneSignalPush() {
           }
         });
       },
-    );
+    ).catch((error) => {
+      // Izinkan inisialisasi ulang jika proses sebelumnya gagal.
+      window.__pesanAjahOneSignalPromise = null;
+      throw error;
+    });
   }
 
   return window.__pesanAjahOneSignalPromise;
+}
+
+async function verifyOneSignalSubscription(OneSignal) {
+  const subscription = OneSignal.User.PushSubscription;
+
+  if (!subscription.optedIn) {
+    await subscription.optIn();
+  }
+
+  // optedIn saja belum membuktikan perangkat memiliki subscription.
+  // Tunggu sampai ID dan token benar-benar tersedia.
+  const timeoutAt = Date.now() + 15000;
+
+  while (Date.now() < timeoutAt) {
+    if (
+      subscription.optedIn
+      && subscription.id
+      && subscription.token
+    ) {
+      return {
+        id: subscription.id,
+        token: subscription.token,
+      };
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+  }
+
+  throw new Error(
+    "Subscription OneSignal belum terbentuk. Periksa izin notifikasi, Service Worker, dan konfigurasi Web Push OneSignal.",
+  );
 }
 
 async function initializePushNotifications() {
@@ -221,15 +255,23 @@ async function initializePushNotifications() {
 
       /*
        * KANAL 2: ONESIGNAL
-       * Jika gagal, Web Push tetap aktif.
+       * Web Push lama tetap aktif meskipun OneSignal gagal.
        */
       try {
         const OneSignal =
           await initializeOneSignalPush();
 
-        if (!OneSignal.User.PushSubscription.optedIn) {
-          await OneSignal.User.PushSubscription.optIn();
-        }
+        const subscription =
+          await verifyOneSignalSubscription(OneSignal);
+
+        console.info(
+          "[Pesan Ajah] OneSignal aktif:",
+          {
+            storeId: document.body.dataset.storeId,
+            externalId: `store_${document.body.dataset.storeId}`,
+            subscriptionId: subscription.id,
+          },
+        );
 
       } catch (oneSignalError) {
         console.error(
@@ -238,9 +280,10 @@ async function initializePushNotifications() {
         );
 
         button.textContent = "Web Push aktif";
+        button.disabled = false;
 
         notify(
-          "Web Push aktif, tetapi OneSignal gagal diaktifkan: "
+          "Web Push aktif, tetapi OneSignal belum aktif: "
             + (
               oneSignalError instanceof Error
                 ? oneSignalError.message
