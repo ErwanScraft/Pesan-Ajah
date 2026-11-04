@@ -116,33 +116,8 @@ $storeInitial = function_exists('mb_substr')
 
             <nav
                 class="side-nav"
-                aria-label="Navigasi dashboard"
+                aria-label="Menu lainnya"
             >
-                <a
-                    class="side-link <?= $activePage === 'dashboard' ? 'active' : '' ?>"
-                    href="<?= e(url('warung/dashboard.php')) ?>"
-                    <?= $activePage === 'dashboard' ? 'aria-current="page"' : '' ?>
-                >
-                    <span aria-hidden="true">▦</span>
-                    Rincian
-                </a>
-
-                <a
-                    class="side-link <?= $activePage === 'pesanan' ? 'active' : '' ?>"
-                    href="<?= e(url('warung/pesanan.php')) ?>"
-                    <?= $activePage === 'pesanan' ? 'aria-current="page"' : '' ?>
-                >
-                    <span aria-hidden="true">▤</span>
-                    Pesanan
-
-                    <?php if ($activePage === 'pesanan'): ?>
-                        <span
-                            class="nav-count"
-                            id="pending-count"
-                        >0</span>
-                    <?php endif; ?>
-                </a>
-
                 <a
                     class="side-link <?= $activePage === 'produk' ? 'active' : '' ?>"
                     href="<?= e(url('warung/produk.php')) ?>"
@@ -151,25 +126,7 @@ $storeInitial = function_exists('mb_substr')
                     <span aria-hidden="true">□</span>
                     Produk
                 </a>
-                
-                <a
-                    class="side-link <?= $activePage === 'stock' ? 'active' : '' ?>"
-                    href="<?= e(url('warung/stock.php')) ?>"
-                    <?= $activePage === 'stock' ? 'aria-current="page"' : '' ?>
-                >
-                    <span aria-hidden="true">▤</span>
-                    Stock
-                </a>
-                
-                <a
-                    class="side-link <?= $activePage === 'kasir' ? 'active' : '' ?>"
-                    href="<?= e(url('warung/kasir.php')) ?>"
-                    <?= $activePage === 'kasir' ? 'aria-current="page"' : '' ?>
-                >
-                    <span aria-hidden="true">▣</span>
-                    Kasir
-                </a>
-
+            
                 <a
                     class="side-link <?= $activePage === 'pengaturan' ? 'active' : '' ?>"
                     href="<?= e(url('warung/pengaturan.php')) ?>"
@@ -238,6 +195,99 @@ $storeInitial = function_exists('mb_substr')
             </form>
 
         </aside>
+
+        <!-- Bottom Navigation -->
+        <nav
+            class="dashboard-bottom-nav"
+            aria-label="Navigasi utama"
+        >
+
+            <!-- Dashboard -->
+            <a
+                class="dashboard-bottom-nav__item <?= $activePage === 'dashboard' ? 'is-active' : '' ?>"
+                href="<?= e(url('warung/dashboard.php')) ?>"
+                <?= $activePage === 'dashboard' ? 'aria-current="page"' : '' ?>
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="3" width="8" height="8" rx="2"/>
+                    <rect x="13" y="3" width="8" height="5" rx="2"/>
+                    <rect x="13" y="10" width="8" height="11" rx="2"/>
+                    <rect x="3" y="13" width="8" height="8" rx="2"/>
+                </svg>
+
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Pesanan -->
+            <a
+                class="dashboard-bottom-nav__item <?= $activePage === 'pesanan' ? 'is-active' : '' ?>"
+                href="<?= e(url('warung/pesanan.php')) ?>"
+                <?= $activePage === 'pesanan' ? 'aria-current="page"' : '' ?>
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h10l3 3v15H4V3h3Z"/>
+                    <path d="M8 10h8M8 14h8M8 18h5"/>
+                </svg>
+
+                <span>Pesanan</span>
+            </a>
+
+            <!-- Kasir -->
+            <a
+                class="dashboard-bottom-nav__item <?= $activePage === 'kasir' ? 'is-active' : '' ?>"
+                href="<?= e(url('warung/kasir.php')) ?>"
+                <?= $activePage === 'kasir' ? 'aria-current="page"' : '' ?>
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2"/>
+                    <path d="M7 2v6M17 2v6M3 10h18"/>
+                    <path d="M8 14h2M14 14h2M8 18h2"/>
+                </svg>
+
+                <span>Kasir</span>
+            </a>
+
+            <!-- Stock -->
+            <a
+                class="dashboard-bottom-nav__item <?= $activePage === 'stock' ? 'is-active' : '' ?>"
+                href="<?= e(url('warung/stock.php')) ?>"
+                <?= $activePage === 'stock' ? 'aria-current="page"' : '' ?>
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+                    <path d="m3 12 9 5 9-5"/>
+                    <path d="m3 16 9 5 9-5"/>
+                    <path d="M12 13v8"/>
+                </svg>
+
+                <span>Stock</span>
+            </a>
+
+            <!-- More -->
+            <button
+                class="dashboard-bottom-nav__item dashboard-bottom-nav__more <?= in_array($activePage, ['produk', 'pengaturan'], true) ? 'is-active' : '' ?>"
+                id="dashboard-more-button"
+                type="button"
+                aria-label="Buka menu lainnya"
+                aria-controls="sidebar"
+                aria-expanded="false"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="5" cy="5" r="1.5"/>
+                    <circle cx="12" cy="5" r="1.5"/>
+                    <circle cx="19" cy="5" r="1.5"/>
+                    <circle cx="5" cy="12" r="1.5"/>
+                    <circle cx="12" cy="12" r="1.5"/>
+                    <circle cx="19" cy="12" r="1.5"/>
+                    <circle cx="5" cy="19" r="1.5"/>
+                    <circle cx="12" cy="19" r="1.5"/>
+                    <circle cx="19" cy="19" r="1.5"/>
+                </svg>
+
+                <span>More</span>
+            </button>
+
+        </nav>
 
         <main class="dashboard-main">
 

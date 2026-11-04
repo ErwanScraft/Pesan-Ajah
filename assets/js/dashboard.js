@@ -1053,34 +1053,58 @@ $("#orders-refresh")?.addEventListener(
   loadOrders,
 );
 
+
 /* =========================================================
-   NAVIGASI
+   NAVIGASI DASHBOARD
 ========================================================= */
 
 const sidebar = $("#sidebar");
 const mobileMenu = $("#mobile-menu");
+const moreButton = $("#dashboard-more-button");
 
-mobileMenu?.addEventListener("click", () => {
-  const open = sidebar?.classList.toggle("open");
+/**
+ * Membuka atau menutup sidebar menu tambahan.
+ */
+function toggleMoreMenu(forceOpen) {
 
-  mobileMenu.setAttribute(
-    "aria-expanded",
-    String(Boolean(open)),
-  );
+    const open = typeof forceOpen === "boolean"
+        ? forceOpen
+        : !sidebar?.classList.contains("open");
+
+    sidebar?.classList.toggle("open", open);
+
+    mobileMenu?.setAttribute(
+        "aria-expanded",
+        String(open),
+    );
+
+    moreButton?.setAttribute(
+        "aria-expanded",
+        String(open),
+    );
+}
+
+/* Tombol More */
+
+moreButton?.addEventListener("click", () => {
+    toggleMoreMenu();
 });
 
+/* Tutup menu dengan tombol Escape */
+
 document.addEventListener("keydown", (event) => {
-  if (event.key !== "Escape") {
-    return;
-  }
 
-  if (productModal && !productModal.hidden) {
-    closeProductModal();
-    return;
-  }
+    if (event.key !== "Escape") {
+        return;
+    }
 
-  sidebar?.classList.remove("open");
-  mobileMenu?.setAttribute("aria-expanded", "false");
+    if (productModal && !productModal.hidden) {
+        closeProductModal();
+        return;
+    }
+
+    toggleMoreMenu(false);
+
 });
 
 /* =========================================================

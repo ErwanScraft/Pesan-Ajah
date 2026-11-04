@@ -58,3 +58,6 @@
 
 /* 14. Kasir warung */
 @import url("./pages/kasir.css");
+
+/* 15. Navigasi dashboard warung */
+@import url("./pages/dashboard-navigation.css");
