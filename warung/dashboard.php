@@ -152,13 +152,13 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
             </select>
         </div>
         
-        <!-- GRAFIK PENJUALAN -->
+        <!-- GRAFIK PESANAN -->
         <div class="overview-chart-card">
             <div class="overview-chart-heading">
                 <div>
-                    <h3>Tren Penjualan</h3>
+                    <h3>Grafik Pesanan</h3>
                     <p id="sales-chart-summary">
-                        Penjualan 7 hari terakhir
+                        Pesanan 7 hari terakhir
                     </p>
                 </div>
         
@@ -180,7 +180,7 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
                 class="overview-chart-container"
                 id="sales-chart"
                 role="img"
-                aria-label="Grafik gunung penjualan tujuh hari terakhir"
+                aria-label="Grafik pesanan tujuh hari terakhir"
             >
                 <div class="overview-chart-loading">
                     Memuat grafik...
@@ -189,7 +189,7 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
         
             <div class="overview-chart-legend">
                 <span></span>
-                Penjualan selesai
+                Pesanan selesai
             </div>
         </div>
         

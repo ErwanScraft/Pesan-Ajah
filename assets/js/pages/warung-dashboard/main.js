@@ -332,18 +332,18 @@ export async function initWarungDashboard({
     const chartHeight = height - padding.top - padding.bottom;
     const baseline = padding.top + chartHeight;
 
-    const maxRevenue = Math.max(
-      1000,
-      ...chartDays.map((day) => day.revenue),
+    const maxOrders = Math.max(
+      4,
+      ...chartDays.map((day) => day.orders),
     );
-
-    const scaleMax = Math.ceil(maxRevenue / 4) * 4 || 4000;
+    
+    const scaleMax = Math.ceil(maxOrders / 4) * 4;
     const points = chartDays.map((day, index) => {
       const x = padding.left +
         (chartWidth / (chartDays.length - 1)) * index;
 
       const y = baseline -
-        (day.revenue / scaleMax) * chartHeight;
+        (day.orders / scaleMax) * chartHeight;
 
       return {
         ...day,
@@ -409,7 +409,7 @@ export async function initWarungDashboard({
         "text-anchor": "end",
       });
 
-      label.textContent = formatCompactRupiah(value);
+      label.textContent = String(Math.round(value));
 
       svg.append(gridLine, label);
     }
@@ -459,8 +459,7 @@ export async function initWarungDashboard({
       const tooltip = createSvgElement("title");
 
       tooltip.textContent =
-        `${point.date}: ${formatRupiah(point.revenue)} · ` +
-        `${point.orders} pesanan`;
+        `${point.date}: ${point.orders} pesanan`;
 
       circle.append(tooltip);
 
@@ -479,12 +478,12 @@ export async function initWarungDashboard({
 
     container.append(svg);
 
-    if (totalRevenue === 0) {
+    if (totalOrders === 0) {
       const empty = document.createElement("div");
 
       empty.className = "overview-chart-empty";
       empty.textContent =
-        "Belum ada penjualan selesai dalam 7 hari terakhir.";
+        "Belum ada pesanan selesai dalam 7 hari terakhir.";
 
       container.append(empty);
     }
