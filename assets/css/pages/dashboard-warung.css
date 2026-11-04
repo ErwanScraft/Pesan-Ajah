@@ -250,8 +250,7 @@
   box-shadow: var(--shadow-sm, 0 4px 16px rgba(20, 40, 25, 0.04));
 }
 
-.overview-stat-icon,
-.overview-quick-icon {
+.overview-stat-icon {
   display: grid;
   width: 37px;
   height: 37px;
@@ -260,14 +259,12 @@
   border-radius: 11px;
 }
 
-.overview-stat-icon svg,
-.overview-quick-icon svg {
+.overview-stat-icon svg {
   width: 20px;
   height: 20px;
 }
 
-.overview-stat-icon.green,
-.overview-quick-icon.green {
+.overview-stat-icon.green {
   background: #eaf6ed;
   color: #287744;
 }
@@ -277,14 +274,12 @@
   color: #a76a1d;
 }
 
-.overview-stat-icon.blue,
-.overview-quick-icon.blue {
+.overview-stat-icon.blue {
   background: #eaf1ff;
   color: #3767b1;
 }
 
-.overview-stat-icon.purple,
-.overview-quick-icon.purple {
+.overview-stat-icon.purple {
   background: #f1eaff;
   color: #7751a9;
 }
@@ -552,53 +547,6 @@
   font-size: 13px;
 }
 
-/* AKSES CEPAT */
-
-.overview-quick-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.overview-quick-card {
-  display: flex;
-  min-width: 0;
-  min-height: 105px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px 10px;
-  border: 1px solid var(--border, #e8ece8);
-  border-radius: 16px;
-  background: var(--white, #fff);
-  color: var(--text, #202820);
-  text-align: center;
-  text-decoration: none;
-  transition: border-color 160ms ease, transform 160ms ease;
-}
-
-.overview-quick-card:hover {
-  border-color: #b7d6c0;
-  transform: translateY(-2px);
-}
-
-.overview-quick-icon {
-  width: 40px;
-  height: 40px;
-  flex-basis: 40px;
-}
-
-.overview-quick-icon.orange {
-  background: #fff0e3;
-  color: #b56a2b;
-}
-
-.overview-quick-card strong {
-  font-size: 11px;
-  font-weight: 750;
-}
-
 /* RESPONSIVE */
 
 @media (max-width: 900px) {
@@ -673,29 +621,6 @@
     border-radius: 13px;
   }
 
-  .overview-quick-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .overview-quick-card {
-    min-height: 91px;
-    gap: 8px;
-    padding: 10px 5px;
-    border-radius: 13px;
-  }
-
-  .overview-quick-icon {
-    width: 35px;
-    height: 35px;
-    flex-basis: 35px;
-  }
-
-  .overview-quick-card strong {
-    font-size: 10px;
-  }
-}
-
 @media (max-width: 360px) {
   .overview-order-card {
     align-items: flex-start;
@@ -710,13 +635,6 @@
     padding: 5px 7px;
   }
 
-  .overview-quick-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .overview-quick-card {
-    min-height: 82px;
-  }
 }
 
 /* =========================================================

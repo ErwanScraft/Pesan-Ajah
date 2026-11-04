@@ -151,50 +151,52 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
                 <option value="today">Hari Ini</option>
             </select>
         </div>
-
-        <div class="overview-stat-grid">
         
-            <!-- GRAFIK PENJUALAN -->
-            <div class="overview-chart-card">
-                <div class="overview-chart-heading">
-                    <div>
-                        <h3>Tren Penjualan</h3>
-                        <p id="sales-chart-summary">
-                            Penjualan 7 hari terakhir
-                        </p>
-                    </div>
-    
-                    <span class="overview-chart-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <path
-                                d="M3 17h18M5 14l4-4 4 3 6-8"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+        <!-- GRAFIK PENJUALAN -->
+        <div class="overview-chart-card">
+            <div class="overview-chart-heading">
+                <div>
+                    <h3>Tren Penjualan</h3>
+                    <p id="sales-chart-summary">
+                        Penjualan 7 hari terakhir
+                    </p>
                 </div>
-    
-                <div
-                    class="overview-chart-container"
-                    id="sales-chart"
-                    role="img"
-                    aria-label="Grafik gunung penjualan tujuh hari terakhir"
-                >
-                    <div class="overview-chart-loading">
-                        Memuat grafik...
-                    </div>
-                </div>
-    
-                <div class="overview-chart-legend">
-                    <span></span>
-                    Penjualan selesai
+        
+                <span class="overview-chart-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M3 17h18M5 14l4-4 4 3 6-8"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </span>
+            </div>
+        
+            <div
+                class="overview-chart-container"
+                id="sales-chart"
+                role="img"
+                aria-label="Grafik gunung penjualan tujuh hari terakhir"
+            >
+                <div class="overview-chart-loading">
+                    Memuat grafik...
                 </div>
             </div>
-
+        
+            <div class="overview-chart-legend">
+                <span></span>
+                Penjualan selesai
+            </div>
+        </div>
+        
+        <!-- STATISTIK ANGKA -->
+        <div class="overview-stat-grid">
+        
+            <!-- Total Pesanan -->
             <article class="overview-stat-card">
                 <span class="overview-stat-icon green">
                     <svg viewBox="0 0 24 24">
@@ -208,27 +210,38 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
                         />
                     </svg>
                 </span>
-
+        
                 <strong id="stat-orders">0</strong>
                 <span>Total Pesanan</span>
             </article>
-
+        
+            <!-- Pesanan Pending -->
             <article class="overview-stat-card">
                 <span class="overview-stat-icon amber">
                     <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9"
-                            fill="none" stroke="currentColor"
-                            stroke-width="1.7"/>
-                        <path d="M12 7v5l3 2"
-                            fill="none" stroke="currentColor"
-                            stroke-width="1.7" stroke-linecap="round"/>
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                        />
+                        <path
+                            d="M12 7v5l3 2"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                        />
                     </svg>
                 </span>
-
+        
                 <strong id="stat-pending">0</strong>
                 <span>Perlu Diproses</span>
             </article>
-
+        
+            <!-- Pesanan Selesai -->
             <article class="overview-stat-card">
                 <span class="overview-stat-icon blue">
                     <svg viewBox="0 0 24 24">
@@ -242,11 +255,12 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
                         />
                     </svg>
                 </span>
-
+        
                 <strong id="stat-completed">0</strong>
                 <span>Pesanan Selesai</span>
             </article>
-
+        
+            <!-- Total Penjualan -->
             <article class="overview-stat-card">
                 <span class="overview-stat-icon purple">
                     <svg viewBox="0 0 24 24">
@@ -259,11 +273,11 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
                         />
                     </svg>
                 </span>
-
+        
                 <strong id="stat-revenue">Rp0</strong>
                 <span>Total Penjualan</span>
             </article>
-
+        
         </div>
     </section>
 
@@ -288,92 +302,6 @@ $freeDelivery = (bool) ($store['free_delivery'] ?? false);
             <div class="overview-empty">
                 Memuat pesanan...
             </div>
-        </div>
-    </section>
-
-    <!-- QUICK BUTTONS -->
-    <section class="overview-section">
-        <div class="overview-heading">
-            <div>
-                <h2>Akses Cepat</h2>
-            </div>
-        </div>
-
-        <div class="overview-quick-grid">
-
-            <a href="<?= e(url('warung/pesanan.php')) ?>"
-                class="overview-quick-card">
-                <span class="overview-quick-icon green">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            stroke-linecap="round"
-                        />
-                    </svg>
-                </span>
-                <strong>Pesanan</strong>
-            </a>
-
-            <a href="<?= e(url('warung/produk.php')) ?>"
-                class="overview-quick-card">
-                <span class="overview-quick-icon blue">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="m12 3 9 5-9 5-9-5 9-5ZM3 8v9l9 5 9-5V8M12 13v9"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </span>
-                <strong>Produk</strong>
-            </a>
-
-            <a href="<?= e(url('warung/pengaturan.php')) ?>"
-                class="overview-quick-card">
-                <span class="overview-quick-icon purple">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                        />
-                        <path
-                            d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.3"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </span>
-                <strong>Pengaturan</strong>
-            </a>
-
-            <a href="<?= e(url('')) ?>"
-                class="overview-quick-card"
-                target="_blank"
-                rel="noopener">
-                <span class="overview-quick-icon orange">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M3 10h18M5 10v10h14V10M3 10l2-6h14l2 6"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.7"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </span>
-                <strong>Lihat Warung</strong>
-            </a>
-
         </div>
     </section>
 
