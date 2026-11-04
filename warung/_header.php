@@ -131,23 +131,33 @@ $storeInitial = function_exists('mb_substr')
                 class="side-nav"
                 aria-label="Menu lainnya"
             >
+
                 <a
-                    class="side-link <?= $activePage === 'produk' ? 'active' : '' ?>"
-                    href="<?= e(url('warung/produk.php')) ?>"
-                    <?= $activePage === 'produk' ? 'aria-current="page"' : '' ?>
+                    class="side-link <?= $activePage === 'stock' ? 'active' : '' ?>"
+                    href="<?= e(url('warung/stock.php')) ?>"
+                    <?= $activePage === 'stock' ? 'aria-current="page"' : '' ?>
                 >
-                    <span aria-hidden="true">□</span>
-                    Produk
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+                        <path d="m3 12 9 5 9-5"/>
+                        <path d="m3 16 9 5 9-5"/>
+                        <path d="M12 13v8"/>
+                    </svg>
+                    <span>Stock</span>
                 </a>
-            
+                
                 <a
                     class="side-link <?= $activePage === 'pengaturan' ? 'active' : '' ?>"
                     href="<?= e(url('warung/pengaturan.php')) ?>"
                     <?= $activePage === 'pengaturan' ? 'aria-current="page"' : '' ?>
                 >
-                    <span aria-hidden="true">⚙</span>
-                    Pengaturan
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.7 1l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.7-1.4-2.4L5.3 15a8 8 0 0 1 0-2l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.7-1L9 7.4h2.8l.3 1.8a8 8 0 0 1 1.7 1l1.7-.7 1.4 2.4-1.4 1.1a8 8 0 0 1-.1 2Z"/>
+                    </svg>
+                    <span>Pengaturan</span>
                 </a>
+
             </nav>
 
             <div class="sidebar-bottom">
@@ -214,7 +224,7 @@ $storeInitial = function_exists('mb_substr')
             class="dashboard-bottom-nav"
             aria-label="Navigasi utama"
         >
-
+        
             <!-- Dashboard -->
             <a
                 class="dashboard-bottom-nav__item <?= $activePage === 'dashboard' ? 'is-active' : '' ?>"
@@ -227,10 +237,9 @@ $storeInitial = function_exists('mb_substr')
                     <rect x="13" y="10" width="8" height="11" rx="2"/>
                     <rect x="3" y="13" width="8" height="8" rx="2"/>
                 </svg>
-
                 <span>Dashboard</span>
             </a>
-
+        
             <!-- Pesanan -->
             <a
                 class="dashboard-bottom-nav__item <?= $activePage === 'pesanan' ? 'is-active' : '' ?>"
@@ -241,10 +250,9 @@ $storeInitial = function_exists('mb_substr')
                     <path d="M7 3h10l3 3v15H4V3h3Z"/>
                     <path d="M8 10h8M8 14h8M8 18h5"/>
                 </svg>
-
                 <span>Pesanan</span>
             </a>
-
+        
             <!-- Kasir -->
             <a
                 class="dashboard-bottom-nav__item <?= $activePage === 'kasir' ? 'is-active' : '' ?>"
@@ -252,33 +260,29 @@ $storeInitial = function_exists('mb_substr')
                 <?= $activePage === 'kasir' ? 'aria-current="page"' : '' ?>
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="16" rx="2"/>
-                    <path d="M7 2v6M17 2v6M3 10h18"/>
-                    <path d="M8 14h2M14 14h2M8 18h2"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M8 7h8M7 12h2m3 0h2m3 0h.01M7 16h2m3 0h2m3 0h.01"/>
                 </svg>
-
                 <span>Kasir</span>
             </a>
-
-            <!-- Stock -->
+        
+            <!-- Produk -->
             <a
-                class="dashboard-bottom-nav__item <?= $activePage === 'stock' ? 'is-active' : '' ?>"
-                href="<?= e(url('warung/stock.php')) ?>"
-                <?= $activePage === 'stock' ? 'aria-current="page"' : '' ?>
+                class="dashboard-bottom-nav__item <?= $activePage === 'produk' ? 'is-active' : '' ?>"
+                href="<?= e(url('warung/produk.php')) ?>"
+                <?= $activePage === 'produk' ? 'aria-current="page"' : '' ?>
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
-                    <path d="m3 12 9 5 9-5"/>
-                    <path d="m3 16 9 5 9-5"/>
+                    <path d="M3 8v8l9 5 9-5V8"/>
                     <path d="M12 13v8"/>
                 </svg>
-
-                <span>Stock</span>
+                <span>Produk</span>
             </a>
-
+        
             <!-- More -->
             <button
-                class="dashboard-bottom-nav__item dashboard-bottom-nav__more <?= in_array($activePage, ['produk', 'pengaturan'], true) ? 'is-active' : '' ?>"
+                class="dashboard-bottom-nav__item dashboard-bottom-nav__more <?= in_array($activePage, ['stock', 'pengaturan'], true) ? 'is-active' : '' ?>"
                 id="dashboard-more-button"
                 type="button"
                 aria-label="Buka menu lainnya"
@@ -286,20 +290,19 @@ $storeInitial = function_exists('mb_substr')
                 aria-expanded="false"
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="5" cy="5" r="1.5"/>
-                    <circle cx="12" cy="5" r="1.5"/>
-                    <circle cx="19" cy="5" r="1.5"/>
-                    <circle cx="5" cy="12" r="1.5"/>
-                    <circle cx="12" cy="12" r="1.5"/>
-                    <circle cx="19" cy="12" r="1.5"/>
-                    <circle cx="5" cy="19" r="1.5"/>
-                    <circle cx="12" cy="19" r="1.5"/>
-                    <circle cx="19" cy="19" r="1.5"/>
+                    <rect x="3" y="3" width="5" height="5" rx="1"/>
+                    <rect x="10" y="3" width="5" height="5" rx="1"/>
+                    <rect x="17" y="3" width="5" height="5" rx="1"/>
+                    <rect x="3" y="10" width="5" height="5" rx="1"/>
+                    <rect x="10" y="10" width="5" height="5" rx="1"/>
+                    <rect x="17" y="10" width="5" height="5" rx="1"/>
+                    <rect x="3" y="17" width="5" height="5" rx="1"/>
+                    <rect x="10" y="17" width="5" height="5" rx="1"/>
+                    <rect x="17" y="17" width="5" height="5" rx="1"/>
                 </svg>
-
                 <span>More</span>
             </button>
-
+        
         </nav>
 
         <main class="dashboard-main">
