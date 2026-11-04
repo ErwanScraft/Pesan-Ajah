@@ -45,6 +45,33 @@ RewriteRule ^(?:app|config|database|scripts|routes)/ - [F,L,NC]
     Require all denied
 </FilesMatch>
 
+# ==========================================
+# MITRA SUBDOMAIN ROUTING
+# ==========================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Arahkan halaman utama subdomain ke Dashboard Warung
+    RewriteCond %{HTTP_HOST} ^mitra\.pesanajah\.web\.id$ [NC]
+    RewriteRule ^$ warung/dashboard.php [L]
+</IfModule>
+
+# ==========================================
+# CLEAN STORE URL
+# ==========================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # URL /nama-warung diarahkan secara internal ke /warung/nama-warung
+    RewriteCond %{REQUEST_URI} !^/warung/ [NC]
+    RewriteCond %{REQUEST_URI} !^/assets/ [NC]
+    RewriteCond %{REQUEST_URI} !^/api/ [NC]
+    RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([a-zA-Z0-9_-]+)/?$ warung/$1 [L,QSA]
+</IfModule>
+
 # =========================================================
 # PESAN AJAH — PUBLIC STORE ROUTING
 # =========================================================
