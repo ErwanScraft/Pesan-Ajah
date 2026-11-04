@@ -89,8 +89,21 @@ $storeInitial = function_exists('mb_substr')
 >
 
     <div class="dashboard-shell">
-
-        <aside class="sidebar" id="sidebar">
+    
+        <!-- Backdrop More Menu -->
+        <button
+            class="sidebar-backdrop"
+            id="sidebar-backdrop"
+            type="button"
+            aria-label="Tutup menu"
+            hidden
+        ></button>
+    
+        <aside
+            class="sidebar"
+            id="sidebar"
+            aria-label="Menu lainnya"
+        >
 
             <a
                 class="brand sidebar-brand"

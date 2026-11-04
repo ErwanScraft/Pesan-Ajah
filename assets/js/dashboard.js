@@ -1054,6 +1054,7 @@ $("#orders-refresh")?.addEventListener(
 );
 
 
+
 /* =========================================================
    NAVIGASI DASHBOARD
 ========================================================= */
@@ -1061,9 +1062,10 @@ $("#orders-refresh")?.addEventListener(
 const sidebar = $("#sidebar");
 const mobileMenu = $("#mobile-menu");
 const moreButton = $("#dashboard-more-button");
+const sidebarBackdrop = $("#sidebar-backdrop");
 
 /**
- * Membuka atau menutup sidebar menu tambahan.
+ * Mengatur popup menu More.
  */
 function toggleMoreMenu(forceOpen) {
 
@@ -1072,6 +1074,20 @@ function toggleMoreMenu(forceOpen) {
         : !sidebar?.classList.contains("open");
 
     sidebar?.classList.toggle("open", open);
+
+    sidebarBackdrop?.classList.toggle(
+        "is-visible",
+        open,
+    );
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.hidden = !open;
+    }
+
+    document.body.classList.toggle(
+        "dashboard-menu-open",
+        open,
+    );
 
     mobileMenu?.setAttribute(
         "aria-expanded",
@@ -1082,6 +1098,11 @@ function toggleMoreMenu(forceOpen) {
         "aria-expanded",
         String(open),
     );
+
+    sidebar?.setAttribute(
+        "aria-hidden",
+        String(!open),
+    );
 }
 
 /* Tombol More */
@@ -1090,7 +1111,13 @@ moreButton?.addEventListener("click", () => {
     toggleMoreMenu();
 });
 
-/* Tutup menu dengan tombol Escape */
+/* Backdrop */
+
+sidebarBackdrop?.addEventListener("click", () => {
+    toggleMoreMenu(false);
+});
+
+/* Tombol Escape */
 
 document.addEventListener("keydown", (event) => {
 
@@ -1106,6 +1133,7 @@ document.addEventListener("keydown", (event) => {
     toggleMoreMenu(false);
 
 });
+
 
 /* =========================================================
    INISIALISASI

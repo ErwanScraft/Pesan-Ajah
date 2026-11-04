@@ -189,3 +189,216 @@
     }
 
 }
+
+
+/* =========================================================
+   MORE MENU — FLOATING BOTTOM POPUP
+========================================================= */
+
+/* Backdrop */
+
+.sidebar-backdrop {
+    display: none;
+}
+
+@media (max-width: 700px) {
+
+    .sidebar-backdrop {
+        position: fixed;
+        z-index: 89;
+        inset: 0;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+        border: 0;
+
+        background: rgb(10 13 25 / 42%);
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition:
+            opacity 220ms ease,
+            visibility 220ms ease;
+    }
+
+    .sidebar-backdrop.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    /* Popup container */
+
+    .sidebar {
+        position: fixed;
+
+        z-index: 95;
+
+        top: auto;
+        right: 12px;
+        bottom: calc(
+            max(12px, env(safe-area-inset-bottom)) + 88px
+        );
+        left: 12px;
+
+        width: auto;
+        max-width: none;
+
+        height: auto;
+        max-height: min(65dvh, 520px);
+
+        display: flex;
+        flex-direction: column;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        overscroll-behavior: contain;
+
+        border: 1px solid rgb(255 255 255 / 8%);
+        border-radius: 22px;
+
+        box-shadow:
+            0 18px 50px rgb(0 0 0 / 22%);
+
+        transform: translateY(18px) scale(.97);
+        transform-origin: bottom center;
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        transition:
+            transform 240ms cubic-bezier(.2, .8, .2, 1),
+            opacity 200ms ease,
+            visibility 200ms ease;
+    }
+
+    /* Popup active */
+
+    .sidebar.open {
+        transform: translateY(0) scale(1);
+
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    /* Popup header */
+
+    .sidebar-brand {
+        flex: 0 0 auto;
+        padding: 18px 18px 14px;
+    }
+
+    /* Menu heading */
+
+    .sidebar-label {
+        margin: 8px 18px 10px;
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
+    /* Menu list */
+
+    .sidebar .side-nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+
+        padding: 0 14px 16px;
+    }
+
+    .sidebar .side-link {
+        display: flex;
+        min-width: 0;
+        min-height: 52px;
+
+        align-items: center;
+        gap: 10px;
+
+        padding: 12px;
+
+        border: 1px solid rgb(128 128 128 / 12%);
+        border-radius: 13px;
+
+        font-size: 12px;
+    }
+
+    .sidebar .side-link > span {
+        flex: 0 0 auto;
+    }
+
+    /* Store information */
+
+    .sidebar-bottom {
+        flex: 0 0 auto;
+
+        margin: 0 14px;
+        padding: 14px 4px;
+
+        border-top: 1px solid rgb(128 128 128 / 15%);
+    }
+
+    /* Logout */
+
+    .sidebar-logout {
+        flex: 0 0 auto;
+
+        padding: 0 14px 16px;
+    }
+
+    .sidebar-logout .button {
+        width: 100%;
+        min-height: 42px;
+    }
+
+    /* Prevent background scroll when popup is open */
+
+    body.dashboard-menu-open {
+        overflow: hidden;
+    }
+
+}
+
+/* Small mobile */
+
+@media (max-width: 360px) {
+
+    .sidebar {
+        right: 8px;
+        left: 8px;
+
+        border-radius: 19px;
+    }
+
+    .sidebar .side-nav {
+        gap: 6px;
+        padding-inline: 10px;
+    }
+
+    .sidebar .side-link {
+        padding: 10px;
+        font-size: 11px;
+    }
+
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar,
+    .sidebar-backdrop {
+        transition: none;
+    }
+
+}
+
