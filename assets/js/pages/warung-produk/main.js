@@ -333,58 +333,61 @@ export async function initWarungProducts({
     function createProductThumbnail(product) {
       const thumbnail = document.createElement("div");
       thumbnail.className = "manage-product-thumbnail";
-
+    
       const placeholder = document.createElement("span");
       placeholder.className = "manage-product-image-placeholder";
       placeholder.textContent = "Tanpa foto";
-
+    
       const image = document.createElement("img");
-
+    
       image.alt = product.name
         ? `Foto ${product.name}`
         : "Foto produk";
-
-      image.loading = "lazy";
+    
+      // Jangan gunakan lazy loading untuk gambar yang awalnya hidden.
+      image.loading = "eager";
       image.decoding = "async";
       image.hidden = true;
-
+    
       thumbnail.append(image, placeholder);
-
+    
+      function showImage() {
+        if (image.naturalWidth > 0) {
+          image.hidden = false;
+          placeholder.hidden = true;
+        }
+      }
+    
       function showPlaceholder() {
         image.hidden = true;
-        image.removeAttribute("src");
         placeholder.hidden = false;
       }
-
+    
       const imageUrl = resolveImageUrl(product.image);
-
+    
       if (!imageUrl) {
         showPlaceholder();
         return thumbnail;
       }
-
-      image.addEventListener(
-        "load",
-        () => {
-          image.hidden = false;
-          placeholder.hidden = true;
-        },
-        { once: true },
-      );
-
-      image.addEventListener(
-        "error",
-        showPlaceholder,
-        { once: true },
-      );
-
+    
+      // Pasang listener sebelum menetapkan src.
+      image.addEventListener("load", showImage);
+    
+      image.addEventListener("error", showPlaceholder, {
+        once: true,
+      });
+    
       image.src = imageUrl;
-
-      if (image.complete && image.naturalWidth > 0) {
-        image.hidden = false;
-        placeholder.hidden = true;
+    
+      // Tangani gambar yang sudah tersedia dari browser cache.
+      if (image.complete) {
+        if (image.naturalWidth > 0) {
+          showImage();
+        } else {
+          showPlaceholder();
+        }
       }
-
+    
       return thumbnail;
     }
 
