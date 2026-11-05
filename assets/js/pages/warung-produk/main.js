@@ -215,21 +215,20 @@ export async function initWarungProducts({
     }
   });
 
+
   function renderProducts() {
     if (!productList) return;
-  
+
     productList.replaceChildren();
-  
+
     const count = $("#product-count");
-  
-    const searchTerm = String(
-      productSearchInput?.value || "",
-    )
+
+    const searchTerm = String(productSearchInput?.value || "")
       .trim()
       .toLocaleLowerCase("id-ID");
-  
+
     const statusFilter = productStatusFilter?.value || "all";
-  
+
     const visibleProducts = products.filter((product) => {
       const searchableText = [
         product.name,
@@ -239,65 +238,63 @@ export async function initWarungProducts({
         .filter(Boolean)
         .join(" ")
         .toLocaleLowerCase("id-ID");
-  
+
       const matchesSearch =
         !searchTerm || searchableText.includes(searchTerm);
-  
+
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "available" && product.available) ||
         (statusFilter === "unavailable" && !product.available);
-  
+
       return matchesSearch && matchesStatus;
     });
-  
+
     if (count) {
       count.textContent =
         searchTerm || statusFilter !== "all"
           ? `${visibleProducts.length} dari ${products.length} produk`
           : `${products.length} produk`;
     }
-  
+
     if (products.length === 0) {
       const empty = document.createElement("p");
       empty.className = "product-empty";
       empty.textContent = "Belum ada produk.";
-  
+
       productList.append(empty);
       return;
     }
-  
+
     if (visibleProducts.length === 0) {
       const empty = document.createElement("p");
       empty.className = "product-empty";
-  
-      empty.textContent = searchTerm || statusFilter !== "all"
-        ? "Tidak ada produk yang sesuai dengan pencarian."
-        : "Belum ada produk.";
-  
+      empty.textContent =
+        "Tidak ada produk yang sesuai dengan pencarian.";
+
       productList.append(empty);
       return;
     }
-  
+
     const categoryMap = new Map();
-  
+
     for (const product of visibleProducts) {
       const category =
         String(product.category || "").trim() || "Lainnya";
-  
+
       if (!categoryMap.has(category)) {
         categoryMap.set(category, []);
       }
-  
+
       categoryMap.get(category).push(product);
     }
-  
+
     function readCategoryOrder() {
       try {
         const parsed = JSON.parse(
           document.body.dataset.categoryOrder || "[]",
         );
-  
+
         return Array.isArray(parsed)
           ? parsed.filter(
               (category) => typeof category === "string",
@@ -307,74 +304,290 @@ export async function initWarungProducts({
         return [];
       }
     }
-  
+
     const categoryRank = new Map(
       readCategoryOrder().map((category, index) => [
         category,
         index,
       ]),
     );
-  
+
     function compareCategories(a, b) {
       const rankA = categoryRank.get(a);
       const rankB = categoryRank.get(b);
-  
+
       if (rankA !== undefined && rankB !== undefined) {
         return rankA - rankB;
       }
-  
+
       if (rankA !== undefined) return -1;
       if (rankB !== undefined) return 1;
-  
+
       return a.localeCompare(b, "id-ID");
     }
-  
+
     const sortedCategories = [...categoryMap.keys()].sort(
       compareCategories,
     );
-  
-    // Pertahankan fungsi createProductThumbnail() yang lama.
-    // Pertahankan fungsi createProductInfo() yang lama.
-    // Pertahankan renderAvailabilityButton() yang lama.
-    // Pertahankan updateAvailability() yang lama.
-    // Pertahankan createProductRow() yang lama.
-  
+
+    function createProductThumbnail(product) {
+      const thumbnail = document.createElement("div");
+      thumbnail.className = "manage-product-thumbnail";
+
+      const placeholder = document.createElement("span");
+      placeholder.className = "manage-product-image-placeholder";
+      placeholder.textContent = "Tanpa foto";
+
+      const image = document.createElement("img");
+
+      image.alt = product.name
+        ? `Foto ${product.name}`
+        : "Foto produk";
+
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.hidden = true;
+
+      thumbnail.append(image, placeholder);
+
+      function showPlaceholder() {
+        image.hidden = true;
+        image.removeAttribute("src");
+        placeholder.hidden = false;
+      }
+
+      const imageUrl = resolveImageUrl(product.image);
+
+      if (!imageUrl) {
+        showPlaceholder();
+        return thumbnail;
+      }
+
+      image.addEventListener(
+        "load",
+        () => {
+          image.hidden = false;
+          placeholder.hidden = true;
+        },
+        { once: true },
+      );
+
+      image.addEventListener(
+        "error",
+        showPlaceholder,
+        { once: true },
+      );
+
+      image.src = imageUrl;
+
+      if (image.complete && image.naturalWidth > 0) {
+        image.hidden = false;
+        placeholder.hidden = true;
+      }
+
+      return thumbnail;
+    }
+
+    function createProductInfo(product) {
+      const info = document.createElement("div");
+      info.className = "manage-product";
+
+      const details = document.createElement("span");
+      const name = document.createElement("strong");
+
+      name.textContent = product.name || "Produk tanpa nama";
+
+      const variant = document.createElement("small");
+      variant.className = "manage-product-variant";
+      variant.textContent = product.variant || "";
+      variant.hidden = !product.variant;
+
+      const metadata = document.createElement("small");
+      metadata.textContent =
+        `${product.unit || "-"} · ${formatRupiah(product.price)}`;
+
+      details.append(name, variant, metadata);
+      info.append(createProductThumbnail(product), details);
+
+      return info;
+    }
+
+    function renderAvailabilityButton(button, product) {
+      const available = product.available;
+
+      button.classList.toggle("is-available", available);
+      button.classList.toggle("is-unavailable", !available);
+
+      button.setAttribute(
+        "aria-label",
+        available
+          ? `Tandai ${product.name} sebagai habis`
+          : `Tandai ${product.name} sebagai tersedia`,
+      );
+
+      button.title = available
+        ? "Tersedia — klik untuk menandai habis"
+        : "Habis — klik untuk mengaktifkan";
+
+      button.innerHTML = available
+        ? `
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle
+              cx="12" cy="12" r="9"
+              fill="none" stroke="currentColor" stroke-width="1.8"
+            />
+            <path
+              d="m8 12 2.5 2.5L16.5 8"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"
+            />
+          </svg>
+        `
+        : `
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle
+              cx="12" cy="12" r="9"
+              fill="none" stroke="currentColor" stroke-width="1.8"
+            />
+            <path
+              d="m9 9 6 6m0-6-6 6"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        `;
+    }
+
+    async function updateAvailability(product, button) {
+      if (button.disabled) return;
+
+      const previousValue = product.available;
+      const nextValue = !previousValue;
+
+      button.disabled = true;
+      button.classList.add("is-saving");
+      button.title = "Menyimpan perubahan...";
+      button.setAttribute(
+        "aria-label",
+        `Menyimpan status produk ${product.name}`,
+      );
+
+      try {
+        await postJSON(API.products, {
+          id: product.id,
+          name: product.name,
+          variant: product.variant || "",
+          category: product.category || "Lainnya",
+          description: product.description || "",
+          price: product.price,
+          unit: product.unit,
+          tag: product.tag || "",
+          available: nextValue,
+        });
+
+        product.available = nextValue;
+        renderAvailabilityButton(button, product);
+
+        notify(
+          nextValue
+            ? "Produk berhasil diaktifkan."
+            : "Produk ditandai habis.",
+        );
+
+        await loadProducts();
+      } catch (error) {
+        product.available = previousValue;
+        renderAvailabilityButton(button, product);
+
+        notify(
+          error instanceof Error
+            ? error.message
+            : "Status produk gagal diperbarui.",
+        );
+      } finally {
+        button.disabled = false;
+        button.classList.remove("is-saving");
+      }
+    }
+
+    function createProductRow(product) {
+      const row = document.createElement("article");
+      row.className = "manage-row";
+      row.dataset.productId = String(product.id);
+
+      const info = createProductInfo(product);
+      const actions = document.createElement("div");
+      actions.className = "manage-actions";
+
+      const availabilityButton = document.createElement("button");
+      availabilityButton.type = "button";
+      availabilityButton.className = "availability-icon";
+
+      renderAvailabilityButton(availabilityButton, product);
+
+      availabilityButton.addEventListener("click", () => {
+        updateAvailability(product, availabilityButton);
+      });
+
+      const editButton = createIconButton(
+        `Edit ${product.name}`,
+        "edit",
+        () => editProduct(product.id),
+      );
+
+      const deleteButton = createIconButton(
+        `Hapus ${product.name}`,
+        "delete",
+        () => deleteProduct(product.id),
+        "danger-action",
+      );
+
+      actions.append(
+        availabilityButton,
+        editButton,
+        deleteButton,
+      );
+
+      row.append(info, actions);
+
+      return row;
+    }
+
     for (const category of sortedCategories) {
       const categoryProducts = categoryMap.get(category);
-  
+
       if (!categoryProducts?.length) continue;
-  
+
       const section = document.createElement("section");
       section.className = "product-category-group";
       section.setAttribute("aria-label", `Kategori ${category}`);
-  
+
       const header = document.createElement("header");
       header.className = "product-category-heading";
-  
+
       const title = document.createElement("h4");
       title.textContent = category;
-  
+
       const categoryCount = document.createElement("span");
       categoryCount.className = "product-category-count";
       categoryCount.textContent =
         `${categoryProducts.length} produk`;
-  
+
       header.append(title, categoryCount);
-  
+
       const card = document.createElement("div");
       card.className = "product-category-card";
-  
+
       for (const product of categoryProducts) {
         card.append(createProductRow(product));
       }
-  
+
       section.append(header, card);
       productList.append(section);
     }
   }
-  
+
   productSearchInput?.addEventListener("input", renderProducts);
-  
   productStatusFilter?.addEventListener("change", renderProducts);
   
   async function loadProducts() {
