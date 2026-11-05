@@ -146,9 +146,17 @@ if (mb_strlen($buyerNote, 'UTF-8') > 500) {
 
 $deliveryMethod = $input['delivery_method'] ?? '';
 
-$buyerPhoneNormalized = $deliveryMethod === 'delivery'
-    ? checkout_phone($buyerPhone)
-    : null;
+$buyerPhoneNormalized = checkout_phone($buyerPhone);
+
+if (
+    $buyerPhone !== ''
+    && $buyerPhoneNormalized === null
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Nomor WhatsApp tidak valid.',
+    ], 422);
+}
 
 $deliveryAddress = trim(
     is_string($input['delivery_address'] ?? null)
@@ -292,6 +300,23 @@ foreach ($items as $item) {
 }
 
 $db = database();
+
+$deviceToken = $_COOKIE['pa_buyer_device'] ?? '';
+
+if (
+    !is_string($deviceToken)
+    || !preg_match('/^[a-f0-9]{64}$/i', $deviceToken)
+) {
+    $deviceToken = '';
+}
+
+$isNewBuyerDevice = $deviceToken === '';
+
+if ($isNewBuyerDevice) {
+    $deviceToken = bin2hex(random_bytes(32));
+}
+
+$deviceTokenHash = hash('sha256', $deviceToken);
 
 try {
     $db->beginTransaction();
@@ -442,67 +467,149 @@ try {
     | SIMPAN PROFIL PEMBELI
     |--------------------------------------------------------------------------
     */
-
+    
     $buyerAddress = $deliveryMethod === 'delivery'
         ? $deliveryAddress
         : null;
-
+    
     $buyerMapsUrl = $deliveryMethod === 'delivery'
-        ? ($deliveryMapsUrl !== '' ? $deliveryMapsUrl : null)
-        : null;
-
-    $buyerStmt = $db->prepare(
-        "INSERT INTO buyers (
-            name,
-            phone,
-            delivery_address,
-            delivery_maps_url,
-            delivery_latitude,
-            delivery_longitude
-        ) VALUES (
-            :name,
-            :phone,
-            :address,
-            :maps_url,
-            :latitude,
-            :longitude
-        )
-
-        ON DUPLICATE KEY UPDATE
-            id = LAST_INSERT_ID(id),
-            name = VALUES(name),
-            delivery_address = COALESCE(
-                VALUES(delivery_address),
-                delivery_address
-            ),
-            delivery_maps_url = COALESCE(
-                VALUES(delivery_maps_url),
-                delivery_maps_url
-            ),
-            delivery_latitude = COALESCE(
-                VALUES(delivery_latitude),
-                delivery_latitude
-            ),
-            delivery_longitude = COALESCE(
-                VALUES(delivery_longitude),
-                delivery_longitude
-            )"
+        && $deliveryMapsUrl !== ''
+            ? $deliveryMapsUrl
+            : null;
+    
+    /*
+     * Cari profil berdasarkan token perangkat.
+     * Nomor WhatsApp tidak digunakan untuk autentikasi.
+     */
+    $deviceStmt = $db->prepare(
+        'SELECT buyer_id
+         FROM buyer_devices
+         WHERE token_hash = :token_hash
+         LIMIT 1
+         FOR UPDATE'
     );
-
-    $buyerStmt->execute([
-        'name' => $buyerName,
-        'phone' => $buyerPhoneNormalized,
-        'address' => $buyerAddress,
-        'maps_url' => $buyerMapsUrl,
-        'latitude' => $deliveryMethod === 'delivery'
-            ? $deliveryLatitude
-            : null,
-        'longitude' => $deliveryMethod === 'delivery'
-            ? $deliveryLongitude
-            : null,
+    
+    $deviceStmt->execute([
+        'token_hash' => $deviceTokenHash,
     ]);
-
-    $buyerId = (int) $db->lastInsertId();
+    
+    $buyerId = (int) ($deviceStmt->fetchColumn() ?: 0);
+    
+    if ($buyerId > 0) {
+        /*
+         * Perangkat sudah memiliki profil.
+         * Perbarui data identitas dan lokasi terakhir.
+         */
+        $buyerStmt = $db->prepare(
+            "UPDATE buyers SET
+                name = :name,
+    
+                phone = COALESCE(
+                    :phone,
+                    phone
+                ),
+    
+                delivery_address = CASE
+                    WHEN :is_delivery_address = 1
+                    THEN :address
+                    ELSE delivery_address
+                END,
+    
+                delivery_maps_url = CASE
+                    WHEN :has_new_location = 1
+                    THEN :maps_url
+                    ELSE delivery_maps_url
+                END,
+    
+                delivery_latitude = CASE
+                    WHEN :has_new_location = 1
+                    THEN :latitude
+                    ELSE delivery_latitude
+                END,
+    
+                delivery_longitude = CASE
+                    WHEN :has_new_location = 1
+                    THEN :longitude
+                    ELSE delivery_longitude
+                END
+    
+            WHERE id = :buyer_id
+            LIMIT 1"
+        );
+    
+        $hasNewLocation = (
+            $deliveryMethod === 'delivery'
+            && $deliveryLatitude !== null
+            && $deliveryLongitude !== null
+        );
+    
+        $buyerStmt->execute([
+            'name' => $buyerName,
+            'phone' => $buyerPhoneNormalized,
+            'is_delivery_address' => $deliveryMethod === 'delivery'
+                ? 1
+                : 0,
+            'address' => $deliveryAddress,
+            'has_new_location' => $hasNewLocation ? 1 : 0,
+            'maps_url' => $buyerMapsUrl,
+            'latitude' => $deliveryLatitude,
+            'longitude' => $deliveryLongitude,
+            'buyer_id' => $buyerId,
+        ]);
+    
+    } else {
+        /*
+         * Perangkat baru:
+         * buat profil pembeli dan relasi perangkat.
+         */
+        $buyerStmt = $db->prepare(
+            'INSERT INTO buyers (
+                name,
+                phone,
+                delivery_address,
+                delivery_maps_url,
+                delivery_latitude,
+                delivery_longitude
+            ) VALUES (
+                :name,
+                :phone,
+                :address,
+                :maps_url,
+                :latitude,
+                :longitude
+            )'
+        );
+    
+        $buyerStmt->execute([
+            'name' => $buyerName,
+            'phone' => $buyerPhoneNormalized,
+            'address' => $buyerAddress,
+            'maps_url' => $buyerMapsUrl,
+            'latitude' => $deliveryMethod === 'delivery'
+                ? $deliveryLatitude
+                : null,
+            'longitude' => $deliveryMethod === 'delivery'
+                ? $deliveryLongitude
+                : null,
+        ]);
+    
+        $buyerId = (int) $db->lastInsertId();
+    
+        $deviceInsert = $db->prepare(
+            'INSERT INTO buyer_devices (
+                buyer_id,
+                token_hash
+            ) VALUES (
+                :buyer_id,
+                :token_hash
+            )'
+        );
+    
+        $deviceInsert->execute([
+            'buyer_id' => $buyerId,
+            'token_hash' => $deviceTokenHash,
+        ]);
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -643,7 +750,7 @@ try {
         'buyer_id' => $buyerId,
         'order_number' => $orderNumber,
         'buyer_name' => $buyerName,
-        'buyer_phone' => $buyerPhone,
+        'buyer_phone' => $buyerPhoneNormalized,
         'delivery_method' => $deliveryMethod,
         'delivery_address' => $buyerAddress,
         'notes' => $buyerNote !== '' ? $buyerNote : null,
@@ -702,7 +809,18 @@ try {
      * URL WhatsApp dikirim ke browser.
      */
     $db->commit();
-
+    
+    /*
+     * Cookie perangkat hanya diterbitkan setelah
+     * transaksi pesanan dan profil berhasil disimpan.
+     */
+    setcookie('pa_buyer_device', $deviceToken, [
+        'expires' => time() + (365 * 24 * 60 * 60),
+        'path' => '/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 
     /*
     |-------------------------------------------------------------------------- 

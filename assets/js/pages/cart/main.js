@@ -309,6 +309,83 @@ export function initCartPage({
     csrfToken = data.csrf_token;
   }
 
+  async function loadBuyerProfile() {
+    try {
+      const response = await fetch("/api/buyer-profile.php", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+  
+      if (!response.ok) return;
+  
+      const result = await response.json();
+  
+      if (!result.success || !result.profile) return;
+  
+      const profile = result.profile;
+  
+      const nameInput = $("#buyer-name");
+      const phoneInput = $("#buyer-phone");
+      const addressInput = $("#delivery-address");
+      const mapsInput = $("#delivery-maps-url");
+      const latitudeInput = $("#delivery-latitude");
+      const longitudeInput = $("#delivery-longitude");
+  
+      // Jangan menimpa data yang sudah mulai diketik pembeli.
+      if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = profile.name || "";
+      }
+  
+      if (phoneInput && !phoneInput.value.trim()) {
+        phoneInput.value = profile.phone || "";
+      }
+  
+      if (addressInput && !addressInput.value.trim()) {
+        addressInput.value = profile.delivery_address || "";
+      }
+  
+      if (mapsInput && !mapsInput.value.trim()) {
+        mapsInput.value = profile.delivery_maps_url || "";
+      }
+  
+      if (
+        latitudeInput &&
+        !latitudeInput.value &&
+        profile.delivery_latitude !== null
+      ) {
+        latitudeInput.value = profile.delivery_latitude;
+      }
+  
+      if (
+        longitudeInput &&
+        !longitudeInput.value &&
+        profile.delivery_longitude !== null
+      ) {
+        longitudeInput.value = profile.delivery_longitude;
+      }
+  
+      if (
+        latitudeInput?.value &&
+        longitudeInput?.value
+      ) {
+        setLocationStatus("success");
+      }
+  
+      renderCart();
+  
+    } catch (error) {
+      // Checkout tetap dapat digunakan meskipun profil gagal dimuat.
+      console.warn(
+        "[Pesan Ajah] Profil pembeli tidak dapat dimuat.",
+        error,
+      );
+    }
+  }
+
   function setLocationStatus(state = "idle") {
     const button = $("#use-location-button");
 
@@ -338,17 +415,14 @@ export function initCartPage({
       address.required = false;
     }
 
-    if (!isDelivery) {
-      const urlInput = $("#delivery-maps-url");
-      const latitude = $("#delivery-latitude");
-      const longitude = $("#delivery-longitude");
-
-      if (urlInput) urlInput.value = "";
-      if (latitude) latitude.value = "";
-      if (longitude) longitude.value = "";
-    }
-
-    setLocationStatus("idle");
+    const latitude = $("#delivery-latitude");
+    const longitude = $("#delivery-longitude");
+    
+    setLocationStatus(
+      latitude?.value && longitude?.value
+        ? "success"
+        : "idle",
+    );
   }
 
   function validMapsUrl(value) {
@@ -465,9 +539,6 @@ export function initCartPage({
     const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
     const deliveryMethod = selectedFulfillment();
 
-    const validatedBuyerPhone =
-      deliveryMethod === "delivery" ? buyerPhone : "";
-
     const deliveryAddress =
       $("#delivery-address")?.value.trim() ?? "";
 
@@ -517,7 +588,7 @@ export function initCartPage({
 
     if (
       deliveryMethod === "delivery" &&
-      (!validatedBuyerPhone || validatedBuyerPhone.length > 25)
+      (!buyerPhone || buyerPhone.length > 25)
     ) {
       showToast(toast, "Nomor Whatsapp belum kamu isi lo.");
       $("#buyer-phone")?.focus();
@@ -567,7 +638,7 @@ export function initCartPage({
         _token: csrfToken,
         store_id: product.store_id,
         buyer_name: buyerName,
-        buyer_phone: validatedBuyerPhone,
+        buyer_phone: buyerPhone,
         buyer_note: $("#buyer-note")?.value.trim() ?? "",
         delivery_method: deliveryMethod,
 
@@ -753,7 +824,9 @@ export function initCartPage({
   });
 
   toggleDeliveryFields();
-
+  
+  loadBuyerProfile();
+  
   cartItems?.addEventListener("click", (event) => {
     const addButton = event.target.closest("[data-add]");
     const removeButton = event.target.closest("[data-remove]");
