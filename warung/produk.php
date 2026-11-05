@@ -27,7 +27,6 @@ require __DIR__ . '/_header.php';
         </div>
     
         <div class="products-heading-actions">
-            <span class="table-caption" id="product-count">0 produk</span>
     
             <button
                 class="button button-primary"
@@ -48,7 +47,37 @@ require __DIR__ . '/_header.php';
         aria-labelledby="products-list-title"
     >
         <div class="products-list-heading">
-            <h3 id="products-list-title">Daftar produk</h3>
+            <div>
+                <h3 id="products-list-title">Daftar produk</h3>
+                <p>Atur katalog dan ketersediaan produk.</p>
+            </div>
+        
+            <span class="table-caption" id="product-count">0 produk</span>
+        </div>
+        
+        <div class="products-toolbar">
+            <label class="products-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="m16 16 4 4"></path>
+                </svg>
+        
+                <input
+                    type="search"
+                    id="product-search"
+                    placeholder="Cari nama atau varian produk..."
+                    autocomplete="off"
+                >
+            </label>
+        
+            <select
+                id="product-status-filter"
+                aria-label="Filter status produk"
+            >
+                <option value="all">Semua status</option>
+                <option value="available">Tersedia</option>
+                <option value="unavailable">Habis</option>
+            </select>
         </div>
     
         <div
