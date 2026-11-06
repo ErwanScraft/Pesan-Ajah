@@ -858,6 +858,40 @@
     
         let catalogProducts = [];
         let catalogLoaded = false;
+        
+          function resolveEditImageUrl(value) {
+              if (typeof value !== "string") {
+                  return "";
+              }
+          
+              const path = value.trim();
+          
+              if (!path) {
+                  return "";
+              }
+          
+              if (/^(https?:\/\/|data:image\/|blob:)/i.test(path)) {
+                  return path;
+              }
+          
+              if (/^[a-z][a-z0-9+.-]*:/i.test(path)) {
+                  return "";
+              }
+          
+              const normalized = path
+                  .replace(/\\/g, "/")
+                .replace(/^(\.\/)+/, "")
+                .replace(/^\/+/, "");
+        
+            if (
+                !normalized ||
+                normalized.split("/").includes("..")
+            ) {
+                return "";
+            }
+        
+            return `/${normalized}`;
+        }
     
         function getSubtotal() {
             return items.reduce(
@@ -878,13 +912,21 @@
                 const row = createElement("div", "buyer-edit-product");
     
                 const image = createElement("img", "buyer-edit-product-image");
+                
                 image.alt = item.name;
                 image.loading = "lazy";
-    
-                if (item.image) {
-                    image.src = item.image;
-                } else {
-                    image.hidden = true;
+                image.hidden = true;
+                
+                const imageUrl = resolveEditImageUrl(item.image);
+                
+                if (imageUrl) {
+                    image.addEventListener("error", () => {
+                        image.hidden = true;
+                        image.removeAttribute("src");
+                    }, { once: true });
+                
+                    image.src = imageUrl;
+                    image.hidden = false;
                 }
     
                 const info = createElement("div", "buyer-edit-product-info");

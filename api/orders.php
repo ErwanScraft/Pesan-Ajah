@@ -239,19 +239,23 @@ try {
 
     $itemStmt = $db->prepare(
         'SELECT
-            id,
-            product_id,
-            product_name,
-            product_variant,
-            quantity,
-            price,
-            subtotal
-
-        FROM order_items
-
-        WHERE order_id = :order_id
-
-        ORDER BY id ASC'
+            oi.id,
+            oi.product_id,
+            oi.product_name,
+            oi.product_variant,
+            oi.quantity,
+            oi.price,
+            oi.subtotal,
+            p.image AS image
+    
+        FROM order_items oi
+    
+        LEFT JOIN products p
+            ON p.id = oi.product_id
+    
+        WHERE oi.order_id = :order_id
+    
+        ORDER BY oi.id ASC'
     );
 
     foreach ($orders as &$order) {
