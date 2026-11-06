@@ -755,11 +755,12 @@
             "buyer-edit-section"
         );
     
-        productSection.appendChild(
-            createElement("h3", "", "Daftar Item")
-        );
-    
         const productList = createElement("div", "buyer-edit-products");
+
+        productSection.append(
+            createElement("h3", "", "Daftar Item"),
+            productList
+        );
     
         const addButton = createElement(
             "button",
