@@ -1478,8 +1478,29 @@
 }
 
 .buyer-edit-remove {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
     color: #a43c3c;
-    font-size: 22px;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.buyer-edit-remove:hover {
+    background: #fceaea;
+    color: #c62828;
+}
+
+.buyer-edit-remove svg {
+    display: block;
+    width: 19px;
+    height: 19px;
 }
 
 .buyer-edit-add {
