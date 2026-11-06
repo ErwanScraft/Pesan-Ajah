@@ -1,7 +1,6 @@
-
 /* =========================================================
    PESAN AJAH — BUYER DASHBOARD
-   Mobile-first order tracking UI
+   Clean Order Management Interface
 ========================================================= */
 
 :root {
@@ -10,11 +9,11 @@
     --buyer-green-soft: #edf7f0;
     --buyer-text: #202520;
     --buyer-muted: #737a75;
-    --buyer-border: #e4e7e4;
-    --buyer-surface: #f6f7f6;
+    --buyer-border: #e7ebe7;
+    --buyer-surface: #f7f9f7;
     --buyer-white: #ffffff;
     --buyer-danger: #b42318;
-    --buyer-radius: 18px;
+    --buyer-radius: 16px;
 }
 
 /* Base */
@@ -22,7 +21,7 @@
 .buyer-page {
     width: 100%;
     min-height: 65vh;
-    padding: 32px 0 48px;
+    padding: 34px 0 52px;
     overflow-wrap: anywhere;
 }
 
@@ -37,7 +36,7 @@
 }
 
 .buyer-container {
-    width: min(100% - 40px, 860px);
+    width: min(100% - 40px, 920px);
     min-width: 0;
     margin-inline: auto;
 }
@@ -51,7 +50,7 @@
     font: inherit;
 }
 
-/* Header */
+/* Shared header */
 
 .buyer-site-header {
     position: relative;
@@ -80,47 +79,32 @@
     min-width: 0;
 }
 
-.buyer-back-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 40px;
-    padding: 9px 13px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.buyer-back-button svg {
-    width: 17px;
-    height: 17px;
-}
-
 /* Page introduction */
 
 .buyer-intro {
-    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 26px;
 }
 
-.buyer-intro .eyebrow {
-    display: inline-block;
-    margin: 0;
-    color: var(--buyer-muted);
+.buyer-intro-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--buyer-green);
     font-size: 10px;
-    font-weight: 750;
-    letter-spacing: 0.08em;
+    font-weight: 800;
+    letter-spacing: 0.1em;
 }
 
 .buyer-intro h1 {
-    margin: 7px 0 6px;
+    margin: 0 0 6px;
     color: var(--buyer-text);
     font-size: clamp(26px, 4vw, 34px);
     font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -0.7px;
+    line-height: 1.2;
+    letter-spacing: -0.8px;
 }
 
 .buyer-intro p {
@@ -130,13 +114,41 @@
     line-height: 1.7;
 }
 
-/* Summary counters */
+.buyer-shop-link {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 9px 14px;
+    border: 1px solid var(--buyer-border);
+    border-radius: 10px;
+    background: var(--buyer-white);
+    color: var(--buyer-green-dark);
+    font-size: 12px;
+    font-weight: 750;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease;
+}
+
+.buyer-shop-link:hover {
+    border-color: #b9d8c4;
+    background: var(--buyer-green-soft);
+}
+
+.buyer-shop-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Summary */
 
 .buyer-summary {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
+    gap: 14px;
+    margin-bottom: 34px;
 }
 
 .buyer-summary-card {
@@ -144,46 +156,101 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 8px;
     min-width: 0;
-    min-height: 112px;
-    padding: 18px;
-    border: 1px solid transparent;
-    border-radius: 16px;
-    background: #f1f2f1;
+    min-height: 142px;
+    padding: 20px 22px;
+    border: 1px solid var(--buyer-border);
+    border-radius: var(--buyer-radius);
+    background: var(--buyer-white);
+}
+
+.buyer-summary-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.buyer-summary-icon {
+    display: grid;
+    flex: 0 0 34px;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--buyer-green-soft);
+    color: var(--buyer-green-dark);
+}
+
+.buyer-summary-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.buyer-summary-completed .buyer-summary-icon {
+    background: #edf2ff;
+    color: #315ca8;
 }
 
 .buyer-summary-label {
-    color: #707670;
+    color: var(--buyer-muted);
     font-size: 12px;
-    line-height: 1.5;
+    font-weight: 650;
 }
 
 .buyer-summary-card > strong {
     color: var(--buyer-text);
-    font-size: 29px;
-    font-weight: 800;
-    line-height: 1.2;
+    font-size: 30px;
+    font-weight: 850;
+    line-height: 1.1;
     font-variant-numeric: tabular-nums;
 }
 
-.buyer-summary-icon {
-    display: none;
+.buyer-summary-caption {
+    margin-top: 6px;
+    color: #929992;
+    font-size: 10px;
+    line-height: 1.5;
 }
 
-/* =========================================================
-   ORDER MANAGEMENT — CATEGORY NAVIGATION
-========================================================= */
+/* Order section */
+
+.buyer-order-section {
+    min-width: 0;
+}
+
+.buyer-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.buyer-section-heading h2 {
+    margin: 0 0 4px;
+    color: var(--buyer-text);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.buyer-section-heading p {
+    margin: 0;
+    color: var(--buyer-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* Category tabs */
 
 .buyer-order-tabs {
     display: flex;
     align-items: center;
     gap: 8px;
-
     width: 100%;
-    margin: 22px 0 18px;
-    padding: 4px 0;
-
+    margin: 0 0 18px;
+    padding: 3px 0 7px;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -198,32 +265,22 @@
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-
-    min-height: 43px;
-    padding: 9px 15px;
-
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 14px;
     border: 1px solid var(--buyer-border);
-    border-radius: 11px;
-
+    border-radius: 10px;
     background: var(--buyer-white);
     color: var(--buyer-muted);
-
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
-
     cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
 .buyer-order-tab:hover {
-    border-color: #b9d8c4;
-    background: #f7faf7;
+    border-color: #c7ddce;
     color: var(--buyer-green-dark);
 }
 
@@ -235,17 +292,14 @@
 
 .buyer-tab-count {
     display: inline-flex;
-    min-width: 21px;
-    height: 21px;
     align-items: center;
     justify-content: center;
-
-    padding: 0 6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
     border-radius: 7px;
-
     background: #f0f2f0;
     color: var(--buyer-muted);
-
     font-size: 10px;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
@@ -256,46 +310,11 @@
     color: var(--buyer-white);
 }
 
-.buyer-order-tab:focus-visible {
-    outline: 2px solid var(--buyer-green);
-    outline-offset: 3px;
-}
-
-/* Mobile */
-
-@media (max-width: 520px) {
-    .buyer-order-tabs {
-        gap: 7px;
-        margin: 18px 0 15px;
-    }
-
-    .buyer-order-tab {
-        min-height: 40px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-size: 11px;
-    }
-
-    .buyer-tab-count {
-        min-width: 19px;
-        height: 19px;
-        font-size: 9px;
-    }
-}
-
-/* Reduced motion */
-
-@media (prefers-reduced-motion: reduce) {
-    .buyer-order-tab {
-        transition: none;
-    }
-}
-
 /* Message and loading */
 
 .buyer-message {
     margin: 0 0 14px;
-    padding: 12px 14px;
+    padding: 11px 14px;
     border: 1px solid var(--buyer-border);
     border-radius: 10px;
     background: var(--buyer-white);
@@ -317,9 +336,9 @@
 }
 
 .buyer-loading {
-    padding: 32px 16px;
+    padding: 34px 16px;
     border: 1px solid var(--buyer-border);
-    border-radius: 14px;
+    border-radius: var(--buyer-radius);
     background: var(--buyer-white);
     color: var(--buyer-muted);
     font-size: 12px;
@@ -331,7 +350,7 @@
 .buyer-orders {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
+    gap: 16px;
     min-width: 0;
 }
 
@@ -341,19 +360,19 @@
     border: 1px solid var(--buyer-border);
     border-radius: var(--buyer-radius);
     background: var(--buyer-white);
-    box-shadow: 0 2px 5px rgb(0 0 0 / 2%);
+    box-shadow: 0 3px 12px rgb(24 45 30 / 3%);
 }
 
-/* Card header */
+/* Order header */
 
 .buyer-order-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
+    gap: 14px;
     min-width: 0;
-    padding: 17px 18px 15px;
-    border-bottom: 1px solid #eceeec;
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid #edf0ed;
 }
 
 .buyer-order-identity {
@@ -362,7 +381,7 @@
 }
 
 .buyer-order-store {
-    margin: 0 0 7px;
+    margin: 0 0 5px;
     color: var(--buyer-text);
     font-size: 15px;
     font-weight: 800;
@@ -373,7 +392,7 @@
 .buyer-order-number {
     display: inline-block;
     max-width: 100%;
-    margin: 0 0 6px;
+    margin: 0 0 3px;
     color: var(--buyer-muted);
     font-size: 11px;
     line-height: 1.6;
@@ -382,12 +401,12 @@
 
 .buyer-order-date {
     margin: 0;
-    color: var(--buyer-muted);
-    font-size: 11px;
+    color: #929992;
+    font-size: 10px;
     line-height: 1.6;
 }
 
-/* Order status badge */
+/* Status badge */
 
 .buyer-status-badge {
     display: inline-flex;
@@ -395,12 +414,12 @@
     align-items: center;
     justify-content: center;
     max-width: 48%;
-    padding: 7px 10px;
-    border-radius: 999px;
+    padding: 7px 11px;
+    border-radius: 8px;
     background: #eaf1eb;
     color: #35634a;
     font-size: 10px;
-    font-weight: 750;
+    font-weight: 800;
     line-height: 1.4;
     text-align: center;
     overflow-wrap: anywhere;
@@ -443,23 +462,23 @@
     align-items: center;
     gap: 15px;
     min-width: 0;
-    padding: 20px 18px;
+    padding: 18px 20px;
 }
 
 .buyer-summary-product-icon {
     display: grid;
-    flex: 0 0 76px;
+    flex: 0 0 58px;
     place-items: center;
-    width: 76px;
-    height: 76px;
-    border-radius: 17px;
-    background: #f1f2f1;
-    color: var(--buyer-text);
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    background: var(--buyer-surface);
+    color: var(--buyer-green-dark);
 }
 
 .buyer-summary-product-icon svg {
-    width: 31px;
-    height: 31px;
+    width: 27px;
+    height: 27px;
 }
 
 .buyer-order-summary-content {
@@ -468,44 +487,40 @@
 }
 
 .buyer-order-summary-title {
-    margin: 0 0 5px;
+    margin: 0 0 4px;
     color: var(--buyer-text);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     line-height: 1.5;
 }
 
 .buyer-order-summary-meta {
-    margin: 0 0 8px;
+    margin: 0 0 7px;
     color: var(--buyer-muted);
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.6;
 }
 
 .buyer-order-total {
     margin: 0;
-    color: var(--buyer-text);
-    font-size: clamp(19px, 3vw, 24px);
-    font-weight: 800;
-    line-height: 1.35;
+    color: var(--buyer-green-dark);
+    font-size: clamp(19px, 3vw, 23px);
+    font-weight: 850;
+    line-height: 1.3;
     font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   ORDER PROGRESS — HORIZONTAL ICON STEPPER
-========================================================= */
+/* Tracking panel */
 
 .buyer-tracking-panel {
     min-width: 0;
-    margin: 0 16px 14px;
-    padding: 20px 16px 15px;
+    margin: 0 20px 16px;
+    padding: 18px 16px 13px;
     border: 1px solid var(--buyer-border);
-    border-radius: 16px;
-    background: #fff;
+    border-radius: 13px;
+    background: #fcfdfc;
 }
-
-/* Stepper layout */
 
 .buyer-progress-steps {
     display: flex;
@@ -523,19 +538,17 @@
     flex-direction: column;
     align-items: center;
     min-width: 0;
-    gap: 9px;
+    gap: 8px;
     color: var(--buyer-muted);
     text-align: center;
 }
-
-/* Connector line */
 
 .buyer-progress-step::after {
     position: absolute;
     top: 16px;
     left: calc(50% + 19px);
     right: calc(-50% + 19px);
-    height: 3px;
+    height: 2px;
     border-radius: 999px;
     background: #e5e8e5;
     content: "";
@@ -544,8 +557,6 @@
 .buyer-progress-step:last-child::after {
     display: none;
 }
-
-/* Icon */
 
 .buyer-progress-icon {
     position: relative;
@@ -559,18 +570,12 @@
     border-radius: 50%;
     background: #f5f6f5;
     color: #929a93;
-    transition:
-        background 180ms ease,
-        border-color 180ms ease,
-        color 180ms ease;
 }
 
 .buyer-progress-icon svg {
-    width: 19px;
-    height: 19px;
+    width: 18px;
+    height: 18px;
 }
-
-/* Completed steps */
 
 .buyer-progress-step.is-complete {
     color: var(--buyer-green-dark);
@@ -586,8 +591,6 @@
     background: var(--buyer-green);
 }
 
-/* Current step */
-
 .buyer-progress-step.is-current {
     color: var(--buyer-green-dark);
     font-weight: 800;
@@ -599,8 +602,6 @@
     color: #fff;
     box-shadow: 0 0 0 4px var(--buyer-green-soft);
 }
-
-/* Step labels */
 
 .buyer-progress-label {
     display: block;
@@ -616,11 +617,9 @@
     font-weight: 800;
 }
 
-/* Status message */
-
 .buyer-progress-message {
-    margin: 17px 0 0;
-    padding-top: 12px;
+    margin: 15px 0 0;
+    padding-top: 11px;
     border-top: 1px solid var(--buyer-border);
     color: var(--buyer-muted);
     font-size: 11px;
@@ -632,10 +631,10 @@
     margin: 0;
     padding: 12px;
     border: 1px solid #f1d1d1;
-    border-radius: 10px;
+    border-radius: 9px;
     background: #fff5f5;
     color: var(--buyer-danger);
-    font-weight: 700;
+    font-weight: 750;
 }
 
 .buyer-tracking-panel.is-cancelled {
@@ -644,7 +643,7 @@
     background: #fff;
 }
 
-/* Order footer and detail toggle */
+/* Order footer */
 
 .buyer-order-footer {
     display: flex;
@@ -653,7 +652,7 @@
     flex-wrap: wrap;
     gap: 10px;
     min-width: 0;
-    padding: 0 18px 16px;
+    padding: 0 20px 17px;
 }
 
 .buyer-order-item-count {
@@ -689,7 +688,7 @@
     transform: rotate(90deg);
 }
 
-/* Collapsible details */
+/* Order details */
 
 .buyer-order-details {
     border-top: 1px solid var(--buyer-border);
@@ -701,7 +700,7 @@
 }
 
 .buyer-detail-section {
-    padding: 17px 18px;
+    padding: 17px 20px;
     border-bottom: 1px solid var(--buyer-border);
 }
 
@@ -765,7 +764,7 @@
     line-height: 1.7;
 }
 
-/* Payment rows */
+/* Payment */
 
 .buyer-payment-row {
     display: flex;
@@ -803,7 +802,7 @@
     font-weight: 800;
 }
 
-/* Address */
+/* Delivery address */
 
 .buyer-address-text {
     margin: 0 0 10px;
@@ -827,12 +826,26 @@
     text-decoration: none;
 }
 
-/* Delete action */
+/* Order actions */
 
 .buyer-order-actions {
     display: flex;
     justify-content: flex-end;
-    padding: 0 18px 16px;
+    gap: 8px;
+    padding: 0 20px 17px;
+}
+
+.buyer-order-actions .buyer-details-toggle {
+    min-height: 40px;
+    padding: 9px 13px;
+    border: 1px solid #cfe2d4;
+    border-radius: 9px;
+    background: var(--buyer-green-soft);
+}
+
+.buyer-order-actions .buyer-details-toggle:disabled {
+    opacity: 0.6;
+    cursor: wait;
 }
 
 .buyer-order-delete {
@@ -854,10 +867,10 @@
 /* Empty state */
 
 .buyer-empty {
-    padding: 34px 20px;
+    padding: 42px 20px;
     border: 1px dashed #d4dfd3;
-    border-radius: 16px;
-    background: #fff;
+    border-radius: var(--buyer-radius);
+    background: var(--buyer-white);
     text-align: center;
 }
 
@@ -866,15 +879,15 @@
     place-items: center;
     width: 54px;
     height: 54px;
-    margin: 0 auto 13px;
+    margin: 0 auto 14px;
     border-radius: 15px;
     background: var(--buyer-green-soft);
     color: var(--buyer-green-dark);
 }
 
 .buyer-empty-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 27px;
+    height: 27px;
 }
 
 .buyer-empty h2 {
@@ -899,12 +912,11 @@
     min-height: 42px;
 }
 
-/* Local-storage notice */
+/* Local storage notice */
 
 .buyer-security-note {
-    margin: 17px 0 0;
-    padding: 0;
-    color: var(--buyer-muted);
+    margin: 18px 0 0;
+    color: #929992;
     font-size: 10px;
     line-height: 1.7;
 }
@@ -940,12 +952,12 @@
 
 @media (max-width: 760px) {
     .buyer-page {
-        padding-top: 26px;
+        padding-top: 28px;
     }
 
     .buyer-container {
         width: calc(100% - 32px);
-        max-width: 620px;
+        max-width: 680px;
     }
 }
 
@@ -953,7 +965,7 @@
 
 @media (max-width: 520px) {
     .buyer-page {
-        padding: 22px 0 32px;
+        padding: 22px 0 34px;
     }
 
     .buyer-container {
@@ -981,46 +993,94 @@
         font-size: 10px;
     }
 
-    .buyer-back-button {
-        min-height: 36px;
-        padding: 7px 9px;
-        font-size: 10px;
-    }
-
     .buyer-intro {
-        margin-bottom: 18px;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
     .buyer-intro h1 {
         font-size: 26px;
     }
 
+    .buyer-intro p {
+        font-size: 12px;
+    }
+
+    .buyer-shop-link {
+        min-height: 36px;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
     .buyer-summary {
         gap: 10px;
-        margin-bottom: 16px;
+        margin-bottom: 27px;
     }
 
     .buyer-summary-card {
-        min-height: 108px;
-        padding: 16px;
-        border-radius: 16px;
+        min-height: 126px;
+        padding: 15px;
+        border-radius: 14px;
+    }
+
+    .buyer-summary-top {
+        gap: 8px;
+        margin-bottom: 11px;
+    }
+
+    .buyer-summary-icon {
+        flex-basis: 30px;
+        width: 30px;
+        height: 30px;
     }
 
     .buyer-summary-label {
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .buyer-summary-card > strong {
         font-size: 27px;
     }
 
+    .buyer-summary-caption {
+        font-size: 9px;
+    }
+
+    .buyer-section-heading h2 {
+        font-size: 16px;
+    }
+
+    .buyer-order-tabs {
+        gap: 7px;
+        margin-bottom: 14px;
+    }
+
+    .buyer-order-tab {
+        min-height: 39px;
+        padding: 8px 11px;
+        border-radius: 9px;
+        font-size: 11px;
+    }
+
+    .buyer-tab-count {
+        min-width: 19px;
+        height: 19px;
+        font-size: 9px;
+    }
+
+    .buyer-orders {
+        gap: 12px;
+    }
+
     .buyer-order-card {
-        border-radius: 17px;
-        box-shadow: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgb(24 45 30 / 3%);
     }
 
     .buyer-order-header {
-        padding: 15px 16px;
+        gap: 8px;
+        padding: 15px 14px;
     }
 
     .buyer-order-store {
@@ -1029,81 +1089,80 @@
 
     .buyer-status-badge {
         max-width: 44%;
-        padding: 6px 9px;
-        font-size: 10px;
+        padding: 6px 8px;
+        font-size: 9px;
     }
 
     .buyer-order-summary {
-        gap: 13px;
-        padding: 17px 16px;
+        gap: 12px;
+        padding: 16px 14px;
     }
 
     .buyer-summary-product-icon {
-        flex-basis: 68px;
-        width: 68px;
-        height: 68px;
-        border-radius: 15px;
+        flex-basis: 50px;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
     }
 
     .buyer-summary-product-icon svg {
-        width: 29px;
-        height: 29px;
+        width: 24px;
+        height: 24px;
     }
 
     .buyer-order-summary-title {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .buyer-order-summary-meta {
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .buyer-order-total {
-        font-size: 21px;
+        font-size: 20px;
     }
 
     .buyer-tracking-panel {
-        margin: 0 12px 13px;
-        padding: 18px 10px 13px;
-        border-radius: 15px;
+        margin: 0 10px 13px;
+        padding: 16px 8px 12px;
+        border-radius: 12px;
     }
-    
+
     .buyer-progress-step {
         gap: 8px;
     }
-    
+
     .buyer-progress-step::after {
-        top: 15px;
-        left: calc(50% + 17px);
-        right: calc(-50% + 17px);
-        height: 2px;
+        top: 14px;
+        left: calc(50% + 16px);
+        right: calc(-50% + 16px);
     }
-    
+
     .buyer-progress-icon {
-        flex-basis: 34px;
-        width: 34px;
-        height: 34px;
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
     }
-    
+
     .buyer-progress-icon svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
-    
+
     .buyer-progress-label {
-        font-size: 9px;
-        line-height: 1.4;
+        font-size: 8px;
+        line-height: 1.35;
     }
-    
+
     .buyer-progress-message {
-        margin-top: 14px;
-        padding-top: 11px;
+        margin-top: 13px;
+        padding-top: 10px;
         font-size: 10px;
     }
 
     .buyer-order-footer {
-        gap: 8px;
-        padding: 0 16px 15px;
+        gap: 7px;
+        padding: 0 14px 14px;
     }
 
     .buyer-order-item-count {
@@ -1115,11 +1174,15 @@
     }
 
     .buyer-detail-section {
-        padding: 15px 16px;
+        padding: 15px 14px;
     }
 
     .buyer-order-actions {
-        padding: 0 16px 15px;
+        padding: 0 14px 14px;
+    }
+
+    .buyer-security-note {
+        font-size: 9px;
     }
 
     .buyer-site-footer .footer-inner {
@@ -1140,67 +1203,92 @@
         display: none;
     }
 
+    .buyer-intro h1 {
+        font-size: 24px;
+    }
+
+    .buyer-shop-link {
+        gap: 5px;
+        padding-inline: 8px;
+        font-size: 10px;
+    }
+
+    .buyer-summary-card {
+        padding: 12px;
+    }
+
+    .buyer-summary-label {
+        font-size: 9px;
+    }
+
+    .buyer-summary-card > strong {
+        font-size: 25px;
+    }
+
     .buyer-order-header {
-        gap: 7px;
-        padding-inline: 12px;
+        padding-inline: 11px;
     }
 
     .buyer-status-badge {
         max-width: 42%;
         padding: 6px 7px;
-        font-size: 9px;
-    }
-
-    .buyer-order-summary {
-        gap: 10px;
-        padding-inline: 12px;
-    }
-
-    .buyer-summary-product-icon {
-        flex-basis: 56px;
-        width: 56px;
-        height: 56px;
-    }
-
-    .buyer-order-total {
-        font-size: 19px;
-    }
-    
-    .buyer-tracking-panel {
-        margin-inline: 9px;
-        padding-inline: 7px;
-    }
-    
-    .buyer-progress-step {
-        gap: 7px;
-    }
-    
-    .buyer-progress-step::after {
-        left: calc(50% + 16px);
-        right: calc(-50% + 16px);
-    }
-    
-    .buyer-progress-icon {
-        flex-basis: 32px;
-        width: 32px;
-        height: 32px;
-    }
-    
-    .buyer-progress-icon svg {
-        width: 17px;
-        height: 17px;
-    }
-    
-    .buyer-progress-label {
         font-size: 8px;
     }
 
+    .buyer-order-summary {
+        gap: 9px;
+        padding-inline: 11px;
+    }
+
+    .buyer-summary-product-icon {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .buyer-order-total {
+        font-size: 18px;
+    }
+
+    .buyer-tracking-panel {
+        margin-inline: 8px;
+        padding-inline: 6px;
+    }
+
+    .buyer-progress-step {
+        gap: 7px;
+    }
+
+    .buyer-progress-step::after {
+        left: calc(50% + 15px);
+        right: calc(-50% + 15px);
+    }
+
+    .buyer-progress-icon {
+        flex-basis: 30px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .buyer-progress-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .buyer-progress-label {
+        font-size: 7px;
+    }
+
     .buyer-order-footer {
-        padding-inline: 12px;
+        padding-inline: 11px;
     }
 
     .buyer-detail-section {
-        padding-inline: 12px;
+        padding-inline: 11px;
+    }
+
+    .buyer-order-actions {
+        padding-inline: 11px;
     }
 }
 
