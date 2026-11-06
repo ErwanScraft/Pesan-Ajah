@@ -401,21 +401,28 @@
     }
 
     /* -----------------------------------------------------
-       Status tracking
+       Status tracking — Horizontal icon stepper
     ----------------------------------------------------- */
-
+    
     function createStatusIcon(kind) {
-        const wrapper = createElement("span", "buyer-tracking-icon");
+        const wrapper = createElement("span", "buyer-progress-icon");
         wrapper.setAttribute("aria-hidden", "true");
-
+    
         const paths = {
-            store: `
-                <path d="M3 10h18l-2-6H5l-2 6Z"
+            confirm: `
+                <path d="m5 12 4 4L19 6"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"
+                    stroke="currentColor" stroke-width="1.7"/>
+            `,
+            process: `
+                <path d="M6 3h12l2 5H4l2-5Z"
                     stroke="currentColor" stroke-width="1.7"
                     stroke-linejoin="round"/>
-                <path d="M5 10v10h14V10M9 20v-6h6v6"
+                <path d="M5 8v13h14V8M9 12h6M9 16h6"
                     stroke="currentColor" stroke-width="1.7"
-                    stroke-linejoin="round"/>
+                    stroke-linecap="round" stroke-linejoin="round"/>
             `,
             delivery: `
                 <circle cx="5.5" cy="17.5" r="2.5"
@@ -425,159 +432,133 @@
                 <path d="M8 17.5h6l-3-8H7m4 0h4l3.5 8M14 6h3"
                     stroke="currentColor" stroke-width="1.7"
                     stroke-linecap="round" stroke-linejoin="round"/>
+            `,
+            pickup: `
+                <path d="M3 9h18l-2-5H5L3 9Z"
+                    stroke="currentColor" stroke-width="1.7"
+                    stroke-linejoin="round"/>
+                <path d="M5 9v11h14V9M9 20v-6h6v6"
+                    stroke="currentColor" stroke-width="1.7"
+                    stroke-linejoin="round"/>
+            `,
+            completed: `
+                <path d="m5 12 4 4L19 6"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
             `
         };
-
+    
         wrapper.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none">
-                ${paths[kind] || paths.store}
+                ${paths[kind] || paths.confirm}
             </svg>
         `;
-
+    
         return wrapper;
     }
-
-    function createTrackingRow(title, description, icon, badge = null) {
-        const row = createElement("div", "buyer-tracking-row");
-        const symbol = createStatusIcon(icon);
-        const copy = createElement("div", "buyer-tracking-copy");
-
-        copy.append(
-            createElement("h4", "buyer-tracking-title", title),
-            createElement("p", "buyer-tracking-description", description)
-        );
-
-        row.append(symbol, copy);
-
-        if (badge) {
-            row.appendChild(
-                createElement("span", "buyer-tracking-badge", badge)
-            );
-        }
-
-        return row;
-    }
-
+    
     function createProgress(order) {
-        const deliveryStatus = normalize(order.delivery_status);
         const panel = createElement("section", "buyer-tracking-panel");
-
+    
         const orderStatus = normalize(order.status);
-        const orderDescription = {
-            pending: "Menunggu konfirmasi warung",
-            confirmed: "Pesanan telah dikonfirmasi",
-            processing: "Pesanan sedang disiapkan",
-            ready_for_pickup: "Pesanan tersedia dan siap diambil di warung",
-            ready_for_driver: "Pesanan siap diserahkan kepada driver",
-            in_delivery: "Pesanan sedang diantarkan kepada pembeli",
-            completed: "Pesanan telah selesai",
-            cancelled: "Pesanan dibatalkan"
-        }[orderStatus] || "Status pesanan diperbarui";
-
-        const storeRow = createTrackingRow(
-            "Pesanan warung",
-            orderDescription,
-            "store",
-            orderStatus === "completed"
-                ? "Selesai"
-                : orderStatus === "cancelled"
-                    ? "Dibatalkan"
-                    : null
-        );
-
-        panel.appendChild(storeRow);
-
-        if (normalize(order.delivery_method) !== "delivery") {
+        const deliveryStatus = normalize(order.delivery_status);
+        const isPickup = normalize(order.delivery_method) === "pickup";
+        const isCancelled = orderStatus === "cancelled";
+    
+        if (isCancelled) {
+            panel.classList.add("is-cancelled");
+    
             panel.appendChild(
-                createTrackingRow(
-                    "Pengambilan",
-                    "Pesanan diambil langsung di warung",
-                    "delivery",
-                    "Ambil sendiri"
+                createElement(
+                    "p",
+                    "buyer-progress-message is-cancelled",
+                    "Pesanan telah dibatalkan."
                 )
             );
-
+    
             return panel;
         }
-
-        const deliveryLabel = orderStatus === "ready_for_driver"
-            ? "Menunggu driver mengambil pesanan"
-            : orderStatus === "in_delivery"
-                ? "Pesanan sedang diantarkan"
-                : orderStatus === "completed"
-                    ? "Pengantaran selesai"
-                    : DELIVERY_STATUS[deliveryStatus] || "Menunggu driver";
-
-        panel.appendChild(
-            createTrackingRow(
-                "Pengantaran",
-                deliveryLabel,
-                "delivery",
-                deliveryStatus === "completed"
-                    ? "Selesai"
-                    : deliveryStatus === "cancelled"
-                        ? "Dibatalkan"
-                        : deliveryStatus === "accepted" ||
-                          deliveryStatus === "to_store" ||
-                          deliveryStatus === "picked_up" ||
-                          deliveryStatus === "to_buyer"
-                            ? "Berjalan"
-                            : "Menunggu"
-            )
-        );
-
-        const steps = createElement("ol", "buyer-progress-steps");
-        const currentIndex = DELIVERY_STEPS.findIndex(
-            (step) => step.key === deliveryStatus
-        );
-
-        DELIVERY_STEPS.forEach((step, index) => {
-            const item = createElement(
-                "li",
-                "buyer-progress-step"
-            );
-
-            if (currentIndex >= 0 && index <= currentIndex) {
+    
+        const steps = isPickup
+            ? [
+                { key: "confirm", label: "Konfirmasi" },
+                { key: "process", label: "Diproses" },
+                { key: "pickup", label: "Siap diambil" },
+                { key: "completed", label: "Selesai" }
+            ]
+            : [
+                { key: "confirm", label: "Konfirmasi" },
+                { key: "process", label: "Diproses" },
+                { key: "delivery", label: "Diantar" },
+                { key: "completed", label: "Selesai" }
+            ];
+    
+        let currentIndex = 0;
+    
+        if (orderStatus === "completed" || deliveryStatus === "completed") {
+            currentIndex = 3;
+        } else if (isPickup) {
+            if (orderStatus === "ready_for_pickup") {
+                currentIndex = 2;
+            } else if (orderStatus === "processing") {
+                currentIndex = 1;
+            }
+        } else {
+            if (
+                orderStatus === "ready_for_driver" ||
+                orderStatus === "in_delivery" ||
+                ["accepted", "to_store", "picked_up", "to_buyer"].includes(deliveryStatus)
+            ) {
+                currentIndex = 2;
+            } else if (orderStatus === "processing") {
+                currentIndex = 1;
+            }
+        }
+    
+        const list = createElement("ol", "buyer-progress-steps");
+        list.setAttribute("aria-label", "Progres pesanan");
+    
+        steps.forEach((step, index) => {
+            const item = createElement("li", "buyer-progress-step");
+    
+            if (index < currentIndex || orderStatus === "completed" || deliveryStatus === "completed") {
                 item.classList.add("is-complete");
             }
-
-            if (index === currentIndex) {
+    
+            if (index === currentIndex && orderStatus !== "completed" && deliveryStatus !== "completed") {
                 item.classList.add("is-current");
+                item.setAttribute("aria-current", "step");
             }
-
+    
+            item.appendChild(createStatusIcon(step.key));
+    
             item.appendChild(
                 createElement("span", "buyer-progress-label", step.label)
             );
-
-            steps.appendChild(item);
+    
+            list.appendChild(item);
         });
-
-        if (
-            currentIndex >= 0 &&
-            deliveryStatus !== "cancelled"
-        ) {
-            panel.appendChild(steps);
-
-            const progress = createElement("div", "buyer-progress-track");
-            const bar = createElement("span", "buyer-progress-bar");
-
-            const percent = currentIndex === 0
-                ? 15
-                : (currentIndex / (DELIVERY_STEPS.length - 1)) * 100;
-
-            bar.style.width = `${Math.min(100, percent)}%`;
-            progress.appendChild(bar);
-            panel.appendChild(progress);
-        }
-
+    
+        panel.appendChild(list);
+    
+        const note = isPickup
+            ? orderStatus === "ready_for_pickup"
+                ? "Pesanan siap diambil di warung."
+                : orderStatus === "completed"
+                    ? "Pesanan berhasil diselesaikan."
+                    : "Status pengambilan diperbarui otomatis."
+            : orderStatus === "ready_for_driver"
+                ? "Pesanan siap diserahkan kepada driver."
+                : orderStatus === "in_delivery"
+                    ? "Pesanan sedang dalam perjalanan."
+                    : orderStatus === "completed" || deliveryStatus === "completed"
+                        ? "Pengantaran telah selesai."
+                        : "Status pengantaran diperbarui otomatis.";
+    
         panel.appendChild(
-            createElement(
-                "p",
-                "buyer-tracking-note",
-                "Status diperbarui otomatis"
-            )
+            createElement("p", "buyer-progress-message", note)
         );
-
+    
         return panel;
     }
 

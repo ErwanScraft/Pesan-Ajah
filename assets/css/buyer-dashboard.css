@@ -492,133 +492,156 @@
     overflow-wrap: anywhere;
 }
 
-/* Tracking panel */
+/* =========================================================
+   ORDER PROGRESS — HORIZONTAL ICON STEPPER
+========================================================= */
 
 .buyer-tracking-panel {
-    display: grid;
-    gap: 17px;
     min-width: 0;
     margin: 0 16px 14px;
-    padding: 16px;
+    padding: 20px 16px 15px;
     border: 1px solid var(--buyer-border);
     border-radius: 16px;
     background: #fff;
 }
 
-.buyer-tracking-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.buyer-tracking-icon {
-    display: grid;
-    flex: 0 0 30px;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    color: var(--buyer-text);
-}
-
-.buyer-tracking-icon svg {
-    width: 25px;
-    height: 25px;
-}
-
-.buyer-tracking-copy {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.buyer-tracking-title {
-    margin: 0 0 4px;
-    color: var(--buyer-text);
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.5;
-}
-
-.buyer-tracking-description {
-    margin: 0;
-    color: var(--buyer-muted);
-    font-size: 11px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-}
-
-.buyer-tracking-badge {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    max-width: 42%;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #f0f1f0;
-    color: #454b46;
-    font-size: 10px;
-    font-weight: 750;
-    line-height: 1.4;
-    text-align: center;
-}
-
-/* Delivery progress */
+/* Stepper layout */
 
 .buyer-progress-steps {
-    display: grid;
-    gap: 5px;
-    margin: -3px 0 0;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin: 0;
     padding: 0;
     list-style: none;
 }
 
 .buyer-progress-step {
     position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
     min-width: 0;
-    padding: 7px 10px 7px 13px;
-    border-left: 3px solid #e5e8e5;
+    gap: 9px;
     color: var(--buyer-muted);
-    font-size: 10px;
-    line-height: 1.6;
+    text-align: center;
 }
 
+/* Connector line */
+
+.buyer-progress-step::after {
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 19px);
+    right: calc(-50% + 19px);
+    height: 3px;
+    border-radius: 999px;
+    background: #e5e8e5;
+    content: "";
+}
+
+.buyer-progress-step:last-child::after {
+    display: none;
+}
+
+/* Icon */
+
+.buyer-progress-icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: 0 0 36px;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e1e5e1;
+    border-radius: 50%;
+    background: #f5f6f5;
+    color: #929a93;
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
+}
+
+.buyer-progress-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+/* Completed steps */
+
 .buyer-progress-step.is-complete {
-    border-left-color: var(--buyer-green);
     color: var(--buyer-green-dark);
 }
 
-.buyer-progress-step.is-current {
-    background: #f0f8f2;
-    font-weight: 750;
+.buyer-progress-step.is-complete .buyer-progress-icon {
+    border-color: var(--buyer-green);
+    background: var(--buyer-green-soft);
+    color: var(--buyer-green-dark);
 }
+
+.buyer-progress-step.is-complete::after {
+    background: var(--buyer-green);
+}
+
+/* Current step */
+
+.buyer-progress-step.is-current {
+    color: var(--buyer-green-dark);
+    font-weight: 800;
+}
+
+.buyer-progress-step.is-current .buyer-progress-icon {
+    border-color: var(--buyer-green);
+    background: var(--buyer-green);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--buyer-green-soft);
+}
+
+/* Step labels */
 
 .buyer-progress-label {
     display: block;
+    width: 100%;
+    max-width: 100%;
+    font-size: 10px;
+    font-weight: 650;
+    line-height: 1.4;
     overflow-wrap: anywhere;
 }
 
-.buyer-progress-track {
-    width: 100%;
-    height: 7px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: #eceeed;
+.buyer-progress-step.is-current .buyer-progress-label {
+    font-weight: 800;
 }
 
-.buyer-progress-bar {
-    display: block;
-    height: 100%;
-    border-radius: inherit;
-    background: var(--buyer-green);
-    transition: width 250ms ease;
-}
+/* Status message */
 
-.buyer-tracking-note {
-    margin: -11px 0 0;
+.buyer-progress-message {
+    margin: 17px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--buyer-border);
     color: var(--buyer-muted);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.6;
+    text-align: center;
+}
+
+.buyer-progress-message.is-cancelled {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid #f1d1d1;
+    border-radius: 10px;
+    background: #fff5f5;
+    color: var(--buyer-danger);
+    font-weight: 700;
+}
+
+.buyer-tracking-panel.is-cancelled {
+    padding: 12px;
+    border-color: #f1d1d1;
+    background: #fff;
 }
 
 /* Order footer and detail toggle */
@@ -1040,38 +1063,41 @@
     }
 
     .buyer-tracking-panel {
-        gap: 16px;
         margin: 0 12px 13px;
-        padding: 14px;
+        padding: 18px 10px 13px;
         border-radius: 15px;
     }
-
-    .buyer-tracking-row {
-        gap: 10px;
+    
+    .buyer-progress-step {
+        gap: 8px;
     }
-
-    .buyer-tracking-icon {
-        flex-basis: 26px;
-        width: 26px;
-        height: 26px;
+    
+    .buyer-progress-step::after {
+        top: 15px;
+        left: calc(50% + 17px);
+        right: calc(-50% + 17px);
+        height: 2px;
     }
-
-    .buyer-tracking-icon svg {
-        width: 23px;
-        height: 23px;
+    
+    .buyer-progress-icon {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
     }
-
-    .buyer-tracking-title {
-        font-size: 12px;
+    
+    .buyer-progress-icon svg {
+        width: 18px;
+        height: 18px;
     }
-
-    .buyer-tracking-description {
-        font-size: 10px;
+    
+    .buyer-progress-label {
+        font-size: 9px;
+        line-height: 1.4;
     }
-
-    .buyer-tracking-badge {
-        max-width: 36%;
-        padding: 6px 8px;
+    
+    .buyer-progress-message {
+        margin-top: 14px;
+        padding-top: 11px;
         font-size: 10px;
     }
 
@@ -1139,15 +1165,34 @@
     .buyer-order-total {
         font-size: 19px;
     }
-
+    
     .buyer-tracking-panel {
         margin-inline: 9px;
-        padding: 12px;
+        padding-inline: 7px;
     }
-
-    .buyer-tracking-badge {
-        max-width: 34%;
-        font-size: 9px;
+    
+    .buyer-progress-step {
+        gap: 7px;
+    }
+    
+    .buyer-progress-step::after {
+        left: calc(50% + 16px);
+        right: calc(-50% + 16px);
+    }
+    
+    .buyer-progress-icon {
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
+    }
+    
+    .buyer-progress-icon svg {
+        width: 17px;
+        height: 17px;
+    }
+    
+    .buyer-progress-label {
+        font-size: 8px;
     }
 
     .buyer-order-footer {
