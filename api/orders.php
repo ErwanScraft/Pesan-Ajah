@@ -196,6 +196,7 @@ foreach ($hashes as $index => $hash) {
 $sql = '
     SELECT
         o.id,
+        o.store_id,
         o.order_number,
         o.buyer_name,
         o.buyer_phone,

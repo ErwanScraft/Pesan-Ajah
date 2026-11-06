@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
-require_once APP_ROOT . '/app/delivery.php';
 
 require_method('POST');
 
@@ -23,35 +22,6 @@ function edit_order_json(array $data, int $status = 200): never
     );
 
     exit;
-}
-
-function edit_order_phone(mixed $value): ?string
-{
-    if (!is_string($value)) {
-        return null;
-    }
-
-    $phone = preg_replace('/\D+/', '', $value);
-
-    if (!$phone) {
-        return null;
-    }
-
-    if (str_starts_with($phone, '0')) {
-        $phone = '62' . substr($phone, 1);
-    } elseif (str_starts_with($phone, '8')) {
-        $phone = '62' . $phone;
-    }
-
-    if (
-        !str_starts_with($phone, '62')
-        || strlen($phone) < 10
-        || strlen($phone) > 16
-    ) {
-        return null;
-    }
-
-    return $phone;
 }
 
 try {
@@ -75,14 +45,9 @@ if (!is_array($input)) {
     ], 400);
 }
 
-$orderNumber = $input['order_number'] ?? null;
-$token = $input['buyer_token'] ?? null;
-$buyerName = trim((string) ($input['buyer_name'] ?? ''));
-$buyerPhoneInput = trim((string) ($input['buyer_phone'] ?? ''));
-$buyerPhone = edit_order_phone($buyerPhoneInput);
+$orderNumber = $input['order_number'] ?? '';
+$token = $input['buyer_token'] ?? '';
 $notes = trim((string) ($input['notes'] ?? ''));
-$address = trim((string) ($input['delivery_address'] ?? ''));
-$mapsUrl = trim((string) ($input['delivery_maps_url'] ?? ''));
 $items = $input['items'] ?? [];
 
 if (
@@ -90,105 +55,23 @@ if (
     || !preg_match('/^PA\d{6}[A-F0-9]{8}$/i', $orderNumber)
     || !is_string($token)
     || !preg_match('/^[a-f0-9]{64}$/i', $token)
-    || mb_strlen($buyerName, 'UTF-8') < 1
-    || mb_strlen($buyerName, 'UTF-8') > 100
     || mb_strlen($notes, 'UTF-8') > 500
     || !is_array($items)
     || count($items) > 50
 ) {
     edit_order_json([
         'success' => false,
-        'message' => 'Periksa kembali data pesanan.',
+        'message' => 'Data pesanan tidak valid.',
     ], 422);
 }
 
-if (mb_strlen($address, 'UTF-8') > 255) {
-    edit_order_json([
-        'success' => false,
-        'message' => 'Detail alamat maksimal 255 karakter.',
-    ], 422);
-}
+/*
+|--------------------------------------------------------------------------
+| NORMALISASI ITEM
+|--------------------------------------------------------------------------
+*/
 
-if ($mapsUrl !== '') {
-    $parsedUrl = filter_var($mapsUrl, FILTER_VALIDATE_URL);
-    $host = strtolower((string) parse_url($mapsUrl, PHP_URL_HOST));
-
-    $allowedHosts = [
-        'google.com',
-        'www.google.com',
-        'maps.google.com',
-        'maps.app.goo.gl',
-        'goo.gl',
-    ];
-
-    $validHost = false;
-
-    foreach ($allowedHosts as $allowedHost) {
-        if (
-            $host === $allowedHost
-            || str_ends_with($host, '.' . $allowedHost)
-        ) {
-            $validHost = true;
-            break;
-        }
-    }
-
-    if (
-        !$parsedUrl
-        || parse_url($mapsUrl, PHP_URL_SCHEME) !== 'https'
-        || !$validHost
-    ) {
-        edit_order_json([
-            'success' => false,
-            'message' => 'Link Google Maps tidak valid.',
-        ], 422);
-    }
-}
-
-$latitudeInput = $input['delivery_latitude'] ?? null;
-$longitudeInput = $input['delivery_longitude'] ?? null;
-
-$latitude = null;
-$longitude = null;
-
-if ($latitudeInput !== null && $latitudeInput !== '') {
-    if (
-        !is_numeric($latitudeInput)
-        || (float) $latitudeInput < -90
-        || (float) $latitudeInput > 90
-    ) {
-        edit_order_json([
-            'success' => false,
-            'message' => 'Koordinat lintang tidak valid.',
-        ], 422);
-    }
-
-    $latitude = (float) $latitudeInput;
-}
-
-if ($longitudeInput !== null && $longitudeInput !== '') {
-    if (
-        !is_numeric($longitudeInput)
-        || (float) $longitudeInput < -180
-        || (float) $longitudeInput > 180
-    ) {
-        edit_order_json([
-            'success' => false,
-            'message' => 'Koordinat bujur tidak valid.',
-        ], 422);
-    }
-
-    $longitude = (float) $longitudeInput;
-}
-
-if (($latitude === null) !== ($longitude === null)) {
-    edit_order_json([
-        'success' => false,
-        'message' => 'Koordinat lokasi harus diisi berpasangan.',
-    ], 422);
-}
-
-$normalizedItems = [];
+$requestedItems = [];
 
 foreach ($items as $item) {
     if (!is_array($item)) {
@@ -198,8 +81,8 @@ foreach ($items as $item) {
         ], 422);
     }
 
-    $itemId = filter_var(
-        $item['id'] ?? null,
+    $productId = filter_var(
+        $item['product_id'] ?? null,
         FILTER_VALIDATE_INT,
         ['options' => ['min_range' => 1]]
     );
@@ -213,21 +96,28 @@ foreach ($items as $item) {
         ]]
     );
 
-    if ($itemId === false || $quantity === false) {
+    if ($productId === false || $quantity === false) {
         edit_order_json([
             'success' => false,
             'message' => 'Jumlah produk tidak valid.',
         ], 422);
     }
 
-    if (isset($normalizedItems[$itemId])) {
+    if (isset($requestedItems[$productId])) {
         edit_order_json([
             'success' => false,
             'message' => 'Produk tidak boleh dikirim berulang.',
         ], 422);
     }
 
-    $normalizedItems[$itemId] = (int) $quantity;
+    $requestedItems[$productId] = (int) $quantity;
+}
+
+if (!$requestedItems) {
+    edit_order_json([
+        'success' => false,
+        'message' => 'Pesanan harus memiliki minimal satu produk.',
+    ], 422);
 }
 
 $db = database();
@@ -236,22 +126,20 @@ try {
     $db->beginTransaction();
 
     /*
-     * Kunci pesanan dan validasi kepemilikan menggunakan token.
-     */
+    |--------------------------------------------------------------------------
+    | VALIDASI PESANAN DAN KEPEMILIKAN
+    |--------------------------------------------------------------------------
+    */
+
     $orderStmt = $db->prepare(
         'SELECT
-            o.id,
-            o.store_id,
-            o.buyer_id,
-            o.status,
-            o.delivery_method,
-            o.delivery_address,
-            o.delivery_maps_url,
-            o.delivery_latitude,
-            o.delivery_longitude
-         FROM orders o
-         WHERE o.order_number = :order_number
-           AND o.buyer_token_hash = :token_hash
+            id,
+            store_id,
+            status,
+            delivery_fee
+         FROM orders
+         WHERE order_number = :order_number
+           AND buyer_token_hash = :token_hash
          LIMIT 1
          FOR UPDATE'
     );
@@ -281,26 +169,14 @@ try {
 
     $orderId = (int) $order['id'];
     $storeId = (int) $order['store_id'];
-    $deliveryMethod = (string) $order['delivery_method'];
-
-    if ($deliveryMethod === 'delivery' && $buyerPhone === null) {
-        throw new RuntimeException(
-            'Nomor WhatsApp wajib diisi untuk Delivery.'
-        );
-    }
-
-    if ($deliveryMethod === 'pickup') {
-        $buyerPhone = $buyerPhone ?: null;
-        $address = '';
-        $mapsUrl = '';
-        $latitude = null;
-        $longitude = null;
-    }
 
     /*
-     * Ambil item lama.
-     */
-    $oldItemStmt = $db->prepare(
+    |--------------------------------------------------------------------------
+    | AMBIL ITEM LAMA
+    |--------------------------------------------------------------------------
+    */
+
+    $oldStmt = $db->prepare(
         'SELECT
             id,
             product_id,
@@ -314,100 +190,43 @@ try {
          FOR UPDATE'
     );
 
-    $oldItemStmt->execute([
+    $oldStmt->execute([
         'order_id' => $orderId,
     ]);
 
-    $oldItems = $oldItemStmt->fetchAll();
+    $oldItems = $oldStmt->fetchAll();
 
-    if (!$oldItems) {
-        throw new RuntimeException(
-            'Rincian pesanan tidak ditemukan.'
-        );
-    }
-
-    $oldItemMap = [];
-
-    foreach ($oldItems as $oldItem) {
-        $oldItemMap[(int) $oldItem['id']] = $oldItem;
-    }
-
-    /*
-     * Item tanpa product_id merupakan snapshot produk yang
-     * sudah dihapus. Item tersebut dipertahankan tanpa perubahan.
-     */
-    $newItems = [];
+    $oldProducts = [];
     $oldStock = [];
-    $newStock = [];
 
     foreach ($oldItems as $oldItem) {
-        $itemId = (int) $oldItem['id'];
-        $productId = $oldItem['product_id'] !== null
-            ? (int) $oldItem['product_id']
-            : null;
-
-        $oldQuantity = (int) $oldItem['quantity'];
-
-        if ($productId === null) {
-            $newItems[] = [
-                'id' => $itemId,
-                'product_id' => null,
-                'product_name' => $oldItem['product_name'],
-                'product_variant' => $oldItem['product_variant'],
-                'quantity' => $oldQuantity,
-                'price' => (int) $oldItem['price'],
-            ];
-
+        if ($oldItem['product_id'] === null) {
             continue;
         }
+
+        $productId = (int) $oldItem['product_id'];
 
         $oldStock[$productId] =
-            ($oldStock[$productId] ?? 0) + $oldQuantity;
+            ($oldStock[$productId] ?? 0)
+            + (int) $oldItem['quantity'];
 
-        if (!array_key_exists($itemId, $normalizedItems)) {
-            continue;
-        }
-
-        $quantity = $normalizedItems[$itemId];
-
-        $newStock[$productId] =
-            ($newStock[$productId] ?? 0) + $quantity;
-
-        $newItems[] = [
-            'id' => $itemId,
-            'product_id' => $productId,
-            'product_name' => $oldItem['product_name'],
-            'product_variant' => $oldItem['product_variant'],
-            'quantity' => $quantity,
-            'price' => (int) $oldItem['price'],
-        ];
-    }
-
-    /*
-     * Pastikan tidak ada ID item asing yang disisipkan.
-     */
-    foreach ($normalizedItems as $itemId => $quantity) {
-        if (!isset($oldItemMap[$itemId])) {
-            throw new RuntimeException(
-                'Rincian produk tidak valid.'
-            );
+        if (!isset($oldProducts[$productId])) {
+            $oldProducts[$productId] = $oldItem;
         }
     }
 
-    if (!$newItems) {
-        throw new RuntimeException(
-            'Pesanan harus memiliki minimal satu produk.'
-        );
-    }
-
     /*
-     * Kunci produk dan sesuaikan stok berdasarkan selisih.
-     * Stok pesanan sudah dikurangi saat status menjadi pending.
-     */
+    |--------------------------------------------------------------------------
+    | AMBIL PRODUK DAN VALIDASI STOK
+    |--------------------------------------------------------------------------
+    */
+
     $productStmt = $db->prepare(
         'SELECT
             id,
             name,
+            variant,
+            price,
             is_available,
             stock_quantity
          FROM products
@@ -417,31 +236,11 @@ try {
          FOR UPDATE'
     );
 
-    $deductStmt = $db->prepare(
-        'UPDATE products
-         SET stock_quantity = stock_quantity - :quantity
-         WHERE id = :product_id
-           AND store_id = :store_id
-           AND stock_quantity IS NOT NULL
-           AND stock_quantity >= :check_quantity'
-    );
+    $newItems = [];
+    $newStock = [];
+    $subtotal = 0;
 
-    $restoreStmt = $db->prepare(
-        'UPDATE products
-         SET stock_quantity = stock_quantity + :quantity
-         WHERE id = :product_id
-           AND store_id = :store_id
-           AND stock_quantity IS NOT NULL'
-    );
-
-    $productIds = array_unique(array_merge(
-        array_keys($oldStock),
-        array_keys($newStock)
-    ));
-
-    sort($productIds);
-
-    foreach ($productIds as $productId) {
+    foreach ($requestedItems as $productId => $quantity) {
         $productStmt->execute([
             'product_id' => $productId,
             'store_id' => $storeId,
@@ -450,21 +249,155 @@ try {
         $product = $productStmt->fetch();
 
         if (!$product) {
+            throw new RuntimeException(
+                'Produk tidak ditemukan di warung ini.'
+            );
+        }
+
+        /*
+         * Produk lama mempertahankan harga snapshot pesanan.
+         * Produk yang baru ditambahkan menggunakan harga katalog.
+         */
+        if (isset($oldProducts[$productId])) {
+            $oldProduct = $oldProducts[$productId];
+
+            $price = (float) $oldProduct['price'];
+            $name = (string) $oldProduct['product_name'];
+            $variant = $oldProduct['product_variant'];
+        } else {
+            if (!(bool) $product['is_available']) {
+                throw new RuntimeException(
+                    'Produk ' . $product['name'] . ' tidak tersedia.'
+                );
+            }
+
+            $price = (float) $product['price'];
+            $name = (string) $product['name'];
+            $variant = trim((string) ($product['variant'] ?? '')) !== ''
+                ? (string) $product['variant']
+                : null;
+        }
+
+        $newStock[$productId] = $quantity;
+
+        $lineSubtotal = round($price * $quantity, 2);
+
+        $subtotal = round($subtotal + $lineSubtotal, 2);
+
+        $newItems[] = [
+            'product_id' => $productId,
+            'product_name' => $name,
+            'product_variant' => $variant,
+            'quantity' => $quantity,
+            'price' => $price,
+            'subtotal' => $lineSubtotal,
+        ];
+    }
+
+    /*
+     * Pertahankan snapshot produk yang sudah dihapus dari katalog.
+     * Produk tersebut tidak bisa diedit dari katalog.
+     */
+    foreach ($oldItems as $oldItem) {
+        if ($oldItem['product_id'] !== null) {
             continue;
         }
 
+        $quantity = (int) $oldItem['quantity'];
+        $price = (float) $oldItem['price'];
+
+        $newItems[] = [
+            'product_id' => null,
+            'product_name' => $oldItem['product_name'],
+            'product_variant' => $oldItem['product_variant'],
+            'quantity' => $quantity,
+            'price' => $price,
+            'subtotal' => round($price * $quantity, 2),
+        ];
+
+        $subtotal = round(
+            $subtotal + ($price * $quantity),
+            2
+        );
+    }
+
+    if (!$newItems) {
+        throw new RuntimeException(
+            'Pesanan harus memiliki minimal satu produk.'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SINKRONISASI STOK BERDASARKAN SELISIH
+    |--------------------------------------------------------------------------
+    |
+    | Stok pesanan sudah dikurangi saat pesanan diaktifkan.
+    | Jangan mengurangi ulang seluruh jumlah pesanan.
+    |--------------------------------------------------------------------------
+    */
+
+    $stockIds = array_unique(array_merge(
+        array_keys($oldStock),
+        array_keys($newStock)
+    ));
+
+    sort($stockIds);
+
+    $stockStmt = $db->prepare(
+        'SELECT id, name, is_available, stock_quantity
+         FROM products
+         WHERE id = :id
+           AND store_id = :store_id
+         LIMIT 1
+         FOR UPDATE'
+    );
+
+    $deductStmt = $db->prepare(
+        'UPDATE products
+         SET stock_quantity = stock_quantity - :quantity
+         WHERE id = :id
+           AND store_id = :store_id
+           AND stock_quantity IS NOT NULL
+           AND stock_quantity >= :required'
+    );
+
+    $restoreStmt = $db->prepare(
+        'UPDATE products
+         SET stock_quantity = stock_quantity + :quantity
+         WHERE id = :id
+           AND store_id = :store_id
+           AND stock_quantity IS NOT NULL'
+    );
+
+    foreach ($stockIds as $productId) {
         $difference =
             ($newStock[$productId] ?? 0)
             - ($oldStock[$productId] ?? 0);
 
-        if ($difference === 0 || $product['stock_quantity'] === null) {
+        if ($difference === 0) {
+            continue;
+        }
+
+        $stockStmt->execute([
+            'id' => $productId,
+            'store_id' => $storeId,
+        ]);
+
+        $product = $stockStmt->fetch();
+
+        if (!$product) {
+            continue;
+        }
+
+        if ($product['stock_quantity'] === null) {
             continue;
         }
 
         if ($difference > 0) {
             if (!(bool) $product['is_available']) {
                 throw new RuntimeException(
-                    'Produk ' . $product['name'] . ' sudah tidak tersedia.'
+                    'Produk ' . $product['name'] . ' tidak tersedia.'
                 );
             }
 
@@ -478,9 +411,9 @@ try {
 
             $deductStmt->execute([
                 'quantity' => $difference,
-                'product_id' => $productId,
+                'id' => $productId,
                 'store_id' => $storeId,
-                'check_quantity' => $difference,
+                'required' => $difference,
             ]);
 
             if ($deductStmt->rowCount() !== 1) {
@@ -489,127 +422,30 @@ try {
                 );
             }
         } else {
-            $restoreQuantity = abs($difference);
-
             $restoreStmt->execute([
-                'quantity' => $restoreQuantity,
-                'product_id' => $productId,
+                'quantity' => abs($difference),
+                'id' => $productId,
                 'store_id' => $storeId,
             ]);
         }
     }
 
     /*
-     * Hitung subtotal menggunakan harga snapshot pesanan.
-     * Harga tidak berubah hanya karena katalog diperbarui.
-     */
-    $subtotal = 0;
+    |--------------------------------------------------------------------------
+    | SIMPAN ITEM DAN TOTAL
+    |--------------------------------------------------------------------------
+    */
 
-    foreach ($newItems as &$newItem) {
-        $newItem['subtotal'] =
-            $newItem['price'] * $newItem['quantity'];
-
-        $subtotal += $newItem['subtotal'];
-    }
-
-    unset($newItem);
-
-    /*
-     * Hitung ulang ongkir menggunakan aturan checkout.
-     */
-    $deliveryFee = 0;
-    $deliveryFeeOriginal = 0;
-    $deliveryDiscount = 0;
-    $deliveryDistanceKm = null;
-
-    if ($deliveryMethod === 'delivery') {
-        $storeStmt = $db->prepare(
-            'SELECT
-                latitude,
-                longitude,
-                free_delivery,
-                delivery_discount
-             FROM stores
-             WHERE id = :store_id
-             LIMIT 1
-             FOR UPDATE'
-        );
-
-        $storeStmt->execute([
-            'store_id' => $storeId,
-        ]);
-
-        $store = $storeStmt->fetch();
-
-        if (!$store) {
-            throw new RuntimeException(
-                'Data warung tidak ditemukan.'
-            );
-        }
-
-        $isFreeDelivery = (bool) $store['free_delivery'];
-
-        if (
-            !$isFreeDelivery
-            && (
-                $latitude === null
-                || $longitude === null
-                || $store['latitude'] === null
-                || $store['longitude'] === null
-            )
-        ) {
-            throw new RuntimeException(
-                'Lokasi pengantaran belum lengkap.'
-            );
-        }
-
-        if (
-            $latitude !== null
-            && $longitude !== null
-            && $store['latitude'] !== null
-            && $store['longitude'] !== null
-        ) {
-            $deliveryDistanceKm = delivery_distance_km(
-                (float) $store['latitude'],
-                (float) $store['longitude'],
-                $latitude,
-                $longitude
-            );
-
-            $deliveryFeeOriginal = DELIVERY_BASE_FEE
-                + delivery_fee_from_distance($deliveryDistanceKm);
-        }
-
-        if ($isFreeDelivery) {
-            $deliveryDiscount = $deliveryFeeOriginal;
-            $deliveryFee = 0;
-        } else {
-            $deliveryDiscount = min(
-                max(0, (int) $store['delivery_discount']),
-                DELIVERY_BASE_FEE
-            );
-
-            $deliveryFee = (
-                DELIVERY_BASE_FEE - $deliveryDiscount
-            ) + ($deliveryFeeOriginal - DELIVERY_BASE_FEE);
-        }
-    }
-
-    $total = $subtotal + $deliveryFee;
-
-    /*
-     * Simpan ulang rincian produk.
-     */
-    $deleteItems = $db->prepare(
+    $deleteStmt = $db->prepare(
         'DELETE FROM order_items
          WHERE order_id = :order_id'
     );
 
-    $deleteItems->execute([
+    $deleteStmt->execute([
         'order_id' => $orderId,
     ]);
 
-    $insertItem = $db->prepare(
+    $insertStmt = $db->prepare(
         'INSERT INTO order_items (
             order_id,
             product_id,
@@ -618,7 +454,7 @@ try {
             quantity,
             price,
             subtotal
-         ) VALUES (
+        ) VALUES (
             :order_id,
             :product_id,
             :product_name,
@@ -626,88 +462,42 @@ try {
             :quantity,
             :price,
             :subtotal
-         )'
+        )'
     );
 
-    foreach ($newItems as $newItem) {
-        $insertItem->execute([
+    foreach ($newItems as $item) {
+        $insertStmt->execute([
             'order_id' => $orderId,
-            'product_id' => $newItem['product_id'],
-            'product_name' => $newItem['product_name'],
-            'product_variant' => $newItem['product_variant'],
-            'quantity' => $newItem['quantity'],
-            'price' => $newItem['price'],
-            'subtotal' => $newItem['subtotal'],
+            'product_id' => $item['product_id'],
+            'product_name' => $item['product_name'],
+            'product_variant' => $item['product_variant'],
+            'quantity' => $item['quantity'],
+            'price' => $item['price'],
+            'subtotal' => $item['subtotal'],
         ]);
     }
 
     /*
-     * Perbarui data pesanan.
+     * Ongkir dipertahankan. Hanya subtotal dan total produk
+     * yang dihitung ulang.
      */
-    $updateOrder = $db->prepare(
-        'UPDATE orders SET
-            buyer_name = :buyer_name,
-            buyer_phone = :buyer_phone,
-            notes = :notes,
-            delivery_address = :address,
-            delivery_maps_url = :maps_url,
-            delivery_latitude = :latitude,
-            delivery_longitude = :longitude,
-            delivery_fee = :delivery_fee,
-            delivery_fee_original = :fee_original,
-            delivery_discount = :discount,
-            delivery_distance_km = :distance,
-            subtotal = :subtotal,
-            total = :total
+    $deliveryFee = (float) $order['delivery_fee'];
+    $total = round($subtotal + $deliveryFee, 2);
+
+    $updateStmt = $db->prepare(
+        'UPDATE orders
+         SET notes = :notes,
+             subtotal = :subtotal,
+             total = :total
          WHERE id = :id'
     );
 
-    $updateOrder->execute([
-        'buyer_name' => $buyerName,
-        'buyer_phone' => $buyerPhone,
+    $updateStmt->execute([
         'notes' => $notes !== '' ? $notes : null,
-        'address' => $deliveryMethod === 'delivery' ? $address : null,
-        'maps_url' => $deliveryMethod === 'delivery' && $mapsUrl !== ''
-            ? $mapsUrl
-            : null,
-        'latitude' => $deliveryMethod === 'delivery' ? $latitude : null,
-        'longitude' => $deliveryMethod === 'delivery' ? $longitude : null,
-        'delivery_fee' => $deliveryFee,
-        'fee_original' => $deliveryFeeOriginal,
-        'discount' => $deliveryDiscount,
-        'distance' => $deliveryDistanceKm,
         'subtotal' => $subtotal,
         'total' => $total,
         'id' => $orderId,
     ]);
-
-    /*
-     * Sinkronkan profil pembeli jika relasinya tersedia.
-     */
-    if (!empty($order['buyer_id'])) {
-        $buyerUpdate = $db->prepare(
-            'UPDATE buyers SET
-                name = :name,
-                phone = :phone,
-                delivery_address = :address,
-                delivery_maps_url = :maps_url,
-                delivery_latitude = :latitude,
-                delivery_longitude = :longitude
-             WHERE id = :id'
-        );
-
-        $buyerUpdate->execute([
-            'name' => $buyerName,
-            'phone' => $buyerPhone,
-            'address' => $deliveryMethod === 'delivery' ? $address : null,
-            'maps_url' => $deliveryMethod === 'delivery' && $mapsUrl !== ''
-                ? $mapsUrl
-                : null,
-            'latitude' => $deliveryMethod === 'delivery' ? $latitude : null,
-            'longitude' => $deliveryMethod === 'delivery' ? $longitude : null,
-            'id' => (int) $order['buyer_id'],
-        ]);
-    }
 
     $db->commit();
 
@@ -715,7 +505,6 @@ try {
         'success' => true,
         'message' => 'Pesanan berhasil diperbarui.',
         'subtotal' => $subtotal,
-        'delivery_fee' => $deliveryFee,
         'total' => $total,
     ]);
 } catch (RuntimeException $exception) {

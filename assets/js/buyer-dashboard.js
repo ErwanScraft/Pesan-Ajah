@@ -720,83 +720,35 @@
        Order card
     ----------------------------------------------------- */
     
-    function createEditField(labelText, value, name, type = "text") {
-        const wrapper = createElement("label", "buyer-edit-field");
-        const label = createElement("span", "", labelText);
-        const input = createElement("input", "buyer-edit-input");
-    
-        input.type = type;
-        input.name = name;
-        input.value = value ?? "";
-    
-        if (type === "number") {
-            input.min = "1";
-            input.max = "99";
-            input.step = "1";
-            input.required = true;
-        }
-    
-        wrapper.append(label, input);
-    
-        return { wrapper, input };
-    }
-    
     function createEditModal(order, token) {
         const overlay = createElement("div", "buyer-edit-overlay");
         const modal = createElement("form", "buyer-edit-modal");
     
         modal.setAttribute("aria-label", "Edit pesanan");
-        modal.noValidate = false;
     
         const header = createElement("div", "buyer-edit-header");
-        const heading = createElement("div");
+        const heading = createElement("div", "buyer-edit-heading");
     
         heading.append(
             createElement("h2", "", "Edit Pesanan"),
-            createElement(
-                "p",
-                "",
-                `Pesanan ${order.order_number}`
-            )
+            createElement("p", "", `Pesanan #${order.order_number}`)
         );
     
-        const closeButton = createElement(
-            "button",
-            "buyer-edit-close",
-            "×"
+        const status = ORDER_STATUS[normalize(order.status)];
+    
+        const statusBadge = createElement(
+            "span",
+            "buyer-edit-status",
+            status?.label || order.status
         );
     
+        const closeButton = createElement("button", "buyer-edit-close", "×");
         closeButton.type = "button";
         closeButton.setAttribute("aria-label", "Tutup");
     
-        header.append(heading, closeButton);
+        header.append(heading, statusBadge, closeButton);
     
         const content = createElement("div", "buyer-edit-content");
-    
-        const buyerSection = createElement("section", "buyer-edit-section");
-        buyerSection.appendChild(
-            createElement("h3", "", "Informasi Pembeli")
-        );
-    
-        const nameField = createEditField(
-            "Nama pembeli",
-            order.buyer_name,
-            "buyer_name"
-        );
-    
-        const phoneField = createEditField(
-            "Nomor WhatsApp",
-            order.buyer_phone,
-            "buyer_phone",
-            "tel"
-        );
-    
-        buyerSection.append(
-            nameField.wrapper,
-            phoneField.wrapper
-        );
-    
-        content.appendChild(buyerSection);
     
         const productSection = createElement(
             "section",
@@ -804,177 +756,64 @@
         );
     
         productSection.appendChild(
-            createElement("h3", "", "Rincian Produk")
+            createElement("h3", "", "Daftar Item")
         );
     
         const productList = createElement("div", "buyer-edit-products");
-        const productRows = [];
     
-        (Array.isArray(order.items) ? order.items : []).forEach((item) => {
-            const row = createElement("div", "buyer-edit-product");
-            const info = createElement("div", "buyer-edit-product-info");
-    
-            const name = createElement(
-                "strong",
-                "",
-                item.product_name || "Produk"
-            );
-    
-            const variant = item.product_variant
-                ? createElement("small", "", item.product_variant)
-                : null;
-    
-            const price = createElement(
-                "small",
-                "",
-                `${formatRupiah(item.price)} / produk`
-            );
-    
-            info.append(name);
-    
-            if (variant) info.appendChild(variant);
-    
-            info.appendChild(price);
-    
-            const controls = createElement(
-                "div",
-                "buyer-edit-product-controls"
-            );
-    
-            if (item.product_id === null || item.product_id === undefined) {
-                controls.appendChild(
-                    createElement("small", "", "Tidak dapat diedit")
-                );
-    
-                row.classList.add("is-locked");
-            } else {
-                const quantity = createEditField(
-                    "Jumlah",
-                    item.quantity,
-                    `item_${item.id}`,
-                    "number"
-                );
-    
-                const removeButton = createElement(
-                    "button",
-                    "buyer-edit-remove",
-                    "Hapus"
-                );
-    
-                removeButton.type = "button";
-    
-                removeButton.addEventListener("click", () => {
-                    row.remove();
-    
-                    const entry = productRows.find(
-                        (product) => product.id === Number(item.id)
-                    );
-    
-                    if (entry) entry.removed = true;
-                });
-    
-                controls.append(
-                    quantity.wrapper,
-                    removeButton
-                );
-    
-                productRows.push({
-                    id: Number(item.id),
-                    productId: Number(item.product_id),
-                    quantity: quantity.input,
-                    removed: false
-                });
-            }
-    
-            row.append(info, controls);
-            productList.appendChild(row);
-        });
-    
-        productSection.appendChild(productList);
-        content.appendChild(productSection);
-    
-        const noteField = createEditField(
-            "Catatan pesanan",
-            order.notes,
-            "notes"
+        const addButton = createElement(
+            "button",
+            "buyer-edit-add",
+            "＋  Tambah Produk"
         );
     
-        noteField.input.removeAttribute("type");
-        noteField.input = document.createElement("textarea");
-        noteField.input.className = "buyer-edit-input";
-        noteField.input.name = "notes";
-        noteField.input.value = order.notes || "";
-        noteField.input.maxLength = 500;
-        noteField.wrapper.replaceChild(
-            noteField.input,
-            noteField.wrapper.querySelector("input")
-        );
+        addButton.type = "button";
+    
+        const picker = createElement("div", "buyer-edit-picker");
+        picker.hidden = true;
+    
+        const search = createElement("input", "buyer-edit-search");
+        search.type = "search";
+        search.placeholder = "Cari produk...";
+        search.setAttribute("aria-label", "Cari produk");
+    
+        const pickerList = createElement("div", "buyer-edit-picker-list");
+    
+        picker.append(search, pickerList);
     
         const noteSection = createElement(
             "section",
             "buyer-edit-section"
         );
     
-        noteSection.append(
-            createElement("h3", "", "Catatan"),
-            noteField.wrapper
+        noteSection.appendChild(
+            createElement("h3", "", "Catatan Pesanan")
         );
     
-        content.appendChild(noteSection);
+        const noteInput = createElement("textarea", "buyer-edit-note");
+        noteInput.name = "notes";
+        noteInput.maxLength = 500;
+        noteInput.placeholder = "Tambahkan catatan pesanan...";
+        noteInput.value = order.notes || "";
     
-        let addressField = null;
-        let mapsField = null;
-        let latitudeField = null;
-        let longitudeField = null;
+        noteSection.appendChild(noteInput);
     
-        if (normalize(order.delivery_method) === "delivery") {
-            const locationSection = createElement(
-                "section",
-                "buyer-edit-section"
-            );
-    
-            locationSection.appendChild(
-                createElement("h3", "", "Lokasi Pengantaran")
-            );
-    
-            addressField = createEditField(
-                "Detail tempat / rumah",
-                order.delivery_address,
-                "delivery_address"
-            );
-    
-            mapsField = createEditField(
-                "Link Google Maps",
-                order.delivery_maps_url,
-                "delivery_maps_url",
-                "url"
-            );
-    
-            latitudeField = createEditField(
-                "Latitude",
-                order.delivery_latitude,
-                "delivery_latitude",
-                "number"
-            );
-    
-            longitudeField = createEditField(
-                "Longitude",
-                order.delivery_longitude,
-                "delivery_longitude",
-                "number"
-            );
-    
-            locationSection.append(
-                addressField.wrapper,
-                mapsField.wrapper,
-                latitudeField.wrapper,
-                longitudeField.wrapper
-            );
-    
-            content.appendChild(locationSection);
-        }
+        content.append(
+            productSection,
+            addButton,
+            picker,
+            noteSection
+        );
     
         const footer = createElement("div", "buyer-edit-footer");
+        const totalRow = createElement("div", "buyer-edit-total");
+    
+        totalRow.append(
+            createElement("span", "", "Total produk"),
+            createElement("strong", "buyer-edit-total-value", "Rp0")
+        );
+    
+        const actions = createElement("div", "buyer-edit-actions");
     
         const cancelButton = createElement(
             "button",
@@ -992,10 +831,320 @@
     
         saveButton.type = "submit";
     
-        footer.append(cancelButton, saveButton);
+        actions.append(cancelButton, saveButton);
+        footer.append(totalRow, actions);
     
         modal.append(header, content, footer);
         overlay.appendChild(modal);
+    
+        /*
+        |--------------------------------------------------------------------------
+        | DATA ITEM
+        |--------------------------------------------------------------------------
+        */
+    
+        const items = (Array.isArray(order.items) ? order.items : []).map(
+            (item) => ({
+                productId: item.product_id ? Number(item.product_id) : null,
+                name: item.product_name || "Produk",
+                variant: item.product_variant || "",
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1,
+                image: item.image || "",
+                locked: !item.product_id
+            })
+        );
+    
+        let catalogProducts = [];
+        let catalogLoaded = false;
+    
+        function getSubtotal() {
+            return items.reduce(
+                (total, item) => total + item.price * item.quantity,
+                0
+            );
+        }
+    
+        function renderTotal() {
+            totalRow.querySelector("strong").textContent =
+                formatRupiah(getSubtotal());
+        }
+    
+        function renderProducts() {
+            productList.replaceChildren();
+    
+            items.forEach((item, index) => {
+                const row = createElement("div", "buyer-edit-product");
+    
+                const image = createElement("img", "buyer-edit-product-image");
+                image.alt = item.name;
+                image.loading = "lazy";
+    
+                if (item.image) {
+                    image.src = item.image;
+                } else {
+                    image.hidden = true;
+                }
+    
+                const info = createElement("div", "buyer-edit-product-info");
+    
+                info.appendChild(
+                    createElement("strong", "", item.name)
+                );
+    
+                if (item.variant) {
+                    info.appendChild(
+                        createElement("small", "", item.variant)
+                    );
+                }
+    
+                info.appendChild(
+                    createElement(
+                        "span",
+                        "",
+                        formatRupiah(item.price)
+                    )
+                );
+    
+                const controls = createElement(
+                    "div",
+                    "buyer-edit-product-controls"
+                );
+    
+                if (item.locked) {
+                    controls.appendChild(
+                        createElement("small", "", "Produk tidak tersedia")
+                    );
+                } else {
+                    const decrease = createElement(
+                        "button",
+                        "buyer-edit-quantity-button",
+                        "−"
+                    );
+    
+                    decrease.type = "button";
+                    decrease.setAttribute("aria-label", "Kurangi jumlah");
+    
+                    decrease.addEventListener("click", () => {
+                        if (item.quantity > 1) {
+                            item.quantity--;
+                            renderProducts();
+                        }
+                    });
+    
+                    const quantity = createElement(
+                        "strong",
+                        "buyer-edit-quantity",
+                        item.quantity
+                    );
+    
+                    const increase = createElement(
+                        "button",
+                        "buyer-edit-quantity-button is-add",
+                        "+"
+                    );
+    
+                    increase.type = "button";
+                    increase.setAttribute("aria-label", "Tambah jumlah");
+    
+                    increase.addEventListener("click", () => {
+                        if (item.quantity < 99) {
+                            item.quantity++;
+                            renderProducts();
+                        }
+                    });
+    
+                    const remove = createElement(
+                        "button",
+                        "buyer-edit-remove",
+                        "⌫"
+                    );
+    
+                    remove.type = "button";
+                    remove.setAttribute("aria-label", "Hapus produk");
+    
+                    remove.addEventListener("click", () => {
+                        items.splice(index, 1);
+                        renderProducts();
+                    });
+    
+                    controls.append(
+                        decrease,
+                        quantity,
+                        increase,
+                        remove
+                    );
+                }
+    
+                row.append(image, info, controls);
+                productList.appendChild(row);
+            });
+    
+            renderTotal();
+        }
+    
+        /*
+        |--------------------------------------------------------------------------
+        | KATALOG PRODUK
+        |--------------------------------------------------------------------------
+        */
+    
+        function renderPicker() {
+            const query = search.value
+                .trim()
+                .toLocaleLowerCase("id-ID");
+    
+            pickerList.replaceChildren();
+    
+            const filtered = catalogProducts.filter((product) => {
+                return (
+                    product.available &&
+                    (
+                        product.name || ""
+                    ).toLocaleLowerCase("id-ID").includes(query)
+                );
+            });
+    
+            if (!filtered.length) {
+                pickerList.appendChild(
+                    createElement(
+                        "p",
+                        "buyer-edit-picker-empty",
+                        "Produk tidak ditemukan atau tidak tersedia."
+                    )
+                );
+    
+                return;
+            }
+    
+            filtered.forEach((product) => {
+                const button = createElement(
+                    "button",
+                    "buyer-edit-picker-product"
+                );
+    
+                button.type = "button";
+    
+                const name = createElement(
+                    "span",
+                    "",
+                    product.name
+                );
+    
+                const detail = createElement(
+                    "small",
+                    "",
+                    `${formatRupiah(product.price)}${product.variant ? ` · ${product.variant}` : ""}`
+                );
+    
+                const addIcon = createElement("strong", "", "+");
+    
+                button.append(name, detail, addIcon);
+    
+                button.addEventListener("click", () => {
+                    const existing = items.find(
+                        (item) => item.productId === Number(product.id)
+                    );
+    
+                    if (existing) {
+                        if (existing.quantity >= 99) {
+                            showMessage(
+                                "Jumlah maksimal produk adalah 99.",
+                                "error"
+                            );
+                            return;
+                        }
+    
+                        existing.quantity++;
+                    } else {
+                        items.push({
+                            productId: Number(product.id),
+                            name: product.name,
+                            variant: product.variant || "",
+                            price: Number(product.price),
+                            quantity: 1,
+                            image: product.image || "",
+                            locked: false
+                        });
+                    }
+    
+                    renderProducts();
+                    picker.hidden = false;
+                    search.value = "";
+                    renderPicker();
+                });
+    
+                pickerList.appendChild(button);
+            });
+        }
+    
+        async function loadPickerProducts() {
+            if (catalogLoaded) {
+                renderPicker();
+                return;
+            }
+    
+            pickerList.replaceChildren(
+                createElement("p", "", "Memuat produk...")
+            );
+    
+            try {
+                const response = await fetch(
+                    `/api/catalog.php?store_id=${encodeURIComponent(order.store_id)}`,
+                    {
+                        method: "GET",
+                        credentials: "same-origin",
+                        cache: "no-store",
+                        headers: {
+                            Accept: "application/json"
+                        }
+                    }
+                );
+    
+                const result = await response.json();
+    
+                if (!response.ok || result.success !== true) {
+                    throw new Error(
+                        result.message || "Katalog gagal dimuat."
+                    );
+                }
+    
+                catalogProducts = (result.products || []).map((product) => ({
+                    ...product,
+                    id: Number(product.id),
+                    price: Number(product.price),
+                    available: Boolean(product.available)
+                }));
+    
+                catalogLoaded = true;
+                renderPicker();
+            } catch (error) {
+                pickerList.replaceChildren(
+                    createElement(
+                        "p",
+                        "buyer-edit-picker-empty",
+                        error.message || "Katalog gagal dimuat."
+                    )
+                );
+            }
+        }
+    
+        addButton.addEventListener("click", async () => {
+            picker.hidden = !picker.hidden;
+    
+            if (!picker.hidden) {
+                await loadPickerProducts();
+                search.focus();
+            }
+        });
+    
+        search.addEventListener("input", renderPicker);
+    
+        /*
+        |--------------------------------------------------------------------------
+        | MODAL
+        |--------------------------------------------------------------------------
+        */
     
         function closeModal() {
             overlay.remove();
@@ -1006,30 +1155,33 @@
         cancelButton.addEventListener("click", closeModal);
     
         overlay.addEventListener("click", (event) => {
-            if (event.target === overlay) closeModal();
+            if (event.target === overlay) {
+                closeModal();
+            }
         });
     
         document.body.appendChild(overlay);
         document.body.classList.add("buyer-edit-open");
     
-        nameField.input.required = true;
+        renderProducts();
     
-        if (normalize(order.delivery_method) === "delivery") {
-            phoneField.input.required = true;
-            addressField.input.required = true;
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | SIMPAN PERUBAHAN
+        |--------------------------------------------------------------------------
+        */
     
         modal.addEventListener("submit", async (event) => {
             event.preventDefault();
     
-            const updatedItems = productRows
-                .filter((item) => !item.removed)
+            const updatedItems = items
+                .filter((item) => !item.locked)
                 .map((item) => ({
-                    id: item.id,
-                    quantity: Number(item.quantity.value)
+                    product_id: item.productId,
+                    quantity: item.quantity
                 }));
     
-            if (updatedItems.length === 0) {
+            if (!updatedItems.length && !items.some((item) => item.locked)) {
                 showMessage(
                     "Pesanan harus memiliki minimal satu produk.",
                     "error"
@@ -1037,32 +1189,8 @@
                 return;
             }
     
-            if (!window.confirm(
-                "Simpan perubahan pada pesanan ini?"
-            )) {
-                return;
-            }
-    
             saveButton.disabled = true;
             saveButton.textContent = "Menyimpan...";
-    
-            const payload = {
-                order_number: order.order_number,
-                buyer_token: token,
-                buyer_name: nameField.input.value.trim(),
-                buyer_phone: phoneField.input.value.trim(),
-                notes: noteField.input.value.trim(),
-                items: updatedItems
-            };
-    
-            if (normalize(order.delivery_method) === "delivery") {
-                payload.delivery_address = addressField.input.value.trim();
-                payload.delivery_maps_url = mapsField.input.value.trim();
-                payload.delivery_latitude =
-                    latitudeField.input.value.trim() || null;
-                payload.delivery_longitude =
-                    longitudeField.input.value.trim() || null;
-            }
     
             try {
                 const response = await fetch(EDIT_API_URL, {
@@ -1073,7 +1201,12 @@
                         Accept: "application/json",
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        order_number: order.order_number,
+                        buyer_token: token,
+                        notes: noteInput.value.trim(),
+                        items: updatedItems
+                    })
                 });
     
                 const result = await response.json();
