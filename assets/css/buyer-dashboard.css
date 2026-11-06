@@ -171,6 +171,126 @@
     display: none;
 }
 
+/* =========================================================
+   ORDER MANAGEMENT — CATEGORY NAVIGATION
+========================================================= */
+
+.buyer-order-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+    margin: 22px 0 18px;
+    padding: 4px 0;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.buyer-order-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.buyer-order-tab {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 43px;
+    padding: 9px 15px;
+
+    border: 1px solid var(--buyer-border);
+    border-radius: 11px;
+
+    background: var(--buyer-white);
+    color: var(--buyer-muted);
+
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.buyer-order-tab:hover {
+    border-color: #b9d8c4;
+    background: #f7faf7;
+    color: var(--buyer-green-dark);
+}
+
+.buyer-order-tab.is-active {
+    border-color: var(--buyer-green);
+    background: var(--buyer-green);
+    color: var(--buyer-white);
+}
+
+.buyer-tab-count {
+    display: inline-flex;
+    min-width: 21px;
+    height: 21px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+    border-radius: 7px;
+
+    background: #f0f2f0;
+    color: var(--buyer-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.buyer-order-tab.is-active .buyer-tab-count {
+    background: rgb(255 255 255 / 20%);
+    color: var(--buyer-white);
+}
+
+.buyer-order-tab:focus-visible {
+    outline: 2px solid var(--buyer-green);
+    outline-offset: 3px;
+}
+
+/* Mobile */
+
+@media (max-width: 520px) {
+    .buyer-order-tabs {
+        gap: 7px;
+        margin: 18px 0 15px;
+    }
+
+    .buyer-order-tab {
+        min-height: 40px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 11px;
+    }
+
+    .buyer-tab-count {
+        min-width: 19px;
+        height: 19px;
+        font-size: 9px;
+    }
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .buyer-order-tab {
+        transition: none;
+    }
+}
+
 /* Message and loading */
 
 .buyer-message {

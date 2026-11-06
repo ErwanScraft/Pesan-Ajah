@@ -42,9 +42,9 @@ header('Cache-Control: no-store, private');
     <main class="buyer-page">
         <div class="container buyer-container">
             <section class="buyer-intro">
-                <span class="eyebrow eyebrow-plain">DASHBOARD PEMBELI</span>
-                <h1>Pesanan saya</h1>
-                <p>Pantau pesanan dan status pengantaranmu.</p>
+                <span class="eyebrow eyebrow-plain">ORDER MANAGEMENT</span>
+                <h1>Dashboard User</h1>
+                <p>Pantau dan kelola seluruh pesananmu di satu tempat.</p>
             </section>
 
             <section class="buyer-summary" aria-label="Ringkasan pesanan">
@@ -85,6 +85,52 @@ header('Cache-Control: no-store, private');
                     <strong id="buyer-completed-count">—</strong>
                 </article>
             </section>
+            
+            <nav class="buyer-order-tabs" aria-label="Kategori pesanan" role="tablist">
+                <button
+                    type="button"
+                    class="buyer-order-tab is-active"
+                    data-category="waiting"
+                    role="tab"
+                    aria-selected="true"
+                >
+                    <span>Menunggu</span>
+                    <span class="buyer-tab-count" id="buyer-count-waiting">0</span>
+                </button>
+            
+                <button
+                    type="button"
+                    class="buyer-order-tab"
+                    data-category="processing"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    <span>Proses</span>
+                    <span class="buyer-tab-count" id="buyer-count-processing">0</span>
+                </button>
+            
+                <button
+                    type="button"
+                    class="buyer-order-tab"
+                    data-category="handoff"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    <span>Delivery / Ambil Sendiri</span>
+                    <span class="buyer-tab-count" id="buyer-count-handoff">0</span>
+                </button>
+            
+                <button
+                    type="button"
+                    class="buyer-order-tab"
+                    data-category="completed"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    <span>Selesai</span>
+                    <span class="buyer-tab-count" id="buyer-count-completed">0</span>
+                </button>
+            </nav>
 
             <div
                 class="buyer-message"
@@ -119,8 +165,11 @@ header('Cache-Control: no-store, private');
                         />
                     </svg>
                 </div>
-                <h2>Belum ada pesanan</h2>
-                <p>Pesananmu akan muncul di halaman ini setelah checkout.</p>
+                <h2 id="buyer-empty-title">Belum ada pesanan</h2>
+                
+                <p id="buyer-empty-description">
+                    Pesananmu akan muncul di kategori ini.
+                </p>
                 <a class="button button-primary" href="/">Mulai belanja</a>
             </section>
 

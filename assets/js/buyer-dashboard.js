@@ -68,10 +68,39 @@
         empty: document.getElementById("buyer-empty"),
         year: document.getElementById("buyer-current-year"),
         activeCount: document.getElementById("buyer-active-count"),
-        completedCount: document.getElementById("buyer-completed-count")
+        completedCount: document.getElementById("buyer-completed-count"),
+        categoryTabs: document.querySelectorAll(".buyer-order-tab"),
+        categoryCounts: {
+            waiting: document.getElementById("buyer-count-waiting"),
+            processing: document.getElementById("buyer-count-processing"),
+            handoff: document.getElementById("buyer-count-handoff"),
+            completed: document.getElementById("buyer-count-completed")
+        },
+        emptyTitle: document.getElementById("buyer-empty-title"),
+        emptyDescription: document.getElementById("buyer-empty-description")
     };
 
     let currentOrders = [];
+    let activeCategory = "waiting";
+    
+    const ORDER_CATEGORIES = {
+        waiting: {
+            title: "Belum ada pesanan menunggu",
+            description: "Pesanan yang menunggu konfirmasi warung akan muncul di sini."
+        },
+        processing: {
+            title: "Belum ada pesanan diproses",
+            description: "Pesanan yang sudah dikonfirmasi dan sedang disiapkan akan muncul di sini."
+        },
+        handoff: {
+            title: "Belum ada pesanan untuk diterima",
+            description: "Pesanan yang siap diambil atau sedang diantarkan akan muncul di sini."
+        },
+        completed: {
+            title: "Belum ada riwayat pesanan",
+            description: "Pesanan yang selesai atau dibatalkan akan muncul di sini."
+        }
+    };
     let isLoading = false;
     let refreshTimer = null;
     let hasLoadedSuccessfully = false;
@@ -209,23 +238,78 @@
     function isActive(order) {
         return !isCompleted(order) && !isCancelled(order);
     }
+    
+    function getOrderCategory(order) {
+        const status = normalize(order.status);
+        const method = normalize(order.delivery_method);
+    
+        if (status === "completed" || status === "cancelled") {
+            return "completed";
+        }
+    
+        if (status === "pending") {
+            return "waiting";
+        }
+    
+        if (status === "confirmed" || status === "processing") {
+            return "processing";
+        }
+    
+        if (
+            method === "pickup" &&
+            status === "ready_for_pickup"
+        ) {
+            return "handoff";
+        }
+    
+        if (
+            method === "delivery" &&
+            (
+                status === "ready_for_driver" ||
+                status === "in_delivery"
+            )
+        ) {
+            return "handoff";
+        }
+    
+        return "processing";
+    }
+    
+    function getOrdersByCategory(category) {
+        return currentOrders.filter((order) => {
+            return getOrderCategory(order) === category;
+        });
+    }
 
     /* -----------------------------------------------------
        Summary counters
     ----------------------------------------------------- */
 
     function renderSummary() {
+        const waiting = getOrdersByCategory("waiting").length;
+        const processing = getOrdersByCategory("processing").length;
+        const handoff = getOrdersByCategory("handoff").length;
+        const completed = getOrdersByCategory("completed").length;
+    
         if (elements.activeCount) {
             elements.activeCount.textContent = String(
-                currentOrders.filter(isActive).length
+                waiting + processing + handoff
             );
         }
-
+    
         if (elements.completedCount) {
             elements.completedCount.textContent = String(
                 currentOrders.filter(isCompleted).length
             );
         }
+    
+        Object.entries(elements.categoryCounts).forEach(([category, element]) => {
+            if (!element) return;
+    
+            element.textContent = String(
+                getOrdersByCategory(category).length
+            );
+        });
     }
 
     /* -----------------------------------------------------
@@ -811,23 +895,56 @@
     /* -----------------------------------------------------
        Render and API
     ----------------------------------------------------- */
+    
+    function setActiveCategory(category) {
+        if (!ORDER_CATEGORIES[category]) return;
+    
+        activeCategory = category;
+    
+        elements.categoryTabs.forEach((tab) => {
+            const isActive = tab.dataset.category === category;
+    
+            tab.classList.toggle("is-active", isActive);
+            tab.setAttribute("aria-selected", String(isActive));
+        });
+    
+        renderOrders();
+    }
 
     function renderOrders() {
         if (!elements.orders) return;
-
+    
+        const filteredOrders = getOrdersByCategory(activeCategory);
+    
         elements.orders.replaceChildren();
-
-        currentOrders.forEach((order, index) => {
-            elements.orders.appendChild(createOrderCard(order, index));
+    
+        filteredOrders.forEach((order, index) => {
+            elements.orders.appendChild(
+                createOrderCard(order, index)
+            );
         });
-
-        const hasOrders = currentOrders.length > 0;
+    
+        const hasOrders = filteredOrders.length > 0;
+    
         elements.orders.hidden = !hasOrders;
-
+    
         if (elements.empty) {
             elements.empty.hidden = hasOrders;
         }
-
+    
+        if (!hasOrders) {
+            const emptyContent = ORDER_CATEGORIES[activeCategory];
+    
+            if (elements.emptyTitle) {
+                elements.emptyTitle.textContent = emptyContent.title;
+            }
+    
+            if (elements.emptyDescription) {
+                elements.emptyDescription.textContent =
+                    emptyContent.description;
+            }
+        }
+    
         renderSummary();
     }
 
@@ -952,6 +1069,12 @@
         }
 
         if (!elements.orders) return;
+        
+        elements.categoryTabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+                setActiveCategory(tab.dataset.category);
+            });
+        });
 
         loadOrders();
         startOrderRefresh();
