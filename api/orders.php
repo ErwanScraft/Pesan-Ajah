@@ -198,6 +198,8 @@ $sql = '
         o.id,
         o.order_number,
         o.buyer_name,
+        o.buyer_phone,
+        o.notes,
         o.delivery_method,
         o.status,
         da.status AS delivery_status,
@@ -236,6 +238,8 @@ try {
 
     $itemStmt = $db->prepare(
         'SELECT
+            id,
+            product_id,
             product_name,
             product_variant,
             quantity,
