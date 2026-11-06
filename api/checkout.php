@@ -503,36 +503,36 @@ try {
         $buyerStmt = $db->prepare(
             "UPDATE buyers SET
                 name = :name,
-    
+        
                 phone = COALESCE(
                     :phone,
                     phone
                 ),
-    
+        
                 delivery_address = CASE
                     WHEN :is_delivery_address = 1
                     THEN :address
                     ELSE delivery_address
                 END,
-    
+        
                 delivery_maps_url = CASE
-                    WHEN :has_new_location = 1
+                    WHEN :has_new_maps_url = 1
                     THEN :maps_url
                     ELSE delivery_maps_url
                 END,
-    
+        
                 delivery_latitude = CASE
-                    WHEN :has_new_location = 1
+                    WHEN :has_new_latitude = 1
                     THEN :latitude
                     ELSE delivery_latitude
                 END,
-    
+        
                 delivery_longitude = CASE
-                    WHEN :has_new_location = 1
+                    WHEN :has_new_longitude = 1
                     THEN :longitude
                     ELSE delivery_longitude
                 END
-    
+        
             WHERE id = :buyer_id
             LIMIT 1"
         );
@@ -546,14 +546,21 @@ try {
         $buyerStmt->execute([
             'name' => $buyerName,
             'phone' => $buyerPhoneNormalized,
+        
             'is_delivery_address' => $deliveryMethod === 'delivery'
                 ? 1
                 : 0,
+        
             'address' => $deliveryAddress,
-            'has_new_location' => $hasNewLocation ? 1 : 0,
+        
+            'has_new_maps_url' => $hasNewLocation ? 1 : 0,
+            'has_new_latitude' => $hasNewLocation ? 1 : 0,
+            'has_new_longitude' => $hasNewLocation ? 1 : 0,
+        
             'maps_url' => $buyerMapsUrl,
             'latitude' => $deliveryLatitude,
             'longitude' => $deliveryLongitude,
+        
             'buyer_id' => $buyerId,
         ]);
     
