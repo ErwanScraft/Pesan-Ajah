@@ -1,9 +1,22 @@
 let printStyleElement = null;
 
-const PAPER_WIDTHS = {
-  "58mm": "58mm",
-  "80mm": "80mm",
-  A4: "210mm",
+const PAPER_SIZES = {
+  "58mm": {
+    width: "58mm",
+    height: "auto",
+  },
+  "80mm": {
+    width: "80mm",
+    height: "auto",
+  },
+  A4: {
+    width: "210mm",
+    height: "297mm",
+  },
+  "A5-1/3": {
+    width: "148mm",
+    height: "70mm",
+  },
 };
 
 export function printReceipt(options = {}) {
@@ -13,8 +26,12 @@ export function printReceipt(options = {}) {
     margin = 3,
   } = options;
 
-  const width = PAPER_WIDTHS[paperSize]
+  const selectedPaper = PAPER_SIZES[paperSize];
+  
+  const width = selectedPaper?.width
     || `${Math.min(210, Math.max(30, Number(customWidth) || 80))}mm`;
+  
+  const height = selectedPaper?.height || "auto";
 
   const safeMargin = Math.min(
     15,
@@ -32,7 +49,7 @@ export function printReceipt(options = {}) {
   printStyleElement.textContent = `
     @media print {
       @page {
-        size: ${paperSize === "A4" ? "A4" : `${width} auto`};
+        size: ${width} ${height};
         margin: ${safeMargin}mm;
       }
 

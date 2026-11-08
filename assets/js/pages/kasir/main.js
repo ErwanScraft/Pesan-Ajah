@@ -642,7 +642,7 @@ export async function initWarungKasir({
     }
   
     printReceipt({
-      paperSize: "80mm",
+      paperSize: "A5-1/3",
       margin: 3,
     });
   });

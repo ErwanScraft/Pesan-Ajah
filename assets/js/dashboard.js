@@ -536,7 +536,7 @@ async function printBuyerOrder(order) {
     });
 
     printReceipt({
-      paperSize: "80mm",
+      paperSize: "A5-1/3",
       margin: 3,
     });
 
