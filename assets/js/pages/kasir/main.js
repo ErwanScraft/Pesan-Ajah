@@ -549,6 +549,12 @@ export async function initWarungKasir({
     try {
       const result = await postJSON(API.cashier, payload);
       
+      receipt = result.receipt;
+      
+      if (!receipt || !Array.isArray(receipt.items)) {
+        throw new Error("Data struk dari server tidak valid.");
+      }
+      
       const receiptData = {
         type: "cashier",
       
@@ -560,6 +566,7 @@ export async function initWarungKasir({
         },
       
         items: receipt.items,
+      
         total: receipt.total,
       
         payment: {
