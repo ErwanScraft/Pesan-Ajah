@@ -54,58 +54,62 @@ export function printReceipt(options = {}) {
   printStyleElement = document.createElement("style");
   printStyleElement.id = "receipt-print-settings";
 
+  
+  const receiptWidth = "70mm";
+  
   printStyleElement.textContent = `
     @media print {
       @page {
-        size: ${pageSize};
-        margin: ${safeMargin}mm;
+        size: 70mm auto;
+        margin: 0;
       }
-
+  
       html,
       body {
-        width: ${paperWidth} !important;
+        width: 70mm !important;
         height: auto !important;
         min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
       }
-
+  
       body.receipt-printing * {
         visibility: hidden !important;
       }
-
+  
       body.receipt-printing #shared-receipt-root,
       body.receipt-printing #shared-receipt-root * {
         visibility: visible !important;
       }
-
+  
       body.receipt-printing #shared-receipt-root {
         display: block !important;
-        position: static !important;
-
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+  
         width: ${receiptWidth} !important;
         max-width: ${receiptWidth} !important;
-        min-width: 0 !important;
-
+  
         height: auto !important;
+        min-height: 0 !important;
         max-height: none !important;
-
+  
         margin: 0 !important;
         padding: 0 !important;
-
+  
         overflow: visible !important;
-
         border: 0 !important;
         box-shadow: none !important;
         background: #fff !important;
-
-        page-break-before: auto !important;
-        page-break-after: auto !important;
-        break-before: auto !important;
-        break-after: auto !important;
+  
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        break-before: avoid !important;
+        break-after: avoid !important;
       }
-
+  
       body.receipt-printing #shared-receipt-root * {
         max-height: none !important;
         overflow: visible !important;
@@ -113,6 +117,7 @@ export function printReceipt(options = {}) {
       }
     }
   `;
+
 
   document.head.append(printStyleElement);
 
