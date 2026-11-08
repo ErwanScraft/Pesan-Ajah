@@ -1,3 +1,6 @@
+import { renderReceipt } from "../../modules/receipt/renderer.js";
+import { printReceipt } from "../../modules/receipt/printer.js";
+
 export async function initWarungKasir({
   $,
   API,
@@ -8,6 +11,9 @@ export async function initWarungKasir({
   formatRupiah,
 }) {
   const productsContainer = $("#cashier-products");
+  const receiptPreviewContent = $(
+    "#cashier-receipt-content"
+  );
   const categoriesContainer = $("#cashier-categories");
   const cartContainer = $("#cashier-cart");
   const manualForm = $("#cashier-manual-form");
@@ -21,6 +27,11 @@ export async function initWarungKasir({
   let selectedCategory = "all";
   let receipt = null;
 
+  const receiptRoot = document.querySelector(
+    "#shared-receipt-root"
+  );
+  
+  const receiptPreview = $("#cashier-receipt");
   const checkoutButton = $("#cashier-checkout");
   const cashInput = $("#cashier-cash-received");
   const changeElement = $("#cashier-change");
@@ -510,168 +521,6 @@ export async function initWarungKasir({
     }
   }
 
-  function showReceipt(data) {
-    receipt = data;
-  
-    const target = $("#cashier-receipt-content");
-    target.replaceChildren();
-  
-    const brand = createElement("div", "cashier-receipt-brand");
-  
-    if (data.store_logo) {
-      const logo = document.createElement("img");
-      logo.src = resolveImageUrl(data.store_logo);
-      logo.alt = `Logo ${data.store_name || "warung"}`;
-      logo.loading = "eager";
-      logo.onerror = () => logo.remove();
-      brand.append(logo);
-    }
-  
-    const storeName = createElement(
-      "strong",
-      "cashier-receipt-store",
-      data.store_name || "Warung",
-    );
-  
-    const storeAddress = createElement(
-      "p",
-      "cashier-receipt-contact",
-      data.store_address || "",
-    );
-  
-    const storePhone = createElement(
-      "p",
-      "cashier-receipt-contact",
-      data.store_phone ? `WhatsApp: ${data.store_phone}` : "",
-    );
-  
-    brand.append(storeName);
-  
-    if (data.store_address) {
-      brand.append(storeAddress);
-    }
-  
-    if (data.store_phone) {
-      brand.append(storePhone);
-    }
-  
-    target.append(brand);
-  
-    const divider = () => createElement("div", "cashier-receipt-divider");
-  
-    target.append(divider());
-  
-    const title = createElement(
-      "strong",
-      "cashier-receipt-title",
-      "NOTA PESANAN",
-    );
-  
-    const date = createElement(
-      "small",
-      "cashier-receipt-date",
-      data.created_at || "",
-    );
-  
-    target.append(title, date, divider());
-  
-    const list = createElement("div", "cashier-receipt-list");
-  
-    data.items.forEach((item) => {
-      const row = createElement("div", "cashier-receipt-line");
-  
-      const information = createElement(
-        "div",
-        "cashier-receipt-line-info",
-      );
-  
-      const name = item.variant
-        ? `${item.name} (${item.variant})`
-        : item.name;
-  
-      information.append(
-        createElement("strong", "", name),
-        createElement(
-          "small",
-          "",
-          `${item.quantity} × ${formatRupiah(item.price)}`,
-        ),
-      );
-  
-      row.append(
-        information,
-        createElement(
-          "strong",
-          "cashier-receipt-line-total",
-          formatRupiah(item.subtotal),
-        ),
-      );
-  
-      list.append(row);
-    });
-  
-    target.append(list, divider());
-  
-    const summary = createElement("div", "cashier-receipt-summary");
-  
-    const methodLabels = {
-      cash: "Tunai",
-      qris: "QRIS",
-      transfer: "Transfer",
-    };
-  
-    function addSummary(label, value, className = "") {
-      const row = createElement(
-        "div",
-        `cashier-receipt-summary-row ${className}`.trim(),
-      );
-  
-      row.append(
-        createElement("span", "", label),
-        createElement("strong", "", value),
-      );
-  
-      summary.append(row);
-    }
-  
-    addSummary(
-      "Jumlah Harga Pesanan",
-      formatRupiah(data.total),
-      "is-total",
-    );
-  
-    addSummary(
-      "Metode Pembayaran",
-      methodLabels[data.payment_method] || data.payment_method,
-    );
-  
-    if (data.payment_method === "cash") {
-      addSummary("Uang Buyer", formatRupiah(data.cash_received));
-      addSummary(
-        "Kembalian",
-        formatRupiah(data.change),
-        "is-change",
-      );
-    }
-  
-    target.append(summary, divider());
-  
-    const footer = createElement("div", "cashier-receipt-watermark");
-  
-    footer.append(
-      createElement("strong", "", "Pesan Ajah"),
-      createElement("small", "", "Terima kasih telah berbelanja"),
-    );
-  
-    target.append(footer);
-  
-    $("#cashier-receipt").hidden = false;
-    $("#cashier-receipt").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-
   checkoutButton.addEventListener("click", async () => {
     if (!cart.length || checkoutButton.disabled) {
       return;
@@ -699,8 +548,70 @@ export async function initWarungKasir({
 
     try {
       const result = await postJSON(API.cashier, payload);
+      
+      const receiptData = {
+        type: "cashier",
+      
+        store: {
+          name: receipt.store_name,
+          logo: receipt.store_logo,
+          address: receipt.store_address,
+          phone: receipt.store_phone,
+        },
+      
+        items: receipt.items,
+        total: receipt.total,
+      
+        payment: {
+          method: receipt.payment_method,
+          received: receipt.cash_received,
+          change: receipt.change,
+        },
+      
+        createdAt: receipt.created_at,
+      };
+      
+      renderReceipt(receiptRoot, receiptData, {
+        resolveImageUrl,
+      });
+      
+      renderReceipt(receiptPreviewContent, receiptData, {
+        resolveImageUrl,
+      });
 
-      showReceipt(result.receipt);
+      receipt = result.receipt;
+      
+      renderReceipt(receiptRoot, {
+        type: "cashier",
+      
+        store: {
+          name: receipt.store_name,
+          logo: receipt.store_logo,
+          address: receipt.store_address,
+          phone: receipt.store_phone,
+        },
+      
+        items: receipt.items,
+      
+        total: receipt.total,
+      
+        payment: {
+          method: receipt.payment_method,
+          received: receipt.cash_received,
+          change: receipt.change,
+        },
+      
+        createdAt: receipt.created_at,
+      }, {
+        resolveImageUrl,
+      });
+      
+      receiptPreview.hidden = false;
+      
+      receiptPreview.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
 
       cart = [];
       cashInput.value = "";
@@ -729,12 +640,19 @@ export async function initWarungKasir({
     if (!receipt) {
       return;
     }
-
-    window.print();
+  
+    printReceipt({
+      paperSize: "80mm",
+      margin: 3,
+    });
   });
 
   $("#cashier-new").addEventListener("click", () => {
     receipt = null;
+
+    receiptRoot.replaceChildren();
+    receiptPreview.hidden = true;
+    receiptPreviewContent.replaceChildren();
 
     $("#cashier-receipt").hidden = true;
 

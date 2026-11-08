@@ -443,6 +443,8 @@ function createIconButton(
 
 let orders = [];
 let orderFilter = "all";
+let orderStore = null;
+let receiptModulePromise = null;
 
 async function loadOrders() {
   const refreshButton = $("#orders-refresh");
@@ -453,7 +455,9 @@ async function loadOrders() {
 
   try {
     const data = await apiRequest(API.orders);
-
+    
+    orderStore = data.store || null;
+    
     orders = Array.isArray(data.orders)
       ? data.orders
       : [];
@@ -472,6 +476,81 @@ async function loadOrders() {
   }
 }
 
+
+async function printBuyerOrder(order) {
+  if (!orderStore) {
+    notify("Informasi warung tidak tersedia.", "error");
+    return;
+  }
+
+  try {
+    if (!receiptModulePromise) {
+      receiptModulePromise = Promise.all([
+        import("./modules/receipt/renderer.js"),
+        import("./modules/receipt/printer.js"),
+      ]);
+    }
+
+    const [
+      { renderReceipt },
+      { printReceipt },
+    ] = await receiptModulePromise;
+
+    const receiptRoot = $("#shared-receipt-root");
+
+    if (!receiptRoot) {
+      throw new Error("Container struk tidak ditemukan.");
+    }
+
+    renderReceipt(receiptRoot, {
+      type: "order",
+
+      store: {
+        name: orderStore.name,
+        logo: orderStore.logo,
+        address: orderStore.address,
+        phone: orderStore.phone,
+      },
+
+      order: {
+        number: order.order_number || order.id,
+        buyer_name: order.buyer_name,
+        buyer_phone: order.buyer_phone,
+        delivery_method: order.delivery_method,
+        delivery_address: order.delivery_address,
+        buyer_note: order.buyer_note,
+      },
+
+      items: (order.items || []).map((item) => ({
+        product_name: item.product_name,
+        product_variant: item.product_variant,
+        quantity: item.quantity,
+        price: item.price,
+        subtotal: item.subtotal,
+      })),
+
+      total: order.total,
+      createdAt: order.created_at,
+    }, {
+      resolveImageUrl,
+    });
+
+    printReceipt({
+      paperSize: "80mm",
+      margin: 3,
+    });
+
+  } catch (error) {
+    console.error("[Pesan Ajah Receipt]", error);
+
+    notify(
+      error instanceof Error
+        ? error.message
+        : "Struk pesanan gagal dicetak.",
+      "error",
+    );
+  }
+}
 
 function nextOrderStatus(order) {
   const status = String(order.status || "").toLowerCase();
@@ -844,7 +923,19 @@ function renderOrders() {
     );
 
     detailButton.setAttribute("aria-expanded", "false");
-    footer.append(detailButton);
+    
+    const printButton = createButton(
+      "Cetak Struk",
+      async () => {
+        await printBuyerOrder(order);
+      },
+      "button button-outline order-print-button",
+    );
+    
+    footer.append(
+      detailButton,
+      printButton,
+    );
 
     const next = nextOrderStatus(order);
     

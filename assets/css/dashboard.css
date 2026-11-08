@@ -1350,3 +1350,10 @@
   outline: 2px solid #b42318;
   outline-offset: 2px;
 }
+
+.order-print-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}

@@ -76,6 +76,14 @@ if (request_method() === 'GET') {
 
     api_json([
         'success' => true,
+    
+        'store' => [
+            'name' => (string) ($store['name'] ?? ''),
+            'logo' => (string) ($store['icon_image'] ?? ''),
+            'address' => (string) ($store['address'] ?? ''),
+            'phone' => (string) ($store['phone'] ?? ''),
+        ],
+    
         'orders' => $orders,
     ]);
 }

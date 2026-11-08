@@ -64,3 +64,6 @@
 
 /* 16. Editor pesanan warung */
 @import url("./pages/warung-pesanan-edit.css");
+
+/* 17. Shared Receipt Module */
+@import url("./modules/receipt.css");

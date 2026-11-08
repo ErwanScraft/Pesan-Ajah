@@ -280,23 +280,22 @@ require __DIR__ . '/_header.php';
     </div>
 
     <section
-        class="cashier-receipt"
+        class="cashier-receipt receipt-preview"
         id="cashier-receipt"
         hidden
     >
-
-        <div class="cashier-receipt-heading">
+        <div class="receipt-preview-heading">
             <div>
                 <h3>Pembayaran Berhasil</h3>
                 <p>Transaksi selesai diproses.</p>
             </div>
-
+    
             <span class="cashier-receipt-check">✓</span>
         </div>
-
+    
         <div id="cashier-receipt-content"></div>
-
-        <div class="cashier-receipt-actions">
+    
+        <div class="receipt-preview-actions">
             <button
                 type="button"
                 class="button button-outline"
@@ -304,7 +303,7 @@ require __DIR__ . '/_header.php';
             >
                 Cetak Struk
             </button>
-
+    
             <button
                 type="button"
                 class="button button-primary"
@@ -313,7 +312,6 @@ require __DIR__ . '/_header.php';
                 Transaksi Baru
             </button>
         </div>
-
     </section>
 
 </div>

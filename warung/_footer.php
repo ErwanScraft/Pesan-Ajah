@@ -16,6 +16,11 @@ declare(strict_types=1);
         role="status"
         aria-live="polite"
     ></div>
+    
+    <div
+        id="shared-receipt-root"
+        aria-hidden="true"
+    ></div>
 
 </body>
 </html>
