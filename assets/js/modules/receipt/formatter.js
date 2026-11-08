@@ -32,14 +32,19 @@ export function normalizeReceiptItem(item) {
   const quantity = Number(item.quantity) || 0;
   const price = Number(item.price) || 0;
 
+  const subtotal = item.subtotal != null
+    ? Number(item.subtotal)
+    : price * quantity;
+
   return {
     name,
     variant,
     quantity,
     price,
-    subtotal: Number(item.subtotal) || price * quantity,
+    subtotal: Number.isFinite(subtotal) ? subtotal : 0,
   };
 }
+
 
 export function normalizeReceiptData(data) {
   return {

@@ -293,3 +293,46 @@ export function renderReceipt(
 
   return data;
 }
+
+function renderReceiptItems(container, items, formatCurrency) {
+  const fragment = document.createDocumentFragment();
+
+  items.forEach((item) => {
+    const row = createElement("div", "receipt-item");
+
+    const information = createElement(
+      "div",
+      "receipt-item-information",
+    );
+
+    information.append(
+      createElement("strong", "", item.name),
+    );
+
+    if (item.variant) {
+      information.append(
+        createElement("small", "", item.variant),
+      );
+    }
+
+    information.append(
+      createElement(
+        "small",
+        "",
+        `${item.quantity} × ${formatCurrency(item.price)}`,
+      ),
+    );
+
+    const subtotal = createElement(
+      "strong",
+      "receipt-item-subtotal",
+      formatCurrency(item.subtotal),
+    );
+
+    row.append(information, subtotal);
+    fragment.append(row);
+  });
+
+  container.replaceChildren(fragment);
+}
+

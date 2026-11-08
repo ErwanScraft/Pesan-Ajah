@@ -26,11 +26,19 @@ export function printReceipt(options = {}) {
     margin = 3,
   } = options;
 
+  const root = document.querySelector(
+    "#shared-receipt-root"
+  );
+
+  if (!root || !root.firstElementChild) {
+    throw new Error("Struk belum tersedia untuk dicetak.");
+  }
+
   const selectedPaper = PAPER_SIZES[paperSize];
-  
+
   const width = selectedPaper?.width
     || `${Math.min(210, Math.max(30, Number(customWidth) || 80))}mm`;
-  
+
   const height = selectedPaper?.height || "auto";
 
   const safeMargin = Math.min(
@@ -38,37 +46,26 @@ export function printReceipt(options = {}) {
     Math.max(0, Number(margin) || 0),
   );
 
-  if (printStyleElement) {
-    printStyleElement.remove();
-  }
+  printStyleElement?.remove();
 
   printStyleElement = document.createElement("style");
-
   printStyleElement.id = "receipt-print-settings";
 
   printStyleElement.textContent = `
     @media print {
       @page {
-        size: 148mm 70mm;
-        margin: 3mm;
+        size: ${width} ${height};
+        margin: ${safeMargin}mm;
       }
-      
+
       html,
       body {
-        width: 148mm !important;
-        height: 70mm !important;
+        width: ${width} !important;
+        height: auto !important;
+        min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
-        overflow: hidden !important;
-      }
-      
-      body.receipt-printing #shared-receipt-root {
-        width: 142mm !important;
-        height: 64mm !important;
-        max-height: 64mm !important;
-        overflow: hidden !important;
-        page-break-after: avoid !important;
-        break-after: avoid !important;
+        overflow: visible !important;
       }
 
       body.receipt-printing * {
@@ -85,24 +82,27 @@ export function printReceipt(options = {}) {
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
+
         width: calc(${width} - ${safeMargin * 2}mm) !important;
         max-width: calc(${width} - ${safeMargin * 2}mm) !important;
+
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+
         margin: 0 !important;
         padding: 0 !important;
         border: 0 !important;
         box-shadow: none !important;
         background: #fff !important;
+
+        page-break-after: avoid !important;
+        break-after: avoid !important;
       }
     }
   `;
 
   document.head.append(printStyleElement);
-
-  const root = document.querySelector("#shared-receipt-root");
-
-  if (!root || !root.firstElementChild) {
-    throw new Error("Struk belum tersedia untuk dicetak.");
-  }
 
   document.body.classList.add("receipt-printing");
 
@@ -110,20 +110,24 @@ export function printReceipt(options = {}) {
     document.body.classList.remove("receipt-printing");
     window.removeEventListener("afterprint", cleanup);
 
-    if (printStyleElement) {
-      printStyleElement.remove();
-      printStyleElement = null;
-    }
+    printStyleElement?.remove();
+    printStyleElement = null;
   };
 
-  window.addEventListener("afterprint", cleanup, { once: true });
+  window.addEventListener(
+    "afterprint",
+    cleanup,
+    { once: true },
+  );
 
   try {
     window.print();
   } finally {
-    // Fallback untuk browser yang tidak memicu afterprint.
+    // Fallback jika browser tidak menjalankan afterprint.
     window.setTimeout(() => {
-      if (document.body.classList.contains("receipt-printing")) {
+      if (
+        document.body.classList.contains("receipt-printing")
+      ) {
         cleanup();
       }
     }, 60000);
