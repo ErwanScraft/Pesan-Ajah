@@ -548,13 +548,19 @@ export async function initWarungKasir({
 
     try {
       const result = await postJSON(API.cashier, payload);
-      
+
+      // Ambil data struk dari respons server terlebih dahulu.
       receipt = result.receipt;
       
       if (!receipt || !Array.isArray(receipt.items)) {
-        throw new Error("Data struk dari server tidak valid.");
+        throw new Error("Data struk tidak valid.");
       }
       
+      if (!receiptRoot || !receiptPreviewContent) {
+        throw new Error("Komponen struk tidak ditemukan.");
+      }
+      
+      // Normalisasi data untuk shared receipt renderer.
       const receiptData = {
         type: "cashier",
       
@@ -578,38 +584,12 @@ export async function initWarungKasir({
         createdAt: receipt.created_at,
       };
       
-      renderReceipt(receiptRoot, receiptData, {
-        resolveImageUrl,
-      });
-      
+      // Render struk untuk preview dan printer.
       renderReceipt(receiptPreviewContent, receiptData, {
         resolveImageUrl,
       });
-
-      receipt = result.receipt;
       
-      renderReceipt(receiptRoot, {
-        type: "cashier",
-      
-        store: {
-          name: receipt.store_name,
-          logo: receipt.store_logo,
-          address: receipt.store_address,
-          phone: receipt.store_phone,
-        },
-      
-        items: receipt.items,
-      
-        total: receipt.total,
-      
-        payment: {
-          method: receipt.payment_method,
-          received: receipt.cash_received,
-          change: receipt.change,
-        },
-      
-        createdAt: receipt.created_at,
-      }, {
+      renderReceipt(receiptRoot, receiptData, {
         resolveImageUrl,
       });
       
