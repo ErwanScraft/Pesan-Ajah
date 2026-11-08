@@ -49,14 +49,26 @@ export function printReceipt(options = {}) {
   printStyleElement.textContent = `
     @media print {
       @page {
-        size: ${width} ${height};
-        margin: ${safeMargin}mm;
+        size: 148mm 70mm;
+        margin: 3mm;
       }
-
+      
       html,
       body {
+        width: 148mm !important;
+        height: 70mm !important;
         margin: 0 !important;
         padding: 0 !important;
+        overflow: hidden !important;
+      }
+      
+      body.receipt-printing #shared-receipt-root {
+        width: 142mm !important;
+        height: 64mm !important;
+        max-height: 64mm !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
       }
 
       body.receipt-printing * {
