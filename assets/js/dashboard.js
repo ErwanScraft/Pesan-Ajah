@@ -20,6 +20,7 @@ const API = {
   dashboard: "/warung/api/dashboard.php",
   products: "/warung/api/products.php",
   orders: "/warung/api/orders.php",
+  editOrder: "/warung/api/edit-order.php",
   settings: "/warung/api/settings.php",
   push: "/warung/api/push-subscription.php",
   stock: "/warung/api/stock.php",
@@ -1193,6 +1194,20 @@ async function initializeDashboard() {
     }
 
     if (page === "orders") {
+      const { initWarungOrderEditor } = await import(
+        "./pages/warung-pesanan-edit/main.js"
+      );
+    
+      await initWarungOrderEditor({
+        API,
+        apiRequest,
+        postJSON,
+        notify,
+        formatRupiah,
+        resolveImageUrl,
+        reloadOrders: loadOrders,
+      });
+    
       await loadOrders();
     }
 

@@ -1,0 +1,437 @@
+/* =========================================================
+   EDIT PESANAN WARUNG
+========================================================= */
+
+.warung-order-edit-open {
+  overflow: hidden;
+}
+
+.warung-order-edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgb(15 23 42 / 55%);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+}
+
+.warung-order-edit-modal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 620px);
+  max-height: min(90vh, 850px);
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 20%);
+  animation: warung-edit-enter 180ms ease-out;
+}
+
+@keyframes warung-edit-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.warung-order-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.warung-order-edit-heading h2 {
+  margin: 0;
+  color: #17231d;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.warung-order-edit-heading p {
+  margin: 5px 0 0;
+  color: #78827c;
+  font-size: 13px;
+}
+
+.warung-order-edit-close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: #f2f5f3;
+  color: #526057;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.warung-order-edit-content {
+  flex: 1;
+  min-height: 0;
+  padding: 22px 24px;
+  overflow-y: auto;
+}
+
+.warung-order-edit-section {
+  margin-bottom: 20px;
+}
+
+.warung-order-edit-section h3 {
+  margin: 0;
+  color: #25342b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.warung-order-edit-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.warung-order-edit-count {
+  color: #7b877f;
+  font-size: 12px;
+}
+
+.warung-order-edit-products {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.warung-order-edit-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edf0ed;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.warung-order-edit-product-image {
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #f2f4f2;
+}
+
+.warung-order-edit-product-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+
+.warung-order-edit-product-info strong {
+  color: #243129;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.warung-order-edit-product-info small {
+  color: #87918a;
+  font-size: 11px;
+}
+
+.warung-order-edit-product-info span {
+  color: #176b45;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.warung-order-edit-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.warung-order-edit-quantity {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 1px solid #e4eae5;
+  border-radius: 8px;
+  background: #fff;
+  color: #34443a;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.warung-order-edit-quantity:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.warung-order-edit-quantity.is-add {
+  border-color: #176b45;
+  background: #176b45;
+  color: #fff;
+}
+
+.warung-order-edit-quantity-value {
+  min-width: 18px;
+  color: #29372f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.warung-order-edit-remove {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #d04444;
+  cursor: pointer;
+}
+
+.warung-order-edit-locked {
+  max-width: 110px;
+  color: #a16b20;
+  font-size: 10px;
+  text-align: right;
+}
+
+.warung-order-edit-add {
+  width: 100%;
+  min-height: 43px;
+  margin: 2px 0 22px;
+  border: 1px dashed #9db9a7;
+  border-radius: 11px;
+  background: #f5faf6;
+  color: #176b45;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.warung-order-edit-picker {
+  margin: -10px 0 22px;
+  padding: 13px;
+  border: 1px solid #e8eee9;
+  border-radius: 12px;
+  background: #fafcfb;
+}
+
+.warung-order-edit-picker-search,
+.warung-order-edit-search {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #e2e8e3;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #26342b;
+  font: inherit;
+  font-size: 13px;
+}
+
+.warung-order-edit-search:focus,
+.warung-order-edit-note:focus {
+  border-color: #176b45;
+  box-shadow: 0 0 0 3px rgb(23 107 69 / 9%);
+}
+
+.warung-order-edit-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 220px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.warung-order-edit-picker-product {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 10px;
+  border: 1px solid #edf0ed;
+  border-radius: 9px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.warung-order-edit-picker-product strong {
+  flex: 1;
+  color: #29372f;
+  font-size: 12px;
+}
+
+.warung-order-edit-picker-product small {
+  color: #77847b;
+  font-size: 11px;
+}
+
+.warung-order-edit-picker-add {
+  color: #176b45;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.warung-order-edit-note {
+  display: block;
+  width: 100%;
+  min-height: 92px;
+  margin-top: 12px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid #e2e8e3;
+  border-radius: 10px;
+  outline: none;
+  color: #26342b;
+  font: inherit;
+  font-size: 13px;
+}
+
+.warung-order-edit-footer {
+  padding: 17px 24px 20px;
+  border-top: 1px solid #edf0f2;
+  background: #fff;
+}
+
+.warung-order-edit-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.warung-order-edit-total span {
+  color: #78827c;
+  font-size: 13px;
+}
+
+.warung-order-edit-total strong {
+  color: #176b45;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.warung-order-edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.warung-order-edit-cancel,
+.warung-order-edit-save {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.warung-order-edit-cancel {
+  flex: 1;
+  background: #f0f3f1;
+  color: #536158;
+}
+
+.warung-order-edit-save {
+  flex: 1.5;
+  background: #176b45;
+  color: #fff;
+}
+
+.warung-order-edit-save:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.warung-order-edit-empty,
+.warung-order-edit-error {
+  margin: 10px 0;
+  padding: 13px;
+  color: #7c8980;
+  font-size: 12px;
+  text-align: center;
+}
+
+.warung-order-edit-error {
+  color: #c13d3d;
+}
+
+@media (max-width: 600px) {
+  .warung-order-edit-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .warung-order-edit-modal {
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 19px 19px 0 0;
+  }
+
+  .warung-order-edit-header {
+    padding: 19px 18px;
+  }
+
+  .warung-order-edit-content {
+    padding: 18px;
+  }
+
+  .warung-order-edit-footer {
+    padding: 15px 18px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .warung-order-edit-product {
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .warung-order-edit-product-image {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .warung-order-edit-controls {
+    gap: 5px;
+  }
+
+  .warung-order-edit-quantity {
+    width: 27px;
+    height: 27px;
+  }
+
+  .warung-order-edit-remove {
+    width: 29px;
+    height: 29px;
+  }
+}

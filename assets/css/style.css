@@ -61,3 +61,6 @@
 
 /* 15. Navigasi dashboard warung */
 @import url("./pages/dashboard-navigation.css");
+
+/* 16. Editor pesanan warung */
+@import url("./pages/warung-pesanan-edit.css");
