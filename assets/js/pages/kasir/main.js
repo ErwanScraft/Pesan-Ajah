@@ -512,86 +512,159 @@ export async function initWarungKasir({
 
   function showReceipt(data) {
     receipt = data;
-
+  
     const target = $("#cashier-receipt-content");
     target.replaceChildren();
-
-    const header = createElement(
-      "div",
+  
+    const brand = createElement("div", "cashier-receipt-brand");
+  
+    if (data.store_logo) {
+      const logo = document.createElement("img");
+      logo.src = resolveImageUrl(data.store_logo);
+      logo.alt = `Logo ${data.store_name || "warung"}`;
+      logo.loading = "eager";
+      logo.onerror = () => logo.remove();
+      brand.append(logo);
+    }
+  
+    const storeName = createElement(
+      "strong",
       "cashier-receipt-store",
-      data.store_name,
+      data.store_name || "Warung",
     );
-
+  
+    const storeAddress = createElement(
+      "p",
+      "cashier-receipt-contact",
+      data.store_address || "",
+    );
+  
+    const storePhone = createElement(
+      "p",
+      "cashier-receipt-contact",
+      data.store_phone ? `WhatsApp: ${data.store_phone}` : "",
+    );
+  
+    brand.append(storeName);
+  
+    if (data.store_address) {
+      brand.append(storeAddress);
+    }
+  
+    if (data.store_phone) {
+      brand.append(storePhone);
+    }
+  
+    target.append(brand);
+  
+    const divider = () => createElement("div", "cashier-receipt-divider");
+  
+    target.append(divider());
+  
+    const title = createElement(
+      "strong",
+      "cashier-receipt-title",
+      "NOTA PESANAN",
+    );
+  
     const date = createElement(
       "small",
-      "",
-      data.created_at,
+      "cashier-receipt-date",
+      data.created_at || "",
     );
-
-    target.append(header, date);
-
+  
+    target.append(title, date, divider());
+  
     const list = createElement("div", "cashier-receipt-list");
-
+  
     data.items.forEach((item) => {
-      const row = createElement("div", "cashier-receipt-item");
-
+      const row = createElement("div", "cashier-receipt-line");
+  
+      const information = createElement(
+        "div",
+        "cashier-receipt-line-info",
+      );
+  
       const name = item.variant
         ? `${item.name} (${item.variant})`
         : item.name;
-
-      row.append(
+  
+      information.append(
+        createElement("strong", "", name),
         createElement(
-          "span",
+          "small",
           "",
-          `${name} × ${item.quantity}`,
+          `${item.quantity} × ${formatRupiah(item.price)}`,
         ),
+      );
+  
+      row.append(
+        information,
         createElement(
           "strong",
-          "",
+          "cashier-receipt-line-total",
           formatRupiah(item.subtotal),
         ),
       );
-
+  
       list.append(row);
     });
-
-    target.append(list);
-
-    const summary = createElement(
-      "div",
-      "cashier-receipt-summary",
-    );
-
+  
+    target.append(list, divider());
+  
+    const summary = createElement("div", "cashier-receipt-summary");
+  
     const methodLabels = {
       cash: "Tunai",
       qris: "QRIS",
       transfer: "Transfer",
     };
-
-    function addSummary(label, value) {
-      const row = createElement("div", "cashier-receipt-item");
-
+  
+    function addSummary(label, value, className = "") {
+      const row = createElement(
+        "div",
+        `cashier-receipt-summary-row ${className}`.trim(),
+      );
+  
       row.append(
         createElement("span", "", label),
         createElement("strong", "", value),
       );
-
+  
       summary.append(row);
     }
-
-    addSummary("Total", formatRupiah(data.total));
+  
     addSummary(
-      "Pembayaran",
+      "Jumlah Harga Pesanan",
+      formatRupiah(data.total),
+      "is-total",
+    );
+  
+    addSummary(
+      "Metode Pembayaran",
       methodLabels[data.payment_method] || data.payment_method,
     );
-
+  
     if (data.payment_method === "cash") {
-      addSummary("Uang diterima", formatRupiah(data.cash_received));
-      addSummary("Kembalian", formatRupiah(data.change));
+      addSummary("Uang Buyer", formatRupiah(data.cash_received));
+      addSummary(
+        "Kembalian",
+        formatRupiah(data.change),
+        "is-change",
+      );
     }
-
-    target.append(summary);
-
+  
+    target.append(summary, divider());
+  
+    const footer = createElement("div", "cashier-receipt-watermark");
+  
+    footer.append(
+      createElement("strong", "", "Pesan Ajah"),
+      createElement("small", "", "Terima kasih telah berbelanja"),
+    );
+  
+    target.append(footer);
+  
     $("#cashier-receipt").hidden = false;
     $("#cashier-receipt").scrollIntoView({
       behavior: "smooth",

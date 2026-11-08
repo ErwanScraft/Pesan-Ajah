@@ -99,6 +99,7 @@ function api_store_owner(): array
             s.latitude,
             s.longitude,
             s.description,
+            s.icon_image,
             s.is_open,
             s.free_delivery,
             s.is_active AS store_is_active

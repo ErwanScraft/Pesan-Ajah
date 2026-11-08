@@ -400,6 +400,9 @@ try {
 
         'receipt' => [
             'store_name' => (string) $store['name'],
+            'store_logo' => (string) ($store['icon_image'] ?? ''),
+            'store_address' => (string) ($store['address'] ?? ''),
+            'store_phone' => (string) ($store['phone'] ?? ''),
             'items' => $saleItems,
             'total' => $total,
             'payment_method' => $paymentMethod,
