@@ -1,5 +1,8 @@
 import { resolveImageUrl, setImageSource } from "./modules/image.js";
 import {
+  initPushNotifications,
+} from "./modules/push-notifications/main.js";
+import {
   initErrorLogger,
   captureError,
 } from "./core/error-logger.js";
@@ -22,7 +25,6 @@ const API = {
   orders: "/warung/api/orders.php",
   editOrder: "/warung/api/edit-order.php",
   settings: "/warung/api/settings.php",
-  push: "/warung/api/push-subscription.php",
   stock: "/warung/api/stock.php",
   cashier: "/warung/api/cashier.php",
 };
@@ -70,290 +72,6 @@ async function postJSON(url, body, method = "POST") {
     method,
     body: JSON.stringify(body),
   });
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-
-  return Uint8Array.from(
-    [...rawData].map((char) => char.charCodeAt(0)),
-  );
-}
-
-async function initializeOneSignalPush() {
-  const appId = document.body.dataset.onesignalAppId;
-  const storeId = document.body.dataset.storeId;
-
-  if (!appId || !storeId) {
-    throw new Error(
-      "Konfigurasi OneSignal belum tersedia.",
-    );
-  }
-
-  if (!window.__pesanAjahOneSignalPromise) {
-    window.__pesanAjahOneSignalPromise = new Promise(
-      (resolve, reject) => {
-        window.OneSignalDeferred =
-          window.OneSignalDeferred || [];
-
-        window.OneSignalDeferred.push(async (OneSignal) => {
-          try {
-            await OneSignal.init({
-              appId,
-
-              serviceWorkerPath:
-                "/onesignal/OneSignalSDKWorker.js",
-
-              serviceWorkerParam: {
-                scope: "/onesignal/",
-              },
-            });
-
-            await OneSignal.login(`store_${storeId}`);
-
-            resolve(OneSignal);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-    ).catch((error) => {
-      // Izinkan inisialisasi ulang jika proses sebelumnya gagal.
-      window.__pesanAjahOneSignalPromise = null;
-      throw error;
-    });
-  }
-
-  return window.__pesanAjahOneSignalPromise;
-}
-
-async function verifyOneSignalSubscription(OneSignal) {
-  const subscription = OneSignal.User.PushSubscription;
-
-  if (!subscription.optedIn) {
-    await subscription.optIn();
-  }
-
-  // optedIn saja belum membuktikan perangkat memiliki subscription.
-  // Tunggu sampai ID dan token benar-benar tersedia.
-  const timeoutAt = Date.now() + 15000;
-
-  while (Date.now() < timeoutAt) {
-    if (
-      subscription.optedIn
-      && subscription.id
-      && subscription.token
-    ) {
-      return {
-        id: subscription.id,
-        token: subscription.token,
-      };
-    }
-
-    await new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    });
-  }
-
-  throw new Error(
-    "Subscription OneSignal belum terbentuk. Periksa izin notifikasi, Service Worker, dan konfigurasi Web Push OneSignal.",
-  );
-}
-
-async function initializePushNotifications() {
-  const button = $("#push-enable-button");
-
-  if (!button) {
-    return;
-  }
-
-  const supported =
-    "serviceWorker" in navigator &&
-    "PushManager" in window &&
-    "Notification" in window;
-
-  if (!supported) {
-    button.disabled = true;
-    button.textContent = "Notifikasi tidak didukung";
-    return;
-  }
-
-  if (Notification.permission === "denied") {
-    button.disabled = true;
-    button.textContent = "Izin notifikasi diblokir";
-    return;
-  }
-
-  button.addEventListener("click", async () => {
-    const originalText = button.textContent;
-
-    button.disabled = true;
-    button.textContent = "Mengaktifkan...";
-
-    try {
-      const permission =
-        Notification.permission === "granted"
-          ? "granted"
-          : await Notification.requestPermission();
-
-      if (permission !== "granted") {
-        throw new Error(
-          "Izin notifikasi belum diberikan.",
-        );
-      }
-
-      /*
-       * KANAL 1: WEB PUSH LAMA
-       * Tetap menggunakan service-worker.js root.
-       */
-      const registration =
-        await navigator.serviceWorker.register(
-          "/service-worker.js",
-          { scope: "/" },
-        );
-
-      await navigator.serviceWorker.ready;
-
-      const keyResponse = await apiRequest(API.push);
-
-      if (!keyResponse.public_key) {
-        throw new Error(
-          "Kunci Web Push tidak tersedia.",
-        );
-      }
-
-      let subscription =
-        await registration.pushManager.getSubscription();
-
-      if (!subscription) {
-        subscription =
-          await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-
-            applicationServerKey:
-              urlBase64ToUint8Array(
-                keyResponse.public_key,
-              ),
-          });
-      }
-
-      const subscriptionData = subscription.toJSON();
-
-      await postJSON(API.push, {
-        action: "subscribe",
-        endpoint: subscriptionData.endpoint,
-        keys: subscriptionData.keys,
-        contentEncoding: "aes128gcm",
-      });
-
-      /*
-       * KANAL 2: ONESIGNAL
-       * Web Push lama tetap aktif meskipun OneSignal gagal.
-       */
-      try {
-        const OneSignal =
-          await initializeOneSignalPush();
-
-        const subscription =
-          await verifyOneSignalSubscription(OneSignal);
-
-        console.info(
-          "[Pesan Ajah] OneSignal aktif:",
-          {
-            storeId: document.body.dataset.storeId,
-            externalId: `store_${document.body.dataset.storeId}`,
-            subscriptionId: subscription.id,
-          },
-        );
-
-      } catch (oneSignalError) {
-        console.error(
-          "[Pesan Ajah] OneSignal gagal diaktifkan:",
-          oneSignalError,
-        );
-
-        button.textContent = "Web Push aktif";
-        button.disabled = false;
-
-        notify(
-          "Web Push aktif, tetapi OneSignal belum aktif: "
-            + (
-              oneSignalError instanceof Error
-                ? oneSignalError.message
-                : "Periksa konfigurasi OneSignal."
-            ),
-          "error",
-        );
-
-        return;
-      }
-
-      button.textContent = "Notifikasi aktif";
-
-      notify(
-        "Web Push dan OneSignal berhasil diaktifkan.",
-        "success",
-      );
-
-    } catch (error) {
-      console.error(
-        "[Pesan Ajah] Aktivasi push gagal:",
-        error,
-      );
-
-      notify(
-        error instanceof Error
-          ? error.message
-          : "Notifikasi gagal diaktifkan.",
-        "error",
-      );
-
-      button.textContent = originalText;
-      button.disabled = false;
-    }
-  });
-
-  /*
-   * Sinkronisasi subscription Web Push lama.
-   * Tidak otomatis mengaktifkan OneSignal tanpa tindakan pengguna.
-   */
-  if (Notification.permission === "granted") {
-    try {
-      const registration =
-        await navigator.serviceWorker.register(
-          "/service-worker.js",
-          { scope: "/" },
-        );
-
-      const subscription =
-        await registration.pushManager.getSubscription();
-
-      if (subscription) {
-        const subscriptionData = subscription.toJSON();
-
-        await postJSON(API.push, {
-          action: "subscribe",
-          endpoint: subscriptionData.endpoint,
-          keys: subscriptionData.keys,
-          contentEncoding: "aes128gcm",
-        });
-
-        button.textContent = "Web Push aktif";
-      }
-
-    } catch (error) {
-      console.error(
-        "[Pesan Ajah] Sinkronisasi subscription gagal:",
-        error,
-      );
-    }
-  }
 }
 
 function notify(message, type = "info") {
@@ -1353,6 +1071,12 @@ async function initializeDashboard() {
   }
 }
 
-initializePushNotifications();
+// =================
+
+initPushNotifications({
+  apiRequest,
+  postJSON,
+  notify,
+});
 
 initializeDashboard();

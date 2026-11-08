@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/web_push.php';
-require_once __DIR__ . '/onesignal_push.php';
+require_once __DIR__
+    . '/modules/push-notifications/main.php';
 
 /**
  * Mengirim notifikasi pesanan baru melalui seluruh kanal.

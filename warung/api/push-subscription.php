@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/app/warung_api.php';
 
+require_once APP_PATH . '/modules/push-notifications/main.php';
+
 $store = api_store_owner();
 $storeId = (int) $store['store_id'];
 
 if (request_method() === 'GET') {
-    $publicKey = (string) env('VAPID_PUBLIC_KEY', '');
+    $publicKey = push_notification_public_key();
 
     if ($publicKey === '') {
         api_json([
@@ -37,120 +39,60 @@ if (request_method() !== 'POST') {
 $input = api_json_input();
 $action = $input['action'] ?? 'subscribe';
 
-$endpoint = $input['endpoint'] ?? null;
+try {
+    if ($action === 'unsubscribe') {
+        $endpoint = $input['endpoint'] ?? null;
 
-if (
-    !is_string($endpoint)
-    || strlen($endpoint) > 2048
-    || !filter_var($endpoint, FILTER_VALIDATE_URL)
-    || !str_starts_with($endpoint, 'https://')
-) {
-    api_json([
-        'success' => false,
-        'message' => 'Endpoint subscription tidak valid.',
-    ], 422);
-}
+        if (!is_string($endpoint)) {
+            throw new InvalidArgumentException(
+                'Endpoint subscription tidak valid.'
+            );
+        }
 
-$endpointHash = hash('sha256', $endpoint);
+        push_notification_delete_subscription(
+            database(),
+            $storeId,
+            $endpoint
+        );
 
-if ($action === 'unsubscribe') {
-    $stmt = database()->prepare(
-        'DELETE FROM push_subscriptions
-         WHERE store_id = :store_id
-           AND endpoint_hash = :endpoint_hash'
+        api_json([
+            'success' => true,
+            'message' => 'Notifikasi perangkat dinonaktifkan.',
+        ]);
+    }
+
+    if ($action !== 'subscribe') {
+        api_json([
+            'success' => false,
+            'message' => 'Aksi tidak valid.',
+        ], 422);
+    }
+
+    push_notification_save_subscription(
+        database(),
+        $storeId,
+        $input
     );
-
-    $stmt->execute([
-        'store_id' => $storeId,
-        'endpoint_hash' => $endpointHash,
-    ]);
 
     api_json([
         'success' => true,
-        'message' => 'Notifikasi perangkat dinonaktifkan.',
+        'message' => 'Perangkat berhasil didaftarkan.',
     ]);
-}
 
-if ($action !== 'subscribe') {
+} catch (InvalidArgumentException $exception) {
     api_json([
         'success' => false,
-        'message' => 'Aksi tidak valid.',
+        'message' => $exception->getMessage(),
     ], 422);
-}
 
-$keys = $input['keys'] ?? null;
+} catch (Throwable $exception) {
+    error_log(
+        '[Push Subscription] '
+        . $exception->getMessage()
+    );
 
-if (!is_array($keys)) {
     api_json([
         'success' => false,
-        'message' => 'Data kunci subscription tidak valid.',
-    ], 422);
+        'message' => 'Subscription gagal diproses.',
+    ], 500);
 }
-
-$p256dh = $keys['p256dh'] ?? null;
-$auth = $keys['auth'] ?? null;
-
-if (
-    !is_string($p256dh)
-    || !is_string($auth)
-    || $p256dh === ''
-    || $auth === ''
-    || strlen($p256dh) > 255
-    || strlen($auth) > 255
-) {
-    api_json([
-        'success' => false,
-        'message' => 'Kunci subscription tidak valid.',
-    ], 422);
-}
-
-$contentEncoding = $input['contentEncoding'] ?? 'aes128gcm';
-
-if (
-    !is_string($contentEncoding)
-    || !in_array($contentEncoding, ['aes128gcm'], true)
-) {
-    api_json([
-        'success' => false,
-        'message' => 'Format enkripsi tidak didukung.',
-    ], 422);
-}
-
-$stmt = database()->prepare(
-    'INSERT INTO push_subscriptions (
-        store_id,
-        endpoint,
-        endpoint_hash,
-        p256dh,
-        auth,
-        content_encoding
-    ) VALUES (
-        :store_id,
-        :endpoint,
-        :endpoint_hash,
-        :p256dh,
-        :auth,
-        :content_encoding
-    )
-    ON DUPLICATE KEY UPDATE
-        store_id = VALUES(store_id),
-        endpoint = VALUES(endpoint),
-        p256dh = VALUES(p256dh),
-        auth = VALUES(auth),
-        content_encoding = VALUES(content_encoding),
-        updated_at = CURRENT_TIMESTAMP'
-);
-
-$stmt->execute([
-    'store_id' => $storeId,
-    'endpoint' => $endpoint,
-    'endpoint_hash' => $endpointHash,
-    'p256dh' => $p256dh,
-    'auth' => $auth,
-    'content_encoding' => $contentEncoding,
-]);
-
-api_json([
-    'success' => true,
-    'message' => 'Perangkat berhasil didaftarkan.',
-]);
