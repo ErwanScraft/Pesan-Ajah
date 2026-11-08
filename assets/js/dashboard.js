@@ -1,5 +1,3 @@
-// version: 2
-
 import { resolveImageUrl, setImageSource } from "./modules/image.js";
 import {
   initErrorLogger,
@@ -887,6 +885,26 @@ function renderOrders() {
       );
     
       footer.append(deleteButton);
+    }
+    
+    if (
+      ["pending", "confirmed", "processing"].includes(
+        String(order.status || "").toLowerCase()
+      )
+    ) {
+      const editButton = createButton(
+        "Edit Pesanan",
+        () => {
+          document.dispatchEvent(
+            new CustomEvent("warung:edit-order", {
+              detail: { order },
+            })
+          );
+        },
+        "button button-secondary order-edit-button",
+      );
+    
+      footer.append(editButton);
     }
 
     card.append(
