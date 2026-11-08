@@ -53,9 +53,6 @@ export function printReceipt(options = {}) {
 
   printStyleElement = document.createElement("style");
   printStyleElement.id = "receipt-print-settings";
-
-  
-  const receiptWidth = "70mm";
   
   printStyleElement.textContent = `
     @media print {
