@@ -1,43 +1,54 @@
 let printStyleElement = null;
 
 const PAPER_SIZES = {
-  "58mm": { width: "58mm", height: "auto" },
-  "80mm": { width: "80mm", height: "auto" },
-  A5: { width: "148mm", height: "210mm" },
-  A4: { width: "210mm", height: "297mm" },
+  A4: {
+    width: "210mm",
+    height: "297mm",
+  },
+  A5: {
+    width: "148mm",
+    height: "210mm",
+  },
+  "58mm": {
+    width: "58mm",
+    height: "auto",
+  },
+  "80mm": {
+    width: "80mm",
+    height: "auto",
+  },
 };
 
 export function printReceipt(options = {}) {
   const {
-    paperSize = "80mm",
-    customWidth = 80,
-    margin = 3,
+    paperSize = "A4",
+    margin = 0,
   } = options;
 
-  const selectedPaper = PAPER_SIZES[paperSize];
+  const selectedPaper = PAPER_SIZES[paperSize] || PAPER_SIZES.A4;
 
-  const width = selectedPaper?.width
-    || `${Math.min(210, Math.max(30, Number(customWidth) || 80))}mm`;
+  const paperWidth = selectedPaper.width;
+  const paperHeight = selectedPaper.height;
 
-  const height = selectedPaper?.height || "auto";
+  const receiptWidth = "70mm";
 
   const safeMargin = Math.min(
     15,
     Math.max(0, Number(margin) || 0)
   );
 
-  const pageSize = height === "auto"
-    ? width
-    : `${width} ${height}`;
-
-  if (printStyleElement) {
-    printStyleElement.remove();
-  }
+  const pageSize = paperHeight === "auto"
+    ? paperWidth
+    : `${paperWidth} ${paperHeight}`;
 
   const root = document.querySelector("#shared-receipt-root");
 
   if (!root || !root.firstElementChild) {
     throw new Error("Struk belum tersedia untuk dicetak.");
+  }
+
+  if (printStyleElement) {
+    printStyleElement.remove();
   }
 
   printStyleElement = document.createElement("style");
@@ -52,7 +63,7 @@ export function printReceipt(options = {}) {
 
       html,
       body {
-        width: ${width} !important;
+        width: ${paperWidth} !important;
         height: auto !important;
         min-height: 0 !important;
         margin: 0 !important;
@@ -71,12 +82,11 @@ export function printReceipt(options = {}) {
 
       body.receipt-printing #shared-receipt-root {
         display: block !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
+        position: static !important;
 
-        width: calc(${width} - ${safeMargin * 2}mm) !important;
-        max-width: calc(${width} - ${safeMargin * 2}mm) !important;
+        width: ${receiptWidth} !important;
+        max-width: ${receiptWidth} !important;
+        min-width: 0 !important;
 
         height: auto !important;
         max-height: none !important;
@@ -85,16 +95,21 @@ export function printReceipt(options = {}) {
         padding: 0 !important;
 
         overflow: visible !important;
-        box-shadow: none !important;
+
         border: 0 !important;
+        box-shadow: none !important;
         background: #fff !important;
 
+        page-break-before: auto !important;
         page-break-after: auto !important;
+        break-before: auto !important;
         break-after: auto !important;
       }
 
       body.receipt-printing #shared-receipt-root * {
         max-height: none !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
       }
     }
   `;
@@ -114,7 +129,9 @@ export function printReceipt(options = {}) {
     }
   };
 
-  window.addEventListener("afterprint", cleanup, { once: true });
+  window.addEventListener("afterprint", cleanup, {
+    once: true,
+  });
 
   try {
     window.print();

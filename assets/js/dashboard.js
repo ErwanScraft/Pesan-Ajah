@@ -536,8 +536,8 @@ async function printBuyerOrder(order) {
     });
 
     printReceipt({
-      paperSize: "A5-1/3",
-      margin: 3,
+      paperSize: "A4",
+      margin: 0,
     });
 
   } catch (error) {
