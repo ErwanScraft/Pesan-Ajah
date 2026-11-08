@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
-require_once dirname(__DIR__) . '/app/order_notifications.php';
-
+require_once dirname(__DIR__) . '/app/modules/push-notifications/main.php';
 require_method('POST');
 
 header('Content-Type: application/json; charset=utf-8');
