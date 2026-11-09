@@ -104,10 +104,6 @@ function renderOrderInformation(container, data) {
     addSummary(section, "Nama Pembeli", order.buyer_name);
   }
 
-  if (order.buyer_phone) {
-    addSummary(section, "WhatsApp", order.buyer_phone);
-  }
-
   if (order.delivery_method) {
     addSummary(
       section,
@@ -180,15 +176,48 @@ function renderItems(container, items) {
   container.append(list);
 }
 
+
 function renderPayment(container, data) {
   const summary = createElement("div", "receipt-summary");
 
-  addSummary(
-    summary,
-    "Jumlah Harga Pesanan",
-    formatReceiptCurrency(data.total),
-    "is-total",
-  );
+  if (data.type === "order") {
+    const order = data.order;
+
+    const subtotal = Number(order.subtotal) || 0;
+    const deliveryFee = Number(order.delivery_fee) || 0;
+
+    addSummary(
+      summary,
+      "Pesanan",
+      formatReceiptCurrency(subtotal),
+    );
+
+    addSummary(
+      summary,
+      "Bonus",
+      "-",
+    );
+
+    addSummary(
+      summary,
+      "Ongkir",
+      formatReceiptCurrency(deliveryFee),
+    );
+
+    addSummary(
+      summary,
+      "Jumlah",
+      formatReceiptCurrency(data.total),
+      "is-total",
+    );
+  } else {
+    addSummary(
+      summary,
+      "Jumlah Harga Pesanan",
+      formatReceiptCurrency(data.total),
+      "is-total",
+    );
+  }
 
   if (data.type === "cashier") {
     const labels = {
@@ -222,11 +251,26 @@ function renderPayment(container, data) {
   container.append(summary);
 }
 
+
+
 function renderFooter(container) {
   const footer = createElement("div", "receipt-footer");
 
   footer.append(
     createElement("strong", "", "PESAN AJAH"),
+
+    createElement(
+      "small",
+      "",
+      "Belanja Jauh lebih Simpel",
+    ),
+
+    createElement(
+      "small",
+      "",
+      "www.pesanajah.web.id",
+    ),
+
     createElement(
       "small",
       "",
