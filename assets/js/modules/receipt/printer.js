@@ -10,11 +10,11 @@ function loadPdfLibraries() {
   if (!pdfLibraryPromise) {
     pdfLibraryPromise = Promise.all([
       loadScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+        "/assets/vendor/html2canvas.min.js",
         () => window.html2canvas
       ),
       loadScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js",
+        "/assets/vendor/jspdf.umd.min.js",
         () => window.jspdf?.jsPDF
       ),
     ]).catch((error) => {
