@@ -102,8 +102,12 @@ export function printReceipt(options = {}) {
 
         overflow: visible !important;
         border: 0 !important;
-        ${isSheetPaper ? "border-right: 1px dashed #777 !important;" : ""}
         box-shadow: none !important;
+        
+        ${isSheetPaper ? `
+          outline: 1px dashed #777 !important;
+          outline-offset: 3mm !important;
+        ` : ""}
         background: #fff !important;
         box-sizing: border-box !important;
 
