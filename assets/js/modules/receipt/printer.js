@@ -53,7 +53,7 @@ function loadScript(src, check) {
   });
 }
 
-async function createReceiptPdf() {
+async function createReceiptPdf(options = {}) {
   const root = document.querySelector("#shared-receipt-root");
 
   if (!root || !root.firstElementChild) {
@@ -62,13 +62,15 @@ async function createReceiptPdf() {
 
   await loadPdfLibraries();
 
+  const layout = getReceiptLayout(options);
+
   const wrapper = document.createElement("div");
 
   wrapper.style.cssText = `
     position: fixed;
     left: -10000px;
     top: 0;
-    width: 70mm;
+    width: ${layout.receiptWidth};
     background: #fff;
     z-index: -1;
   `;
@@ -76,25 +78,43 @@ async function createReceiptPdf() {
   const receipt = root.firstElementChild.cloneNode(true);
 
   receipt.style.cssText += `
-    width: 70mm;
-    max-width: 70mm;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    height: auto;
     margin: 0;
-    padding: 3mm;
+    padding: 0;
     box-sizing: border-box;
     background: #fff;
+    overflow: visible;
   `;
 
   wrapper.append(receipt);
   document.body.append(wrapper);
 
   try {
+    await Promise.all(
+      Array.from(receipt.querySelectorAll("img")).map((img) => {
+        if (img.complete) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }),
+    );
+
     const canvas = await window.html2canvas(receipt, {
       scale: 2,
       useCORS: true,
       backgroundColor: "#ffffff",
+      logging: false,
     });
 
-    const width = 70;
+    const width = layout.receiptWidthMm;
     const height = canvas.height * (width / canvas.width);
 
     const { jsPDF } = window.jspdf;
@@ -122,7 +142,7 @@ async function createReceiptPdf() {
 }
 
 export async function shareReceiptPdf(options = {}) {
-  const blob = await createReceiptPdf();
+  const blob = await createReceiptPdf(options);
 
   const file = new File(
     [blob],
@@ -177,10 +197,9 @@ const PAPER_SIZES = {
   },
 };
 
-export function printReceipt(options = {}) {
+function getReceiptLayout(options = {}) {
   const {
     paperSize = "A4",
-    margin = 0,
   } = options;
 
   const selectedPaper = PAPER_SIZES[paperSize] || PAPER_SIZES.A4;
@@ -190,8 +209,40 @@ export function printReceipt(options = {}) {
   const paperWidth = selectedPaper.width;
   const paperHeight = selectedPaper.height;
 
-  // Lebar struk 7 cm untuk kertas A4 dan A5.
-  const receiptWidth = isSheetPaper ? "70mm" : paperWidth;
+  const receiptWidth = isSheetPaper
+    ? "70mm"
+    : paperWidth;
+
+  const receiptWidthMm = Number.parseFloat(receiptWidth);
+
+  const pageSize = paperHeight === "auto"
+    ? paperWidth
+    : `${paperWidth} ${paperHeight}`;
+
+  return {
+    paperWidth,
+    paperHeight,
+    receiptWidth,
+    receiptWidthMm,
+    pageSize,
+    isSheetPaper,
+  };
+}
+
+export function printReceipt(options = {}) {
+  const {
+    margin = 0,
+  } = options;
+
+  const layout = getReceiptLayout(options);
+
+  const {
+    paperWidth,
+    paperHeight,
+    receiptWidth,
+    pageSize,
+    isSheetPaper,
+  } = layout;
 
   const safeMargin = Math.min(
     15,

@@ -256,15 +256,18 @@ async function printBuyerOrder(order, mode = "print") {
       resolveImageUrl,
     });
 
+    const receiptOptions = {
+      paperSize: "A4",
+      margin: 0,
+    };
+    
     if (mode === "share") {
       await shareReceiptPdf({
+        ...receiptOptions,
         fileName: `struk-${order.order_number || order.id}.pdf`,
       });
     } else {
-      printReceipt({
-        paperSize: "A4",
-        margin: 0,
-      });
+      printReceipt(receiptOptions);
     }
 
   } catch (error) {
