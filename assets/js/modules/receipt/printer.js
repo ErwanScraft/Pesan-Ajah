@@ -1,3 +1,4 @@
+
 let printStyleElement = null;
 
 const PAPER_SIZES = {
@@ -27,10 +28,13 @@ export function printReceipt(options = {}) {
 
   const selectedPaper = PAPER_SIZES[paperSize] || PAPER_SIZES.A4;
 
+  const isSheetPaper = paperSize === "A4" || paperSize === "A5";
+
   const paperWidth = selectedPaper.width;
   const paperHeight = selectedPaper.height;
 
-  const receiptWidth = "70mm";
+  // Lebar struk 7 cm untuk kertas A4 dan A5.
+  const receiptWidth = isSheetPaper ? "70mm" : paperWidth;
 
   const safeMargin = Math.min(
     15,
@@ -53,60 +57,62 @@ export function printReceipt(options = {}) {
 
   printStyleElement = document.createElement("style");
   printStyleElement.id = "receipt-print-settings";
-  
+
   printStyleElement.textContent = `
     @media print {
       @page {
-        size: 70mm auto;
+        size: ${pageSize};
         margin: 0;
       }
-  
+
       html,
       body {
-        width: 70mm !important;
-        height: auto !important;
+        width: ${paperWidth} !important;
+        height: ${paperHeight} !important;
         min-height: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
       }
-  
+
       body.receipt-printing * {
         visibility: hidden !important;
       }
-  
+
       body.receipt-printing #shared-receipt-root,
       body.receipt-printing #shared-receipt-root * {
         visibility: visible !important;
       }
-  
+
       body.receipt-printing #shared-receipt-root {
         display: block !important;
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
-  
+
         width: ${receiptWidth} !important;
         max-width: ${receiptWidth} !important;
-  
+
         height: auto !important;
         min-height: 0 !important;
         max-height: none !important;
-  
+
         margin: 0 !important;
         padding: 0 !important;
-  
+
         overflow: visible !important;
         border: 0 !important;
+        ${isSheetPaper ? "border-right: 1px dashed #777 !important;" : ""}
         box-shadow: none !important;
         background: #fff !important;
-  
+        box-sizing: border-box !important;
+
         page-break-before: avoid !important;
         page-break-after: avoid !important;
         break-before: avoid !important;
         break-after: avoid !important;
       }
-  
+
       body.receipt-printing #shared-receipt-root * {
         max-height: none !important;
         overflow: visible !important;
@@ -114,7 +120,6 @@ export function printReceipt(options = {}) {
       }
     }
   `;
-
 
   document.head.append(printStyleElement);
 
