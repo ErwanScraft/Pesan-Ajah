@@ -249,10 +249,6 @@ export function printReceipt(options = {}) {
     Math.max(0, Number(margin) || 0)
   );
 
-  const pageSize = paperHeight === "auto"
-    ? paperWidth
-    : `${paperWidth} ${paperHeight}`;
-
   const root = document.querySelector("#shared-receipt-root");
 
   if (!root || !root.firstElementChild) {
