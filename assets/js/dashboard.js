@@ -237,6 +237,9 @@ async function printBuyerOrder(order) {
         delivery_method: order.delivery_method,
         delivery_address: order.delivery_address,
         buyer_note: order.buyer_note,
+      
+        subtotal: order.subtotal,
+        delivery_fee: order.delivery_fee,
       },
 
       items: (order.items || []).map((item) => ({
