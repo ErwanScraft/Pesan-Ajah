@@ -195,7 +195,7 @@ async function loadOrders() {
 }
 
 
-async function printBuyerOrder(order) {
+async function printBuyerOrder(order, mode = "print") {
   if (!orderStore) {
     notify("Informasi warung tidak tersedia.", "error");
     return;
@@ -211,9 +211,9 @@ async function printBuyerOrder(order) {
 
     const [
       { renderReceipt },
-      { printReceipt },
+      { printReceipt, shareReceiptPdf },
     ] = await receiptModulePromise;
-
+    
     const receiptRoot = $("#shared-receipt-root");
 
     if (!receiptRoot) {
@@ -256,10 +256,16 @@ async function printBuyerOrder(order) {
       resolveImageUrl,
     });
 
-    printReceipt({
-      paperSize: "A4",
-      margin: 0,
-    });
+    if (mode === "share") {
+      await shareReceiptPdf({
+        fileName: `struk-${order.order_number || order.id}.pdf`,
+      });
+    } else {
+      printReceipt({
+        paperSize: "A4",
+        margin: 0,
+      });
+    }
 
   } catch (error) {
     console.error("[Pesan Ajah Receipt]", error);
@@ -653,9 +659,18 @@ function renderOrders() {
       "button button-outline order-print-button",
     );
     
+    const shareButton = createButton(
+      "Bagikan PDF",
+      async () => {
+        await printBuyerOrder(order, "share");
+      },
+      "button button-outline order-share-button",
+    );
+    
     footer.append(
       detailButton,
       printButton,
+      shareButton,
     );
 
     const next = nextOrderStatus(order);
