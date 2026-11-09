@@ -292,7 +292,8 @@ export function printReceipt(options = {}) {
         display: block !important;
         position: absolute !important;
         top: 0 !important;
-        left: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
 
         width: ${receiptWidth} !important;
         max-width: ${receiptWidth} !important;
