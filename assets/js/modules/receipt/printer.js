@@ -210,7 +210,7 @@ function getReceiptLayout(options = {}) {
   const paperHeight = selectedPaper.height;
 
   const receiptWidth = isSheetPaper
-    ? "70mm"
+    ? "55mm"
     : paperWidth;
 
   const receiptWidthMm = Number.parseFloat(receiptWidth);
