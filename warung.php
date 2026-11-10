@@ -153,7 +153,7 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
 
     <main class="store-page">
 
-        <!-- Banner -->
+        <!-- Banner dan identitas warung -->
         <section class="store-banner" aria-label="Banner warung">
             <img
                 src="/assets/images/banner_1.webp"
@@ -162,29 +162,30 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                 height="900"
                 fetchpriority="high"
             >
-        </section>
-
-        <!-- Identitas warung -->
-        <section class="store-identity" aria-labelledby="store-profile-name">
-            <div class="store-identity-logo">
-                <?php if ($storeIconUrl !== null): ?>
-                    <img
-                        src="<?= e($storeIconUrl) ?>"
-                        alt="Logo <?= e($storeName) ?>"
-                        width="88"
-                        height="88"
-                    >
-                <?php else: ?>
-                    <span aria-hidden="true"><?= e($storeInitial) ?></span>
-                <?php endif; ?>
-            </div>
-
-            <div class="store-identity-text">
-                <h1 id="store-profile-name"><?= e($storeName) ?></h1>
-
-                <?php if ($storeOwner !== ''): ?>
-                    <p><?= e($storeOwner) ?></p>
-                <?php endif; ?>
+        
+            <div class="store-identity" aria-labelledby="store-profile-name">
+                <div class="store-identity-logo">
+                    <?php if ($storeIconUrl !== null): ?>
+                        <img
+                            src="<?= e($storeIconUrl) ?>"
+                            alt="Logo <?= e($storeName) ?>"
+                            width="88"
+                            height="88"
+                        >
+                    <?php else: ?>
+                        <span aria-hidden="true"><?= e($storeInitial) ?></span>
+                    <?php endif; ?>
+                </div>
+        
+                <div class="store-identity-text">
+                    <h1 id="store-profile-name">
+                        <?= e($storeName) ?>
+                    </h1>
+        
+                    <?php if ($storeOwner !== ''): ?>
+                        <p><?= e($storeOwner) ?></p>
+                    <?php endif; ?>
+                </div>
             </div>
         </section>
 
