@@ -195,7 +195,7 @@ async function loadOrders() {
 }
 
 
-async function printBuyerOrder(order, mode = "print") {
+async function printBuyerOrder(order) {
   if (!orderStore) {
     notify("Informasi warung tidak tersedia.", "error");
     return;
@@ -211,7 +211,7 @@ async function printBuyerOrder(order, mode = "print") {
 
     const [
       { renderReceipt },
-      { shareReceiptImage, shareReceiptPdf },
+      { shareReceiptImage },
     ] = await receiptModulePromise;
     
     const receiptRoot = $("#shared-receipt-root");
@@ -256,21 +256,9 @@ async function printBuyerOrder(order, mode = "print") {
       resolveImageUrl,
     });
 
-    const receiptOptions = {
-      paperSize: "A4",
-      margin: 0,
-    };
-    
-    if (mode === "share") {
-      await shareReceiptPdf({
-        ...receiptOptions,
-        fileName: `struk-${order.order_number || order.id}.pdf`,
-      });
-    } else {
-      await shareReceiptImage({
-        fileName: `struk-${order.order_number || order.id}.png`,
-      });
-    }
+    await shareReceiptImage({
+      fileName: `struk-${order.order_number || order.id}.png`,
+    });
 
   } catch (error) {
     if (error.name === "AbortError") {
@@ -668,18 +656,9 @@ function renderOrders() {
       "button button-outline order-print-button",
     );
     
-    const shareButton = createButton(
-      "Bagikan PDF",
-      async () => {
-        await printBuyerOrder(order, "share");
-      },
-      "button button-outline order-share-button",
-    );
-    
     footer.append(
       detailButton,
       printButton,
-      shareButton,
     );
 
     const next = nextOrderStatus(order);

@@ -1,31 +1,5 @@
 let printStyleElement = null;
 
-let pdfLibraryPromise = null;
-
-function loadPdfLibraries() {
-  if (window.html2canvas && window.jspdf?.jsPDF) {
-    return Promise.resolve();
-  }
-
-  if (!pdfLibraryPromise) {
-    pdfLibraryPromise = Promise.all([
-      loadScript(
-        "/assets/vendor/html2canvas.min.js",
-        () => window.html2canvas
-      ),
-      loadScript(
-        "/assets/vendor/jspdf.umd.min.js",
-        () => window.jspdf?.jsPDF
-      ),
-    ]).catch((error) => {
-      pdfLibraryPromise = null;
-      throw error;
-    });
-  }
-
-  return pdfLibraryPromise;
-}
-
 function loadScript(src, check) {
   if (check()) {
     return Promise.resolve();
@@ -41,12 +15,12 @@ function loadScript(src, check) {
       if (check()) {
         resolve();
       } else {
-        reject(new Error("Library PDF gagal dimuat."));
+        reject(new Error("Library gambar struk gagal dimuat."));
       }
     };
 
     script.onerror = () => {
-      reject(new Error("Tidak dapat memuat library PDF."));
+      reject(new Error("Tidak dapat memuat library gambar struk."));
     };
 
     document.head.append(script);
@@ -175,81 +149,6 @@ async function createReceiptCanvas(options = {}) {
   } finally {
     wrapper.remove();
   }
-}
-
-async function createReceiptPdf(options = {}) {
-  await loadPdfLibraries();
-
-  const canvas = await createReceiptCanvas(options);
-  const layout = getReceiptLayout(options);
-
-  const width = Number(options.printableWidthMm)
-    || layout.receiptWidthMm;
-
-  const height = canvas.height * (width / canvas.width);
-
-  const { jsPDF } = window.jspdf;
-
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [width, height],
-    compress: true,
-  });
-
-  pdf.addImage(
-    canvas.toDataURL("image/jpeg", 0.95),
-    "JPEG",
-    0,
-    0,
-    width,
-    height,
-  );
-
-  const blob = pdf.output("blob");
-
-  if (!blob || blob.size < 1000) {
-    throw new Error("PDF struk kosong atau gagal dibuat.");
-  }
-
-  return blob;
-}
-
-export async function shareReceiptPdf(options = {}) {
-  const blob = await createReceiptPdf(options);
-
-  const file = new File(
-    [blob],
-    options.fileName || "struk-pesanan.pdf",
-    {
-      type: "application/pdf",
-    },
-  );
-
-  if (
-    navigator.share &&
-    navigator.canShare &&
-    navigator.canShare({ files: [file] })
-  ) {
-    await navigator.share({
-      files: [file],
-      title: "Struk Pesanan Pesan Ajah",
-    });
-
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = file.name;
-
-  document.body.append(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 async function createReceiptPng(options = {}) {
