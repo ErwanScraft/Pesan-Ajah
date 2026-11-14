@@ -413,6 +413,10 @@ $productCategories = require APP_ROOT . '/config/categories.php';
         role="status"
         aria-live="polite"
     ></div>
+    
+    <!-- Google ADS -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6568186199598824"
+     crossorigin="anonymous"></script>
 
 </body>
 </html>
