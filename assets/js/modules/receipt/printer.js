@@ -122,21 +122,38 @@ async function createReceiptCanvas(options = {}) {
       }),
     );
 
-    // Pastikan browser menyelesaikan perhitungan layout.
-    receipt.style.height = "max-content";
+    // Tunggu layout dan font selesai sebelum mengukur seluruh konten.
+    receipt.style.height = "auto";
     receipt.style.minHeight = "0";
+    receipt.style.maxHeight = "none";
     receipt.style.overflow = "visible";
     
-    const receiptHeight = Math.ceil(
-      Math.max(
-        receipt.scrollHeight,
-        receipt.getBoundingClientRect().height,
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+    
+    const receiptRect = receipt.getBoundingClientRect();
+    
+    const contentBottom = Math.max(
+      receiptRect.bottom,
+      ...Array.from(receipt.querySelectorAll("*")).map(
+        (element) => element.getBoundingClientRect().bottom,
       ),
     );
     
-    // Tambahan ruang agar baris footer paling bawah tidak terpotong.
-    const captureHeight = receiptHeight + 16;
+    // Ukur tinggi berdasarkan seluruh elemen,
+    // termasuk teks footer paling bawah.
+    const receiptHeight = Math.ceil(
+      Math.max(
+        receipt.scrollHeight,
+        receiptRect.height,
+        contentBottom - receiptRect.top,
+      ),
+    );
     
+    // Ruang tambahan untuk mencegah pemotongan akibat pembulatan pixel.
+    const captureHeight = receiptHeight + 32;
+
     const canvas = await window.html2canvas(receipt, {
       scale: 3,
       width: receipt.offsetWidth,
