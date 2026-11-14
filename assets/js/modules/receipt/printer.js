@@ -63,14 +63,19 @@ async function createReceiptPdf(options = {}) {
   await loadPdfLibraries();
 
   const layout = getReceiptLayout(options);
-
+  
+  const receiptWidthMm = Number(options.printableWidthMm)
+    || layout.receiptWidthMm;
+  
+  const receiptWidth = `${receiptWidthMm}mm`;
+  
   const wrapper = document.createElement("div");
-
+  
   wrapper.style.cssText = `
     position: fixed;
     left: -10000px;
     top: 0;
-    width: ${layout.receiptWidth};
+    width: ${receiptWidth};
     background: #fff;
     z-index: -1;
   `;
@@ -114,7 +119,7 @@ async function createReceiptPdf(options = {}) {
       logging: false,
     });
 
-    const width = layout.receiptWidthMm;
+    const width = receiptWidthMm;
     const height = canvas.height * (width / canvas.width);
 
     const { jsPDF } = window.jspdf;
@@ -176,6 +181,39 @@ export async function shareReceiptPdf(options = {}) {
   link.remove();
 
   setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+export async function printThermalReceipt(options = {}) {
+  if (!navigator.share || !navigator.canShare) {
+    throw new Error(
+      "Browser tidak mendukung pengiriman file ke Mate Bluetooth Print. Gunakan Chrome Android versi terbaru."
+    );
+  }
+
+  const blob = await createReceiptPdf({
+    ...options,
+    paperSize: "58mm",
+    printableWidthMm: 48,
+  });
+
+  const file = new File(
+    [blob],
+    options.fileName || "struk-pesan-ajah.pdf",
+    {
+      type: "application/pdf",
+    },
+  );
+
+  if (!navigator.canShare({ files: [file] })) {
+    throw new Error(
+      "File PDF tidak dapat dibagikan dari browser ini."
+    );
+  }
+
+  await navigator.share({
+    files: [file],
+    title: "Cetak Struk Pesan Ajah",
+  });
 }
 
 const PAPER_SIZES = {

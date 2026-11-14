@@ -211,7 +211,7 @@ async function printBuyerOrder(order, mode = "print") {
 
     const [
       { renderReceipt },
-      { printReceipt, shareReceiptPdf },
+      { printThermalReceipt, shareReceiptPdf },
     ] = await receiptModulePromise;
     
     const receiptRoot = $("#shared-receipt-root");
@@ -261,18 +261,27 @@ async function printBuyerOrder(order, mode = "print") {
       margin: 0,
     };
     
+    const receiptFileName =
+      `struk-${order.order_number || order.id}.pdf`;
+    
     if (mode === "share") {
       await shareReceiptPdf({
         ...receiptOptions,
-        fileName: `struk-${order.order_number || order.id}.pdf`,
+        fileName: receiptFileName,
       });
     } else {
-      printReceipt(receiptOptions);
+      await printThermalReceipt({
+        fileName: receiptFileName,
+      });
     }
 
   } catch (error) {
+    if (error.name === "AbortError") {
+      return;
+    }
+  
     console.error("[Pesan Ajah Receipt]", error);
-
+  
     notify(
       error instanceof Error
         ? error.message

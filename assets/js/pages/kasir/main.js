@@ -1,5 +1,5 @@
 import { renderReceipt } from "../../modules/receipt/renderer.js";
-import { printReceipt } from "../../modules/receipt/printer.js";
+import { printThermalReceipt } from "../../modules/receipt/printer.js";
 
 export async function initWarungKasir({
   $,
@@ -623,15 +623,27 @@ export async function initWarungKasir({
     }
   });
 
-  $("#cashier-print").addEventListener("click", () => {
+  $("#cashier-print").addEventListener("click", async () => {
     if (!receipt) {
       return;
     }
   
-    printReceipt({
-      paperSize: "A5",
-      margin: 0,
-    });
+    try {
+      await printThermalReceipt({
+        fileName: "struk-kasir-pesan-ajah.pdf",
+      });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return;
+      }
+  
+      notify(
+        error instanceof Error
+          ? error.message
+          : "Struk gagal dikirim ke aplikasi printer.",
+        "error",
+      );
+    }
   });
 
   $("#cashier-new").addEventListener("click", () => {
