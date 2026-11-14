@@ -77,6 +77,7 @@ async function createReceiptCanvas(options = {}) {
     left: 0;
     top: 0;
     width: ${receiptWidthMm}mm;
+    height: auto;
     background: #fff;
     z-index: 999999;
     opacity: 0.01;
@@ -121,8 +122,27 @@ async function createReceiptCanvas(options = {}) {
       }),
     );
 
+    // Pastikan browser menyelesaikan perhitungan layout.
+    receipt.style.height = "max-content";
+    receipt.style.minHeight = "0";
+    receipt.style.overflow = "visible";
+    
+    const receiptHeight = Math.ceil(
+      Math.max(
+        receipt.scrollHeight,
+        receipt.getBoundingClientRect().height,
+      ),
+    );
+    
+    // Tambahan ruang agar baris footer paling bawah tidak terpotong.
+    const captureHeight = receiptHeight + 16;
+    
     const canvas = await window.html2canvas(receipt, {
       scale: 3,
+      width: receipt.offsetWidth,
+      height: captureHeight,
+      windowWidth: window.innerWidth,
+      windowHeight: Math.max(window.innerHeight, captureHeight),
       useCORS: true,
       allowTaint: false,
       backgroundColor: "#ffffff",
