@@ -1,5 +1,5 @@
 import { renderReceipt } from "../../modules/receipt/renderer.js";
-import { printThermalReceipt } from "../../modules/receipt/printer.js";
+import { shareReceiptImage } from "../../modules/receipt/printer.js";
 
 export async function initWarungKasir({
   $,
@@ -629,8 +629,8 @@ export async function initWarungKasir({
     }
   
     try {
-      await printThermalReceipt({
-        fileName: "struk-kasir-pesan-ajah.pdf",
+      await shareReceiptImage({
+        fileName: "struk-kasir-pesan-ajah.png",
       });
     } catch (error) {
       if (error.name === "AbortError") {
@@ -640,7 +640,7 @@ export async function initWarungKasir({
       notify(
         error instanceof Error
           ? error.message
-          : "Struk gagal dikirim ke aplikasi printer.",
+          : "Gambar struk gagal dikirim ke aplikasi printer.",
         "error",
       );
     }

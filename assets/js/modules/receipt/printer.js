@@ -53,29 +53,30 @@ function loadScript(src, check) {
   });
 }
 
-async function createReceiptPdf(options = {}) {
+async function createReceiptCanvas(options = {}) {
   const root = document.querySelector("#shared-receipt-root");
 
   if (!root || !root.firstElementChild) {
     throw new Error("Struk belum tersedia.");
   }
 
-  await loadPdfLibraries();
+  await loadScript(
+    "/assets/vendor/html2canvas.min.js",
+    () => window.html2canvas,
+  );
 
   const layout = getReceiptLayout(options);
-  
+
   const receiptWidthMm = Number(options.printableWidthMm)
     || layout.receiptWidthMm;
-  
-  const receiptWidth = `${receiptWidthMm}mm`;
-  
+
   const wrapper = document.createElement("div");
-  
+
   wrapper.style.cssText = `
     position: fixed;
     left: 0;
     top: 0;
-    width: ${receiptWidth};
+    width: ${receiptWidthMm}mm;
     background: #fff;
     z-index: 999999;
     opacity: 0.01;
@@ -104,7 +105,7 @@ async function createReceiptPdf(options = {}) {
     if (document.fonts?.ready) {
       await document.fonts.ready;
     }
-    
+
     await Promise.all(
       Array.from(receipt.querySelectorAll("img")).map(async (img) => {
         if (!img.complete) {
@@ -113,7 +114,7 @@ async function createReceiptPdf(options = {}) {
             img.onerror = resolve;
           });
         }
-    
+
         if (img.decode && img.naturalWidth > 0) {
           await img.decode().catch(() => {});
         }
@@ -128,45 +129,53 @@ async function createReceiptPdf(options = {}) {
       logging: false,
       imageTimeout: 15000,
     });
-    
+
     if (!canvas.width || !canvas.height) {
       throw new Error("Gagal membuat gambar struk.");
     }
 
-    const width = receiptWidthMm;
-    const height = canvas.height * (width / canvas.width);
-
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [width, height],
-      compress: true,
-    });
-
-    pdf.addImage(
-      canvas.toDataURL("image/jpeg", 0.95),
-      "JPEG",
-      0,
-      0,
-      width,
-      height,
-    );
-    
-    const blob = pdf.output("blob");
-    
-    if (!blob || blob.size < 1000) {
-      throw new Error("PDF struk kosong atau gagal dibuat.");
-    }
-    
-    return blob;
-
-    return pdf.output("blob");
-    
+    return canvas;
   } finally {
     wrapper.remove();
   }
+}
+
+async function createReceiptPdf(options = {}) {
+  await loadPdfLibraries();
+
+  const canvas = await createReceiptCanvas(options);
+  const layout = getReceiptLayout(options);
+
+  const width = Number(options.printableWidthMm)
+    || layout.receiptWidthMm;
+
+  const height = canvas.height * (width / canvas.width);
+
+  const { jsPDF } = window.jspdf;
+
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [width, height],
+    compress: true,
+  });
+
+  pdf.addImage(
+    canvas.toDataURL("image/jpeg", 0.95),
+    "JPEG",
+    0,
+    0,
+    width,
+    height,
+  );
+
+  const blob = pdf.output("blob");
+
+  if (!blob || blob.size < 1000) {
+    throw new Error("PDF struk kosong atau gagal dibuat.");
+  }
+
+  return blob;
 }
 
 export async function shareReceiptPdf(options = {}) {
@@ -204,6 +213,89 @@ export async function shareReceiptPdf(options = {}) {
   link.remove();
 
   setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+async function createReceiptPng(options = {}) {
+  const canvas = await createReceiptCanvas({
+    ...options,
+    paperSize: "58mm",
+    printableWidthMm: 48,
+  });
+
+  // Lebar gambar disesuaikan dengan resolusi printer thermal 58 mm.
+  const targetWidth = 384;
+  const targetHeight = Math.round(
+    canvas.height * (targetWidth / canvas.width),
+  );
+
+  const outputCanvas = document.createElement("canvas");
+
+  outputCanvas.width = targetWidth;
+  outputCanvas.height = targetHeight;
+
+  const context = outputCanvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Gagal menyiapkan gambar struk.");
+  }
+
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, targetWidth, targetHeight);
+
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+
+  context.drawImage(
+    canvas,
+    0,
+    0,
+    targetWidth,
+    targetHeight,
+  );
+
+  const blob = await new Promise((resolve) => {
+    outputCanvas.toBlob(resolve, "image/png");
+  });
+
+  if (!blob || blob.size < 1000) {
+    throw new Error("Gambar struk kosong atau gagal dibuat.");
+  }
+
+  return blob;
+}
+
+export async function shareReceiptImage(options = {}) {
+  if (!navigator.share || !navigator.canShare) {
+    throw new Error(
+      "Browser tidak mendukung berbagi gambar. Gunakan Chrome Android versi terbaru.",
+    );
+  }
+
+  const blob = await createReceiptPng(options);
+
+  const file = new File(
+    [blob],
+    options.fileName || "struk-pesan-ajah.png",
+    {
+      type: "image/png",
+    },
+  );
+
+  if (!navigator.canShare({ files: [file] })) {
+    throw new Error(
+      "Browser tidak mendukung berbagi file PNG.",
+    );
+  }
+
+  await navigator.share({
+    files: [file],
+    title: "Cetak Struk Pesan Ajah",
+  });
+}
+
+// Menjaga kompatibilitas dengan pemanggil lama.
+export async function printThermalReceipt(options = {}) {
+  return shareReceiptImage(options);
 }
 
 export async function printThermalReceipt(options = {}) {

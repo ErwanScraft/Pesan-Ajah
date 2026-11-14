@@ -211,7 +211,7 @@ async function printBuyerOrder(order, mode = "print") {
 
     const [
       { renderReceipt },
-      { printThermalReceipt, shareReceiptPdf },
+      { shareReceiptImage, shareReceiptPdf },
     ] = await receiptModulePromise;
     
     const receiptRoot = $("#shared-receipt-root");
@@ -261,17 +261,14 @@ async function printBuyerOrder(order, mode = "print") {
       margin: 0,
     };
     
-    const receiptFileName =
-      `struk-${order.order_number || order.id}.pdf`;
-    
     if (mode === "share") {
       await shareReceiptPdf({
         ...receiptOptions,
-        fileName: receiptFileName,
+        fileName: `struk-${order.order_number || order.id}.pdf`,
       });
     } else {
-      await printThermalReceipt({
-        fileName: receiptFileName,
+      await shareReceiptImage({
+        fileName: `struk-${order.order_number || order.id}.png`,
       });
     }
 
