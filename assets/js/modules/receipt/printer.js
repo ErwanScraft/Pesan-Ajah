@@ -73,11 +73,13 @@ async function createReceiptPdf(options = {}) {
   
   wrapper.style.cssText = `
     position: fixed;
-    left: -10000px;
+    left: 0;
     top: 0;
     width: ${receiptWidth};
     background: #fff;
-    z-index: -1;
+    z-index: 999999;
+    opacity: 0.01;
+    pointer-events: none;
   `;
 
   const receipt = root.firstElementChild.cloneNode(true);
@@ -99,25 +101,37 @@ async function createReceiptPdf(options = {}) {
   document.body.append(wrapper);
 
   try {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+    
     await Promise.all(
-      Array.from(receipt.querySelectorAll("img")).map((img) => {
-        if (img.complete) {
-          return Promise.resolve();
+      Array.from(receipt.querySelectorAll("img")).map(async (img) => {
+        if (!img.complete) {
+          await new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
         }
-
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
+    
+        if (img.decode && img.naturalWidth > 0) {
+          await img.decode().catch(() => {});
+        }
       }),
     );
 
     const canvas = await window.html2canvas(receipt, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
+      allowTaint: false,
       backgroundColor: "#ffffff",
       logging: false,
+      imageTimeout: 15000,
     });
+    
+    if (!canvas.width || !canvas.height) {
+      throw new Error("Gagal membuat gambar struk.");
+    }
 
     const width = receiptWidthMm;
     const height = canvas.height * (width / canvas.width);
@@ -139,8 +153,17 @@ async function createReceiptPdf(options = {}) {
       width,
       height,
     );
+    
+    const blob = pdf.output("blob");
+    
+    if (!blob || blob.size < 1000) {
+      throw new Error("PDF struk kosong atau gagal dibuat.");
+    }
+    
+    return blob;
 
     return pdf.output("blob");
+    
   } finally {
     wrapper.remove();
   }
