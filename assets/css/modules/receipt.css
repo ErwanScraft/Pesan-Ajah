@@ -1,4 +1,3 @@
-
 /* =========================================================
    PESAN AJAH — SHARED RECEIPT MODULE
 ========================================================= */
@@ -11,64 +10,66 @@
   width: 100%;
   max-width: 420px;
   margin-inline: auto;
-  padding: 20px;
+  padding: 14px 12px;
+  box-sizing: border-box;
   background: #fff;
-  color: #202820;
+  color: #171717;
   font-family: Arial, sans-serif;
-  font-size: 11px;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 .receipt-brand,
 .receipt-footer {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: 3px;
   text-align: center;
 }
 
 .receipt-brand img {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 5px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 4px;
+  border-radius: 6px;
   object-fit: contain;
 }
 
 .receipt-store-name {
-  font-size: 16px;
-  font-weight: 850;
+  font-size: 14px;
+  font-weight: 800;
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
 .receipt-store-contact {
   margin: 0;
-  color: #626b63;
-  font-size: 10px;
-  line-height: 1.5;
+  color: #444;
+  font-size: 9px;
+  line-height: 1.4;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
 .receipt-divider {
   width: 100%;
-  margin: 12px 0;
-  border-top: 1px dashed #aab2aa;
+  margin: 9px 0;
+  border-top: 1px dashed #777;
 }
 
 .receipt-title {
   display: block;
   font-size: 13px;
-  font-weight: 850;
-  letter-spacing: 1px;
+  font-weight: 900;
+  letter-spacing: 1.3px;
   text-align: center;
 }
 
 .receipt-date {
   display: block;
-  margin-top: 5px;
-  color: #626b63;
-  font-size: 10px;
+  margin-top: 4px;
+  color: #555;
+  font-size: 9px;
   text-align: center;
 }
 
@@ -76,27 +77,29 @@
 .receipt-items,
 .receipt-summary {
   display: grid;
-  gap: 9px;
+  gap: 7px;
 }
 
 .receipt-section-title {
-  margin-bottom: 3px;
-  font-size: 11px;
-  font-weight: 850;
+  margin-bottom: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .3px;
 }
 
 .receipt-summary-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 10px;
+  gap: 8px;
+  font-size: 9px;
+  line-height: 1.4;
 }
 
 .receipt-summary-row > span {
   flex: 1;
   min-width: 0;
-  color: #626b63;
+  color: #444;
 }
 
 .receipt-summary-row > strong {
@@ -106,70 +109,78 @@
 }
 
 .receipt-summary-row.is-total {
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #aab2aa;
+  padding: 9px 7px;
+  border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
+  background: #f2f2f2;
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 900;
 }
 
 .receipt-summary-row.is-total > span,
 .receipt-summary-row.is-total > strong {
-  color: #17251a;
+  color: #000;
 }
 
 .receipt-summary-row.is-change > strong {
-  font-weight: 850;
+  font-weight: 900;
 }
 
 .receipt-items {
-  gap: 11px;
+  gap: 10px;
 }
 
 .receipt-item {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   break-inside: avoid;
 }
 
 .receipt-item-information {
   display: grid;
   min-width: 0;
-  gap: 4px;
+  gap: 3px;
 }
 
 .receipt-item-information > strong {
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
 .receipt-item-information > small {
-  color: #626b63;
+  color: #555;
   font-size: 9px;
+  line-height: 1.4;
 }
 
 .receipt-item-subtotal {
   flex: 0 0 auto;
-  font-size: 10px;
+  font-size: 9px;
+  font-weight: 700;
   text-align: right;
 }
 
 .receipt-footer {
-  gap: 3px;
-  margin-top: 3px;
+  gap: 4px;
+  margin-top: 5px;
+  padding-bottom: 5px;
 }
 
 .receipt-footer > strong {
-  color: #315d43;
-  font-size: 13px;
+  color: #222;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.2px;
 }
 
 .receipt-footer > small {
-  color: #7a837b;
-  font-size: 9px;
+  color: #555;
+  font-size: 8px;
+  line-height: 1.4;
 }
 
 /* =========================================================
@@ -216,30 +227,25 @@
 ========================================================= */
 
 @media print {
-  #shared-receipt-root {
-    display: block !important;
-    background: #fff !important;
-  }
-
   .receipt-document {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    box-sizing: border-box !important;
     color: #000 !important;
     font-family: Arial, sans-serif !important;
-    font-size: 9px !important;
   }
 
   .receipt-brand img {
-    width: 48px !important;
-    height: 48px !important;
+    width: 38px !important;
+    height: 38px !important;
     border-radius: 0 !important;
   }
 
   .receipt-store-name {
     color: #000 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
   }
 
   .receipt-store-contact,
@@ -249,38 +255,29 @@
   }
 
   .receipt-divider {
-    margin: 8px 0 !important;
-    border-color: #777 !important;
+    margin: 7px 0 !important;
+    border-color: #555 !important;
   }
 
-  .receipt-title {
-    color: #000 !important;
-    font-size: 12px !important;
+  .receipt-summary-row.is-total {
+    background: #eee !important;
+    border-color: #000 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .receipt-summary-row,
   .receipt-summary-row > span,
   .receipt-summary-row > strong {
     color: #000 !important;
-    font-size: 9px !important;
-  }
-
-  .receipt-summary-row.is-total,
-  .receipt-summary-row.is-total > strong {
-    font-size: 11px !important;
   }
 
   .receipt-item-information > strong,
   .receipt-item-subtotal {
     color: #000 !important;
-    font-size: 9px !important;
   }
 
-  .receipt-footer > strong {
-    color: #555 !important;
-    font-size: 12px !important;
-  }
-
+  .receipt-footer > strong,
   .receipt-footer > small {
     color: #000 !important;
   }
