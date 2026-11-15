@@ -1,5 +1,3 @@
-// Version: 2
-
 import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
@@ -20,15 +18,32 @@ const $ = (selector) => document.querySelector(selector);
 
 function initStoreProfileScroll() {
   const profile = $(".store-profile");
+  const header = $(".site-header");
 
-  if (!profile) return;
+  if (!profile || !header) return;
 
   const spacer = document.createElement("div");
   spacer.className = "store-profile-spacer";
-  profile.before(spacer);
+  profile.after(spacer);
 
-  let lastScrollY = window.scrollY;
+  let profileInitialTop = 0;
+  let headerHeight = 0;
   let compact = false;
+  let ticking = false;
+
+  const updateMeasurements = () => {
+    const scrollY = window.scrollY;
+
+    headerHeight = header.getBoundingClientRect().height;
+
+    profileInitialTop =
+      profile.getBoundingClientRect().top + scrollY;
+
+    document.documentElement.style.setProperty(
+      "--store-header-offset",
+      `${headerHeight}px`,
+    );
+  };
 
   const setCompact = (shouldCompact) => {
     if (compact === shouldCompact) return;
@@ -36,40 +51,47 @@ function initStoreProfileScroll() {
     compact = shouldCompact;
 
     if (compact) {
-      const styles = window.getComputedStyle(profile);
-      const verticalMargins =
-        (Number.parseFloat(styles.marginTop) || 0) +
-        (Number.parseFloat(styles.marginBottom) || 0);
-
-      spacer.style.height = `${Math.max(
-        0,
-        profile.offsetHeight + verticalMargins,
-      )}px`;
-
+      spacer.style.height = `${profile.offsetHeight}px`;
       profile.classList.add("is-compact");
       return;
     }
 
     profile.classList.remove("is-compact");
-    spacer.style.height = "0";
+    spacer.style.height = "0px";
   };
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      const currentScrollY = window.scrollY;
-      const scrollingDown = currentScrollY > lastScrollY;
+  const updateProfile = () => {
+    const scrollY = window.scrollY;
 
-      if (scrollingDown && currentScrollY > 120) {
-        setCompact(true);
-      } else if (!scrollingDown || currentScrollY <= 120) {
-        setCompact(false);
-      }
+    // Profil kembali normal ketika posisi awalnya
+    // sudah terlihat tepat di bawah header.
+    const compactThreshold = profileInitialTop - headerHeight;
 
-      lastScrollY = currentScrollY;
-    },
-    { passive: true },
-  );
+    setCompact(scrollY > compactThreshold);
+  };
+
+  const handleScroll = () => {
+    if (ticking) return;
+
+    ticking = true;
+
+    window.requestAnimationFrame(() => {
+      updateProfile();
+      ticking = false;
+    });
+  };
+
+  updateMeasurements();
+  updateProfile();
+
+  window.addEventListener("scroll", handleScroll, {
+    passive: true,
+  });
+
+  window.addEventListener("resize", () => {
+    updateMeasurements();
+    updateProfile();
+  });
 }
 
 /*
