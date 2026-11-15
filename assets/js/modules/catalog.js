@@ -124,47 +124,8 @@ export function createCatalog({
       allButton.type = "button";
     }
 
-    // Ikon grid empat kotak.
-    const icon = document.createElement("span");
-    icon.className = "category-all-icon";
-    icon.setAttribute("aria-hidden", "true");
-
-    const svg = document.createElementNS(svgNamespace, "svg");
-    svg.setAttribute("xmlns", svgNamespace);
-    svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("width", "20");
-    svg.setAttribute("height", "20");
-    svg.setAttribute("fill", "none");
-    svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "1.8");
-    svg.setAttribute("stroke-linecap", "round");
-    svg.setAttribute("stroke-linejoin", "round");
-    svg.setAttribute("focusable", "false");
-
-    const positions = [
-      [3.5, 3.5],
-      [13.5, 3.5],
-      [3.5, 13.5],
-      [13.5, 13.5],
-    ];
-
-    positions.forEach(([x, y]) => {
-      const rect = document.createElementNS(
-        svgNamespace,
-        "rect",
-      );
-
-      rect.setAttribute("x", String(x));
-      rect.setAttribute("y", String(y));
-      rect.setAttribute("width", "7");
-      rect.setAttribute("height", "7");
-      rect.setAttribute("rx", "1.5");
-
-      svg.appendChild(rect);
-    });
-
-    icon.appendChild(svg);
-    allButton.appendChild(icon);
+    // Tombol Semua menggunakan teks.
+    allButton.textContent = "Semua";
 
     allButton.classList.toggle(
       "active",
