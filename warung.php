@@ -185,6 +185,11 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                     <?= e($storeName) ?>
                 </h1>
             </div>
+
+            <span class="store-profile-status store-status <?= $isStoreOpen ? 'is-open' : 'is-closed' ?>">
+                <span class="store-status-dot"></span>
+                <?= $isStoreOpen ? 'Buka' : 'Tutup' ?>
+            </span>
         </section>
 
         <!-- Informasi warung -->
@@ -198,17 +203,6 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                     <span class="store-detail-label">Owner</span>
                     <p>
                         <?= e($storeOwner !== '' ? $storeOwner : 'Belum diisi') ?>
-                    </p>
-                </div>
-
-                <!-- Status -->
-                <div class="store-detail-item">
-                    <span class="store-detail-label">Status</span>
-                    <p>
-                        <span class="store-status <?= $isStoreOpen ? 'is-open' : 'is-closed' ?>">
-                            <span class="store-status-dot"></span>
-                            <?= $isStoreOpen ? 'Buka' : 'Tutup' ?>
-                        </span>
                     </p>
                 </div>
 

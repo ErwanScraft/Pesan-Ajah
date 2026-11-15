@@ -18,6 +18,60 @@ initErrorLogger();
 
 const $ = (selector) => document.querySelector(selector);
 
+function initStoreProfileScroll() {
+  const profile = $(".store-profile");
+
+  if (!profile) return;
+
+  const spacer = document.createElement("div");
+  spacer.className = "store-profile-spacer";
+  profile.before(spacer);
+
+  let lastScrollY = window.scrollY;
+  let compact = false;
+
+  const setCompact = (shouldCompact) => {
+    if (compact === shouldCompact) return;
+
+    compact = shouldCompact;
+
+    if (compact) {
+      const styles = window.getComputedStyle(profile);
+      const verticalMargins =
+        (Number.parseFloat(styles.marginTop) || 0) +
+        (Number.parseFloat(styles.marginBottom) || 0);
+
+      spacer.style.height = `${Math.max(
+        0,
+        profile.offsetHeight + verticalMargins,
+      )}px`;
+
+      profile.classList.add("is-compact");
+      return;
+    }
+
+    profile.classList.remove("is-compact");
+    spacer.style.height = "0";
+  };
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > lastScrollY;
+
+      if (scrollingDown && currentScrollY > 120) {
+        setCompact(true);
+      } else if (!scrollingDown || currentScrollY <= 120) {
+        setCompact(false);
+      }
+
+      lastScrollY = currentScrollY;
+    },
+    { passive: true },
+  );
+}
+
 /*
 |--------------------------------------------------------------------------
 | STATUS SKELETON HOMEPAGE
@@ -195,13 +249,8 @@ if (currentYear) {
 |--------------------------------------------------------------------------
 */
 
-/*
-|--------------------------------------------------------------------------
-| Inisialisasi
-|--------------------------------------------------------------------------
-*/
-
 initBuyerMenu();
+initStoreProfileScroll();
 
 catalog = createCatalog({
   products,
