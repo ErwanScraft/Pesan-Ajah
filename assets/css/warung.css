@@ -151,36 +151,48 @@
 }
 
 .store-details > h2 {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     color: var(--store-text);
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 750;
+    line-height: 1.4;
 }
 
+/* Hapus dekorasi garis di samping judul */
 .store-details > h2::before {
-    width: 4px;
-    height: 18px;
-    background: var(--store-brand);
-    border-radius: 4px;
-    content: "";
+    content: none;
 }
 
 .store-detail-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
     min-width: 0;
 }
 
 .store-detail-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 0;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 0;
     border: none;
+}
+
+.store-detail-label {
+    padding: 0;
+    color: var(--store-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.store-detail-item p {
+    margin: 0;
+    color: var(--store-text);
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .store-detail-item:first-child {
@@ -213,22 +225,6 @@
     stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
-}
-
-.store-detail-label {
-    padding-top: 2px;
-    color: var(--store-muted);
-    font-size: 0.82rem;
-    font-weight: 700;
-}
-
-.store-detail-content p,
-.store-detail-item p {
-    margin: 0;
-    color: var(--store-text);
-    font-size: 0.86rem;
-    line-height: 1.6;
-    overflow-wrap: anywhere;
 }
 
 .store-address-link {
@@ -793,9 +789,13 @@
     }
 
     .store-detail-item {
-        grid-template-columns: 65px minmax(0, 1fr);
-        gap: 9px;
-        padding: 12px 0;
+        grid-template-columns: 62px minmax(0, 1fr);
+        gap: 10px;
+        padding: 0;
+    }
+    
+    .store-detail-list {
+        gap: 12px;
     }
 
     .store-detail-label {
@@ -804,11 +804,6 @@
 
     .store-detail-item p {
         font-size: 0.8rem;
-    }
-
-    .store-detail-list {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 13px;
     }
 
     .store-address-row {
