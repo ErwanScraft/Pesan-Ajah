@@ -153,7 +153,8 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
 
     <main class="store-page">
 
-        <!-- Banner dan identitas warung -->
+
+        <!-- Banner warung -->
         <section class="store-banner" aria-label="Banner warung">
             <img
                 src="/assets/images/banner_1.webp"
@@ -162,32 +163,93 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                 height="900"
                 fetchpriority="high"
             >
-        
-            <div class="store-identity" aria-labelledby="store-profile-name">
-                <div class="store-identity-logo">
-                    <?php if ($storeIconUrl !== null): ?>
-                        <img
-                            src="<?= e($storeIconUrl) ?>"
-                            alt="Logo <?= e($storeName) ?>"
-                            width="88"
-                            height="88"
-                        >
-                    <?php else: ?>
-                        <span aria-hidden="true"><?= e($storeInitial) ?></span>
-                    <?php endif; ?>
-                </div>
-        
-                <div class="store-identity-text">
-                    <h1 id="store-profile-name">
-                        <?= e($storeName) ?>
-                    </h1>
-        
-                    <?php if ($storeOwner !== ''): ?>
-                        <p><?= e($storeOwner) ?></p>
-                    <?php endif; ?>
-                </div>
+        </section>
+
+        <!-- Profil warung -->
+        <section class="store-profile" aria-labelledby="store-profile-name">
+            <div class="store-identity-logo">
+                <?php if ($storeIconUrl !== null): ?>
+                    <img
+                        src="<?= e($storeIconUrl) ?>"
+                        alt="Logo <?= e($storeName) ?>"
+                        width="100"
+                        height="100"
+                    >
+                <?php else: ?>
+                    <span aria-hidden="true"><?= e($storeInitial) ?></span>
+                <?php endif; ?>
+            </div>
+
+            <div class="store-identity-text">
+                <h1 id="store-profile-name">
+                    <?= e($storeName) ?>
+                </h1>
             </div>
         </section>
+
+        <!-- Informasi warung -->
+        <section class="store-details" aria-labelledby="store-details-title">
+            <h2 id="store-details-title">Informasi</h2>
+
+            <div class="store-detail-list">
+
+                <!-- Owner -->
+                <div class="store-detail-item">
+                    <span class="store-detail-label">Owner</span>
+                    <p>
+                        <?= e($storeOwner !== '' ? $storeOwner : 'Belum diisi') ?>
+                    </p>
+                </div>
+
+                <!-- Status -->
+                <div class="store-detail-item">
+                    <span class="store-detail-label">Status</span>
+                    <p>
+                        <span class="store-status <?= $isStoreOpen ? 'is-open' : 'is-closed' ?>">
+                            <span class="store-status-dot"></span>
+                            <?= $isStoreOpen ? 'Buka' : 'Tutup' ?>
+                        </span>
+                    </p>
+                </div>
+
+                <!-- Alamat -->
+                <div class="store-detail-item">
+                    <span class="store-detail-label">Alamat</span>
+                    <p>
+                        <?php if ($storeMapsUrl !== null): ?>
+                            <a
+                                class="store-address-link"
+                                href="<?= e($storeMapsUrl) ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Lihat alamat <?= e($storeName) ?> di Google Maps"
+                            >
+                                <?= e($storeAddress) ?>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M7 17 17 7M7 7h10v10"></path>
+                                </svg>
+                            </a>
+                        <?php else: ?>
+                            Alamat belum diisi
+                        <?php endif; ?>
+                    </p>
+                </div>
+
+                <?php if ($hasFreeDelivery): ?>
+                    <div class="store-detail-delivery">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 7h11v11H3z"></path>
+                            <path d="M14 11h4l3 3v4h-7z"></path>
+                            <circle cx="7.5" cy="18" r="2"></circle>
+                            <circle cx="17.5" cy="18" r="2"></circle>
+                        </svg>
+                        <span>Gratis ongkir dari warung</span>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </section>
+
 
         <!-- Detail: hanya status dan alamat -->
         <section class="store-details" aria-labelledby="store-details-title">
