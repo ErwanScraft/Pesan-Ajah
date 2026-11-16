@@ -163,6 +163,8 @@ let orders = [];
 let orderFilter = "all";
 let orderStore = null;
 let receiptModulePromise = null;
+let preparedReceiptFiles = new Map();
+let sharePreparedReceipt = null;
 
 async function loadOrders() {
   const refreshButton = $("#orders-refresh");
@@ -194,11 +196,40 @@ async function loadOrders() {
   }
 }
 
-
-async function printBuyerOrder(order) {
+async function printBuyerOrder(order, button) {
   if (!orderStore) {
     notify("Informasi warung tidak tersedia.", "error");
     return;
+  }
+
+  const orderKey = String(order.id ?? order.order_number);
+  const preparedFile = preparedReceiptFiles.get(orderKey);
+
+  // Tahap kedua: langsung buka aplikasi berbagi.
+  if (preparedFile && sharePreparedReceipt) {
+    try {
+      const sharePromise = sharePreparedReceipt(preparedFile);
+
+      if (button) button.disabled = true;
+
+      await sharePromise;
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        notify(
+          error.message || "Struk gagal dibagikan.",
+          "error",
+        );
+      }
+    } finally {
+      if (button) button.disabled = false;
+    }
+
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Menyiapkan Struk...";
   }
 
   try {
@@ -211,9 +242,11 @@ async function printBuyerOrder(order) {
 
     const [
       { renderReceipt },
-      { shareReceiptImage },
+      printer,
     ] = await receiptModulePromise;
-    
+
+    sharePreparedReceipt = printer.sharePreparedReceipt;
+
     const receiptRoot = $("#shared-receipt-root");
 
     if (!receiptRoot) {
@@ -239,7 +272,6 @@ async function printBuyerOrder(order) {
         buyer_note: order.buyer_note,
         delivery_accepted_at: order.delivery_accepted_at,
         driver_name: order.driver_name,
-      
         subtotal: order.subtotal,
         delivery_fee: order.delivery_fee,
       },
@@ -258,23 +290,31 @@ async function printBuyerOrder(order) {
       resolveImageUrl,
     });
 
-    await shareReceiptImage({
+    const file = await printer.prepareReceiptFile({
       fileName: `struk-${order.order_number || order.id}.png`,
     });
 
-  } catch (error) {
-    if (error.name === "AbortError") {
-      return;
+    preparedReceiptFiles.set(orderKey, file);
+
+    if (button) {
+      button.textContent = "Bagikan Struk";
     }
-  
+
+    notify(
+      "Struk siap. Tekan Bagikan Struk untuk membuka aplikasi printer.",
+      "success",
+    );
+  } catch (error) {
     console.error("[Pesan Ajah Receipt]", error);
-  
+
     notify(
       error instanceof Error
         ? error.message
-        : "Struk pesanan gagal dicetak.",
+        : "Struk gagal disiapkan.",
       "error",
     );
+  } finally {
+    if (button) button.disabled = false;
   }
 }
 
@@ -650,10 +690,14 @@ function renderOrders() {
 
     detailButton.setAttribute("aria-expanded", "false");
     
+    const orderKey = String(order.id ?? order.order_number);
+    
     const printButton = createButton(
-      "Cetak Struk",
+      preparedReceiptFiles.has(orderKey)
+        ? "Bagikan Struk"
+        : "Cetak Struk",
       async () => {
-        await printBuyerOrder(order);
+        await printBuyerOrder(order, printButton);
       },
       "button button-outline order-print-button",
     );

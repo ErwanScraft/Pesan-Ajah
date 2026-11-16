@@ -200,33 +200,40 @@ async function createReceiptPng(options = {}) {
   return blob;
 }
 
-export async function shareReceiptImage(options = {}) {
+export async function prepareReceiptFile(options = {}) {
+  const blob = await createReceiptPng(options);
+
+  return new File(
+    [blob],
+    options.fileName || "struk-pesan-ajah.png",
+    { type: "image/png" },
+  );
+}
+
+export function sharePreparedReceipt(file) {
   if (!navigator.share || !navigator.canShare) {
     throw new Error(
-      "Browser tidak mendukung berbagi gambar. Gunakan Chrome Android versi terbaru.",
+      "Browser tidak mendukung berbagi gambar.",
     );
   }
 
-  const blob = await createReceiptPng(options);
-
-  const file = new File(
-    [blob],
-    options.fileName || "struk-pesan-ajah.png",
-    {
-      type: "image/png",
-    },
-  );
-
-  if (!navigator.canShare({ files: [file] })) {
+  if (!(file instanceof File) || !navigator.canShare({ files: [file] })) {
     throw new Error(
       "Browser tidak mendukung berbagi file PNG.",
     );
   }
 
-  await navigator.share({
+  // Harus dipanggil langsung dari interaksi tombol.
+  return navigator.share({
     files: [file],
     title: "Cetak Struk Pesan Ajah",
   });
+}
+
+export async function shareReceiptImage(options = {}) {
+  const file = await prepareReceiptFile(options);
+
+  return sharePreparedReceipt(file);
 }
 
 // Menjaga kompatibilitas dengan pemanggil lama.
