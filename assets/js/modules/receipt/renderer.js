@@ -179,7 +179,7 @@ function renderOrderInformation(container, data) {
 function renderItems(container, items) {
   const list = createElement("div", "receipt-items");
 
-  items.forEach((item) => {
+  items.forEach((item, index) => {
     const row = createElement("div", "receipt-item");
 
     const information = createElement(
@@ -187,16 +187,16 @@ function renderItems(container, items) {
       "receipt-item-information",
     );
 
-    const name = item.variant
-      ? `${item.name} (${item.variant})`
-      : item.name;
-
     information.append(
-      createElement("strong", "", name),
+      createElement(
+        "strong",
+        "receipt-item-name",
+        `${index + 1}. ${item.name}`,
+      ),
       createElement(
         "small",
         "",
-        `${item.quantity} × ${formatReceiptCurrency(item.price)}`,
+        `${item.quantity} x ${formatReceiptCurrency(item.price)}`,
       ),
     );
 
@@ -215,44 +215,34 @@ function renderItems(container, items) {
   container.append(list);
 }
 
-
 function renderPayment(container, data) {
   const summary = createElement("div", "receipt-summary");
 
   if (data.type === "order") {
     const order = data.order;
 
-    const subtotal = Number(order.subtotal) || 0;
-    const deliveryFee = Number(order.delivery_fee) || 0;
-
     addSummary(
       summary,
-      "Pesanan",
-      formatReceiptCurrency(subtotal),
-    );
-
-    addSummary(
-      summary,
-      "Bonus",
-      "-",
+      "Sub Total",
+      formatReceiptCurrency(order.subtotal),
     );
 
     addSummary(
       summary,
       "Ongkir",
-      formatReceiptCurrency(deliveryFee),
+      formatReceiptCurrency(order.delivery_fee),
     );
 
     addSummary(
       summary,
-      "Jumlah",
+      "Total",
       formatReceiptCurrency(data.total),
       "is-total",
     );
   } else {
     addSummary(
       summary,
-      "Jumlah Harga Pesanan",
+      "Total",
       formatReceiptCurrency(data.total),
       "is-total",
     );
@@ -289,8 +279,6 @@ function renderPayment(container, data) {
 
   container.append(summary);
 }
-
-
 
 function renderFooter(container) {
   const footer = createElement("div", "receipt-footer");
