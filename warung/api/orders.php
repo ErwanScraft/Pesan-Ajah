@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/app/warung_api.php';
+require_once dirname(__DIR__, 2) . '/app/driver_auth.php';
 
 $store = api_store_owner();
 $storeId = (int) $store['store_id'];
@@ -23,9 +24,14 @@ if (request_method() === 'GET') {
             o.total,
             o.status,
             o.created_at,
-            o.updated_at
+            o.updated_at,
+            da.accepted_at AS delivery_accepted_at,
+            da.driver_username
 
         FROM orders o
+
+        LEFT JOIN delivery_assignments da
+            ON da.order_id = o.id
 
         WHERE o.store_id = :store_id
           AND o.status <> 'draft'
@@ -59,7 +65,15 @@ if (request_method() === 'GET') {
         ORDER BY oi.id ASC'
     );
 
+    $driverConfig = driver_credentials();
+    
     foreach ($orders as &$order) {
+        $order['driver_name'] = !empty($order['driver_username'])
+            ? $driverConfig['name']
+            : '';
+    
+        unset($order['driver_username']);
+    
         $itemStmt->execute([
             'order_id' => (int) $order['id'],
         ]);

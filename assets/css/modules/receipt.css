@@ -80,6 +80,47 @@
   gap: 7px;
 }
 
+.receipt-information .receipt-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.receipt-information .receipt-summary-row > :last-child {
+  margin-left: auto;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.receipt-order-number {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.receipt-delivery-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.receipt-delivery-meta > :last-child {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.receipt-delivery-meta > strong {
+  font-weight: 800;
+}
+
 .receipt-section-title {
   margin-bottom: 2px;
   font-size: 10px;

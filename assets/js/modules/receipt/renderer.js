@@ -77,60 +77,99 @@ function renderStore(container, data, resolveImageUrl) {
   container.append(brand);
 }
 
-function renderOrderInformation(container, data) {
-  const order = data.order;
+function formatReceiptDateLine(value) {
+  if (!value) return "-";
 
-  const section = createElement("div", "receipt-information");
+  const date = new Date(String(value).replace(" ", "T"));
 
-  const heading = createElement(
-    "strong",
-    "receipt-section-title",
-    data.type === "cashier"
-      ? "INFORMASI TRANSAKSI"
-      : "INFORMASI PESANAN",
+  if (Number.isNaN(date.getTime())) return "-";
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
   );
 
-  section.append(heading);
+  return `${values.year} - ${values.month} - ${values.day}`;
+}
 
-  if (order.number || order.order_number) {
-    addSummary(
-      section,
-      "Nomor Pesanan",
-      order.number || order.order_number,
-    );
-  }
+function formatReceiptTimeLine(value) {
+  if (!value) return "-";
 
-  if (order.buyer_name) {
-    addSummary(section, "Nama Pembeli", order.buyer_name);
-  }
+  const date = new Date(String(value).replace(" ", "T"));
 
-  if (order.delivery_method) {
-    addSummary(
-      section,
-      "Metode Pengiriman",
-      String(order.delivery_method).toLowerCase() === "pickup"
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  })
+    .format(date)
+    .replace(/:/g, ".");
+}
+
+function renderOrderInformation(container, data) {
+  const order = data.order;
+  const section = createElement("div", "receipt-information");
+  const deliveryDate = order.delivery_accepted_at || data.createdAt;
+
+  const dateRow = createElement("div", "receipt-delivery-meta");
+
+  dateRow.append(
+    createElement(
+      "strong",
+      "",
+      formatReceiptDateLine(deliveryDate),
+    ),
+    createElement(
+      "strong",
+      "",
+      String(order.delivery_method || "").toLowerCase() === "pickup"
         ? "Ambil Sendiri"
         : "Delivery",
-    );
-  }
+    ),
+  );
 
+  const driverRow = createElement("div", "receipt-delivery-meta");
+
+  driverRow.append(
+    createElement(
+      "span",
+      "",
+      formatReceiptTimeLine(deliveryDate),
+    ),
+    createElement(
+      "span",
+      "",
+      order.driver_name || "-",
+    ),
+  );
+
+  section.append(
+    dateRow,
+    driverRow,
+    createDivider(),
+  );
+
+  if (order.buyer_name) {
+    addSummary(section, "Customer", order.buyer_name);
+  }
+  
   if (order.delivery_address) {
     addSummary(section, "Alamat", order.delivery_address);
   }
-
+  
   if (order.buyer_note || order.note) {
     addSummary(
       section,
       "Catatan",
       order.buyer_note || order.note,
-    );
-  }
-
-  if (order.payment_method) {
-    addSummary(
-      section,
-      "Metode Pembayaran",
-      order.payment_method,
     );
   }
 
@@ -302,37 +341,52 @@ export function renderReceipt(
   container.dataset.receiptType = data.type;
 
   renderStore(container, data, options.resolveImageUrl);
-
-  container.append(createDivider());
-
-  container.append(
-    createElement(
-      "strong",
-      "receipt-title",
-      "NOTA PESANAN",
-    ),
-    createElement(
-      "small",
-      "receipt-date",
-      formatReceiptDate(data.createdAt),
-    ),
-  );
-
-  container.append(createDivider());
-
+  
   if (data.type === "order") {
+    const orderNumber = data.order.number || data.order.order_number;
+  
+    if (orderNumber) {
+      container.append(
+        createElement(
+          "strong",
+          "receipt-order-number",
+          orderNumber,
+        ),
+      );
+    }
+  
+    container.append(createDivider());
+  
     renderOrderInformation(container, data);
+  
+    container.append(createDivider());
+  } else {
+    container.append(createDivider());
+  
+    container.append(
+      createElement(
+        "strong",
+        "receipt-title",
+        "INFORMASI TRANSAKSI",
+      ),
+      createElement(
+        "small",
+        "receipt-date",
+        formatReceiptDate(data.createdAt),
+      ),
+    );
+  
     container.append(createDivider());
   }
-
+  
   renderItems(container, data.items);
-
+  
   container.append(createDivider());
-
+  
   renderPayment(container, data);
-
+  
   container.append(createDivider());
-
+  
   renderFooter(container);
 
   return data;

@@ -237,6 +237,8 @@ async function printBuyerOrder(order) {
         delivery_method: order.delivery_method,
         delivery_address: order.delivery_address,
         buyer_note: order.buyer_note,
+        delivery_accepted_at: order.delivery_accepted_at,
+        driver_name: order.driver_name,
       
         subtotal: order.subtotal,
         delivery_fee: order.delivery_fee,
