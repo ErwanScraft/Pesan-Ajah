@@ -10,33 +10,33 @@
   width: 100%;
   max-width: 420px;
   margin-inline: auto;
-  padding: 14px 12px;
+  padding: 10px 9px;
   box-sizing: border-box;
   background: #fff;
   color: #171717;
   font-family: Arial, sans-serif;
   font-size: 10px;
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 .receipt-brand,
 .receipt-footer {
   display: grid;
   justify-items: center;
-  gap: 3px;
+  gap: 2px;
   text-align: center;
 }
 
 .receipt-brand img {
-  width: 42px;
-  height: 42px;
-  margin-bottom: 4px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 2px;
   border-radius: 6px;
   object-fit: contain;
 }
 
 .receipt-store-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1.3;
   overflow-wrap: anywhere;
@@ -46,14 +46,14 @@
   margin: 0;
   color: #444;
   font-size: 9px;
-  line-height: 1.4;
+  line-height: 1.35;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
 .receipt-divider {
   width: 100%;
-  margin: 9px 0;
+  margin: 6px 0;
   border-top: 1px dashed #777;
 }
 
@@ -67,7 +67,7 @@
 
 .receipt-date {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
   color: #555;
   font-size: 9px;
   text-align: center;
@@ -77,14 +77,16 @@
 .receipt-items,
 .receipt-summary {
   display: grid;
-  gap: 7px;
+  gap: 5px;
 }
+
+/* Informasi pesanan */
 
 .receipt-information .receipt-summary-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
@@ -96,7 +98,7 @@
 
 .receipt-order-number {
   display: block;
-  margin-top: 7px;
+  margin-top: 5px;
   font-size: 12px;
   font-weight: 800;
   text-align: center;
@@ -107,9 +109,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   font-size: 9px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .receipt-delivery-meta > :last-child {
@@ -128,13 +130,63 @@
   letter-spacing: .3px;
 }
 
+/* Item pesanan */
+
+.receipt-items {
+  display: grid;
+  gap: 7px;
+}
+
+.receipt-item {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  break-inside: avoid;
+}
+
+.receipt-item-information {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.receipt-item-name,
+.receipt-item-information > strong {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.receipt-item-information > small {
+  color: #444;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.receipt-item-subtotal {
+  flex: 0 0 auto;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Ringkasan pembayaran */
+
+.receipt-summary {
+  display: grid;
+  gap: 4px;
+}
+
 .receipt-summary-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   font-size: 9px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .receipt-summary-row > span {
@@ -150,11 +202,11 @@
 }
 
 .receipt-summary-row.is-total {
-  padding: 9px 7px;
+  padding: 6px 0;
   border-top: 1px solid #222;
   border-bottom: 1px solid #222;
-  background: #f2f2f2;
-  font-size: 12px;
+  background: transparent;
+  font-size: 11px;
   font-weight: 900;
 }
 
@@ -167,92 +219,12 @@
   font-weight: 900;
 }
 
-.receipt-items {
-  display: grid;
-  gap: 9px;
-}
-
-.receipt-item {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 8px;
-  break-inside: avoid;
-}
-
-.receipt-item-information {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.receipt-item-name {
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.receipt-item-information > strong {
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.receipt-item-information > small {
-  color: #444;
-  font-size: 9px;
-  line-height: 1.4;
-}
-
-.receipt-item-subtotal {
-  flex: 0 0 auto;
-  font-size: 9px;
-  font-weight: 700;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.receipt-summary {
-  display: grid;
-  gap: 6px;
-}
-
-.receipt-summary-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 9px;
-  line-height: 1.4;
-}
-
-.receipt-summary-row > span {
-  flex: 1;
-  min-width: 0;
-  color: #444;
-}
-
-.receipt-summary-row > strong {
-  max-width: 65%;
-  text-align: right;
-  overflow-wrap: anywhere;
-}
-
-.receipt-summary-row.is-total {
-  padding: 8px 0;
-  border-top: 1px solid #222;
-  border-bottom: 1px solid #222;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 900;
-}
+/* Footer */
 
 .receipt-footer {
-  gap: 4px;
-  margin-top: 5px;
-  padding-bottom: 5px;
+  gap: 3px;
+  margin-top: 3px;
+  padding-bottom: 2px;
 }
 
 .receipt-footer > strong {
@@ -265,7 +237,7 @@
 .receipt-footer > small {
   color: #555;
   font-size: 8px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 /* =========================================================
@@ -340,7 +312,7 @@
   }
 
   .receipt-divider {
-    margin: 7px 0 !important;
+    margin: 5px 0 !important;
     border-color: #555 !important;
   }
 
@@ -367,3 +339,4 @@
     color: #000 !important;
   }
 }
+
