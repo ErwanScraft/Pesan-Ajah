@@ -237,50 +237,77 @@ try {
 
     $orders = $stmt->fetchAll();
 
-    $itemStmt = $db->prepare(
-        'SELECT
-            oi.id,
-            oi.product_id,
-            oi.product_name,
-            oi.product_variant,
-            oi.quantity,
-            oi.price,
-            oi.subtotal,
-            p.image AS image
+    $orderIds = array_column($orders, 'id');
     
-        FROM order_items oi
+    $itemsByOrder = [];
     
-        LEFT JOIN products p
-            ON p.id = oi.product_id
+    if ($orderIds) {
+        $placeholders = [];
+        $itemParams = [];
     
-        WHERE oi.order_id = :order_id
+        foreach ($orderIds as $index => $orderId) {
+            $key = ':order_' . $index;
     
-        ORDER BY oi.id ASC'
-    );
-
+            $placeholders[] = $key;
+            $itemParams[$key] = (int) $orderId;
+        }
+    
+        $itemStmt = $db->prepare(
+            'SELECT
+                oi.order_id,
+                oi.id,
+                oi.product_id,
+                oi.product_name,
+                oi.product_variant,
+                oi.quantity,
+                oi.price,
+                oi.subtotal,
+                p.image AS image
+    
+             FROM order_items oi
+    
+             LEFT JOIN products p
+                ON p.id = oi.product_id
+    
+             WHERE oi.order_id IN (
+                ' . implode(', ', $placeholders) . '
+             )
+    
+             ORDER BY oi.order_id ASC, oi.id ASC'
+        );
+    
+        $itemStmt->execute($itemParams);
+    
+        foreach ($itemStmt->fetchAll() as $item) {
+            $orderId = (int) $item['order_id'];
+    
+            unset($item['order_id']);
+    
+            $itemsByOrder[$orderId][] = $item;
+        }
+    }
+    
     foreach ($orders as &$order) {
-        $itemStmt->execute([
-            'order_id' => (int) $order['id'],
-        ]);
-
-        $order['items'] = $itemStmt->fetchAll();
-
-        $order['id'] = (int) $order['id'];
+        $orderId = (int) $order['id'];
+    
+        $order['items'] = $itemsByOrder[$orderId] ?? [];
+    
+        $order['id'] = $orderId;
         $order['delivery_fee'] = (float) $order['delivery_fee'];
         $order['subtotal'] = (float) $order['subtotal'];
         $order['total'] = (float) $order['total'];
-
+    
         if ($order['delivery_latitude'] !== null) {
             $order['delivery_latitude'] =
                 (float) $order['delivery_latitude'];
         }
-
+    
         if ($order['delivery_longitude'] !== null) {
             $order['delivery_longitude'] =
                 (float) $order['delivery_longitude'];
         }
     }
-
+    
     unset($order);
 
     buyer_orders_json([

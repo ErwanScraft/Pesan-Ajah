@@ -48,41 +48,70 @@ if (request_method() === 'GET') {
 
     $orders = $stmt->fetchAll();
 
-    $itemStmt = database()->prepare(
-        'SELECT
-            oi.product_id,
-            oi.product_name,
-            oi.product_variant,
-            oi.quantity,
-            oi.price,
-            oi.subtotal,
-            p.image
+    $orderIds = array_column($orders, 'id');
     
-        FROM order_items oi
+    $itemsByOrder = [];
     
-        LEFT JOIN products p
-            ON p.id = oi.product_id
+    if ($orderIds) {
+        $placeholders = [];
+        $params = [];
     
-        WHERE oi.order_id = :order_id
+        foreach ($orderIds as $index => $orderId) {
+            $key = ':order_' . $index;
     
-        ORDER BY oi.id ASC'
-    );
-
+            $placeholders[] = $key;
+            $params[$key] = (int) $orderId;
+        }
+    
+        $itemStmt = database()->prepare(
+            'SELECT
+                oi.order_id,
+                oi.product_id,
+                oi.product_name,
+                oi.product_variant,
+                oi.quantity,
+                oi.price,
+                oi.subtotal,
+                p.image
+    
+             FROM order_items oi
+    
+             LEFT JOIN products p
+                ON p.id = oi.product_id
+    
+             WHERE oi.order_id IN (
+                ' . implode(', ', $placeholders) . '
+             )
+    
+             ORDER BY oi.order_id ASC, oi.id ASC'
+        );
+    
+        $itemStmt->execute($params);
+    
+        foreach ($itemStmt->fetchAll() as $item) {
+            $orderId = (int) $item['order_id'];
+    
+            unset($item['order_id']);
+    
+            $itemsByOrder[$orderId][] = $item;
+        }
+    }
+    
     foreach ($orders as &$order) {
-        $order['driver_name'] = (string) ($order['driver_name'] ?? '');
-
-        $itemStmt->execute([
-            'order_id' => (int) $order['id'],
-        ]);
-
-        $order['items'] = $itemStmt->fetchAll();
-
-        $order['id'] = (int) $order['id'];
+        $orderId = (int) $order['id'];
+    
+        $order['driver_name'] = (string) (
+            $order['driver_name'] ?? ''
+        );
+    
+        $order['items'] = $itemsByOrder[$orderId] ?? [];
+    
+        $order['id'] = $orderId;
         $order['delivery_fee'] = (float) $order['delivery_fee'];
         $order['subtotal'] = (float) $order['subtotal'];
         $order['total'] = (float) $order['total'];
     }
-
+    
     unset($order);
 
     api_json([

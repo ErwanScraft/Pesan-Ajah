@@ -43,32 +43,32 @@ if (request_is_post()) {
             $stmt->execute(['id' => $orderId]);
             $order = $stmt->fetch();
             
-            if (!delivery_is_available($db)) {
-                throw new RuntimeException(
-                    'Layanan Delivery sedang offline.'
-                );
-            }
-            
             $driverStatus = $db->prepare(
-                'SELECT is_active, is_online
-                 FROM drivers
-                 WHERE id = :id
+                'SELECT
+                    d.is_active,
+                    d.is_online,
+                    ds.is_enabled AS delivery_enabled
+                 FROM drivers d
+                 CROSS JOIN delivery_settings ds
+                 WHERE d.id = :driver_id
+                   AND ds.id = 1
                  LIMIT 1'
             );
             
             $driverStatus->execute([
-                'id' => $driver['id'],
+                'driver_id' => (int) $driver['id'],
             ]);
             
             $currentDriver = $driverStatus->fetch();
             
             if (
                 !$currentDriver
+                || !(bool) $currentDriver['delivery_enabled']
                 || !(bool) $currentDriver['is_active']
                 || !(bool) $currentDriver['is_online']
             ) {
                 throw new RuntimeException(
-                    'Aktifkan status driver terlebih dahulu untuk mengambil pesanan.'
+                    'Layanan Delivery offline atau status driver tidak aktif.'
                 );
             }
 
