@@ -7,6 +7,7 @@ import { initBuyerMenu } from "./modules/buyer-menu.js";
 
 import { initIndexPage } from "./pages/index/main.js";
 import { initCartPage } from "./pages/cart/main.js";
+import { initStoreReview } from "./pages/store-review/main.js";
 
 import {
   initErrorLogger,
@@ -314,6 +315,7 @@ if (currentYear) {
 
 initBuyerMenu();
 initStoreProfileScroll();
+initStoreReview({ showToast });
 
 catalog = createCatalog({
   products,

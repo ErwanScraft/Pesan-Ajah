@@ -283,12 +283,16 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
         </section>
         
         <div class="store-review-action">
-            <a href="#store-reviews" class="store-review-button">
+            <button
+                type="button"
+                class="store-review-button"
+                id="store-review-open"
+            >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>
                 </svg>
                 Review
-            </a>
+            </button>
         </div>
 
         <!-- Informasi warung -->
@@ -358,6 +362,51 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
             </div>
         </section>
         
+        <!-- Katalog produk -->
+        <section class="store-catalog" id="products" aria-labelledby="store-products-title">
+
+            <div class="store-catalog-heading">
+                <h2 id="store-products-title">Produk</h2>
+            </div>
+
+            <!-- Pencarian -->
+            <form class="store-search-form" id="search-form" role="search">
+                <input
+                    id="search-input"
+                    type="search"
+                    placeholder="Cari produk di warung ini..."
+                    aria-label="Cari produk di warung ini"
+                >
+                <button type="submit">Cari</button>
+            </form>
+
+            <!-- Kategori dibuat otomatis oleh catalog.js -->
+            <nav
+                class="store-category-nav"
+                id="category-list"
+                aria-label="Kategori produk"
+                data-category-order="<?= e(json_encode(
+                    $productCategories,
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_HEX_APOS
+                    | JSON_HEX_QUOT
+                )) ?>"
+            ></nav>
+
+            <!-- catalog.js mengelompokkan produk di sini -->
+            <div class="store-products" id="product-grid" aria-live="polite"></div>
+
+            <div class="store-empty" id="empty-state" hidden>
+                <h3>Produk tidak ditemukan</h3>
+                <p>Coba kata kunci lain atau pilih kategori berbeda.</p>
+
+                <button class="button button-outline" id="reset-search" type="button">
+                    Lihat semua produk
+                </button>
+            </div>
+
+        </section>
+        
         <!-- Review warung -->
         <section
             class="store-reviews"
@@ -407,52 +456,101 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                 </div>
             <?php endif; ?>
         </section>
-
-        <!-- Katalog produk -->
-        <section class="store-catalog" id="products" aria-labelledby="store-products-title">
-
-            <div class="store-catalog-heading">
-                <h2 id="store-products-title">Produk</h2>
-            </div>
-
-            <!-- Pencarian -->
-            <form class="store-search-form" id="search-form" role="search">
-                <input
-                    id="search-input"
-                    type="search"
-                    placeholder="Cari produk di warung ini..."
-                    aria-label="Cari produk di warung ini"
-                >
-                <button type="submit">Cari</button>
-            </form>
-
-            <!-- Kategori dibuat otomatis oleh catalog.js -->
-            <nav
-                class="store-category-nav"
-                id="category-list"
-                aria-label="Kategori produk"
-                data-category-order="<?= e(json_encode(
-                    $productCategories,
-                    JSON_UNESCAPED_UNICODE
-                    | JSON_HEX_APOS
-                    | JSON_HEX_QUOT
-                )) ?>"
-            ></nav>
-
-            <!-- catalog.js mengelompokkan produk di sini -->
-            <div class="store-products" id="product-grid" aria-live="polite"></div>
-
-            <div class="store-empty" id="empty-state" hidden>
-                <h3>Produk tidak ditemukan</h3>
-                <p>Coba kata kunci lain atau pilih kategori berbeda.</p>
-
-                <button class="button button-outline" id="reset-search" type="button">
-                    Lihat semua produk
-                </button>
-            </div>
-
-        </section>
     </main>
+    
+    <div
+        class="store-review-modal"
+        id="store-review-modal"
+        hidden
+        aria-hidden="true"
+    >
+        <div class="store-review-modal-backdrop" data-review-close></div>
+    
+        <section
+            class="store-review-modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="store-review-modal-title"
+        >
+            <div class="store-review-modal-heading">
+                <div>
+                    <h2 id="store-review-modal-title">Review Warung</h2>
+                    <p>Bagikan pengalaman belanja Anda.</p>
+                </div>
+    
+                <button
+                    type="button"
+                    class="store-review-modal-close"
+                    aria-label="Tutup"
+                    data-review-close
+                >&times;</button>
+            </div>
+    
+            <form id="store-review-form">
+                <input
+                    type="hidden"
+                    id="store-review-store-id"
+                    value="<?= $storeId ?>"
+                >
+    
+                <div class="store-review-field">
+                    <label for="store-review-order">Pesanan</label>
+    
+                    <select id="store-review-order" required>
+                        <option value="">Memuat pesanan...</option>
+                    </select>
+    
+                    <small>Pilih pesanan yang sudah selesai.</small>
+                </div>
+    
+                <div class="store-review-field">
+                    <span class="store-review-field-label">Bintang</span>
+    
+                    <div class="store-review-rating" id="store-review-rating">
+                        <?php for ($star = 1; $star <= 5; $star++): ?>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="rating"
+                                    value="<?= $star ?>"
+                                    <?= $star === 5 ? 'checked' : '' ?>
+                                >
+                                <span aria-label="<?= $star ?> bintang">★</span>
+                            </label>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+    
+                <div class="store-review-field">
+                    <label for="store-review-comment">
+                        Review <span>(Opsional)</span>
+                    </label>
+    
+                    <textarea
+                        id="store-review-comment"
+                        rows="4"
+                        maxlength="1000"
+                        placeholder="Ceritakan pengalaman Anda..."
+                    ></textarea>
+                </div>
+    
+                <button
+                    type="submit"
+                    class="store-review-submit"
+                    id="store-review-submit"
+                >
+                    Post Review
+                </button>
+    
+                <p
+                    class="store-review-form-message"
+                    id="store-review-form-message"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+            </form>
+        </section>
+    </div>
 
     <?php require __DIR__ . '/_footer.php'; ?>
     <?php require __DIR__ . '/partials/cart.php'; ?>
