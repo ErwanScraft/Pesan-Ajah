@@ -26,15 +26,18 @@ if (request_method() === 'GET') {
             o.created_at,
             o.updated_at,
             da.accepted_at AS delivery_accepted_at,
-            da.driver_username
+            d.name AS driver_name
 
         FROM orders o
 
         LEFT JOIN delivery_assignments da
             ON da.order_id = o.id
 
+        LEFT JOIN drivers d
+            ON d.username = da.driver_username
+
         WHERE o.store_id = :store_id
-          AND o.status <> 'draft'
+            AND o.status <> 'draft'
 
         ORDER BY o.created_at DESC, o.id DESC"
     );
@@ -65,15 +68,9 @@ if (request_method() === 'GET') {
         ORDER BY oi.id ASC'
     );
 
-    $driverConfig = driver_credentials();
-    
     foreach ($orders as &$order) {
-        $order['driver_name'] = !empty($order['driver_username'])
-            ? $driverConfig['name']
-            : '';
-    
-        unset($order['driver_username']);
-    
+        $order['driver_name'] = (string) ($order['driver_name'] ?? '');
+
         $itemStmt->execute([
             'order_id' => (int) $order['id'],
         ]);
