@@ -19,9 +19,10 @@ const $ = (selector) => document.querySelector(selector);
 
 function initStoreProfileScroll() {
   const profile = $(".store-profile");
+  const banner = $(".store-banner");
   const header = $(".site-header");
-
-  if (!profile || !header) return;
+  
+  if (!profile || !banner || !header) return;
 
   let placeholder = null;
   let profileInitialTop = 0;
@@ -59,13 +60,27 @@ function initStoreProfileScroll() {
       placeholder.style.marginBottom = styles.marginBottom;
 
       profile.before(placeholder);
-      profile.classList.add("is-compact");
-
+      
+      profile.classList.add("is-transitioning", "is-compact");
+      banner.classList.add("is-scrolled");
+      
+      // Nama warung muncul setelah logo mulai berpindah.
+      window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+              profile.classList.remove("is-transitioning");
+          });
+      });
+      
       return;
     }
 
-    profile.classList.remove("is-compact");
-
+    profile.classList.remove(
+        "is-compact",
+        "is-transitioning"
+    );
+    
+    banner.classList.remove("is-scrolled");
+    
     placeholder?.remove();
     placeholder = null;
   };

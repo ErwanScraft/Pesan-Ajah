@@ -187,7 +187,6 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
             </div>
 
             <span class="store-profile-status store-status <?= $isStoreOpen ? 'is-open' : 'is-closed' ?>">
-                <span class="store-status-dot"></span>
                 <?= $isStoreOpen ? 'Buka' : 'Tutup' ?>
             </span>
         </section>
