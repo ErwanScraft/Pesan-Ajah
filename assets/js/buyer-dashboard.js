@@ -1301,6 +1301,210 @@
             }
         });
     }
+    
+    function createReviewModal(order, token) {
+        let selectedRating = 5;
+    
+        const overlay = createElement("div", "buyer-review-overlay");
+        const modal = createElement("section", "buyer-review-modal");
+    
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+        modal.setAttribute("aria-labelledby", "buyer-review-title");
+    
+        const header = createElement("header", "buyer-review-header");
+    
+        const heading = createElement("div");
+        heading.append(
+            createElement("h2", "", "Beri Penilaian"),
+            createElement(
+                "p",
+                "",
+                order.store_name || "Warung"
+            )
+        );
+    
+        const closeButton = createElement(
+            "button",
+            "buyer-review-close",
+            "×"
+        );
+    
+        closeButton.type = "button";
+        closeButton.setAttribute("aria-label", "Tutup form review");
+    
+        header.append(heading, closeButton);
+    
+        const content = createElement("div", "buyer-review-content");
+    
+        content.appendChild(
+            createElement(
+                "p",
+                "buyer-review-description",
+                "Bagaimana pengalaman belanja Anda di warung ini?"
+            )
+        );
+    
+        const ratingGroup = createElement("div", "buyer-review-rating");
+        ratingGroup.setAttribute("role", "group");
+        ratingGroup.setAttribute("aria-label", "Pilih rating");
+    
+        const ratingButtons = [];
+    
+        for (let value = 1; value <= 5; value++) {
+            const button = createElement(
+                "button",
+                "buyer-review-star",
+                "★"
+            );
+    
+            button.type = "button";
+            button.setAttribute("aria-label", `${value} bintang`);
+            button.setAttribute("aria-pressed", String(value === selectedRating));
+    
+            button.addEventListener("click", () => {
+                selectedRating = value;
+    
+                ratingButtons.forEach((star, index) => {
+                    const active = index < selectedRating;
+    
+                    star.classList.toggle("is-active", active);
+                    star.setAttribute("aria-pressed", String(index + 1 === selectedRating));
+                });
+            });
+    
+            ratingButtons.push(button);
+            ratingGroup.appendChild(button);
+        }
+    
+        ratingButtons.forEach((star, index) => {
+            star.classList.toggle("is-active", index < selectedRating);
+        });
+    
+        const commentLabel = createElement(
+            "label",
+            "buyer-review-label",
+            "Komentar (opsional)"
+        );
+    
+        const comment = createElement("textarea", "buyer-review-comment");
+        comment.placeholder = "Bagikan pengalaman Anda...";
+        comment.maxLength = 1000;
+        comment.rows = 4;
+    
+        commentLabel.appendChild(comment);
+    
+        const message = createElement("p", "buyer-review-message");
+        message.hidden = true;
+    
+        const actions = createElement("div", "buyer-review-actions");
+    
+        const cancelButton = createElement(
+            "button",
+            "buyer-review-cancel",
+            "Batal"
+        );
+    
+        cancelButton.type = "button";
+    
+        const submitButton = createElement(
+            "button",
+            "buyer-review-submit",
+            "Kirim Review"
+        );
+    
+        submitButton.type = "button";
+    
+        actions.append(cancelButton, submitButton);
+    
+        content.append(
+            ratingGroup,
+            commentLabel,
+            message,
+            actions
+        );
+    
+        modal.append(header, content);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    
+        const close = () => {
+            overlay.remove();
+        
+            if (handleEscape) {
+                document.removeEventListener("keydown", handleEscape);
+            }
+        };
+    
+        closeButton.addEventListener("click", close);
+        cancelButton.addEventListener("click", close);
+    
+        overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) {
+                close();
+            }
+        });
+    
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                close();
+            }
+        };
+        
+        document.addEventListener("keydown", handleEscape);
+    
+        submitButton.addEventListener("click", async () => {
+            submitButton.disabled = true;
+            submitButton.textContent = "Mengirim...";
+    
+            message.hidden = true;
+    
+            try {
+                const response = await fetch("/api/store-reviews.php", {
+                    method: "POST",
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        token,
+                        rating: selectedRating,
+                        comment: comment.value.trim()
+                    })
+                });
+    
+                const result = await response.json();
+    
+                if (!response.ok || result.success !== true) {
+                    throw new Error(
+                        result.message || "Review gagal dikirim."
+                    );
+                }
+    
+                close();
+    
+                showMessage(
+                    result.message || "Review berhasil dikirim.",
+                    "success"
+                );
+    
+                await loadOrders();
+            } catch (error) {
+                message.textContent = error instanceof Error
+                    ? error.message
+                    : "Review gagal dikirim.";
+    
+                message.hidden = false;
+    
+                submitButton.disabled = false;
+                submitButton.textContent = "Kirim Review";
+            }
+        });
+    
+        closeButton.focus();
+    }
 
     function createOrderCard(order, index) {
         const card = createElement("article", "buyer-order-card");
@@ -1364,6 +1568,26 @@
             return String(item.order_number || "") ===
                 String(order.order_number || "");
         });
+        
+        if (
+            isCompleted(order) &&
+            Number(order.has_review) !== 1 &&
+            localOrder?.token
+        ) {
+            const reviewButton = createElement(
+                "button",
+                "buyer-order-review",
+                "Beri Review"
+            );
+        
+            reviewButton.type = "button";
+        
+            reviewButton.addEventListener("click", () => {
+                createReviewModal(order, localOrder.token);
+            });
+        
+            orderActions.appendChild(reviewButton);
+        }
         
         if (
             EDITABLE_STATUSES.includes(orderStatus) &&

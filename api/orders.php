@@ -218,7 +218,13 @@ $sql = '
         o.total,
         o.created_at,
         o.updated_at,
-        s.name AS store_name
+        s.name AS store_name,
+
+        EXISTS (
+            SELECT 1
+            FROM store_reviews sr
+            WHERE sr.order_id = o.id
+        ) AS has_review
     FROM orders o
     INNER JOIN stores s
         ON s.id = o.store_id
