@@ -29,22 +29,33 @@ export function initStoreReview({ showToast }) {
   }
 
   function openModal() {
+    if (!modal.hidden) return;
+
     previousFocus = document.activeElement;
 
     modal.hidden = false;
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("no-scroll");
 
+    requestAnimationFrame(() => {
+      modal.classList.add("is-open");
+      orderSelect.focus();
+    });
+
     loadOrders();
-    orderSelect.focus();
   }
 
   function closeModal() {
-    modal.hidden = true;
+    if (modal.hidden) return;
+
+    modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
 
-    previousFocus?.focus();
+    setTimeout(() => {
+      modal.hidden = true;
+      previousFocus?.focus();
+    }, 280);
   }
 
   async function loadOrders() {
