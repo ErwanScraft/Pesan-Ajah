@@ -31,6 +31,7 @@ if (request_is_post()) {
 
     try {
         if ($action === 'accept') {
+        
             $db->beginTransaction();
 
             $stmt = $db->prepare(
@@ -41,6 +42,35 @@ if (request_is_post()) {
             );
             $stmt->execute(['id' => $orderId]);
             $order = $stmt->fetch();
+            
+            if (!delivery_is_available($db)) {
+                throw new RuntimeException(
+                    'Layanan Delivery sedang offline.'
+                );
+            }
+            
+            $driverStatus = $db->prepare(
+                'SELECT is_active, is_online
+                 FROM drivers
+                 WHERE id = :id
+                 LIMIT 1'
+            );
+            
+            $driverStatus->execute([
+                'id' => $driver['id'],
+            ]);
+            
+            $currentDriver = $driverStatus->fetch();
+            
+            if (
+                !$currentDriver
+                || !(bool) $currentDriver['is_active']
+                || !(bool) $currentDriver['is_online']
+            ) {
+                throw new RuntimeException(
+                    'Aktifkan status driver terlebih dahulu untuk mengambil pesanan.'
+                );
+            }
 
             if (
                 !$order
@@ -860,6 +890,16 @@ function driver_status_label(string $status): string
                     <?= count($queue) > 99 ? '99+' : count($queue) ?>
                 </span>
             <?php endif; ?>
+        </a>
+        
+        <a href="/driver/profile.php" class="driver-nav-item">
+            <span class="driver-nav-icon">♙</span>
+            <span>Profil</span>
+        </a>
+        
+        <a href="/driver/settings.php" class="driver-nav-item">
+            <span class="driver-nav-icon">⚙</span>
+            <span>Pengaturan</span>
         </a>
     
     </nav>

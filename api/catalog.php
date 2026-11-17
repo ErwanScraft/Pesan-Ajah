@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 
+require_once APP_ROOT . '/app/delivery_availability.php';
+
 require_method('GET');
 
 header('Content-Type: application/json; charset=utf-8');
@@ -206,10 +208,13 @@ try {
     }
 
     unset($store);
+    
+    $deliveryAvailable = delivery_is_available($db);
 
     echo json_encode([
         'success' => true,
         'stores' => $stores,
+        'delivery_available' => $deliveryAvailable,
         'products' => $products,
     ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 } catch (Throwable $exception) {

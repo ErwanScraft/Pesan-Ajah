@@ -319,6 +319,16 @@ function driver_dashboard_status(string $status): string
                 </span>
             <?php endif; ?>
         </a>
+        
+        <a href="/driver/profile.php" class="driver-nav-item">
+            <span class="driver-nav-icon">♙</span>
+            <span>Profil</span>
+        </a>
+        
+        <a href="/driver/settings.php" class="driver-nav-item">
+            <span class="driver-nav-icon">⚙</span>
+            <span>Pengaturan</span>
+        </a>
 
     </nav>
 

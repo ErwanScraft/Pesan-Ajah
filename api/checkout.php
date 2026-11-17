@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 
+require_once APP_ROOT . '/app/delivery_availability.php';
 require_once APP_ROOT . '/app/delivery.php';
 
 require_method('POST');
@@ -192,6 +193,16 @@ if (
         'success' => false,
         'message' => 'Periksa kembali data pembeli dan produk.',
     ], 422);
+}
+
+if (
+    $deliveryMethod === 'delivery'
+    && !delivery_is_available($db)
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Layanan Delivery sedang offline karena belum ada driver yang tersedia.',
+    ], 503);
 }
 
 if (

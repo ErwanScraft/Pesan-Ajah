@@ -13,41 +13,23 @@ $error = null;
 if (request_is_post()) {
     verify_csrf();
 
-    $username = trim(
-        is_string($_POST['username'] ?? null)
-            ? $_POST['username']
-            : ''
-    );
-
-    $password = is_string($_POST['password'] ?? null)
-        ? $_POST['password']
-        : '';
-
-    $credentials = driver_credentials();
+    $username = trim((string) ($_POST['username'] ?? ''));
+    $password = (string) ($_POST['password'] ?? '');
 
     if (
-        $credentials['username'] === ''
-        || $credentials['password'] === ''
-    ) {
-        $error = 'Akun driver belum dikonfigurasi di server.';
-    } elseif (
         $username === ''
         || $password === ''
         || strlen($username) > 100
         || strlen($password) > 4096
     ) {
         $error = 'Username atau password tidak valid.';
-    } elseif (
-        hash_equals($credentials['username'], $username)
-        && hash_equals($credentials['password'], $password)
-    ) {
-        driver_login($username);
-
+    } elseif (driver_login($username, $password)) {
         redirect('driver/index.php');
     } else {
-        $error = 'Username atau password tidak sesuai.';
+        $error = 'Username atau password tidak sesuai atau akun nonaktif.';
     }
 }
+
 ?>
 <!doctype html>
 <html lang="id">

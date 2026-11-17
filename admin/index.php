@@ -230,6 +230,10 @@ $error = flash('error');
                 >
                     + Tambah warung
                 </a>
+                
+                <a class="button button-outline" href="/admin/drivers.php">
+                    Kelola Driver
+                </a>
 
                 <form method="post" action="/admin/logout.php">
                     <input

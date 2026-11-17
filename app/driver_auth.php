@@ -2,43 +2,46 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/app/bootstrap.php';
-
-/**
- * Mengambil konfigurasi akun driver dari .env.
- */
-function driver_credentials(): array
-{
-    return [
-        'username' => trim((string) env('DRIVER_USERNAME', '')),
-        'password' => (string) env('DRIVER_PASSWORD', ''),
-        'name' => trim((string) env('DRIVER_NAME', 'Driver Anter Ajah')),
-    ];
-}
+require_once __DIR__ . '/bootstrap.php';
 
 /**
  * Memeriksa apakah sesi driver masih valid.
  */
 function driver_is_authenticated(): bool
 {
-    $credentials = driver_credentials();
     $session = $_SESSION['driver_auth'] ?? null;
 
     if (
         !is_array($session)
         || empty($session['authenticated'])
-        || $credentials['username'] === ''
-        || $credentials['password'] === ''
+        || empty($session['id'])
     ) {
         return false;
     }
 
-    return isset($session['username'])
-        && is_string($session['username'])
-        && hash_equals(
-            $credentials['username'],
-            $session['username']
-        );
+    $stmt = database()->prepare(
+        'SELECT id, username, name, is_active
+         FROM drivers
+         WHERE id = :id
+         LIMIT 1'
+    );
+
+    $stmt->execute([
+        'id' => (int) $session['id'],
+    ]);
+
+    $driver = $stmt->fetch();
+
+    if (!$driver || !(bool) $driver['is_active']) {
+        unset($_SESSION['driver_auth']);
+
+        return false;
+    }
+
+    $_SESSION['driver_auth']['username'] = $driver['username'];
+    $_SESSION['driver_auth']['name'] = $driver['name'];
+
+    return true;
 }
 
 /**
@@ -54,27 +57,56 @@ function require_driver(): array
 }
 
 /**
- * Membuat sesi driver setelah kredensial valid.
+ * Login driver menggunakan username dan password database.
  */
-function driver_login(string $username): void
+function driver_login(string $username, string $password): bool
 {
-    $credentials = driver_credentials();
+    $stmt = database()->prepare(
+        'SELECT id, username, password_hash, name, is_active
+         FROM drivers
+         WHERE username = :username
+         LIMIT 1'
+    );
+
+    $stmt->execute([
+        'username' => $username,
+    ]);
+
+    $driver = $stmt->fetch();
+
+    if (
+        !$driver
+        || !(bool) $driver['is_active']
+        || !password_verify($password, $driver['password_hash'])
+    ) {
+        return false;
+    }
 
     session_regenerate_id(true);
 
     $_SESSION['driver_auth'] = [
         'authenticated' => true,
-        'username' => $username,
-        'name' => $credentials['name'] !== ''
-            ? $credentials['name']
-            : 'Driver Anter Ajah',
+        'id' => (int) $driver['id'],
+        'username' => $driver['username'],
+        'name' => $driver['name'],
         'logged_in_at' => time(),
     ];
+
+    $update = database()->prepare(
+        'UPDATE drivers
+         SET last_seen_at = CURRENT_TIMESTAMP
+         WHERE id = :id'
+    );
+
+    $update->execute([
+        'id' => (int) $driver['id'],
+    ]);
+
+    return true;
 }
 
 /**
- * Mengakhiri sesi login driver.
- * Sesi admin/warung tidak dihapus.
+ * Mengakhiri sesi driver.
  */
 function driver_logout(): void
 {
