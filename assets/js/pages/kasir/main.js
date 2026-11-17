@@ -36,6 +36,7 @@ export async function initWarungKasir({
   const cashInput = $("#cashier-cash-received");
   const changeElement = $("#cashier-change");
   const totalElement = $("#cashier-total");
+  const cashierNameInput = $("#cashier-name");
   
   const manualDialog = $("#cashier-manual-dialog");
   const manualOpenButton = $("#cashier-manual-open");
@@ -489,6 +490,7 @@ export async function initWarungKasir({
     checkoutButton.disabled =
       cart.length === 0
       || total < 1
+      || !cashierNameInput?.value.trim()
       || (isCash && cashReceived < total);
   }
 
@@ -555,6 +557,8 @@ export async function initWarungKasir({
   );
 
   cashInput.addEventListener("input", renderCart);
+  
+  cashierNameInput?.addEventListener("input", renderCart);
 
   document.querySelectorAll(
     'input[name="payment_method"]',
@@ -607,6 +611,7 @@ export async function initWarungKasir({
     const paymentMethod = getPaymentMethod();
 
     const payload = {
+      cashier_name: cashierNameInput.value.trim(),
       payment_method: paymentMethod,
       cash_received: paymentMethod === "cash"
         ? Number(cashInput.value)
@@ -648,6 +653,8 @@ export async function initWarungKasir({
           address: receipt.store_address,
           phone: receipt.store_phone,
         },
+      
+        cashierName: receipt.cashier_name,
       
         items: receipt.items,
       

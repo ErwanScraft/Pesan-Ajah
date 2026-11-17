@@ -28,6 +28,21 @@ require __DIR__ . '/_header.php';
             Siap melayani
         </span>
     </div>
+    
+    <div class="cashier-operator">
+        <label class="cashier-field" for="cashier-name">
+            <span>Nama Kasir</span>
+    
+            <input
+                type="text"
+                id="cashier-name"
+                maxlength="100"
+                autocomplete="name"
+                placeholder="Masukkan nama kasir"
+                required
+            >
+        </label>
+    </div>
 
     <div class="cashier-layout">
 

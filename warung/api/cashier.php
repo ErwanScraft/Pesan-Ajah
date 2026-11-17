@@ -75,6 +75,12 @@ $input = api_json_input();
 $items = $input['items'] ?? null;
 $paymentMethod = $input['payment_method'] ?? null;
 
+$cashierName = api_required_text(
+    $input['cashier_name'] ?? null,
+    'Nama kasir',
+    100
+);
+
 if (!is_array($items) || count($items) < 1 || count($items) > 100) {
     api_json([
         'success' => false,
@@ -403,6 +409,7 @@ try {
             'store_logo' => (string) ($store['icon_image'] ?? ''),
             'store_address' => (string) ($store['address'] ?? ''),
             'store_phone' => (string) ($store['phone'] ?? ''),
+            'cashier_name' => $cashierName,
             'items' => $saleItems,
             'total' => $total,
             'payment_method' => $paymentMethod,

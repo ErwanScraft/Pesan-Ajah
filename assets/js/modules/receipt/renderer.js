@@ -350,7 +350,7 @@ export function renderReceipt(
     container.append(createDivider());
   } else {
     container.append(createDivider());
-  
+
     container.append(
       createElement(
         "strong",
@@ -363,7 +363,24 @@ export function renderReceipt(
         formatReceiptDate(data.createdAt),
       ),
     );
-  
+
+    if (data.type === "cashier" && data.cashierName) {
+      const cashierMeta = createElement(
+        "div",
+        "receipt-cashier-meta",
+      );
+
+      cashierMeta.append(
+        createElement(
+          "span",
+          "",
+          `Kasir: ${data.cashierName}`,
+        ),
+      );
+
+      container.append(cashierMeta);
+    }
+
     container.append(createDivider());
   }
   

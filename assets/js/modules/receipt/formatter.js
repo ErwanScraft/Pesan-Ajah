@@ -49,6 +49,7 @@ export function normalizeReceiptItem(item) {
 export function normalizeReceiptData(data) {
   return {
     type: data.type || "order",
+    cashierName: data.cashierName || data.cashier_name || "",
 
     store: {
       name: data.store?.name || "Warung",

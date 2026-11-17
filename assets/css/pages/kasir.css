@@ -1015,3 +1015,32 @@
     padding: 17px;
   }
 }
+
+/* =========================================================
+   IDENTITAS KASIR
+========================================================= */
+
+.cashier-operator {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.cashier-operator .cashier-field {
+  width: min(100%, 280px);
+}
+
+.cashier-operator .cashier-field input {
+  height: 43px;
+  background: var(--white);
+}
+
+@media (max-width: 600px) {
+  .cashier-operator {
+    justify-content: stretch;
+  }
+
+  .cashier-operator .cashier-field {
+    width: 100%;
+  }
+}

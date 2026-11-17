@@ -73,6 +73,17 @@
   text-align: center;
 }
 
+.receipt-cashier-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+  color: #444;
+  font-size: 9px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .receipt-information,
 .receipt-items,
 .receipt-summary {
