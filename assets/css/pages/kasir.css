@@ -989,6 +989,18 @@
   }
 }
 
+@media (max-width: 700px) {
+  .cashier-mobile-cart {
+    bottom: calc(
+      max(12px, env(safe-area-inset-bottom)) + 88px
+    );
+  }
+
+  .cashier-page {
+    padding-bottom: 170px;
+  }
+}
+
 @media (max-width: 600px) {
   .cashier-product-card {
     gap: 11px;
