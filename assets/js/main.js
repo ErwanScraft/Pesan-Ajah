@@ -273,7 +273,12 @@ async function loadCatalog() {
     products.length,
     ...normalizedProducts,
   );
-
+  
+  // Sinkronkan status layanan Delivery dari server.
+  cartPage.setDeliveryAvailable(
+    data.delivery_available === true,
+  );
+  
   /*
    * Render ulang katalog setelah data API berhasil diterima.
    */

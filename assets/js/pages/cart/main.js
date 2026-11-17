@@ -28,6 +28,7 @@ export function initCartPage({
 
   let csrfToken = "";
   let catalogLoaded = false;
+  let deliveryAvailable = null;
 
   function selectedFulfillment() {
     return document.querySelector(
@@ -116,6 +117,40 @@ export function initCartPage({
 
   function renderCart() {
     cart.render(cartView);
+    
+    const deliveryInput = document.querySelector(
+      'input[name="fulfillment-method"][value="delivery"]',
+    );
+    
+    const deliveryOption = deliveryInput?.closest(
+      ".fulfillment-option",
+    );
+    
+    const deliveryNotice = $("#delivery-unavailable-note");
+    
+    if (deliveryAvailable !== null) {
+      const isUnavailable = !deliveryAvailable;
+    
+      if (deliveryOption) {
+        deliveryOption.hidden = isUnavailable;
+      }
+    
+      if (deliveryNotice) {
+        deliveryNotice.hidden = !isUnavailable;
+      }
+    
+      if (isUnavailable && selectedFulfillment() === "delivery") {
+        const pickupInput = document.querySelector(
+          'input[name="fulfillment-method"][value="pickup"]',
+        );
+    
+        if (pickupInput) {
+          pickupInput.checked = true;
+        }
+    
+        toggleDeliveryFields();
+      }
+    }
 
     const cartCountLabel = $("#cart-count-label");
 
@@ -538,6 +573,17 @@ export function initCartPage({
     const buyerName = $("#buyer-name")?.value.trim() ?? "";
     const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
     const deliveryMethod = selectedFulfillment();
+    
+    if (
+      deliveryMethod === "delivery"
+      && deliveryAvailable === false
+    ) {
+      showToast(
+        toast,
+        "Layanan Delivery sedang offline. Silakan pilih Ambil Sendiri.",
+      );
+      return;
+    }
 
     const deliveryAddress =
       $("#delivery-address")?.value.trim() ?? "";
@@ -866,10 +912,16 @@ export function initCartPage({
   return {
     addToCart,
     render: renderCart,
-
+  
     setCatalogLoaded(value) {
       catalogLoaded = Boolean(value);
       renderCart();
+    },
+  
+    setDeliveryAvailable(value) {
+      deliveryAvailable = Boolean(value);
+      renderCart();
+      toggleDeliveryFields();
     },
   };
 }

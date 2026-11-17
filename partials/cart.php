@@ -254,6 +254,16 @@
                             Metode pesanan
                         </h3>
                     </div>
+                    
+                    <p
+                        id="delivery-unavailable-note"
+                        class="muted"
+                        role="status"
+                        hidden
+                    >
+                        Layanan Delivery sedang offline karena belum ada driver
+                        yang tersedia. Silakan pilih Ambil Sendiri.
+                    </p>
 
                     <fieldset class="fulfillment-options">
                         <legend class="visually-hidden">
