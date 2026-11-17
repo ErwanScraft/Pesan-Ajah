@@ -67,7 +67,10 @@ function initStoreProfileScroll() {
       // Nama warung muncul setelah logo mulai berpindah.
       window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
-              profile.classList.remove("is-transitioning");
+              // Jangan jalankan transisi masuk jika pengguna sudah menggulir balik.
+              if (compact) {
+                  profile.classList.remove("is-transitioning");
+              }
           });
       });
       
