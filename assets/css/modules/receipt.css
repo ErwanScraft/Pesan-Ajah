@@ -84,6 +84,35 @@
   text-align: right;
 }
 
+.receipt-cashier-information {
+  display: grid;
+  gap: 4px;
+}
+
+.receipt-cashier-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  color: #333;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.receipt-cashier-meta > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.receipt-cashier-meta > strong {
+  flex: 0 0 auto;
+  max-width: 65%;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .receipt-information,
 .receipt-items,
 .receipt-summary {
@@ -213,17 +242,31 @@
 }
 
 .receipt-summary-row.is-total {
-  padding: 6px 0;
-  border-top: 1px solid #222;
-  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  padding: 7px 0;
+  border: 0;
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
 }
 
-.receipt-summary-row.is-total > span,
-.receipt-summary-row.is-total > strong {
+.receipt-summary-row.is-total > span {
+  flex: 1;
   color: #000;
+  font-weight: 900;
+}
+
+.receipt-summary-row.is-total > strong {
+  flex: 0 0 auto;
+  max-width: none;
+  color: #000;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .receipt-summary-row.is-change > strong {

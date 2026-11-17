@@ -1,6 +1,5 @@
 import {
   formatReceiptCurrency,
-  formatReceiptDate,
   normalizeReceiptData,
 } from "./formatter.js";
 
@@ -112,6 +111,67 @@ function formatReceiptTimeLine(value) {
   })
     .format(date)
     .replace(/:/g, ".");
+}
+
+function renderCashierInformation(container, data) {
+  const section = createElement("div", "receipt-cashier-information");
+  const date = new Date(String(data.createdAt).replace(" ", "T"));
+
+  const dateText = Number.isNaN(date.getTime())
+    ? "-"
+    : new Intl.DateTimeFormat("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(date).replace(/\//g, "-");
+
+  const timeText = Number.isNaN(date.getTime())
+    ? "-"
+    : new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).format(date);
+
+  const dateRow = createElement("div", "receipt-cashier-meta");
+
+  dateRow.append(
+    createElement("span", "", dateText),
+    createElement("strong", "", timeText),
+  );
+
+  section.append(dateRow);
+
+  if (data.cashierName) {
+    const cashierRow = createElement("div", "receipt-cashier-meta");
+
+    cashierRow.append(
+      createElement("span", "", "Kasir"),
+      createElement("strong", "", data.cashierName),
+    );
+
+    section.append(cashierRow);
+  }
+
+  const paymentLabels = {
+    cash: "Tunai",
+    qris: "QRIS",
+    transfer: "Transfer",
+  };
+
+  const methodRow = createElement("div", "receipt-cashier-meta");
+
+  methodRow.append(
+    createElement("span", "", "Metode"),
+    createElement(
+      "strong",
+      "",
+      paymentLabels[data.payment.method] || data.payment.method || "-",
+    ),
+  );
+
+  section.append(methodRow);
+  container.append(section);
 }
 
 function renderOrderInformation(container, data) {
@@ -240,25 +300,15 @@ function renderPayment(container, data) {
       "is-total",
     );
   } else {
-    addSummary(
-      summary,
-      "Total",
-      formatReceiptCurrency(data.total),
-      "is-total",
+    const subtotal = data.items.reduce(
+      (sum, item) => sum + item.subtotal,
+      0,
     );
-  }
-
-  if (data.type === "cashier") {
-    const labels = {
-      cash: "Tunai",
-      qris: "QRIS",
-      transfer: "Transfer",
-    };
 
     addSummary(
       summary,
-      "Metode Pembayaran",
-      labels[data.payment.method] || data.payment.method || "-",
+      "Sub Total",
+      formatReceiptCurrency(subtotal),
     );
 
     if (data.payment.method === "cash") {
@@ -275,6 +325,15 @@ function renderPayment(container, data) {
         "is-change",
       );
     }
+
+    summary.append(createDivider());
+
+    addSummary(
+      summary,
+      "Total",
+      formatReceiptCurrency(data.total),
+      "is-total",
+    );
   }
 
   container.append(summary);
@@ -351,37 +410,13 @@ export function renderReceipt(
   } else {
     container.append(createDivider());
 
-    container.append(
-      createElement(
-        "strong",
-        "receipt-title",
-        "INFORMASI TRANSAKSI",
-      ),
-      createElement(
-        "small",
-        "receipt-date",
-        formatReceiptDate(data.createdAt),
-      ),
-    );
-
-    if (data.type === "cashier" && data.cashierName) {
-      const cashierMeta = createElement(
-        "div",
-        "receipt-cashier-meta",
-      );
-
-      cashierMeta.append(
-        createElement(
-          "span",
-          "",
-          `Kasir: ${data.cashierName}`,
-        ),
-      );
-
-      container.append(cashierMeta);
-    }
+    renderCashierInformation(container, data);
 
     container.append(createDivider());
+
+    container.append(
+      createElement("strong", "receipt-section-title", "Item"),
+    );
   }
   
   renderItems(container, data.items);
