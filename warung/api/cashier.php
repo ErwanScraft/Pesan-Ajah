@@ -415,7 +415,7 @@ try {
             'payment_method' => $paymentMethod,
             'cash_received' => $cashReceived,
             'change' => $change,
-            'created_at' => date('d-m-Y H:i:s'),
+            'created_at' => date('c'),
         ],
     ]);
 

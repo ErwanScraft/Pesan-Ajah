@@ -115,38 +115,54 @@ function formatReceiptTimeLine(value) {
 
 function renderCashierInformation(container, data) {
   const section = createElement("div", "receipt-cashier-information");
-  const date = new Date(String(data.createdAt).replace(" ", "T"));
 
-  const dateText = Number.isNaN(date.getTime())
-    ? "-"
-    : new Intl.DateTimeFormat("id-ID", {
+  const date = new Date(
+    String(data.createdAt || "").replace(" ", "T"),
+  );
+
+  const isValidDate = !Number.isNaN(date.getTime());
+
+  const dateText = isValidDate
+    ? new Intl.DateTimeFormat("id-ID", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-      }).format(date).replace(/\//g, "-");
+      })
+        .format(date)
+        .replace(/\//g, "-")
+    : "-";
 
-  const timeText = Number.isNaN(date.getTime())
-    ? "-"
-    : new Intl.DateTimeFormat("en-GB", {
+  const timeText = isValidDate
+    ? new Intl.DateTimeFormat("en-GB", {
         hour: "2-digit",
         minute: "2-digit",
         hourCycle: "h23",
-      }).format(date);
+      }).format(date)
+    : "-";
 
+  // Informasi tanggal dan waktu
   const dateRow = createElement(
     "div",
     "receipt-cashier-meta is-date",
   );
 
   dateRow.append(
-    createElement("span", "", dateText),
-    createElement("strong", "", timeText),
+    createElement("span", "", "Tanggal / Waktu"),
+    createElement(
+      "strong",
+      "",
+      isValidDate
+        ? `${dateText} ${timeText.replace(/:/g, ".")}`
+        : "-",
+    ),
   );
 
-  section.append(dateRow);
-
+  // Informasi nama kasir
   if (data.cashierName) {
-    const cashierRow = createElement("div", "receipt-cashier-meta");
+    const cashierRow = createElement(
+      "div",
+      "receipt-cashier-meta",
+    );
 
     cashierRow.append(
       createElement("span", "", "Kasir"),
@@ -156,24 +172,34 @@ function renderCashierInformation(container, data) {
     section.append(cashierRow);
   }
 
+  // Informasi metode pembayaran
   const paymentLabels = {
     cash: "Tunai",
     qris: "QRIS",
     transfer: "Transfer",
   };
 
-  const methodRow = createElement("div", "receipt-cashier-meta");
+  const methodRow = createElement(
+    "div",
+    "receipt-cashier-meta",
+  );
 
   methodRow.append(
     createElement("span", "", "Metode"),
     createElement(
       "strong",
       "",
-      paymentLabels[data.payment.method] || data.payment.method || "-",
+      paymentLabels[data.payment.method]
+        || data.payment.method
+        || "-",
     ),
   );
 
-  section.append(methodRow);
+  section.append(
+    dateRow,
+    methodRow,
+  );
+
   container.append(section);
 }
 
