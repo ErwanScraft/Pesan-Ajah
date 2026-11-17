@@ -1985,8 +1985,13 @@
         transform 150ms ease;
 }
 
-.store-review-rating label:has(input:checked) span,
-.store-review-rating label:has(input:checked) ~ label span {
+/* Rating — highlight dari kiri ke kanan */
+
+.store-review-rating:has(input[value="1"]:checked) label:nth-child(-n + 1) span,
+.store-review-rating:has(input[value="2"]:checked) label:nth-child(-n + 2) span,
+.store-review-rating:has(input[value="3"]:checked) label:nth-child(-n + 3) span,
+.store-review-rating:has(input[value="4"]:checked) label:nth-child(-n + 4) span,
+.store-review-rating:has(input[value="5"]:checked) label:nth-child(-n + 5) span {
     color: #e5a000;
 }
 
