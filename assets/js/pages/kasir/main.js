@@ -26,6 +26,7 @@ export async function initWarungKasir({
   let cart = [];
   let selectedCategory = "all";
   let receipt = null;
+  let isProcessing = false;
 
   const receiptRoot = document.querySelector(
     "#shared-receipt-root"
@@ -488,7 +489,8 @@ export async function initWarungKasir({
     changeElement.textContent = formatRupiah(change);
 
     checkoutButton.disabled =
-      cart.length === 0
+      isProcessing
+      || cart.length === 0
       || total < 1
       || !cashierNameInput?.value.trim()
       || (isCash && cashReceived < total);
@@ -603,10 +605,10 @@ export async function initWarungKasir({
     }
   }
 
-  checkoutButton.addEventListener("click", async () => {
-    if (!cart.length || checkoutButton.disabled) {
-      return;
-    }
+    checkoutButton.addEventListener("click", async () => {
+        if (isProcessing || !cart.length || checkoutButton.disabled) {
+            return;
+        }
 
     const paymentMethod = getPaymentMethod();
 
@@ -626,6 +628,7 @@ export async function initWarungKasir({
       })),
     };
 
+    isProcessing = true;
     checkoutButton.disabled = true;
     checkoutButton.textContent = "Memproses...";
 
@@ -702,9 +705,11 @@ export async function initWarungKasir({
       );
 
     } finally {
+      isProcessing = false;
+    
       checkoutButton.innerHTML =
         'Proses Pembayaran <span>→</span>';
-
+    
       renderCart();
     }
   });

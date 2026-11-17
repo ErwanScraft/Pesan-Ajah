@@ -89,7 +89,7 @@ require __DIR__ . '/_header.php';
                 </div>
             </div>
 
-            // Kasir Manual
+            <!-- Kasir Manual -->
 
             <button
                 type="button"
