@@ -107,8 +107,8 @@
 .receipt-cashier-meta.is-date {
   align-items: center;
   margin-bottom: 2px;
-  padding: 4px 0 5px;
-  border-bottom: 1px dashed #aaa;
+  padding: 2px 0;
+  border-bottom: 0;
 }
 
 .receipt-cashier-meta.is-date > span {

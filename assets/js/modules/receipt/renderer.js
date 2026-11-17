@@ -145,7 +145,7 @@ function renderCashierInformation(container, data) {
         .replace(/:/g, ".")
     : "-";
 
-  // Baris tanggal dan waktu
+  // Tanggal dan waktu dalam satu baris tanpa garis pemisah.
   const dateRow = createElement(
     "div",
     "receipt-cashier-meta is-date",
@@ -156,7 +156,7 @@ function renderCashierInformation(container, data) {
     createElement("strong", "", timeText),
   );
 
-  // Baris nama kasir
+  // Nama kasir.
   const cashierRow = createElement(
     "div",
     "receipt-cashier-meta",
@@ -171,7 +171,7 @@ function renderCashierInformation(container, data) {
     ),
   );
 
-  // Label metode pembayaran
+  // Metode pembayaran.
   const paymentLabels = {
     cash: "Tunai",
     qris: "QRIS",
@@ -202,7 +202,6 @@ function renderCashierInformation(container, data) {
 
   container.append(section);
 }
-
 
 function renderOrderInformation(container, data) {
   const order = data.order;
@@ -269,7 +268,7 @@ function renderOrderInformation(container, data) {
 function renderItems(container, items) {
   const list = createElement("div", "receipt-items");
 
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     const row = createElement("div", "receipt-item");
 
     const information = createElement(
@@ -281,12 +280,12 @@ function renderItems(container, items) {
       createElement(
         "strong",
         "receipt-item-name",
-        `${index + 1}. ${item.name}`,
+        item.name,
       ),
       createElement(
         "small",
         "",
-        `${item.quantity} x ${formatReceiptCurrency(item.price)}`,
+        `${item.quantity}x${formatReceiptCurrency(item.price)}`,
       ),
     );
 
@@ -443,10 +442,6 @@ export function renderReceipt(
     renderCashierInformation(container, data);
 
     container.append(createDivider());
-
-    container.append(
-      createElement("strong", "receipt-section-title", "Item"),
-    );
   }
   
   renderItems(container, data.items);
