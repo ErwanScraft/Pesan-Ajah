@@ -38,7 +38,7 @@ require __DIR__ . '/_header.php';
                 id="cashier-name"
                 maxlength="100"
                 autocomplete="name"
-                placeholder="Masukkan nama kasir"
+                placeholder="Nama kasir, kosongkan jika kamu Owner"
                 required
             >
         </label>

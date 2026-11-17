@@ -492,7 +492,6 @@ export async function initWarungKasir({
       isProcessing
       || cart.length === 0
       || total < 1
-      || !cashierNameInput?.value.trim()
       || (isCash && cashReceived < total);
   }
 

@@ -114,7 +114,10 @@ function formatReceiptTimeLine(value) {
 }
 
 function renderCashierInformation(container, data) {
-  const section = createElement("div", "receipt-cashier-information");
+  const section = createElement(
+    "div",
+    "receipt-cashier-information",
+  );
 
   const date = new Date(
     String(data.createdAt || "").replace(" ", "T"),
@@ -137,42 +140,38 @@ function renderCashierInformation(container, data) {
         hour: "2-digit",
         minute: "2-digit",
         hourCycle: "h23",
-      }).format(date)
+      })
+        .format(date)
+        .replace(/:/g, ".")
     : "-";
 
-  // Informasi tanggal dan waktu
+  // Baris tanggal dan waktu
   const dateRow = createElement(
     "div",
     "receipt-cashier-meta is-date",
   );
 
   dateRow.append(
-    createElement("span", "", "Tanggal / Waktu"),
+    createElement("span", "", dateText),
+    createElement("strong", "", timeText),
+  );
+
+  // Baris nama kasir
+  const cashierRow = createElement(
+    "div",
+    "receipt-cashier-meta",
+  );
+
+  cashierRow.append(
+    createElement("span", "", "Kasir"),
     createElement(
       "strong",
       "",
-      isValidDate
-        ? `${dateText} ${timeText.replace(/:/g, ".")}`
-        : "-",
+      data.cashierName || "-",
     ),
   );
 
-  // Informasi nama kasir
-  if (data.cashierName) {
-    const cashierRow = createElement(
-      "div",
-      "receipt-cashier-meta",
-    );
-
-    cashierRow.append(
-      createElement("span", "", "Kasir"),
-      createElement("strong", "", data.cashierName),
-    );
-
-    section.append(cashierRow);
-  }
-
-  // Informasi metode pembayaran
+  // Label metode pembayaran
   const paymentLabels = {
     cash: "Tunai",
     qris: "QRIS",
@@ -197,11 +196,13 @@ function renderCashierInformation(container, data) {
 
   section.append(
     dateRow,
+    cashierRow,
     methodRow,
   );
 
   container.append(section);
 }
+
 
 function renderOrderInformation(container, data) {
   const order = data.order;

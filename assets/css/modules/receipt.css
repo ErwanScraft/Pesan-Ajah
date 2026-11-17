@@ -116,6 +116,7 @@
   color: #333;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  text-align: left;
 }
 
 .receipt-cashier-meta.is-date > strong {

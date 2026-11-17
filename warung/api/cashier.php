@@ -75,11 +75,28 @@ $input = api_json_input();
 $items = $input['items'] ?? null;
 $paymentMethod = $input['payment_method'] ?? null;
 
-$cashierName = api_required_text(
-    $input['cashier_name'] ?? null,
-    'Nama kasir',
-    100
+$cashierName = trim(
+    (string) ($input['cashier_name'] ?? '')
 );
+
+// Gunakan nama Owner jika nama kasir kosong.
+if ($cashierName === '') {
+    $cashierName = trim(
+        (string) ($store['owner_name'] ?? '')
+    );
+}
+
+// Fallback jika nama Owner belum tersedia.
+if ($cashierName === '') {
+    $cashierName = (string) $store['name'];
+}
+
+if (mb_strlen($cashierName, 'UTF-8') > 100) {
+    api_json([
+        'success' => false,
+        'message' => 'Nama kasir maksimal 100 karakter.',
+    ], 422);
+}
 
 if (!is_array($items) || count($items) < 1 || count($items) > 100) {
     api_json([
