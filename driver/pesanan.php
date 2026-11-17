@@ -343,402 +343,526 @@ function driver_status_label(string $status): string
     };
 }
 ?>
+
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#176b45">
-    <title>Pesanan Delivery — Anter Ajah</title>
+
+    <title>Pesanan Delivery — Antar Ajah</title>
 
     <link
         rel="stylesheet"
         href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
     >
 
-    <style>
-        .delivery-shell {
-            width: min(100% - 32px, 1000px);
-            margin: 0 auto;
-            padding: 24px 0 48px;
-        }
-
-        .delivery-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .delivery-heading h1 {
-            margin-bottom: 6px;
-        }
-
-        .delivery-section {
-            margin-top: 28px;
-        }
-
-        .delivery-list {
-            display: grid;
-            gap: 16px;
-        }
-
-        .delivery-card {
-            min-width: 0;
-            padding: 20px;
-            border: 1px solid #e3e9e5;
-            border-radius: 16px;
-            background: #fff;
-        }
-
-        .delivery-card h2,
-        .delivery-card h3 {
-            margin-top: 0;
-        }
-
-        .delivery-meta {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-            margin: 18px 0;
-        }
-
-        .delivery-meta span {
-            display: block;
-            overflow-wrap: anywhere;
-        }
-
-        .delivery-label {
-            margin-bottom: 4px;
-            color: #647067;
-            font-size: 13px;
-        }
-
-        .delivery-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .delivery-message {
-            padding: 12px 14px;
-            margin-bottom: 16px;
-            border-radius: 10px;
-        }
-
-        .delivery-message.success {
-            color: #176b45;
-            background: #e8f6ee;
-        }
-
-        .delivery-message.error {
-            color: #a32323;
-            background: #fff0f0;
-        }
-
-        .delivery-empty {
-            padding: 24px;
-            border: 1px dashed #cbd5ce;
-            border-radius: 14px;
-            color: #647067;
-            text-align: center;
-        }
-
-        @media (max-width: 520px) {
-            .delivery-meta {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .delivery-card {
-                padding: 16px;
-            }
-        }
-    </style>
+    <link
+        rel="stylesheet"
+        href="/assets/css/pages/driver.css?v=<?= asset_version('assets/css/pages/driver.css') ?>"
+    >
 </head>
-<body>
-    <main class="delivery-shell">
-        <header class="delivery-heading">
-            <div>
-                <p class="muted">Anter Ajah</p>
-                <h1>Pesanan Delivery</h1>
-                <p class="muted">
-                    Halo, <?= e($driver['name']) ?>.
-                </p>
-            </div>
 
-            <a class="button button-outline" href="/driver/index.php">
+<body class="driver-page delivery-page">
+
+    <main class="driver-shell delivery-shell">
+    
+        <header class="driver-topbar">
+    
+            <a
+                href="/driver/index.php"
+                class="driver-brand"
+                style="text-decoration:none;color:inherit"
+            >
+                <span class="driver-brand-icon">A</span>
+    
+                <div>
+                    <strong>Antar Ajah</strong>
+                    <span>Manajemen Pengantaran</span>
+                </div>
+            </a>
+    
+            <a
+                href="/driver/index.php"
+                class="driver-logout"
+                style="text-decoration:none"
+            >
                 Dashboard
             </a>
+    
         </header>
-
+    
+        <section class="driver-welcome">
+            <div>
+                <span class="driver-eyebrow">OPERASIONAL</span>
+    
+                <h1>Pesanan Delivery</h1>
+    
+                <p>
+                    Halo, <?= e($driver['name']) ?>.
+                    Kelola semua pengantaran di sini.
+                </p>
+            </div>
+    
+            <div class="driver-avatar">
+                <?= e(mb_strtoupper(mb_substr((string) $driver['name'], 0, 1))) ?>
+            </div>
+        </section>
+    
         <?php if ($message !== null): ?>
             <p class="delivery-message success" role="status">
                 <?= e($message) ?>
             </p>
         <?php endif; ?>
-
+    
         <?php if ($error !== null): ?>
             <p class="delivery-message error" role="alert">
                 <?= e($error) ?>
             </p>
         <?php endif; ?>
-
-        <section class="delivery-section">
-            <h2>Pengantaran aktif (<?= count($activeOrders) ?>)</h2>
-
-            <?php if (!$activeOrders): ?>
-                <div class="delivery-empty">
-                    Belum ada pesanan yang kamu ambil.
-                </div>
-            <?php else: ?>
-                <div class="delivery-list">
-                    <?php foreach ($activeOrders as $order): ?>
-                        <article class="delivery-card">
-                            <h3>
-                                Pesanan #<?= e($order['order_number']) ?>
-                            </h3>
-
-                            <p>
-                                Status:
-                                <strong>
-                                    <?= e(driver_status_label(
-                                        (string) $order['delivery_status']
-                                    )) ?>
-                                </strong>
-                            </p>
-
-                            <div class="delivery-meta">
-                                <div>
-                                    <span class="delivery-label">Warung</span>
-                                    <span><?= e($order['store_name']) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Pembeli</span>
-                                    <span><?= e($order['buyer_name']) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Telepon pembeli</span>
-                                    <span><?= e($order['buyer_phone']) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Alamat pengantaran</span>
-                                    <span>
-                                        <?= e($order['delivery_address'] ?: 'Alamat detail belum diisi') ?>
-                                    </span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Jarak estimasi</span>
-                                    <span>
-                                        <?= $order['delivery_distance_km'] !== null
-                                            ? e(number_format(
-                                                (float) $order['delivery_distance_km'],
-                                                2,
-                                                ',',
-                                                '.'
-                                            ) . ' km')
-                                            : 'Tidak tersedia' ?>
-                                    </span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Ongkir tercatat</span>
-                                    <span><?= e(driver_rupiah($order['delivery_fee'])) ?></span>
-                                </div>
-                            </div>
-
-                            <div class="delivery-actions">
-                                <?php if (!empty($order['delivery_maps_url'])): ?>
-                                    <a
-                                        class="button button-outline"
-                                        href="<?= e($order['delivery_maps_url']) ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Lokasi pembeli
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php if (!empty($order['buyer_phone'])): ?>
-                                    <a
-                                        class="button button-outline"
-                                        href="tel:<?= e($order['buyer_phone']) ?>"
-                                    >
-                                        Telepon pembeli
-                                    </a>
-                                <?php endif; ?>
-                                                       
-                                <?php
-                                $nextDeliveryAction = [
-                                    'accepted' => [
-                                        'label' => 'Mulai menuju warung',
-                                        'confirm' => 'Mulai perjalanan menuju warung?',
-                                    ],
-                                    'to_store' => [
-                                        'label' => 'Tandai pesanan sudah diambil',
-                                        'confirm' => 'Konfirmasi bahwa pesanan sudah diterima dari warung?',
-                                    ],
-                                    'picked_up' => [
-                                        'label' => 'Mulai menuju pembeli',
-                                        'confirm' => 'Mulai perjalanan menuju pembeli?',
-                                    ],
-                                    'to_buyer' => [
-                                        'label' => 'Selesaikan pengantaran',
-                                        'confirm' => 'Konfirmasi bahwa pesanan sudah diterima pembeli?',
-                                    ],
-                                ];
-                                
-                                $currentDeliveryStatus = (string) $order['delivery_status'];
-                                ?>
-                                
-                                <?php if (isset($nextDeliveryAction[$currentDeliveryStatus])): ?>
-                                    <form method="post" action="/driver/pesanan.php">
-                                        <?= csrf_field() ?>
-                                
-                                        <input type="hidden" name="action" value="advance">
-                                
-                                        <input
-                                            type="hidden"
-                                            name="order_id"
-                                            value="<?= (int) $order['order_id'] ?>"
-                                        >
-                                
-                                        <input
-                                            type="hidden"
-                                            name="assignment_id"
-                                            value="<?= (int) $order['assignment_id'] ?>"
-                                        >
-                                
-                                        <button
-                                            class="button button-primary"
-                                            type="submit"
-                                            onclick="return confirm(<?= e(json_encode(
-                                                $nextDeliveryAction[$currentDeliveryStatus]['confirm'],
-                                                JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
-                                            )) ?>)"
-                                        >
-                                            <?= e($nextDeliveryAction[$currentDeliveryStatus]['label']) ?>
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+    
+        <!-- PENGANTARAN AKTIF -->
+    
+        <section class="driver-section-heading">
+            <div>
+                <span class="driver-eyebrow">SEDANG BERLANGSUNG</span>
+    
+                <h2>
+                    Pengantaran aktif
+                    (<?= count($activeOrders) ?>)
+                </h2>
+            </div>
         </section>
-
-        <section class="delivery-section">
-            <h2>Antrean tersedia (<?= count($queue) ?>)</h2>
-
-            <?php if (!$queue): ?>
-                <div class="delivery-empty">
-                    Belum ada pesanan Delivery yang siap diambil.
-                </div>
-            <?php else: ?>
-                <div class="delivery-list">
-                    <?php foreach ($queue as $order): ?>
-                        <article class="delivery-card">
-                            <h3>
-                                Pesanan #<?= e($order['order_number']) ?>
-                            </h3>
-
-                            <p>
-                                Warung:
-                                <strong><?= e($order['store_name']) ?></strong>
-                            </p>
-
-                            <div class="delivery-meta">
-                                <div>
-                                    <span class="delivery-label">Pembeli</span>
-                                    <span><?= e($order['buyer_name']) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Telepon pembeli</span>
-                                    <span><?= e($order['buyer_phone']) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Alamat pengantaran</span>
-                                    <span>
-                                        <?= e($order['delivery_address'] ?: 'Alamat detail belum diisi') ?>
+    
+        <?php if (!$activeOrders): ?>
+    
+            <div class="delivery-empty">
+                Belum ada pengantaran aktif.
+                Ambil pesanan dari antrean untuk mulai bekerja.
+            </div>
+    
+        <?php else: ?>
+    
+            <div class="delivery-list">
+    
+                <?php foreach ($activeOrders as $order): ?>
+    
+                    <?php
+                    $deliverySteps = [
+                        'accepted' => 0,
+                        'to_store' => 1,
+                        'picked_up' => 2,
+                        'to_buyer' => 3,
+                        'completed' => 4,
+                    ];
+    
+                    $currentStep = $deliverySteps[
+                        (string) $order['delivery_status']
+                    ] ?? 0;
+    
+                    $nextDeliveryAction = [
+                        'accepted' => [
+                            'label' => 'Mulai menuju warung',
+                            'confirm' => 'Mulai perjalanan menuju warung?',
+                        ],
+                        'to_store' => [
+                            'label' => 'Tandai pesanan sudah diambil',
+                            'confirm' => 'Konfirmasi pesanan sudah diterima dari warung?',
+                        ],
+                        'picked_up' => [
+                            'label' => 'Mulai menuju pembeli',
+                            'confirm' => 'Mulai perjalanan menuju pembeli?',
+                        ],
+                        'to_buyer' => [
+                            'label' => 'Selesaikan pengantaran',
+                            'confirm' => 'Konfirmasi pesanan sudah diterima pembeli?',
+                        ],
+                    ];
+    
+                    $currentDeliveryStatus = (string) $order['delivery_status'];
+    
+                    $stepLabels = [
+                        'Diterima',
+                        'Menuju warung',
+                        'Diambil',
+                        'Menuju pembeli',
+                    ];
+                    ?>
+    
+                    <article class="delivery-card">
+    
+                        <div class="driver-active-top">
+    
+                            <span class="driver-live-indicator">
+                                Pengantaran aktif
+                            </span>
+    
+                            <span class="driver-order-number">
+                                #<?= e($order['order_number']) ?>
+                            </span>
+    
+                        </div>
+    
+                        <h3 style="margin-top:16px">
+                            <?= e($order['store_name']) ?>
+                        </h3>
+    
+                        <p>
+                            Pembeli:
+                            <strong><?= e($order['buyer_name']) ?></strong>
+                        </p>
+    
+                        <!-- PROGRESS PENGANTARAN -->
+    
+                        <div class="delivery-stepper">
+    
+                            <?php foreach ($stepLabels as $index => $label): ?>
+    
+                                <?php
+                                $stepClass = '';
+    
+                                if ($index < $currentStep) {
+                                    $stepClass = 'done';
+                                } elseif ($index === $currentStep) {
+                                    $stepClass = 'current';
+                                }
+                                ?>
+    
+                                <div class="delivery-step <?= $stepClass ?>">
+    
+                                    <span class="delivery-step-icon">
+                                        <?= $index < $currentStep ? '✓' : ($index + 1) ?>
                                     </span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Jarak estimasi</span>
-                                    <span>
-                                        <?= $order['delivery_distance_km'] !== null
-                                            ? e(number_format(
-                                                (float) $order['delivery_distance_km'],
-                                                2,
-                                                ',',
-                                                '.'
-                                            ) . ' km')
-                                            : 'Tidak tersedia' ?>
+    
+                                    <span class="delivery-step-label">
+                                        <?= e($label) ?>
                                     </span>
+    
                                 </div>
-
-                                <div>
-                                    <span class="delivery-label">Ongkir tercatat</span>
-                                    <span><?= e(driver_rupiah($order['delivery_fee'])) ?></span>
-                                </div>
-
-                                <div>
-                                    <span class="delivery-label">Status pesanan warung</span>
-                                    <span><?= e($order['order_status']) ?></span>
-                                </div>
+    
+                            <?php endforeach; ?>
+    
+                        </div>
+    
+                        <div class="driver-active-status">
+                            <?= e(driver_status_label($currentDeliveryStatus)) ?>
+                        </div>
+    
+                        <!-- INFORMASI PESANAN -->
+    
+                        <div class="delivery-meta">
+    
+                            <div>
+                                <span class="delivery-label">Nama warung</span>
+                                <span><?= e($order['store_name']) ?></span>
                             </div>
-
-                            <div class="delivery-actions">
-                                <?php if (!empty($order['delivery_maps_url'])): ?>
-                                    <a
-                                        class="button button-outline"
-                                        href="<?= e($order['delivery_maps_url']) ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Lokasi pembeli
-                                    </a>
-                                <?php endif; ?>
-
-                                <form method="post" action="/driver/pesanan.php">
+    
+                            <div>
+                                <span class="delivery-label">Nomor warung</span>
+                                <span><?= e($order['store_phone'] ?: '-') ?></span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Nama pembeli</span>
+                                <span><?= e($order['buyer_name']) ?></span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Nomor pembeli</span>
+                                <span><?= e($order['buyer_phone'] ?: '-') ?></span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Alamat pengantaran</span>
+                                <span>
+                                    <?= e(
+                                        $order['delivery_address']
+                                        ?: 'Alamat detail belum diisi'
+                                    ) ?>
+                                </span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Jarak estimasi</span>
+    
+                                <span>
+                                    <?= $order['delivery_distance_km'] !== null
+                                        ? e(number_format(
+                                            (float) $order['delivery_distance_km'],
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) . ' km')
+                                        : 'Tidak tersedia' ?>
+                                </span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Ongkir tercatat</span>
+                                <span>
+                                    <?= e(driver_rupiah($order['delivery_fee'])) ?>
+                                </span>
+                            </div>
+    
+                        </div>
+    
+                        <!-- AKSI -->
+    
+                        <div class="delivery-actions">
+    
+                            <?php if (!empty($order['delivery_maps_url'])): ?>
+    
+                                <a
+                                    class="button button-outline"
+                                    href="<?= e($order['delivery_maps_url']) ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Buka lokasi pembeli
+                                </a>
+    
+                            <?php endif; ?>
+    
+                            <?php if (!empty($order['buyer_phone'])): ?>
+    
+                                <a
+                                    class="button button-outline"
+                                    href="tel:<?= e($order['buyer_phone']) ?>"
+                                >
+                                    Telepon pembeli
+                                </a>
+    
+                            <?php endif; ?>
+    
+                            <?php if (isset($nextDeliveryAction[$currentDeliveryStatus])): ?>
+    
+                                <form
+                                    method="post"
+                                    action="/driver/pesanan.php"
+                                    onsubmit="return confirm(<?= e(json_encode(
+                                        $nextDeliveryAction[$currentDeliveryStatus]['confirm'],
+                                        JSON_HEX_TAG
+                                        | JSON_HEX_APOS
+                                        | JSON_HEX_QUOT
+                                        | JSON_HEX_AMP
+                                    )) ?>)"
+                                >
+    
                                     <?= csrf_field() ?>
-
+    
                                     <input
                                         type="hidden"
                                         name="action"
-                                        value="accept"
+                                        value="advance"
                                     >
-
+    
                                     <input
                                         type="hidden"
                                         name="order_id"
-                                        value="<?= (int) $order['id'] ?>"
+                                        value="<?= (int) $order['order_id'] ?>"
                                     >
-
+    
+                                    <input
+                                        type="hidden"
+                                        name="assignment_id"
+                                        value="<?= (int) $order['assignment_id'] ?>"
+                                    >
+    
                                     <button
                                         class="button button-primary"
                                         type="submit"
                                     >
-                                        Ambil pesanan
+                                        <?= e($nextDeliveryAction[$currentDeliveryStatus]['label']) ?>
                                     </button>
+    
                                 </form>
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+    
+                            <?php endif; ?>
+    
+                        </div>
+    
+                    </article>
+    
+                <?php endforeach; ?>
+    
+            </div>
+    
+        <?php endif; ?>
+    
+        <!-- ANTREAN TERSEDIA -->
+    
+        <section class="driver-section-heading">
+    
+            <div>
+                <span class="driver-eyebrow">PESANAN BARU</span>
+    
+                <h2>
+                    Antrean tersedia
+                    (<?= count($queue) ?>)
+                </h2>
+            </div>
+    
         </section>
+    
+        <?php if (!$queue): ?>
+    
+            <div class="delivery-empty">
+                Belum ada pesanan Delivery yang siap diambil.
+            </div>
+    
+        <?php else: ?>
+    
+            <div class="delivery-list">
+    
+                <?php foreach ($queue as $order): ?>
+    
+                    <article class="delivery-card">
+    
+                        <div class="driver-active-top">
+    
+                            <span class="driver-live-indicator">
+                                Siap diambil
+                            </span>
+    
+                            <span class="driver-order-number">
+                                #<?= e($order['order_number']) ?>
+                            </span>
+    
+                        </div>
+    
+                        <h3 style="margin-top:16px">
+                            <?= e($order['store_name']) ?>
+                        </h3>
+    
+                        <p>
+                            Pembeli:
+                            <strong><?= e($order['buyer_name']) ?></strong>
+                        </p>
+    
+                        <div class="delivery-meta">
+    
+                            <div>
+                                <span class="delivery-label">Nomor pembeli</span>
+                                <span><?= e($order['buyer_phone'] ?: '-') ?></span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Alamat pengantaran</span>
+                                <span>
+                                    <?= e(
+                                        $order['delivery_address']
+                                        ?: 'Alamat detail belum diisi'
+                                    ) ?>
+                                </span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Jarak estimasi</span>
+    
+                                <span>
+                                    <?= $order['delivery_distance_km'] !== null
+                                        ? e(number_format(
+                                            (float) $order['delivery_distance_km'],
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) . ' km')
+                                        : 'Tidak tersedia' ?>
+                                </span>
+                            </div>
+    
+                            <div>
+                                <span class="delivery-label">Ongkir tercatat</span>
+                                <span>
+                                    <?= e(driver_rupiah($order['delivery_fee'])) ?>
+                                </span>
+                            </div>
+    
+                        </div>
+    
+                        <div class="delivery-actions">
+    
+                            <?php if (!empty($order['delivery_maps_url'])): ?>
+    
+                                <a
+                                    class="button button-outline"
+                                    href="<?= e($order['delivery_maps_url']) ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Buka lokasi pembeli
+                                </a>
+    
+                            <?php endif; ?>
+    
+                            <form
+                                method="post"
+                                action="/driver/pesanan.php"
+                                onsubmit="return confirm('Ambil pesanan ini?')"
+                            >
+    
+                                <?= csrf_field() ?>
+    
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="accept"
+                                >
+    
+                                <input
+                                    type="hidden"
+                                    name="order_id"
+                                    value="<?= (int) $order['id'] ?>"
+                                >
+    
+                                <button
+                                    class="button button-primary"
+                                    type="submit"
+                                >
+                                    Ambil pesanan
+                                </button>
+    
+                            </form>
+    
+                        </div>
+    
+                    </article>
+    
+                <?php endforeach; ?>
+    
+            </div>
+    
+        <?php endif; ?>
+    
     </main>
+    
+    <nav class="driver-bottom-nav">
+    
+        <a
+            href="/driver/index.php"
+            class="driver-nav-item"
+        >
+            <span class="driver-nav-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+    
+        <a
+            href="/driver/pesanan.php"
+            class="driver-nav-item active"
+            aria-current="page"
+        >
+            <span class="driver-nav-icon">▤</span>
+            <span>Pesanan</span>
+    
+            <?php if (count($queue) > 0): ?>
+                <span class="driver-nav-badge">
+                    <?= count($queue) > 99 ? '99+' : count($queue) ?>
+                </span>
+            <?php endif; ?>
+        </a>
+    
+    </nav>
+
 </body>
 </html>
