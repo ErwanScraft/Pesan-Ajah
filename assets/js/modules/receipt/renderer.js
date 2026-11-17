@@ -133,7 +133,10 @@ function renderCashierInformation(container, data) {
         hourCycle: "h23",
       }).format(date);
 
-  const dateRow = createElement("div", "receipt-cashier-meta");
+  const dateRow = createElement(
+    "div",
+    "receipt-cashier-meta is-date",
+  );
 
   dateRow.append(
     createElement("span", "", dateText),
