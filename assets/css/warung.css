@@ -1703,6 +1703,16 @@
 }
 
 .store-review-modal-content {
+    /* Variabel warna untuk bottom sheet */
+    --store-surface: var(--white);
+    --store-soft: var(--surface);
+    --store-text: var(--text);
+    --store-muted: var(--muted);
+    --store-border: var(--border);
+    --store-brand: var(--green);
+    --store-brand-dark: var(--green-dark);
+    --store-brand-light: var(--green-light);
+
     position: relative;
     z-index: 1;
 
@@ -1894,6 +1904,20 @@
     transition:
         border-color 160ms ease,
         box-shadow 160ms ease;
+}
+
+.store-review-field select,
+.store-review-field textarea {
+    color: var(--store-text);
+    background-color: var(--white);
+    border: 1px solid var(--store-border);
+    opacity: 1;
+}
+
+.store-review-field select::placeholder,
+.store-review-field textarea::placeholder {
+    color: var(--store-muted);
+    opacity: 1;
 }
 
 .store-review-field textarea {
