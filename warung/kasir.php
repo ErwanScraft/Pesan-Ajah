@@ -74,75 +74,98 @@ require __DIR__ . '/_header.php';
                 </div>
             </div>
 
-            <section class="cashier-manual">
+            // Kasir Manual
 
-                <div class="cashier-section-heading">
-                    <div>
-                        <h3>Item Manual</h3>
-                        <p>Masukkan barang yang belum ada di katalog.</p>
-                    </div>
-
-                    <span class="cashier-manual-icon">+</span>
-                </div>
-
-                <form id="cashier-manual-form">
-
-                    <label class="cashier-field">
-                        <span>Nama barang</span>
-
-                        <input
-                            type="text"
-                            name="name"
-                            maxlength="150"
-                            placeholder="Contoh: Es Teh Jumbo"
-                            required
+            <button
+                type="button"
+                class="cashier-manual-trigger"
+                id="cashier-manual-open"
+            >
+                <span>+</span>
+                Tambah item manual
+            </button>
+            
+            <dialog
+                class="cashier-dialog"
+                id="cashier-manual-dialog"
+            >
+                <div class="cashier-dialog-content">
+            
+                    <div class="cashier-dialog-heading">
+                        <div>
+                            <h3>Tambah Item Manual</h3>
+                            <p>Masukkan barang yang belum tersedia di katalog.</p>
+                        </div>
+            
+                        <button
+                            type="button"
+                            class="cashier-dialog-close"
+                            data-close-dialog
+                            aria-label="Tutup"
                         >
-                    </label>
-
-                    <div class="cashier-manual-fields">
-
-                        <label class="cashier-field">
-                            <span>Harga satuan</span>
-
-                            <input
-                                type="number"
-                                name="price"
-                                min="1"
-                                max="2147483647"
-                                step="1"
-                                inputmode="numeric"
-                                placeholder="5000"
-                                required
-                            >
-                        </label>
-
-                        <label class="cashier-field">
-                            <span>Jumlah</span>
-
-                            <input
-                                type="number"
-                                name="quantity"
-                                min="1"
-                                max="2147483647"
-                                step="1"
-                                inputmode="numeric"
-                                value="1"
-                                required
-                            >
-                        </label>
-
+                            ×
+                        </button>
                     </div>
-
-                    <button
-                        type="submit"
-                        class="button button-outline cashier-manual-submit"
-                    >
-                        + Tambahkan item manual
-                    </button>
-
-                </form>
-
-            </section>
+            
+                    <form id="cashier-manual-form">
+            
+                        <label class="cashier-field">
+                            <span>Nama barang</span>
+            
+                            <input
+                                type="text"
+                                name="name"
+                                maxlength="150"
+                                placeholder="Contoh: Es Teh Jumbo"
+                                required
+                            >
+                        </label>
+            
+                        <div class="cashier-manual-fields">
+            
+                            <label class="cashier-field">
+                                <span>Harga satuan</span>
+            
+                                <input
+                                    type="number"
+                                    name="price"
+                                    min="1"
+                                    max="2147483647"
+                                    step="1"
+                                    inputmode="numeric"
+                                    placeholder="5000"
+                                    required
+                                >
+                            </label>
+            
+                            <label class="cashier-field">
+                                <span>Jumlah</span>
+            
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    min="1"
+                                    max="2147483647"
+                                    step="1"
+                                    inputmode="numeric"
+                                    value="1"
+                                    required
+                                >
+                            </label>
+            
+                        </div>
+            
+                        <button
+                            type="submit"
+                            class="button button-primary cashier-manual-submit"
+                        >
+                            Tambahkan ke Keranjang
+                        </button>
+            
+                    </form>
+            
+                </div>
+            </dialog>
 
         </section>
 
@@ -278,6 +301,27 @@ require __DIR__ . '/_header.php';
         </aside>
 
     </div>
+    
+    <button
+        type="button"
+        class="cashier-mobile-cart"
+        id="cashier-cart-toggle"
+    >
+        <span>
+            Keranjang
+            <small id="cashier-mobile-count">0 item</small>
+        </span>
+    
+        <strong id="cashier-mobile-total">Rp0</strong>
+        <span class="cashier-mobile-cart-arrow">↑</span>
+    </button>
+    
+    <button
+        type="button"
+        class="cashier-cart-backdrop"
+        id="cashier-cart-backdrop"
+        aria-label="Tutup keranjang"
+    ></button>
 
     <section
         class="cashier-receipt receipt-preview"

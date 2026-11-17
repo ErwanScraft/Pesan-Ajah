@@ -36,6 +36,71 @@ export async function initWarungKasir({
   const cashInput = $("#cashier-cash-received");
   const changeElement = $("#cashier-change");
   const totalElement = $("#cashier-total");
+  
+  const manualDialog = $("#cashier-manual-dialog");
+  const manualOpenButton = $("#cashier-manual-open");
+
+  const cartPanel = document.querySelector(".cashier-panel");
+  const cartToggle = $("#cashier-cart-toggle");
+  const cartBackdrop = $("#cashier-cart-backdrop");
+
+  function openManualDialog() {
+    if (!manualDialog?.showModal) {
+      return;
+    }
+
+    manualDialog.showModal();
+
+    manualDialog.querySelector('input[name="name"]')?.focus();
+  }
+
+  function closeManualDialog() {
+    if (manualDialog?.open) {
+      manualDialog.close();
+    }
+  }
+
+  function openCart() {
+    cartPanel?.classList.add("is-open");
+    cartBackdrop?.classList.add("is-visible");
+    cartToggle?.classList.add("is-hidden");
+
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeCart() {
+    cartPanel?.classList.remove("is-open");
+    cartBackdrop?.classList.remove("is-visible");
+    cartToggle?.classList.remove("is-hidden");
+
+    document.body.style.overflow = "";
+  }
+
+  manualOpenButton?.addEventListener(
+    "click",
+    openManualDialog,
+  );
+
+  manualDialog?.querySelectorAll("[data-close-dialog]").forEach(
+    (button) => {
+      button.addEventListener("click", closeManualDialog);
+    },
+  );
+
+  manualDialog?.addEventListener("click", (event) => {
+    if (event.target === manualDialog) {
+      closeManualDialog();
+    }
+  });
+
+  cartToggle?.addEventListener("click", openCart);
+  cartBackdrop?.addEventListener("click", closeCart);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeCart();
+    }
+  });
 
   function createElement(tag, className = "", text = "") {
     const element = document.createElement(tag);
@@ -257,14 +322,14 @@ export async function initWarungKasir({
       information.append(
         createElement("strong", "", product.name),
         createElement(
-          "small",
-          "",
-          product.variant || product.unit || "Produk",
-        ),
-        createElement(
           "span",
           "cashier-product-price",
           formatRupiah(product.price),
+        ),
+        createElement(
+          "small",
+          "",
+          product.variant || product.unit || "Produk",
         ),
       );
 
@@ -393,6 +458,17 @@ export async function initWarungKasir({
 
     $("#cashier-item-count").textContent =
       `${totalItems} item`;
+      
+    const mobileCount = $("#cashier-mobile-count");
+    const mobileTotal = $("#cashier-mobile-total");
+
+    if (mobileCount) {
+      mobileCount.textContent = `${totalItems} item`;
+    }
+
+    if (mobileTotal) {
+      mobileTotal.textContent = formatRupiah(total);
+    }
 
     $("#cashier-total-items").textContent =
       String(totalItems);
@@ -464,10 +540,12 @@ export async function initWarungKasir({
     }
 
     addManualItem(name, price, quantity);
-
+    
     manualForm.reset();
     manualForm.elements.quantity.value = "1";
-
+    
+    closeManualDialog();
+    
     notify("Item manual ditambahkan.", "success");
   });
 
@@ -602,6 +680,7 @@ export async function initWarungKasir({
 
       cart = [];
       cashInput.value = "";
+      closeCart();
 
       await loadProducts();
 
@@ -648,6 +727,7 @@ export async function initWarungKasir({
 
   $("#cashier-new").addEventListener("click", () => {
     receipt = null;
+    closeCart();
 
     receiptRoot.replaceChildren();
     receiptPreview.hidden = true;
