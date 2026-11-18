@@ -72,32 +72,40 @@ $productId = api_positive_id(
 
 $action = $input['action'] ?? null;
 
-if (!in_array($action, ['set', 'increase', 'decrease'], true)) {
+if (!in_array(
+    $action,
+    ['set', 'increase', 'decrease', 'unlimited'],
+    true
+)) {
     api_json([
         'success' => false,
         'message' => 'Aksi perubahan stock tidak valid.',
     ], 422);
 }
 
-$quantity = filter_var(
-    $input['quantity'] ?? null,
-    FILTER_VALIDATE_INT,
-    [
-        'options' => [
-            'min_range' => $action === 'set' ? 0 : 1,
-            'max_range' => 2147483647,
-        ],
-    ]
-);
+$quantity = null;
 
-if ($quantity === false) {
-    api_json([
-        'success' => false,
-        'message' => 'Jumlah stock tidak valid.',
-    ], 422);
+if ($action !== 'unlimited') {
+    $quantity = filter_var(
+        $input['quantity'] ?? null,
+        FILTER_VALIDATE_INT,
+        [
+            'options' => [
+                'min_range' => $action === 'set' ? 0 : 1,
+                'max_range' => 2147483647,
+            ],
+        ]
+    );
+
+    if ($quantity === false) {
+        api_json([
+            'success' => false,
+            'message' => 'Jumlah stock tidak valid.',
+        ], 422);
+    }
+
+    $quantity = (int) $quantity;
 }
-
-$quantity = (int) $quantity;
 
 $db = database();
 
@@ -138,58 +146,83 @@ try {
     $currentStock = $product['stock_quantity'] === null
         ? null
         : (int) $product['stock_quantity'];
-
-    if ($action === 'set') {
-        $newStock = $quantity;
-    } elseif ($action === 'increase') {
-        if ($currentStock === null) {
+    
+    if ($action === 'unlimited') {
+        $update = $db->prepare(
+            'UPDATE products
+    
+             SET stock_quantity = NULL,
+                 is_available = 1
+    
+             WHERE id = :product_id
+               AND store_id = :store_id'
+        );
+    
+        $update->execute([
+            'product_id' => $productId,
+            'store_id' => $storeId,
+        ]);
+    
+        $newStock = null;
+    
+    } else {
+        if ($action === 'set') {
             $newStock = $quantity;
+    
+        } elseif ($action === 'increase') {
+            if ($currentStock === null) {
+                $newStock = $quantity;
+            } else {
+                if ($currentStock > 2147483647 - $quantity) {
+                    throw new RuntimeException(
+                        'Jumlah stock melebihi batas.'
+                    );
+                }
+    
+                $newStock = $currentStock + $quantity;
+            }
+    
         } else {
-            if ($currentStock > 2147483647 - $quantity) {
+            if ($currentStock === null) {
                 throw new RuntimeException(
-                    'Jumlah stock melebihi batas.'
+                    'Tentukan stock awal produk terlebih dahulu.'
                 );
             }
-
-            $newStock = $currentStock + $quantity;
+    
+            if ($currentStock < $quantity) {
+                throw new RuntimeException(
+                    'Stock tidak mencukupi untuk dikurangi.'
+                );
+            }
+    
+            $newStock = $currentStock - $quantity;
         }
-    } else {
-        if ($currentStock === null) {
-            throw new RuntimeException(
-                'Tentukan stock awal produk terlebih dahulu.'
-            );
-        }
-
-        if ($currentStock < $quantity) {
-            throw new RuntimeException(
-                'Stock tidak mencukupi untuk dikurangi.'
-            );
-        }
-
-        $newStock = $currentStock - $quantity;
+    
+        $update = $db->prepare(
+            'UPDATE products
+    
+             SET stock_quantity = :stock_quantity
+    
+             WHERE id = :product_id
+               AND store_id = :store_id'
+        );
+    
+        $update->execute([
+            'stock_quantity' => $newStock,
+            'product_id' => $productId,
+            'store_id' => $storeId,
+        ]);
     }
 
-    $update = $db->prepare(
-        'UPDATE products
-
-         SET stock_quantity = :stock_quantity
-
-         WHERE id = :product_id
-           AND store_id = :store_id'
-    );
-
-    $update->execute([
-        'stock_quantity' => $newStock,
-        'product_id' => $productId,
-        'store_id' => $storeId,
-    ]);
-
     $db->commit();
-
+    
     api_json([
         'success' => true,
-        'message' => 'Stock berhasil diperbarui.',
+        'message' => $action === 'unlimited'
+            ? 'Stock tanpa batas berhasil diaktifkan.'
+            : 'Stock berhasil diperbarui.',
         'stock_quantity' => $newStock,
+        'is_available' => true,
     ]);
 
 } catch (RuntimeException $exception) {

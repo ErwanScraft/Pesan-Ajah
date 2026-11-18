@@ -149,9 +149,8 @@
 
 .stock-item-info {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   min-width: 0;
-  gap: 5px;
 }
 
 .stock-item-name {
@@ -164,14 +163,9 @@
   white-space: nowrap;
 }
 
-.stock-item-unit {
-  color: var(--text-muted, #888);
-  font-size: 0.78rem;
-}
-
 .stock-item-controls {
   display: grid;
-  grid-template-columns: 88px 38px 38px;
+  grid-template-columns: 38px 88px 38px 38px;
   align-items: center;
   gap: 7px;
 }
@@ -242,6 +236,38 @@
   text-align: center;
 }
 
+.stock-unlimited-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border, #dedede);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-muted, #777);
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.stock-unlimited-button.active {
+  border-color: var(--primary, #176b45);
+  background: var(--primary, #176b45);
+  color: #fff;
+}
+
+.stock-unlimited-button:disabled {
+  cursor: default;
+}
+
 @media (max-width: 600px) {
   .stock-page {
     gap: 14px;
@@ -291,8 +317,22 @@
   }
 
   .stock-item-controls {
-    grid-template-columns: 58px 32px 32px;
+    grid-template-columns: 32px 58px 32px 32px;
     gap: 4px;
+  }
+  
+  .stock-unlimited-button {
+    width: 32px;
+    height: 34px;
+    border-radius: 7px;
+    font-size: 1.2rem;
+  }
+  
+  .stock-adjust-button {
+    width: 32px;
+    height: 34px;
+    border-radius: 7px;
+    font-size: 1.15rem;
   }
 
   .stock-quantity-input {
@@ -301,12 +341,6 @@
     font-size: 0.82rem;
   }
 
-  .stock-adjust-button {
-    width: 32px;
-    height: 34px;
-    border-radius: 7px;
-    font-size: 1.15rem;
-  }
 }
 
 @media (max-width: 360px) {
@@ -322,8 +356,18 @@
   }
 
   .stock-item-controls {
-    grid-template-columns: 48px 29px 29px;
+    grid-template-columns: 28px 48px 29px 29px;
     gap: 3px;
+  }
+  
+  .stock-unlimited-button {
+    width: 28px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+  
+  .stock-adjust-button {
+    width: 29px;
   }
 
   .stock-adjust-button {
