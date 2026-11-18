@@ -22,6 +22,31 @@ export async function initWarungProducts({
   let editingProductId = null;
 
   const productImageInput = $("#product-image-input");
+  const uploadProductImageButton = $(
+    "#upload-product-image"
+  );
+  
+  const cameraProductImageButton = $(
+    "#camera-product-image"
+  );
+  
+  uploadProductImageButton?.addEventListener("click", () => {
+    if (!productImageInput) return;
+  
+    productImageInput.removeAttribute("capture");
+    productImageInput.click();
+  });
+  
+  cameraProductImageButton?.addEventListener("click", () => {
+    if (!productImageInput) return;
+  
+    productImageInput.setAttribute(
+      "capture",
+      "environment"
+    );
+  
+    productImageInput.click();
+  });
   const productImagePreview = $("#product-image-preview-img");
   const productImagePlaceholder = $("#product-image-placeholder");
   const removeProductImageButton = $("#remove-product-image");
@@ -81,6 +106,8 @@ export async function initWarungProducts({
   }
 
   productImageInput?.addEventListener("change", () => {
+    productImageInput.removeAttribute("capture");
+    
     const file = productImageInput.files?.[0];
 
     if (!file) {
@@ -164,57 +191,32 @@ export async function initWarungProducts({
 
   const productForm = $("#product-form");
   const productList = $("#manage-products");
-  const productModal = $("#product-editor-modal");
   const addProductButton = $("#add-product-button");
   const productSearchInput = $("#product-search");
   const productStatusFilter = $("#product-status-filter");
-  const stockSheet = createBottomSheet();
+  const bottomSheet = createBottomSheet();
+  const productFormHost = $("#product-form-host");
 
-  let productModalPreviousFocus = null;
-
-  function openProductModal() {
-    if (!productModal || !productForm) {
-      return;
-    }
-
-    productModalPreviousFocus = document.activeElement;
-
-    productModal.hidden = false;
-    document.body.classList.add("products-modal-open");
-
-    window.requestAnimationFrame(() => {
-      productForm.querySelector('input[name="name"]')?.focus();
+  function openProductSheet() {
+    if (!productForm) return;
+  
+    bottomSheet.open({
+      title: editingProductId !== null
+        ? "Edit Item"
+        : "Tambah Item",
+  
+      content: productForm,
+      size: "large",
+  
+      onClose: () => {
+        productFormHost?.append(productForm);
+      },
     });
   }
-
-  function closeProductModal() {
-    if (!productModal || productModal.hidden) {
-      return;
-    }
-
-    productModal.hidden = true;
-    document.body.classList.remove("products-modal-open");
-
-    if (productModalPreviousFocus instanceof HTMLElement) {
-      productModalPreviousFocus.focus();
-    }
-  }
-
+  
   addProductButton?.addEventListener("click", () => {
     resetProductForm();
-    openProductModal();
-  });
-
-  productModal
-    ?.querySelectorAll("[data-close-product-modal]")
-    .forEach((button) => {
-      button.addEventListener("click", closeProductModal);
-    });
-
-  productModal?.addEventListener("click", (event) => {
-    if (event.target === productModal) {
-      closeProductModal();
-    }
+    openProductSheet();
   });
   
   function openStockSheet(product) {
@@ -395,7 +397,7 @@ export async function initWarungProducts({
         product.stock_quantity = result.stock_quantity;
         product.available = result.is_available;
   
-        stockSheet.close();
+        bottomSheet.close();
   
         await loadProducts();
   
@@ -415,7 +417,7 @@ export async function initWarungProducts({
   
     renderControls();
   
-    stockSheet.open({
+    bottomSheet.open({
       title: "Atur Stok",
       content,
       size: "auto",
@@ -776,23 +778,12 @@ export async function initWarungProducts({
 
     resetProductImageState();
 
-    const title = $("#product-form-title");
-    const submit = productForm.querySelector('[type="submit"]');
-    const cancel = $("#cancel-product");
-
-    if (title) {
-      title.textContent = "Tambah produk baru";
+    if (
+      bottomSheet.isOpen() &&
+      !productFormHost?.contains(productForm)
+    ) {
+      bottomSheet.close();
     }
-
-    if (submit) {
-      submit.textContent = "Simpan produk";
-    }
-
-    if (cancel) {
-      cancel.hidden = true;
-    }
-
-    closeProductModal();
   }
 
   function parseProductUnit(unitValue) {
@@ -892,14 +883,7 @@ export async function initWarungProducts({
       description.value = product.description || "";
     }
 
-    $("#product-form-title").textContent = "Edit produk";
-
-    productForm.querySelector('[type="submit"]').textContent =
-      "Simpan perubahan";
-
-    $("#cancel-product").hidden = false;
-
-    openProductModal();
+    openProductSheet();
   }
 
   async function deleteProduct(id) {
@@ -1125,19 +1109,11 @@ export async function initWarungProducts({
       } finally {
         if (submitButton) {
           submitButton.disabled = false;
-          submitButton.textContent =
-            editingProductId !== null
-              ? "Simpan perubahan"
-              : "Simpan produk";
+          submitButton.textContent = "Simpan";
         }
       }
     });
   }
-
-  $("#cancel-product")?.addEventListener(
-    "click",
-    resetProductForm,
-  );
 
   await loadProducts();
 }

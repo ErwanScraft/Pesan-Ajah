@@ -15,8 +15,6 @@
    Catatan:
    - Tombol umum tetap menggunakan components.css.
    - Layout dashboard tetap menggunakan dashboard.css.
-   - Seluruh aturan khusus dibatasi pada .products-page,
-     kecuali body.products-modal-open untuk penguncian scroll.
 ========================================================= */
 
 .products-page,
@@ -429,190 +427,57 @@
 }
 
 /* =========================================================
-   10. MODAL TAMBAH / EDIT PRODUK
+   FORM TAMBAH / EDIT PRODUK — BOTTOM SHEET
 ========================================================= */
 
-.products-page .products-modal[hidden] {
+#product-form-host[hidden] {
   display: none !important;
 }
 
-.products-page .products-modal {
-  position: fixed;
-  z-index: 1200;
-  inset: 0;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  padding: 20px;
-  isolation: isolate;
-}
-
-.products-page .products-modal-backdrop {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: rgb(14 29 21 / 58%);
-  cursor: default;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.products-page .products-modal-dialog {
-  position: relative;
+.product-form--sheet {
   display: flex;
-  width: min(100%, 760px);
-  max-height: min(90vh, 900px);
-  max-height: min(90dvh, 900px);
-  min-height: 0;
+  min-width: 0;
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--white);
-  box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
-  animation: products-modal-enter 160ms ease-out;
-}
-
-.products-page .products-modal-header {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--border);
-  background: var(--white);
-}
-
-.products-page .products-modal-eyebrow {
-  margin: 0 0 4px;
-  color: var(--green);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-}
-
-.products-page .products-modal-title {
+  gap: 17px;
   margin: 0;
-  color: var(--text);
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.products-page .products-modal-close {
-  display: inline-grid;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  place-items: center;
-  margin: 0;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--white);
-  color: var(--text);
-  font: inherit;
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
-}
-
-.products-page .products-modal-close:hover {
-  border-color: var(--green);
-  background: var(--green-light);
-  color: var(--green-dark);
-}
-
-.products-page .products-modal-close:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 3px;
-}
-
-
-/* =========================================================
-   11. FORM PRODUK DI DALAM MODAL
-========================================================= */
-
-.products-page .products-modal-dialog > .product-form {
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  padding: 22px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  padding: 20px;
+  overflow: visible;
   border: 0;
   background: var(--white);
-  -webkit-overflow-scrolling: touch;
 }
 
-.products-page .product-form-heading {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 18px;
-}
-
-.products-page .product-form-heading h3 {
-  margin: 0;
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.4;
-  letter-spacing: -0.2px;
-}
-
-.products-page .products-modal-dialog .product-form-grid {
-  display: grid;
-  min-width: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.products-page .form-field {
+.product-form--sheet .form-field {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 8px;
 }
 
-.products-page .form-field > span {
+.product-form--sheet .form-field > span {
   color: var(--text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
 }
 
-.products-page .form-field > span small {
+.product-form--sheet .form-field > span small {
   color: var(--muted);
   font-size: 11px;
   font-weight: 400;
 }
 
-.products-page .form-field input:not([type="checkbox"]):not([type="file"]),
-.products-page .form-field select,
-.products-page .form-field textarea {
+.product-form--sheet .form-field input:not([type="checkbox"]):not([type="file"]),
+.product-form--sheet .form-field select,
+.product-form--sheet .form-field textarea {
   display: block;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   margin: 0;
-  padding: 11px 12px;
+  padding: 11px 13px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 11px;
   outline: none;
   background: var(--white);
   color: var(--text);
@@ -624,95 +489,71 @@
     box-shadow 160ms ease;
 }
 
-.products-page .form-field textarea {
-  min-height: 100px;
+.product-form--sheet .form-field textarea {
+  min-height: 110px;
   resize: vertical;
 }
 
-.products-page .form-field input::placeholder,
-.products-page .form-field textarea::placeholder {
+.product-form--sheet .form-field input::placeholder,
+.product-form--sheet .form-field textarea::placeholder {
   color: #9aa39b;
   opacity: 1;
 }
 
-.products-page .form-field input:focus,
-.products-page .form-field select:focus,
-.products-page .form-field textarea:focus {
+.product-form--sheet .form-field input:focus,
+.product-form--sheet .form-field select:focus,
+.product-form--sheet .form-field textarea:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgb(18 107 70 / 10%);
 }
 
-.products-page .form-field input:focus-visible,
-.products-page .form-field select:focus-visible,
-.products-page .form-field textarea:focus-visible {
-  outline: none;
-}
-
-.products-page .form-field input:disabled,
-.products-page .form-field select:disabled,
-.products-page .form-field textarea:disabled {
+.product-form--sheet .form-field input:disabled,
+.product-form--sheet .form-field select:disabled,
+.product-form--sheet .form-field textarea:disabled {
   cursor: not-allowed;
   opacity: 0.65;
 }
 
-.products-page .product-description-field {
-  grid-column: 1 / -1;
-}
+/* SATUAN */
 
-
-/* =========================================================
-   12. SATUAN PRODUK
-========================================================= */
-
-.products-page .product-unit-field {
+.product-form--sheet .product-unit-field {
   min-width: 0;
 }
 
-.products-page .product-unit-inputs {
+.product-form--sheet .product-unit-inputs {
   display: grid;
   min-width: 0;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: 0.7fr 1.3fr;
   gap: 10px;
 }
 
-.products-page .product-unit-inputs input,
-.products-page .product-unit-inputs select {
+.product-form--sheet .product-unit-inputs input,
+.product-form--sheet .product-unit-inputs select {
   width: 100%;
   min-width: 0;
-  max-width: 100%;
 }
 
-.products-page .product-unit-help {
-  display: block;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.5;
-}
+/* GAMBAR */
 
-
-/* =========================================================
-   13. FOTO PRODUK
-========================================================= */
-
-.products-page .product-image-field {
+.product-form--sheet .product-image-field {
   min-width: 0;
 }
 
-.products-page .product-image-editor {
+.product-form--sheet .product-image-editor {
   display: flex;
   min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
 }
 
-.products-page .product-image-preview {
+.product-form--sheet .product-image-preview {
   position: relative;
   display: grid;
-  width: 140px;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 112px;
+  height: 112px;
+  flex: 0 0 112px;
   overflow: hidden;
   place-items: center;
   border: 1px dashed var(--border);
@@ -721,75 +562,70 @@
   color: var(--muted);
 }
 
-.products-page .product-image-preview > img {
+.product-form--sheet .product-image-preview > img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
 }
 
-.products-page .product-image-preview > img[hidden] {
+.product-form--sheet .product-image-preview > img[hidden] {
   display: none !important;
 }
 
-.products-page .product-image-preview > span {
-  display: grid;
+.product-form--sheet .product-image-preview > span {
+  display: flex;
   width: 100%;
   height: 100%;
-  padding: 12px;
-  place-items: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 10px;
   text-align: center;
 }
 
-.products-page .product-image-preview > span[hidden] {
+.product-form--sheet .product-image-preview > span[hidden] {
   display: none !important;
 }
 
-.products-page .product-image-actions {
+.product-form--sheet .product-image-actions {
   display: flex;
   min-width: 0;
-  flex-wrap: wrap;
-  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
 }
 
-.products-page .product-image-picker {
+.product-form--sheet .product-image-actions .button {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.products-page .product-image-picker:hover {
-  border-color: var(--green);
-  background: var(--green-light);
-  color: var(--green-dark);
-}
-
-.products-page .product-image-actions button[hidden],
-.products-page .product-form-actions [hidden],
-.products-page .product-remove-image-option[hidden] {
+.product-form--sheet .product-image-actions [hidden],
+.product-form--sheet .product-remove-image-option[hidden] {
   display: none !important;
 }
 
-.products-page .form-help {
+.product-form--sheet .form-help {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.6;
+  font-size: 10px;
+  line-height: 1.5;
 }
 
+/* CHECKBOX */
 
-/* =========================================================
-   14. CHECKBOX FORM
-========================================================= */
-
-.products-page .form-checkbox {
+.product-form--sheet .form-checkbox {
   display: flex;
   min-width: 0;
   align-items: center;
@@ -798,91 +634,79 @@
   color: var(--text);
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.5;
   cursor: pointer;
 }
 
-.products-page .form-checkbox input[type="checkbox"] {
+.product-form--sheet .form-checkbox input[type="checkbox"] {
   width: 17px;
   height: 17px;
   flex: 0 0 17px;
   margin: 0;
   accent-color: var(--green);
-  cursor: pointer;
 }
 
-.products-page .product-availability {
-  margin-top: 20px;
+.product-form--sheet .product-availability {
+  margin-top: 0;
 }
 
-.products-page .product-remove-image-option {
-  margin-top: 2px;
-}
+/* TOMBOL SIMPAN */
 
-
-/* =========================================================
-   15. TOMBOL AKSI FORM
-========================================================= */
-
-.products-page .product-form-actions {
+.product-form--sheet .product-form-actions {
   position: sticky;
-  bottom: -22px;
-  z-index: 1;
+  bottom: 0;
+  z-index: 2;
   display: flex;
-  min-width: 0;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin: 20px -22px -22px;
-  padding: 14px 22px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 0;
   border-top: 1px solid var(--border);
   background: var(--white);
 }
 
-.products-page .product-form-actions .button {
+.product-form--sheet .product-form-actions .button {
   display: inline-flex;
-  min-height: 42px;
+  width: 100%;
+  min-height: 47px;
   align-items: center;
   justify-content: center;
-  padding: 10px 17px;
-  border-radius: 10px;
-  font-size: 12px;
+  border-radius: 11px;
+  font-size: 13px;
   font-weight: 750;
 }
 
-
-/* =========================================================
-   16. SCROLL DAN ANIMASI MODAL
-========================================================= */
-
-body.products-modal-open {
-  overflow: hidden;
+.product-form--sheet .product-form-actions .button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
-@keyframes products-modal-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.99);
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+  .product-form--sheet {
+    gap: 16px;
+    padding: 17px 16px calc(
+      12px + env(safe-area-inset-bottom, 0px)
+    );
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes products-modal-mobile-enter {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
+  .product-form--sheet .product-image-preview {
+    width: 104px;
+    height: 104px;
+    flex-basis: 104px;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .product-form--sheet .product-image-editor {
+    gap: 12px;
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .product-form--sheet *,
+  .product-form--sheet *::before,
+  .product-form--sheet *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* =========================================================
    17. TABLET DAN MOBILE
@@ -939,52 +763,6 @@ body.products-modal-open {
 
   .manage-actions {
     flex: 0 0 auto;
-  }
-
-  .products-page .products-modal {
-    align-items: end;
-    padding: 0;
-  }
-
-  .products-page .products-modal-dialog {
-    width: 100%;
-    max-height: 94vh;
-    max-height: 94dvh;
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
-    border-radius: 18px 18px 0 0;
-    animation-name: products-modal-mobile-enter;
-  }
-
-  .products-page .products-modal-header {
-    padding: 15px 16px;
-  }
-
-  .products-page .products-modal-dialog > .product-form {
-    padding: 17px 16px;
-  }
-
-  .products-page .products-modal-dialog .product-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 15px;
-  }
-
-  .products-page .products-modal-dialog .product-description-field {
-    grid-column: auto;
-  }
-
-  .products-page .products-modal-dialog .product-form-actions {
-    bottom: -17px;
-    flex-direction: column-reverse;
-    align-items: stretch;
-    margin: 18px -16px -17px;
-    padding: 12px 16px
-      calc(12px + env(safe-area-inset-bottom, 0px));
-  }
-
-  .products-page .products-modal-dialog .product-form-actions .button {
-    width: 100%;
   }
 }
 
