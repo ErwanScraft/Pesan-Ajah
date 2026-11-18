@@ -67,3 +67,6 @@
 
 /* 17. Shared Receipt Module */
 @import url("./modules/receipt.css");
+
+/* 18. Shared Bottom Sheet Module */
+@import url("./modules/bottom-sheet.css");
