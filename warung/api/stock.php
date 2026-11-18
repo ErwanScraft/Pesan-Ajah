@@ -74,7 +74,7 @@ $action = $input['action'] ?? null;
 
 if (!in_array(
     $action,
-    ['set', 'increase', 'decrease', 'unlimited'],
+    ['set', 'increase', 'decrease', 'unlimited', 'configure'],
     true
 )) {
     api_json([
@@ -84,8 +84,51 @@ if (!in_array(
 }
 
 $quantity = null;
+$isUnlimited = false;
+$isAvailable = null;
 
-if ($action !== 'unlimited') {
+if ($action === 'configure') {
+    $isUnlimited = filter_var(
+        $input['unlimited'] ?? null,
+        FILTER_VALIDATE_BOOLEAN,
+        FILTER_NULL_ON_FAILURE
+    );
+
+    $isAvailable = filter_var(
+        $input['is_available'] ?? null,
+        FILTER_VALIDATE_BOOLEAN,
+        FILTER_NULL_ON_FAILURE
+    );
+
+    if ($isUnlimited === null || $isAvailable === null) {
+        api_json([
+            'success' => false,
+            'message' => 'Konfigurasi stok tidak valid.',
+        ], 422);
+    }
+
+    if (!$isUnlimited) {
+        $quantity = filter_var(
+            $input['quantity'] ?? null,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 0,
+                    'max_range' => 2147483647,
+                ],
+            ]
+        );
+
+        if ($quantity === false) {
+            api_json([
+                'success' => false,
+                'message' => 'Jumlah stock tidak valid.',
+            ], 422);
+        }
+
+        $quantity = (int) $quantity;
+    }
+} elseif ($action !== 'unlimited') {
     $quantity = filter_var(
         $input['quantity'] ?? null,
         FILTER_VALIDATE_INT,
@@ -148,7 +191,27 @@ try {
         ? null
         : (int) $product['stock_quantity'];
     
-    if ($action === 'unlimited') {
+    if ($action === 'configure') {
+        $newStock = $isUnlimited ? null : $quantity;
+    
+        $update = $db->prepare(
+            'UPDATE products
+    
+             SET stock_quantity = :stock_quantity,
+                 is_available = :is_available
+    
+             WHERE id = :product_id
+               AND store_id = :store_id'
+        );
+    
+        $update->execute([
+            'stock_quantity' => $newStock,
+            'is_available' => (int) $isAvailable,
+            'product_id' => $productId,
+            'store_id' => $storeId,
+        ]);
+    
+    } elseif ($action === 'unlimited') {
         $update = $db->prepare(
             'UPDATE products
     
@@ -219,13 +282,17 @@ try {
     
     api_json([
         'success' => true,
-        'message' => $action === 'unlimited'
-            ? 'Stock tanpa batas berhasil diaktifkan.'
-            : 'Stock berhasil diperbarui.',
+        'message' => $action === 'configure'
+            ? 'Stok produk berhasil diperbarui.'
+            : ($action === 'unlimited'
+                ? 'Stock tanpa batas berhasil diaktifkan.'
+                : 'Stock berhasil diperbarui.'),
         'stock_quantity' => $newStock,
-        'is_available' => $action === 'unlimited'
-            ? true
-            : (bool) $product['is_available'],
+        'is_available' => $action === 'configure'
+            ? $isAvailable
+            : ($action === 'unlimited'
+                ? true
+                : (bool) $product['is_available']),
     ]);
 
 } catch (RuntimeException $exception) {

@@ -5,6 +5,7 @@
  * menggunakan implementasi bersama dari dashboard.js.
  */
 import { captureError } from "../../core/error-logger.js";
+import { createBottomSheet } from "../../modules/bottom-sheet.js";
  
 export async function initWarungProducts({
   $,
@@ -167,6 +168,7 @@ export async function initWarungProducts({
   const addProductButton = $("#add-product-button");
   const productSearchInput = $("#product-search");
   const productStatusFilter = $("#product-status-filter");
+  const stockSheet = createBottomSheet();
 
   let productModalPreviousFocus = null;
 
@@ -214,7 +216,211 @@ export async function initWarungProducts({
       closeProductModal();
     }
   });
-
+  
+  function openStockSheet(product) {
+    const content = document.createElement("form");
+    content.className = "product-stock-sheet";
+  
+    let isUnlimited = product.stock_quantity === null;
+    let isAvailable = product.available;
+  
+    const quantityInput = document.createElement("input");
+  
+    quantityInput.type = "number";
+    quantityInput.className = "product-stock-input";
+    quantityInput.min = "0";
+    quantityInput.max = "2147483647";
+    quantityInput.step = "1";
+    quantityInput.inputMode = "numeric";
+    quantityInput.value = isUnlimited
+      ? ""
+      : String(product.stock_quantity ?? 0);
+  
+    quantityInput.setAttribute(
+      "aria-label",
+      "Jumlah stok produk",
+    );
+  
+    const stepper = document.createElement("div");
+    stepper.className = "product-stock-stepper";
+  
+    const decreaseButton = document.createElement("button");
+    decreaseButton.type = "button";
+    decreaseButton.className = "product-stock-step";
+    decreaseButton.textContent = "−";
+    decreaseButton.setAttribute("aria-label", "Kurangi stok");
+  
+    const increaseButton = document.createElement("button");
+    increaseButton.type = "button";
+    increaseButton.className = "product-stock-step";
+    increaseButton.textContent = "+";
+    increaseButton.setAttribute("aria-label", "Tambah stok");
+  
+    stepper.append(
+      decreaseButton,
+      quantityInput,
+      increaseButton,
+    );
+  
+    const options = document.createElement("div");
+    options.className = "product-stock-options";
+  
+    const unlimitedButton = document.createElement("button");
+    unlimitedButton.type = "button";
+    unlimitedButton.className = "product-stock-option";
+    unlimitedButton.textContent = "∞ Unlimited";
+  
+    const availabilityButton = document.createElement("button");
+    availabilityButton.type = "button";
+    availabilityButton.className = "product-stock-option";
+  
+    const submitButton = document.createElement("button");
+    submitButton.type = "submit";
+    submitButton.className = "button button-primary product-stock-submit";
+    submitButton.textContent = "Terapkan";
+  
+    options.append(
+      unlimitedButton,
+      availabilityButton,
+    );
+  
+    content.append(
+      stepper,
+      options,
+      submitButton,
+    );
+  
+    function renderControls() {
+      quantityInput.disabled = isUnlimited;
+      decreaseButton.disabled = isUnlimited;
+      increaseButton.disabled = isUnlimited;
+  
+      unlimitedButton.classList.toggle(
+        "active",
+        isUnlimited,
+      );
+  
+      unlimitedButton.setAttribute(
+        "aria-pressed",
+        String(isUnlimited),
+      );
+  
+      availabilityButton.classList.toggle(
+        "active",
+        isAvailable,
+      );
+  
+      availabilityButton.setAttribute(
+        "aria-pressed",
+        String(isAvailable),
+      );
+  
+      availabilityButton.textContent = isAvailable
+        ? "✓ Tersedia"
+        : "Habis";
+    }
+  
+    unlimitedButton.addEventListener("click", () => {
+      isUnlimited = !isUnlimited;
+  
+      if (!isUnlimited && !quantityInput.value) {
+        quantityInput.value = "1";
+      }
+  
+      renderControls();
+    });
+  
+    availabilityButton.addEventListener("click", () => {
+      isAvailable = !isAvailable;
+      renderControls();
+    });
+  
+    decreaseButton.addEventListener("click", () => {
+      const quantity = Number(quantityInput.value || 0);
+  
+      quantityInput.value = String(
+        Math.max(0, quantity - 1),
+      );
+    });
+  
+    increaseButton.addEventListener("click", () => {
+      const quantity = Number(quantityInput.value || 0);
+  
+      if (quantity >= 2147483647) {
+        return;
+      }
+  
+      quantityInput.value = String(quantity + 1);
+    });
+  
+    content.addEventListener("submit", async (event) => {
+      event.preventDefault();
+  
+      let quantity = null;
+  
+      if (!isUnlimited) {
+        const value = quantityInput.value.trim();
+  
+        if (!/^\d+$/.test(value)) {
+          notify("Masukkan jumlah stok yang valid.", "error");
+          quantityInput.focus();
+          return;
+        }
+  
+        quantity = Number(value);
+  
+        if (
+          !Number.isSafeInteger(quantity)
+          || quantity < 0
+          || quantity > 2147483647
+        ) {
+          notify("Jumlah stok berada di luar batas.", "error");
+          quantityInput.focus();
+          return;
+        }
+      }
+  
+      submitButton.disabled = true;
+      submitButton.textContent = "Menyimpan...";
+  
+      try {
+        const result = await postJSON(API.stock, {
+          product_id: product.id,
+          action: "configure",
+          quantity,
+          unlimited: isUnlimited,
+          is_available: isAvailable,
+        });
+  
+        product.stock_quantity = result.stock_quantity;
+        product.available = result.is_available;
+  
+        stockSheet.close();
+  
+        await loadProducts();
+  
+        notify(result.message, "success");
+      } catch (error) {
+        notify(
+          error instanceof Error
+            ? error.message
+            : "Stok produk gagal diperbarui.",
+          "error",
+        );
+  
+        submitButton.disabled = false;
+        submitButton.textContent = "Terapkan";
+      }
+    });
+  
+    renderControls();
+  
+    stockSheet.open({
+      title: "Atur Stok",
+      content,
+      size: "auto",
+    });
+  }
 
   function renderProducts() {
     if (!productList) return;
@@ -415,102 +621,46 @@ export async function initWarungProducts({
       return info;
     }
 
-    function renderAvailabilityButton(button, product) {
-      const available = product.available;
-
-      button.classList.toggle("is-available", available);
-      button.classList.toggle("is-unavailable", !available);
-
+    function renderStockButton(button, product) {
+      button.classList.toggle(
+        "is-available",
+        product.available,
+      );
+    
+      button.classList.toggle(
+        "is-unavailable",
+        !product.available,
+      );
+    
       button.setAttribute(
         "aria-label",
-        available
-          ? `Tandai ${product.name} sebagai habis`
-          : `Tandai ${product.name} sebagai tersedia`,
+        `Atur stok ${product.name}`,
       );
-
-      button.title = available
-        ? "Tersedia — klik untuk menandai habis"
-        : "Habis — klik untuk mengaktifkan";
-
-      button.innerHTML = available
-        ? `
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle
-              cx="12" cy="12" r="9"
-              fill="none" stroke="currentColor" stroke-width="1.8"
-            />
-            <path
-              d="m8 12 2.5 2.5L16.5 8"
-              fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round"
-            />
-          </svg>
-        `
-        : `
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle
-              cx="12" cy="12" r="9"
-              fill="none" stroke="currentColor" stroke-width="1.8"
-            />
-            <path
-              d="m9 9 6 6m0-6-6 6"
-              fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        `;
-    }
-
-    async function updateAvailability(product, button) {
-      if (button.disabled) return;
-
-      const previousValue = product.available;
-      const nextValue = !previousValue;
-
-      button.disabled = true;
-      button.classList.add("is-saving");
-      button.title = "Menyimpan perubahan...";
-      button.setAttribute(
-        "aria-label",
-        `Menyimpan status produk ${product.name}`,
-      );
-
-      try {
-        await postJSON(API.products, {
-          id: product.id,
-          name: product.name,
-          variant: product.variant || "",
-          category: product.category || "Lainnya",
-          description: product.description || "",
-          price: product.price,
-          unit: product.unit,
-          tag: product.tag || "",
-          available: nextValue,
-        });
-
-        product.available = nextValue;
-        renderAvailabilityButton(button, product);
-
-        notify(
-          nextValue
-            ? "Produk berhasil diaktifkan."
-            : "Produk ditandai habis.",
-        );
-
-        await loadProducts();
-      } catch (error) {
-        product.available = previousValue;
-        renderAvailabilityButton(button, product);
-
-        notify(
-          error instanceof Error
-            ? error.message
-            : "Status produk gagal diperbarui.",
-        );
-      } finally {
-        button.disabled = false;
-        button.classList.remove("is-saving");
-      }
+    
+      button.title = "Atur stok";
+    
+      button.innerHTML = `
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="m3 7 9-4 9 4-9 4-9-4Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M3 7v10l9 4 9-4V7M12 11v10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </svg>
+      `;
     }
 
     function createProductRow(product) {
@@ -522,14 +672,15 @@ export async function initWarungProducts({
       const actions = document.createElement("div");
       actions.className = "manage-actions";
 
-      const availabilityButton = document.createElement("button");
-      availabilityButton.type = "button";
-      availabilityButton.className = "availability-icon";
-
-      renderAvailabilityButton(availabilityButton, product);
-
-      availabilityButton.addEventListener("click", () => {
-        updateAvailability(product, availabilityButton);
+      const stockButton = document.createElement("button");
+      
+      stockButton.type = "button";
+      stockButton.className = "stock-icon-button";
+      
+      renderStockButton(stockButton, product);
+      
+      stockButton.addEventListener("click", () => {
+        openStockSheet(product);
       });
 
       const editButton = createIconButton(
@@ -546,7 +697,7 @@ export async function initWarungProducts({
       );
 
       actions.append(
-        availabilityButton,
+        stockButton,
         editButton,
         deleteButton,
       );
@@ -600,6 +751,12 @@ export async function initWarungProducts({
       ...product,
       id: Number(product.id),
       price: Number(product.price),
+    
+      stock_quantity:
+        product.stock_quantity == null
+          ? null
+          : Math.max(0, Number(product.stock_quantity) || 0),
+    
       available: Boolean(Number(product.is_available)),
     }));
 

@@ -411,6 +411,7 @@ if ($method === 'GET') {
             image,
             tag,
             is_available,
+            stock_quantity,
             created_at,
             updated_at
 
