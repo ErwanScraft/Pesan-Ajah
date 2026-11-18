@@ -312,10 +312,6 @@
     font-size: 0.82rem;
   }
 
-  .stock-item-unit {
-    font-size: 0.7rem;
-  }
-
   .stock-item-controls {
     grid-template-columns: 32px 58px 32px 32px;
     gap: 4px;
@@ -366,10 +362,6 @@
     font-size: 1.1rem;
   }
   
-  .stock-adjust-button {
-    width: 29px;
-  }
-
   .stock-adjust-button {
     width: 29px;
   }

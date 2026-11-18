@@ -115,15 +115,16 @@ try {
     $stmt = $db->prepare(
         'SELECT
             id,
-            stock_quantity
-
+            stock_quantity,
+            is_available
+    
         FROM products
-
+    
         WHERE id = :product_id
           AND store_id = :store_id
-
+    
         LIMIT 1
-
+    
         FOR UPDATE'
     );
 
@@ -222,7 +223,9 @@ try {
             ? 'Stock tanpa batas berhasil diaktifkan.'
             : 'Stock berhasil diperbarui.',
         'stock_quantity' => $newStock,
-        'is_available' => true,
+        'is_available' => $action === 'unlimited'
+            ? true
+            : (bool) $product['is_available'],
     ]);
 
 } catch (RuntimeException $exception) {

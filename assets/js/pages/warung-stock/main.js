@@ -126,20 +126,23 @@ export async function initWarungStock({
   
     function updateStockUI() {
       const isUnlimited = product.stock_quantity === null;
-  
+      const isAvailable = product.is_available === true;
+    
       input.value = isUnlimited
         ? ""
         : String(product.stock_quantity);
-  
+    
       input.placeholder = isUnlimited ? "∞" : "0";
       input.disabled = isUnlimited;
-  
-      unlimitedButton.disabled = isUnlimited;
+    
+      unlimitedButton.disabled =
+        isUnlimited && isAvailable;
+    
       unlimitedButton.classList.toggle(
         "active",
         isUnlimited,
       );
-  
+    
       decreaseButton.disabled =
         isUnlimited || product.stock_quantity <= 0;
     }
@@ -165,10 +168,7 @@ export async function initWarungStock({
         });
   
         product.stock_quantity = result.stock_quantity;
-  
-        if (action === "unlimited") {
-          product.is_available = true;
-        }
+        product.is_available = result.is_available;
   
         notify(result.message, "success");
   
