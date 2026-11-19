@@ -79,6 +79,85 @@
                 </button>
             </div>
 
+            <!-- KONFIRMASI PESANAN -->
+            <section class="cart-confirmation" id="cart-confirmation" hidden>
+                <div class="cart-section-heading">
+                    <h3>Ringkasan</h3>
+                </div>
+            
+                <div class="cart-confirmation__table-wrap">
+                    <table class="cart-confirmation__table">
+                        <thead>
+                            <tr>
+                                <th>Nama Item</th>
+                                <th>Jumlah</th>
+                                <th>Harga</th>
+                                <th>Jumlah Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody id="confirmation-items"></tbody>
+                    </table>
+                </div>
+            
+                <div class="cart-confirmation__total">
+                    <span>Harga Total</span>
+                    <strong id="confirmation-total">Rp0</strong>
+                </div>
+            
+                <p class="cart-confirmation__question">
+                    Apakah kamu sudah yakin dengan pesananmu?
+                </p>
+            
+                <div class="cart-confirmation__actions">
+                    <button
+                        class="button button-secondary"
+                        id="edit-cart-button"
+                        type="button"
+                    >
+                        Ubah Pesanan
+                    </button>
+            
+                    <button
+                        class="button button-primary"
+                        id="confirm-order-button"
+                        type="button"
+                    >
+                        Yakin dan Lanjutkan
+                    </button>
+                </div>
+            </section>
+            
+            <!-- PESANAN BERHASIL -->
+            <section class="cart-order-success" id="cart-order-success" hidden>
+                <div class="cart-order-success__icon">
+                    <svg viewBox="0 0 64 64" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="29" fill="#E8F5EC"/>
+                        <path
+                            d="m18 32 9 9 19-20"
+                            stroke="#176B45"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </div>
+            
+                <h3>Pesanan Berhasil Disampaikan</h3>
+            
+                <p>
+                    Detail pesanan telah diteruskan ke WhatsApp Seller.
+                </p>
+            
+                <button
+                    class="button button-primary button-full"
+                    id="success-back-button"
+                    type="button"
+                >
+                    Kembali
+                </button>
+            </section>
+
             <!-- Konten checkout -->
             <div class="cart-footer" id="cart-footer" hidden>
             
