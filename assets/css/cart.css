@@ -324,6 +324,13 @@
     box-shadow: none;
 }
 
+#cart-overlay .cart-footer > .cart-products-section,
+#cart-overlay .cart-footer > .buyer-note-section,
+#cart-overlay .cart-footer > .fulfillment-section {
+    padding-top: 19px;
+    border-top: 1px solid var(--cart-border-light);
+}
+
 
 /* =========================================================
    7. SECTION HEADINGS
@@ -477,7 +484,7 @@
 }
 
 #cart-overlay #delivery-address {
-    min-height: 82px;
+    min-height: 47px;
 }
 
 #cart-overlay #delivery-address-hint {
@@ -1354,10 +1361,8 @@
 }
 
 #cart-overlay .fulfillment-option {
-    min-width: 0;
-    min-height: 90px;
-    justify-content: center;
-    padding: 14px;
+    min-height: 85px;
+    padding: 11px;
 }
 
 #cart-overlay .fulfillment-option input[type="radio"] {
@@ -1499,21 +1504,20 @@
     }
 
     #cart-overlay .cart-item {
-        grid-template-columns: 60px minmax(0, 1fr);
-        gap: 10px;
-
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 9px;
         padding: 10px;
     }
-
+    
     #cart-overlay .cart-item-image {
-        width: 60px;
-        height: 60px;
+        width: 54px;
+        height: 54px;
     }
-
+    
     #cart-overlay .cart-item-details {
         grid-column: 2;
     }
-
+    
     #cart-overlay .cart-item-name {
         font-size: 12px;
     }
@@ -1523,8 +1527,8 @@
     }
 
     #cart-overlay .cart-item > .quantity-control {
-        grid-column: 2;
-        justify-self: start;
+        grid-column: auto;
+        justify-self: end;
     }
 
     #cart-overlay .fulfillment-option {
@@ -1555,29 +1559,6 @@
 
     #cart-overlay .checkout-actions button {
         min-height: 49px;
-    }
-
-    .app-bottom-sheet__body > #cart-overlay .cart-content {
-        padding: 16px 15px 20px;
-    }
-
-    #cart-overlay .cart-item {
-        grid-template-columns: 54px minmax(0, 1fr) auto;
-        gap: 9px;
-    }
-
-    #cart-overlay .cart-item-image {
-        width: 54px;
-        height: 54px;
-    }
-
-    #cart-overlay .cart-item > .quantity-control {
-        grid-column: auto;
-    }
-
-    #cart-overlay .fulfillment-option {
-        min-height: 85px;
-        padding: 11px;
     }
 }
 

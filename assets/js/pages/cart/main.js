@@ -14,6 +14,7 @@ export function initCartPage({
   const cartButton = $("#cart-trigger");
   const closeCartButton = $("#close-cart");
   const cartItems = $("#cart-items");
+  const cartCountItems = $("#cart-count-items");
   const checkoutButton = $("#checkout-button");
   const cartSheet = createBottomSheet();
 
@@ -117,9 +118,13 @@ export function initCartPage({
 
     return estimate.fee - discount;
   }
-
+  
   function renderCart() {
     cart.render(cartView);
+  
+    if (cartCountItems) {
+      cartCountItems.textContent = String(cart.quantity());
+    }
     
     const deliveryInput = document.querySelector(
       'input[name="fulfillment-method"][value="delivery"]',
@@ -304,27 +309,26 @@ export function initCartPage({
   }
 
   function openCart() {
-      if (!cartOverlay) return;
+    if (!cartOverlay || cartSheet.isOpen()) return;
   
-      cartOverlay.hidden = false;
+    cartOverlay.hidden = false;
   
-      cartSheet.open({
-          title: "Keranjang",
-          content: cartOverlay,
-          size: "large",
-          closeOnBackdrop: true,
-          closeButton: true,
-          onClose: () => {
-              cartOverlay.hidden = true;
-          },
-      });
+    cartSheet.open({
+      title: "Keranjang",
+      content: cartOverlay,
+      size: "large",
+      closeOnBackdrop: true,
+      closeButton: true,
+      onClose: () => {
+        cartOverlay.hidden = true;
+      },
+    });
   }
   
   function closeCart() {
-      if (!cartSheet.isOpen()) return;
+    if (!cartSheet.isOpen()) return;
   
-      cartSheet.close();
-      cartButton?.focus();
+    cartSheet.close();
   }
 
   async function loadCsrfToken() {
@@ -427,17 +431,21 @@ export function initCartPage({
 
   function setLocationStatus(state = "idle") {
     const button = $("#use-location-button");
-
+  
     if (!button) return;
-
+  
     const labels = {
-      idle: "Pilih Lokasi",
-      loading: "Mencari Lokasi...",
-      success: "Lokasi Dipilih",
-      error: "Pilih Ulang Lokasi",
+      idle: "Pilih lokasi GPS",
+      loading: "Sedang mencari lokasi",
+      success: "Lokasi berhasil dipilih",
+      error: "Gagal memilih lokasi, coba lagi",
     };
-
-    button.textContent = labels[state] || labels.idle;
+  
+    const label = labels[state] || labels.idle;
+  
+    button.setAttribute("aria-label", label);
+    button.title = label;
+    button.dataset.locationState = state;
   }
 
   function toggleDeliveryFields() {
