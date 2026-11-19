@@ -77,6 +77,19 @@ $summaryStmt->execute([
 
 $productCount = (int) $summaryStmt->fetchColumn();
 
+$completedOrderStmt = database()->prepare(
+    "SELECT COUNT(*)
+     FROM orders
+     WHERE store_id = :store_id
+       AND status = 'completed'"
+);
+
+$completedOrderStmt->execute([
+    'store_id' => $storeId,
+]);
+
+$completedOrderCount = (int) $completedOrderStmt->fetchColumn();
+
 $ratingStmt = database()->prepare(
     'SELECT
         COUNT(*) AS review_count,
@@ -259,6 +272,8 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
         
         <!-- Ringkasan warung -->
         <section class="store-overview" aria-label="Ringkasan warung">
+        
+            <!-- Penilaian -->
             <div class="store-overview-item">
                 <div class="store-overview-value">
                     <span class="store-overview-star" aria-hidden="true">★</span>
@@ -273,6 +288,7 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                 </span>
             </div>
         
+            <!-- Produk -->
             <div class="store-overview-item">
                 <strong class="store-overview-value">
                     <?= number_format($productCount, 0, ',', '.') ?>
@@ -280,6 +296,16 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
         
                 <span class="store-overview-label">Produk</span>
             </div>
+        
+            <!-- Pesanan Selesai -->
+            <div class="store-overview-item">
+                <strong class="store-overview-value">
+                    <?= number_format($completedOrderCount, 0, ',', '.') ?>
+                </strong>
+        
+                <span class="store-overview-label">Pesanan Selesai</span>
+            </div>
+        
         </section>
         
         <div class="store-review-action">
