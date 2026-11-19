@@ -99,9 +99,31 @@
                     </table>
                 </div>
             
-                <div class="cart-confirmation__total">
-                    <span>Harga Total</span>
-                    <strong id="confirmation-total">Rp0</strong>
+                <div class="cart-confirmation__breakdown">
+                    <div class="cart-confirmation__row">
+                        <span>Subtotal Produk</span>
+                        <strong id="confirmation-subtotal">Rp0</strong>
+                    </div>
+                
+                    <div class="cart-confirmation__row">
+                        <span>Ongkir</span>
+                        <strong id="confirmation-delivery-fee">Rp0</strong>
+                    </div>
+                
+                    <div class="cart-confirmation__total">
+                        <span id="confirmation-total-label">Total Pesanan</span>
+                        <strong id="confirmation-total">Rp0</strong>
+                    </div>
+                
+                    <p
+                        class="cart-confirmation__note"
+                        id="confirmation-delivery-note"
+                        role="status"
+                        hidden
+                    >
+                        Pilih lokasi GPS untuk menghitung estimasi ongkir.
+                        Total akhir akan dihitung kembali oleh sistem saat checkout.
+                    </p>
                 </div>
             
                 <p class="cart-confirmation__question">
@@ -143,10 +165,11 @@
                     </svg>
                 </div>
             
-                <h3>Pesanan Berhasil Disampaikan</h3>
-            
+                <h3>Pesanan Berhasil Dibuat</h3>
+                
                 <p>
-                    Detail pesanan telah diteruskan ke WhatsApp Seller.
+                    Pesanan sudah tercatat di sistem. Silakan pastikan
+                    detail pesanan sudah dikirim melalui WhatsApp Seller.
                 </p>
             
                 <button

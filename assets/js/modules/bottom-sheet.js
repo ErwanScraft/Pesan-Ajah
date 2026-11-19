@@ -231,6 +231,11 @@ export function createBottomSheet() {
       }
     }, 280);
   }
+  
+  function setTitle(value = "") {
+      title.textContent = String(value);
+      title.hidden = !value;
+  }
 
   function setContent(content) {
     body.replaceChildren();
@@ -243,9 +248,10 @@ export function createBottomSheet() {
   }
 
   return {
-    open,
-    close,
-    setContent,
-    isOpen: () => isOpen,
+      open,
+      close,
+      setTitle,
+      setContent,
+      isOpen: () => isOpen,
   };
 }

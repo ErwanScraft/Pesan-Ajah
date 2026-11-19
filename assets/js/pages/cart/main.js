@@ -313,15 +313,10 @@ export function initCartPage({
   }
   
   function setSheetTitle(value) {
-      const title = $("#app-bottom-sheet-title");
-  
-      if (title) {
-          title.textContent = value;
-      }
+      cartSheet.setTitle(value);
   }
   
   function showConfirmation() {
-  
       if (cart.quantity() === 0) {
           showToast(toast, "Keranjang masih kosong.");
           return;
@@ -335,9 +330,11 @@ export function initCartPage({
   
           const quantity = Number(entry.quantity) || 0;
           const price = Number(item?.price) || 0;
+          const variant = String(item?.variant || "").trim();
   
           return {
               name: item?.name || "Produk",
+              variant,
               quantity,
               price,
               total: quantity * price,
@@ -349,33 +346,62 @@ export function initCartPage({
       rows.forEach((item) => {
           const row = document.createElement("tr");
   
-          [
-              item.name,
-              String(item.quantity),
-              formatRupiah(item.price),
-              formatRupiah(item.total),
-          ].forEach((value) => {
-              const cell = document.createElement("td");
-              cell.textContent = value;
-              row.append(cell);
-          });
+          const nameCell = document.createElement("td");
+          nameCell.textContent = item.variant
+              ? `${item.name} (${item.variant})`
+              : item.name;
+  
+          const quantityCell = document.createElement("td");
+          quantityCell.textContent = String(item.quantity);
+  
+          const priceCell = document.createElement("td");
+          priceCell.textContent = formatRupiah(item.price);
+  
+          const totalCell = document.createElement("td");
+          totalCell.textContent = formatRupiah(item.total);
+  
+          row.append(
+              nameCell,
+              quantityCell,
+              priceCell,
+              totalCell,
+          );
   
           confirmationItems.append(row);
       });
   
+      const subtotal = cart.total();
       const deliveryFee = getDeliveryFee();
+      const isDelivery = selectedFulfillment() === "delivery";
   
-      $("#confirmation-total").textContent = formatRupiah(
-          cart.total() + (deliveryFee ?? 0),
-      );
+      $("#confirmation-subtotal").textContent =
+          formatRupiah(subtotal);
+  
+      $("#confirmation-delivery-fee").textContent =
+          deliveryFee === null
+              ? "Belum dihitung"
+              : formatRupiah(deliveryFee);
+  
+      $("#confirmation-total-label").textContent =
+          deliveryFee === null
+              ? "Total sementara"
+              : "Total Pesanan";
+  
+      $("#confirmation-total").textContent =
+          deliveryFee === null
+              ? "Menunggu lokasi"
+              : formatRupiah(subtotal + deliveryFee);
+  
+      $("#confirmation-delivery-note").hidden =
+          !isDelivery || deliveryFee !== null;
   
       cartFooter.hidden = true;
       confirmationPanel.hidden = false;
       successPanel.hidden = true;
   
-      setSheetTitle("Konfirmasi Pesanan");
-      
       $("#cart-empty").hidden = true;
+  
+      setSheetTitle("Konfirmasi Pesanan");
   }
   
   function showCartEditor() {
@@ -392,12 +418,11 @@ export function initCartPage({
   function showOrderSuccess() {
       cartFooter.hidden = true;
       confirmationPanel.hidden = true;
-  
       successPanel.hidden = false;
   
-      setSheetTitle("Pesanan Berhasil");
-      
       $("#cart-empty").hidden = true;
+  
+      setSheetTitle("Pesanan Berhasil");
   }
 
   function openCart() {
@@ -656,379 +681,437 @@ export function initCartPage({
     }
   }
 
-  async function submitCheckout(whatsappWindow = null) {
-    if (cart.quantity() === 0) {
-      showToast(toast, "Keranjang masih kosong.");
-      return;
-    }
-
-    const product = selectedStore();
-
-    if (!product) {
-      showToast(toast, "Warung pada keranjang tidak ditemukan.");
-      return;
-    }
-
-    if (!product.store_is_open) {
-      showToast(toast, "Warung sedang tutup.");
-      return;
-    }
-
-    const buyerName = $("#buyer-name")?.value.trim() ?? "";
-    const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
-    const deliveryMethod = selectedFulfillment();
-    
-    if (
-      deliveryMethod === "delivery"
-      && deliveryAvailable === false
-    ) {
-      showToast(
-        toast,
-        "Layanan Delivery sedang offline. Silakan pilih Ambil Sendiri.",
-      );
-      return;
-    }
-
-    const deliveryAddress =
-      $("#delivery-address")?.value.trim() ?? "";
-
-    const deliveryMapsUrl =
-      $("#delivery-maps-url")?.value.trim() ?? "";
-
-    const deliveryLatitude =
-      $("#delivery-latitude")?.value.trim() ?? "";
-
-    const deliveryLongitude =
-      $("#delivery-longitude")?.value.trim() ?? "";
-
-    if (
-      deliveryMethod === "delivery" &&
-      !product.store_free_delivery
-    ) {
-      const buyerLat = Number(deliveryLatitude);
-      const buyerLon = Number(deliveryLongitude);
-
-      if (!deliveryLatitude || !deliveryLongitude) {
-        showToast(
-          toast,
-          "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
-        );
-        return;
-      }
-
-      if (
-        !Number.isFinite(buyerLat) ||
-        !Number.isFinite(buyerLon) ||
-        !Number.isFinite(product.store_latitude) ||
-        !Number.isFinite(product.store_longitude)
-      ) {
-        showToast(
-          toast,
-          "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
-        );
-        return;
-      }
-    }
-
-    if (!buyerName || buyerName.length > 100) {
-      showToast(toast, "Nama pembeli wajib diisi.");
-      $("#buyer-name")?.focus();
-      return;
-    }
-
-    if (
-      deliveryMethod === "delivery" &&
-      (!buyerPhone || buyerPhone.length > 25)
-    ) {
-      showToast(toast, "Nomor Whatsapp belum kamu isi lo.");
-      $("#buyer-phone")?.focus();
-      return;
-    }
-
-    if (
-      deliveryMethod === "delivery" &&
-      deliveryAddress.length > 255
-    ) {
-      showToast(toast, "Detail alamat maksimal 255 karakter.");
-      $("#delivery-address")?.focus();
-      return;
-    }
-
-    if (
-      deliveryMethod === "delivery" &&
-      !validMapsUrl(deliveryMapsUrl)
-    ) {
-      showToast(
-        toast,
-        "Tautan lokasi harus berupa tautan Google Maps yang valid.",
-      );
-      $("#delivery-maps-url")?.focus();
-      return;
-    }
-
-    if (
-      (deliveryLatitude && !deliveryLongitude) ||
-      (!deliveryLatitude && deliveryLongitude)
-    ) {
-      showToast(toast, "Koordinat lokasi tidak lengkap.");
-      return;
-    }
-
-    checkoutButton.disabled = true;
-    
-    const confirmButton = $("#confirm-order-button");
-    
-    if (confirmButton) {
-        confirmButton.disabled = true;
-        confirmButton.textContent = "Memproses...";
-    }
-    
-    const originalText = checkoutButton.textContent;
-    
-    checkoutButton.textContent = "Menyimpan pesanan...";
-
-    try {
-      if (!csrfToken) {
-        await loadCsrfToken();
-      }
-
-      const payload = {
-        _token: csrfToken,
-        store_id: product.store_id,
-        buyer_name: buyerName,
-        buyer_phone: buyerPhone,
-        buyer_note: $("#buyer-note")?.value.trim() ?? "",
-        delivery_method: deliveryMethod,
-
-        delivery_address:
-          deliveryMethod === "delivery" ? deliveryAddress : "",
-
-        delivery_maps_url:
-          deliveryMethod === "delivery" ? deliveryMapsUrl : "",
-
-        delivery_latitude:
-          deliveryMethod === "delivery" ? deliveryLatitude : "",
-
-        delivery_longitude:
-          deliveryMethod === "delivery" ? deliveryLongitude : "",
-
-        items: cart.entries(),
-      };
-
-      const response = await fetch("/api/checkout.php", {
-        method: "POST",
-        credentials: "same-origin",
-        cache: "no-store",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "Checkout gagal diproses.",
-        );
-      }
-
-      if (
-        typeof result.buyer_token !== "string" ||
-        !/^[a-f0-9]{64}$/i.test(result.buyer_token)
-      ) {
-        throw new Error(
-          "Pesanan tersimpan, tetapi token pelacakan tidak diterima. Simpan nomor pesanan: " +
-          result.order_number,
-        );
-      }
-
-      const storageKey = "pesan_ajah_order_tokens";
-      let savedOrders = [];
-
-      try {
-        const stored = JSON.parse(
-          localStorage.getItem(storageKey) || "[]",
-        );
-
-        if (Array.isArray(stored)) {
-          savedOrders = stored;
-        }
-      } catch {
-        savedOrders = [];
-      }
-
-      savedOrders = savedOrders.filter(
-        (order) =>
-          order &&
-          order.order_number !== result.order_number,
-      );
-
-      savedOrders.unshift({
-        token: result.buyer_token,
-        order_number: result.order_number,
-        created_at: new Date().toISOString(),
-      });
-
-      savedOrders = savedOrders.slice(0, 50);
-
-      try {
-        localStorage.setItem(
-          storageKey,
-          JSON.stringify(savedOrders),
-        );
-      } catch {
-        showToast(
-          toast,
-          "Pesanan tersimpan, tetapi browser tidak dapat menyimpan riwayat. Buka Dashboard Buyer setelah checkout ini.",
-        );
-      }
-
-      if (
-          typeof result.whatsapp_url !== "string" ||
-          !result.whatsapp_url
-      ) {
-          throw new Error(
-              "Tautan WhatsApp Seller tidak tersedia.",
-          );
-      }
-      
-      let whatsappUrl;
-      
-      try {
-          whatsappUrl = new URL(result.whatsapp_url);
-      } catch {
-          throw new Error("Tautan WhatsApp tidak valid.");
-      }
-      
-      if (
-          whatsappUrl.protocol !== "https:" ||
-          ![
-              "wa.me",
-              "api.whatsapp.com",
-              "web.whatsapp.com",
-          ].includes(whatsappUrl.hostname)
-      ) {
-          throw new Error("Tujuan WhatsApp tidak valid.");
-      }
-      
-      // Aktifkan pesanan sebelum membuka WhatsApp.
-      const activationResponse = await fetch(
-          "/api/activate-order.php",
-          {
-              method: "POST",
-              credentials: "same-origin",
-              cache: "no-store",
-              headers: {
-                  "Content-Type": "application/json",
-                  Accept: "application/json",
-              },
-              body: JSON.stringify({
-                  order_number: result.order_number,
-                  buyer_token: result.buyer_token,
-              }),
-          },
-      );
-      
-      const activationResult = await activationResponse.json();
-      
-      if (
-          !activationResponse.ok ||
-          !activationResult.success ||
-          activationResult.status !== "pending"
-      ) {
-          throw new Error(
-              activationResult.message ||
-              "Pesanan belum berhasil diaktifkan.",
-          );
-      }
-      
-      // Buka WhatsApp Seller.
-      if (whatsappWindow && !whatsappWindow.closed) {
-          whatsappWindow.location.href = whatsappUrl.href;
-      } else {
-          // Popup diblokir: gunakan halaman saat ini sebagai fallback.
-          window.location.assign(whatsappUrl.href);
+  async function submitCheckout() {
+      if (cart.quantity() === 0) {
+          showToast(toast, "Keranjang masih kosong.");
           return;
       }
-      
-      // Simpan token pesanan seperti mekanisme sebelumnya.
-      const storageKey = "pesan_ajah_order_tokens";
-      
-      let savedOrders = [];
-      
-      try {
-          const stored = JSON.parse(
-              localStorage.getItem(storageKey) || "[]",
+  
+      const product = selectedStore();
+  
+      if (!product) {
+          showToast(toast, "Warung pada keranjang tidak ditemukan.");
+          return;
+      }
+  
+      if (!product.store_is_open) {
+          showToast(toast, "Warung sedang tutup.");
+          return;
+      }
+  
+      const buyerName = $("#buyer-name")?.value.trim() ?? "";
+      const buyerPhone = $("#buyer-phone")?.value.trim() ?? "";
+      const deliveryMethod = selectedFulfillment();
+  
+      if (
+          deliveryMethod === "delivery" &&
+          deliveryAvailable === false
+      ) {
+          showToast(
+              toast,
+              "Layanan Delivery sedang offline. Silakan pilih Ambil Sendiri.",
           );
-      
-          if (Array.isArray(stored)) {
-              savedOrders = stored;
+          return;
+      }
+  
+      const deliveryAddress =
+          $("#delivery-address")?.value.trim() ?? "";
+  
+      const deliveryMapsUrl =
+          $("#delivery-maps-url")?.value.trim() ?? "";
+  
+      const deliveryLatitude =
+          $("#delivery-latitude")?.value.trim() ?? "";
+  
+      const deliveryLongitude =
+          $("#delivery-longitude")?.value.trim() ?? "";
+  
+      if (
+          deliveryMethod === "delivery" &&
+          !product.store_free_delivery
+      ) {
+          const buyerLat = Number(deliveryLatitude);
+          const buyerLon = Number(deliveryLongitude);
+  
+          if (!deliveryLatitude || !deliveryLongitude) {
+              showToast(
+                  toast,
+                  "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
+              );
+              return;
           }
-      } catch {
-          savedOrders = [];
+  
+          if (
+              !Number.isFinite(buyerLat) ||
+              !Number.isFinite(buyerLon) ||
+              !Number.isFinite(product.store_latitude) ||
+              !Number.isFinite(product.store_longitude)
+          ) {
+              showToast(
+                  toast,
+                  "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
+              );
+              return;
+          }
       }
-      
-      savedOrders = savedOrders.filter(
-          (order) =>
-              order &&
-              order.order_number !== result.order_number,
-      );
-      
-      savedOrders.unshift({
-          token: result.buyer_token,
-          order_number: result.order_number,
-          created_at: new Date().toISOString(),
-      });
-      
-      savedOrders = savedOrders.slice(0, 50);
-      
+  
+      if (!buyerName || buyerName.length > 100) {
+          showToast(toast, "Nama pembeli wajib diisi.");
+          $("#buyer-name")?.focus();
+          return;
+      }
+  
+      if (
+          deliveryMethod === "delivery" &&
+          (!buyerPhone || buyerPhone.length > 25)
+      ) {
+          showToast(toast, "Nomor WhatsApp belum kamu isi.");
+          $("#buyer-phone")?.focus();
+          return;
+      }
+  
+      if (
+          deliveryMethod === "delivery" &&
+          deliveryAddress.length > 255
+      ) {
+          showToast(toast, "Detail alamat maksimal 255 karakter.");
+          $("#delivery-address")?.focus();
+          return;
+      }
+  
+      if (
+          deliveryMethod === "delivery" &&
+          !validMapsUrl(deliveryMapsUrl)
+      ) {
+          showToast(
+              toast,
+              "Tautan lokasi harus berupa tautan Google Maps yang valid.",
+          );
+          $("#delivery-maps-url")?.focus();
+          return;
+      }
+  
+      if (
+          (deliveryLatitude && !deliveryLongitude) ||
+          (!deliveryLatitude && deliveryLongitude)
+      ) {
+          showToast(toast, "Koordinat lokasi tidak lengkap.");
+          return;
+      }
+  
+      /*
+       * Popup dibuka setelah seluruh validasi awal berhasil.
+       * Ini mencegah tab kosong ketika data checkout tidak valid.
+       */
+      const whatsappWindow = window.open("about:blank", "_blank");
+  
+      if (!whatsappWindow) {
+          showToast(
+              toast,
+              "Izinkan pembukaan tab baru agar WhatsApp Seller dapat dibuka.",
+          );
+          return;
+      }
+  
+      const confirmButton = $("#confirm-order-button");
+      const originalText = checkoutButton.textContent;
+  
+      checkoutButton.disabled = true;
+      checkoutButton.textContent = "Menyimpan pesanan...";
+  
+      if (confirmButton) {
+          confirmButton.disabled = true;
+          confirmButton.textContent = "Memproses...";
+      }
+  
+      const pendingStorageKey = "pesan_ajah_pending_checkout";
+      const orderStorageKey = "pesan_ajah_order_tokens";
+  
       try {
-          localStorage.setItem(
-              storageKey,
-              JSON.stringify(savedOrders),
+          if (!csrfToken) {
+              await loadCsrfToken();
+          }
+  
+          const payload = {
+              _token: csrfToken,
+              store_id: product.store_id,
+              buyer_name: buyerName,
+              buyer_phone: buyerPhone,
+              buyer_note: $("#buyer-note")?.value.trim() ?? "",
+              delivery_method: deliveryMethod,
+  
+              delivery_address:
+                  deliveryMethod === "delivery" ? deliveryAddress : "",
+  
+              delivery_maps_url:
+                  deliveryMethod === "delivery" ? deliveryMapsUrl : "",
+  
+              delivery_latitude:
+                  deliveryMethod === "delivery" ? deliveryLatitude : "",
+  
+              delivery_longitude:
+                  deliveryMethod === "delivery" ? deliveryLongitude : "",
+  
+              items: cart.entries(),
+          };
+  
+          /*
+           * Fingerprint digunakan untuk memastikan draft lama
+           * hanya digunakan kembali jika isi checkout masih sama.
+           */
+          const fingerprintPayload = { ...payload };
+          delete fingerprintPayload._token;
+  
+          const fingerprint = JSON.stringify(fingerprintPayload);
+  
+          let pendingOrder = null;
+  
+          try {
+              const storedPending = JSON.parse(
+                  localStorage.getItem(pendingStorageKey) || "null",
+              );
+  
+              if (
+                  storedPending &&
+                  storedPending.fingerprint === fingerprint &&
+                  typeof storedPending.order_number === "string" &&
+                  typeof storedPending.buyer_token === "string" &&
+                  typeof storedPending.whatsapp_url === "string"
+              ) {
+                  pendingOrder = storedPending;
+              }
+          } catch {
+              pendingOrder = null;
+          }
+  
+          let result;
+  
+          if (pendingOrder) {
+              /*
+               * Gunakan draft sebelumnya.
+               * Jangan membuat pesanan baru jika aktivasi sebelumnya gagal.
+               */
+              result = {
+                  order_number: pendingOrder.order_number,
+                  buyer_token: pendingOrder.buyer_token,
+                  whatsapp_url: pendingOrder.whatsapp_url,
+              };
+          } else {
+              const response = await fetch("/api/checkout.php", {
+                  method: "POST",
+                  credentials: "same-origin",
+                  cache: "no-store",
+                  headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(payload),
+              });
+  
+              const checkoutResult = await response.json();
+  
+              if (!response.ok || !checkoutResult.success) {
+                  throw new Error(
+                      checkoutResult.message || "Checkout gagal diproses.",
+                  );
+              }
+  
+              result = checkoutResult;
+          }
+  
+          if (
+              typeof result.order_number !== "string" ||
+              typeof result.buyer_token !== "string" ||
+              !/^[a-f0-9]{64}$/i.test(result.buyer_token)
+          ) {
+              throw new Error(
+                  "Data token pesanan tidak valid. Simpan nomor pesanan: " +
+                  (result.order_number || "-"),
+              );
+          }
+  
+          let whatsappUrl;
+  
+          try {
+              whatsappUrl = new URL(result.whatsapp_url);
+          } catch {
+              throw new Error("Tautan WhatsApp tidak valid.");
+          }
+  
+          if (
+              whatsappUrl.protocol !== "https:" ||
+              ![
+                  "wa.me",
+                  "api.whatsapp.com",
+                  "web.whatsapp.com",
+              ].includes(whatsappUrl.hostname)
+          ) {
+              throw new Error("Tujuan WhatsApp tidak valid.");
+          }
+  
+          /*
+           * Simpan draft sementara sebelum aktivasi.
+           * Jika aktivasi gagal, percobaan berikutnya dapat
+           * melanjutkan pesanan yang sama.
+           */
+          pendingOrder = {
+              fingerprint,
+              order_number: result.order_number,
+              buyer_token: result.buyer_token,
+              whatsapp_url: whatsappUrl.href,
+              created_at: new Date().toISOString(),
+          };
+  
+          try {
+              localStorage.setItem(
+                  pendingStorageKey,
+                  JSON.stringify(pendingOrder),
+              );
+          } catch (error) {
+              console.warn(
+                  "[Pesan Ajah] Draft checkout tidak dapat disimpan.",
+                  error,
+              );
+          }
+  
+          /*
+           * Simpan token buyer satu kali.
+           * Data ini digunakan untuk riwayat/pelacakan pesanan.
+           */
+          let savedOrders = [];
+  
+          try {
+              const storedOrders = JSON.parse(
+                  localStorage.getItem(orderStorageKey) || "[]",
+              );
+  
+              if (Array.isArray(storedOrders)) {
+                  savedOrders = storedOrders;
+              }
+          } catch {
+              savedOrders = [];
+          }
+  
+          savedOrders = savedOrders.filter(
+              (order) =>
+                  order &&
+                  order.order_number !== result.order_number,
           );
+  
+          savedOrders.unshift({
+              token: result.buyer_token,
+              order_number: result.order_number,
+              created_at: new Date().toISOString(),
+          });
+  
+          try {
+              localStorage.setItem(
+                  orderStorageKey,
+                  JSON.stringify(savedOrders.slice(0, 50)),
+              );
+          } catch (error) {
+              console.warn(
+                  "[Pesan Ajah] Token riwayat pesanan tidak dapat disimpan.",
+                  error,
+              );
+          }
+  
+          /*
+           * Aktifkan pesanan.
+           * Endpoint ini aman dipanggil ulang untuk pesanan
+           * yang sudah berstatus pending.
+           */
+          const activationResponse = await fetch(
+              "/api/activate-order.php",
+              {
+                  method: "POST",
+                  credentials: "same-origin",
+                  cache: "no-store",
+                  headers: {
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                  },
+                  body: JSON.stringify({
+                      order_number: result.order_number,
+                      buyer_token: result.buyer_token,
+                  }),
+              },
+          );
+  
+          const activationResult = await activationResponse.json();
+  
+          if (
+              !activationResponse.ok ||
+              !activationResult.success ||
+              activationResult.status !== "pending"
+          ) {
+              throw new Error(
+                  activationResult.message ||
+                  "Pesanan belum berhasil diaktifkan. Silakan coba lagi.",
+              );
+          }
+  
+          if (whatsappWindow.closed) {
+              throw new Error(
+                  "Tab WhatsApp tertutup. Tekan Yakin dan Lanjutkan untuk membuka kembali.",
+              );
+          }
+  
+          /*
+           * Buka WhatsApp setelah pesanan berhasil diaktifkan.
+           */
+          whatsappWindow.location.href = whatsappUrl.href;
+  
+          /*
+           * Hapus draft sementara setelah aktivasi berhasil.
+           */
+          try {
+              const storedPending = JSON.parse(
+                  localStorage.getItem(pendingStorageKey) || "null",
+              );
+  
+              if (
+                  storedPending?.order_number === result.order_number
+              ) {
+                  localStorage.removeItem(pendingStorageKey);
+              }
+          } catch (error) {
+              console.warn(
+                  "[Pesan Ajah] Draft sementara tidak dapat dibersihkan.",
+                  error,
+              );
+          }
+  
+          cart.clear();
+  
+          renderCart();
+          onCatalogRender?.();
+  
+          showOrderSuccess();
+  
       } catch (error) {
-          console.warn(
-              "[Pesan Ajah] Riwayat pesanan tidak dapat disimpan.",
-              error,
+          if (whatsappWindow && !whatsappWindow.closed) {
+              whatsappWindow.close();
+          }
+  
+          showToast(
+              toast,
+              error instanceof Error
+                  ? error.message
+                  : "Terjadi kesalahan saat checkout.",
           );
+  
+      } finally {
+          checkoutButton.disabled =
+              !catalogLoaded || cart.quantity() === 0;
+  
+          checkoutButton.textContent = originalText;
+  
+          if (confirmButton) {
+              confirmButton.disabled = false;
+              confirmButton.textContent = "Yakin dan Lanjutkan";
+          }
       }
-      
-      // Kosongkan keranjang setelah pesanan berhasil diproses.
-      cart.clear();
-      
-      renderCart();
-      onCatalogRender?.();
-      
-      // Ubah tampilan bottom sheet.
-      showOrderSuccess();
-
-    } catch (error) {
-        if (whatsappWindow && !whatsappWindow.closed) {
-            whatsappWindow.close();
-        }
-    
-        showToast(
-            toast,
-            error instanceof Error
-                ? error.message
-                : "Terjadi kesalahan saat checkout.",
-        );
-    } finally {
-        checkoutButton.disabled =
-            !catalogLoaded || cart.quantity() === 0;
-    
-        checkoutButton.textContent = originalText;
-    
-        const confirmButton = $("#confirm-order-button");
-    
-        if (confirmButton) {
-            confirmButton.disabled = false;
-            confirmButton.textContent = "Yakin dan Lanjutkan";
-        }
-    }
   }
 
   cartButton?.addEventListener("click", openCart);
@@ -1076,13 +1159,7 @@ export function initCartPage({
   
   $("#confirm-order-button")?.addEventListener(
       "click",
-      () => {
-          // Membuka tab sejak interaksi pengguna agar tidak
-          // diblokir oleh popup blocker ketika proses checkout selesai.
-          const whatsappWindow = window.open("about:blank", "_blank");
-  
-          submitCheckout(whatsappWindow);
-      },
+      submitCheckout,
   );
   
   $("#success-back-button")?.addEventListener(

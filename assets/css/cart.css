@@ -1533,6 +1533,54 @@
     border-radius: 11px;
 }
 
+/* =========================================================
+   CONFIRMATION PAYMENT BREAKDOWN
+   ========================================================= */
+
+#cart-overlay .cart-confirmation__breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+#cart-overlay .cart-confirmation__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    color: var(--cart-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+#cart-overlay .cart-confirmation__row strong {
+    color: var(--cart-text);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+#cart-overlay .cart-confirmation__breakdown .cart-confirmation__total {
+    margin-top: 3px;
+}
+
+#cart-overlay .cart-confirmation__note {
+    margin: 0;
+    padding: 10px 12px;
+
+    color: var(--cart-muted);
+    background: var(--cart-surface);
+
+    border: 1px solid var(--cart-border);
+    border-radius: 9px;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
 
 /* =========================================================
    RESPONSIVE
