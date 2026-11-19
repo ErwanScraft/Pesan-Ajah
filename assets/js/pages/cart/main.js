@@ -799,26 +799,9 @@ export function initCartPage({
           return;
       }
   
-      /*
-       * Popup dibuka setelah seluruh validasi awal berhasil.
-       * Ini mencegah tab kosong ketika data checkout tidak valid.
-       */
-      const whatsappWindow = window.open("about:blank", "_blank");
-  
-      if (!whatsappWindow) {
-          showToast(
-              toast,
-              "Izinkan pembukaan tab baru agar WhatsApp Seller dapat dibuka.",
-          );
-          return;
-      }
-  
       const confirmButton = $("#confirm-order-button");
-      const originalText = checkoutButton.textContent;
-  
-      checkoutButton.disabled = true;
-      checkoutButton.textContent = "Menyimpan pesanan...";
-  
+      const originalText = confirmButton?.textContent || "Yakin dan Lanjutkan";
+      
       if (confirmButton) {
           confirmButton.disabled = true;
           confirmButton.textContent = "Memproses...";
@@ -1051,17 +1034,6 @@ export function initCartPage({
               );
           }
   
-          if (whatsappWindow.closed) {
-              throw new Error(
-                  "Tab WhatsApp tertutup. Tekan Yakin dan Lanjutkan untuk membuka kembali.",
-              );
-          }
-  
-          /*
-           * Buka WhatsApp setelah pesanan berhasil diaktifkan.
-           */
-          whatsappWindow.location.href = whatsappUrl.href;
-  
           /*
            * Hapus draft sementara setelah aktivasi berhasil.
            */
@@ -1083,33 +1055,33 @@ export function initCartPage({
           }
   
           cart.clear();
-  
+          
           renderCart();
           onCatalogRender?.();
-  
+          
+          /*
+           * Tampilkan sheet berhasil sebelum berpindah ke WhatsApp.
+           */
           showOrderSuccess();
+          
+          /*
+           * Arahkan tab aktif ke WhatsApp Seller.
+           * Tidak membuat tab kosong atau tab baru.
+           */
+          window.location.assign(whatsappUrl.href);
   
       } catch (error) {
-          if (whatsappWindow && !whatsappWindow.closed) {
-              whatsappWindow.close();
-          }
-  
           showToast(
               toast,
               error instanceof Error
                   ? error.message
                   : "Terjadi kesalahan saat checkout.",
           );
-  
+      
       } finally {
-          checkoutButton.disabled =
-              !catalogLoaded || cart.quantity() === 0;
-  
-          checkoutButton.textContent = originalText;
-  
           if (confirmButton) {
               confirmButton.disabled = false;
-              confirmButton.textContent = "Yakin dan Lanjutkan";
+              confirmButton.textContent = originalText;
           }
       }
   }
