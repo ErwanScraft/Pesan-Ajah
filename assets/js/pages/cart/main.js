@@ -968,9 +968,9 @@ export function initCartPage({
                   JSON.stringify(pendingOrder),
               );
           } catch (error) {
-              console.warn(
-                  "[Pesan Ajah] Draft checkout tidak dapat disimpan.",
-                  error,
+              throw new Error(
+                  "Draft pesanan tidak dapat disimpan. " +
+                  "Periksa penyimpanan browser dan coba kembali.",
               );
           }
   
