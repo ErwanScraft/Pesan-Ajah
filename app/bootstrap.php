@@ -13,30 +13,20 @@ if (defined('PESANAJAH_BOOTSTRAPPED')) {
 }
 
 define('PESANAJAH_BOOTSTRAPPED', true);
-
-/*
-|--------------------------------------------------------------------------
-| HTML PAGE CACHE VALIDATION
-|--------------------------------------------------------------------------
-|
-| Halaman PHP harus selalu diperiksa ulang agar browser
-| tidak menggunakan HTML lama yang berisi versi asset lama.
-|
-*/
-
-if (!headers_sent()) {
-    header(
-        'Cache-Control: no-store, no-cache, must-revalidate, max-age=0'
-    );
-
-    header('Pragma: no-cache');
-    header('Expires: 0');
-}
-
 define('APP_ROOT', dirname(__DIR__));
 define('APP_PATH', APP_ROOT . '/app');
 define('CONFIG_PATH', APP_ROOT . '/config');
 define('ASSETS_PATH', APP_ROOT . '/assets');
+
+/*
+|--------------------------------------------------------------------------
+| ASSET CACHE MANAGER
+|--------------------------------------------------------------------------
+*/
+
+require_once APP_PATH . '/modules/asset-cache/main.php';
+
+asset_cache_headers();
 
 /*
 |--------------------------------------------------------------------------
@@ -270,27 +260,6 @@ function url(string $path = ''): string
     }
 
     return APP_URL . '/' . ltrim($path, '/');
-}
-
-/**
- * Menghasilkan versi asset berdasarkan hash isi file.
- *
- * Perubahan isi file selalu menghasilkan versi baru,
- * termasuk jika beberapa file diperbarui dalam detik yang sama.
- */
-function asset_version(string $path): string
-{
-    $filePath = APP_ROOT . '/' . ltrim($path, '/');
-
-    if (!is_file($filePath) || !is_readable($filePath)) {
-        return '1';
-    }
-
-    $hash = hash_file('sha256', $filePath);
-
-    return $hash !== false
-        ? substr($hash, 0, 16)
-        : '1';
 }
 
 function redirect(string $path, int $statusCode = 302): never

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 http_response_code(503);
 
-header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-header('Pragma: no-cache');
-header('X-Robots-Tag: noindex, nofollow');
+require_once __DIR__ . '/app/modules/asset-cache/main.php';
 
-$cssPath = __DIR__ . '/assets/css/pages/maintenance.css';
-$cssVersion = is_file($cssPath) ? filemtime($cssPath) : '1';
+asset_cache_headers();
+
+header('X-Robots-Tag: noindex, nofollow');
 
 ?>
 <!DOCTYPE html>
@@ -26,7 +25,11 @@ $cssVersion = is_file($cssPath) ? filemtime($cssPath) : '1';
 
     <link
         rel="stylesheet"
-        href="/assets/css/pages/maintenance.css?v=<?= htmlspecialchars((string) $cssVersion, ENT_QUOTES, 'UTF-8') ?>"
+        href="<?= htmlspecialchars(
+            asset_url('assets/css/pages/maintenance.css'),
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
     >
 </head>
 
