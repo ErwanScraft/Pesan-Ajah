@@ -1229,6 +1229,164 @@
 
 
 /* =========================================================
+   CART — BOTTOM SHEET INTEGRATION
+   ========================================================= */
+
+.app-bottom-sheet__body > #cart-overlay {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+
+    background: transparent;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition: none;
+}
+
+.app-bottom-sheet__body > #cart-overlay .cart-drawer {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+
+    overflow: visible;
+
+    box-shadow: none;
+    transform: none;
+    transition: none;
+}
+
+.app-bottom-sheet__body > #cart-overlay .cart-header {
+    display: none;
+}
+
+.app-bottom-sheet__body > #cart-overlay .cart-content {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 18px 18px 24px;
+
+    overflow: visible;
+}
+
+.app-bottom-sheet__body > #cart-overlay .cart-footer {
+    gap: 23px;
+}
+
+/* =========================================================
+   BUYER ADDRESS
+   ========================================================= */
+
+#cart-overlay .cart-address-input {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+}
+
+#cart-overlay .cart-address-input input {
+    flex: 1;
+    min-width: 0;
+}
+
+#cart-overlay .cart-address-input button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 48px;
+    width: 48px;
+    min-height: 47px;
+
+    padding: 0;
+
+    color: var(--cart-primary);
+    background: var(--cart-primary-light);
+
+    border: 1px solid #c9e2d1;
+    border-radius: 11px;
+
+    cursor: pointer;
+}
+
+#cart-overlay .cart-address-input button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+/* =========================================================
+   CART ITEM
+   ========================================================= */
+
+#cart-overlay .cart-item {
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+#cart-overlay .cart-item > .quantity-control {
+    grid-column: auto;
+    justify-self: end;
+}
+
+#cart-overlay .cart-item-details {
+    min-width: 0;
+}
+
+#cart-overlay .cart-item-name {
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   FULFILLMENT
+   ========================================================= */
+
+#cart-overlay .fulfillment-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#cart-overlay .fulfillment-option {
+    min-width: 0;
+    min-height: 90px;
+    justify-content: center;
+    padding: 14px;
+}
+
+#cart-overlay .fulfillment-option input[type="radio"] {
+    top: 12px;
+    right: 12px;
+}
+
+#cart-overlay .fulfillment-copy {
+    padding-right: 12px;
+}
+
+#cart-overlay .fulfillment-copy strong {
+    font-size: 13px;
+}
+
+/* =========================================================
+   CHECKOUT BUTTON
+   ========================================================= */
+
+#cart-overlay .checkout-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+
+    padding: 12px 0;
+    background: var(--cart-white);
+}
+
+/* =========================================================
    17. TABLET
    ========================================================= */
 
@@ -1397,6 +1555,29 @@
 
     #cart-overlay .checkout-actions button {
         min-height: 49px;
+    }
+
+    .app-bottom-sheet__body > #cart-overlay .cart-content {
+        padding: 16px 15px 20px;
+    }
+
+    #cart-overlay .cart-item {
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 9px;
+    }
+
+    #cart-overlay .cart-item-image {
+        width: 54px;
+        height: 54px;
+    }
+
+    #cart-overlay .cart-item > .quantity-control {
+        grid-column: auto;
+    }
+
+    #cart-overlay .fulfillment-option {
+        min-height: 85px;
+        padding: 11px;
     }
 }
 

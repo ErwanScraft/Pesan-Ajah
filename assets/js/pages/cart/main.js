@@ -1,3 +1,5 @@
+import { createBottomSheet } from "../../modules/bottom-sheet.js";
+
 export function initCartPage({
   products,
   cart,
@@ -13,6 +15,7 @@ export function initCartPage({
   const closeCartButton = $("#close-cart");
   const cartItems = $("#cart-items");
   const checkoutButton = $("#checkout-button");
+  const cartSheet = createBottomSheet();
 
   const fulfillmentInputs = document.querySelectorAll(
     'input[name="fulfillment-method"]',
@@ -301,26 +304,27 @@ export function initCartPage({
   }
 
   function openCart() {
-    if (!cartOverlay) return;
-
-    cartOverlay.hidden = false;
-
-    requestAnimationFrame(() => {
-      cartOverlay.classList.add("active");
-    });
-
-    document.body.classList.add("no-scroll");
-    closeCartButton?.focus();
+      if (!cartOverlay) return;
+  
+      cartOverlay.hidden = false;
+  
+      cartSheet.open({
+          title: "Keranjang",
+          content: cartOverlay,
+          size: "large",
+          closeOnBackdrop: true,
+          closeButton: true,
+          onClose: () => {
+              cartOverlay.hidden = true;
+          },
+      });
   }
-
+  
   function closeCart() {
-    if (!cartOverlay) return;
-
-    cartOverlay.classList.remove("active");
-    document.body.classList.remove("no-scroll");
-    cartOverlay.hidden = true;
-
-    cartButton?.focus();
+      if (!cartSheet.isOpen()) return;
+  
+      cartSheet.close();
+      cartButton?.focus();
   }
 
   async function loadCsrfToken() {
@@ -886,22 +890,6 @@ export function initCartPage({
       cart.change(Number(removeButton.dataset.remove), -1);
       onCatalogRender?.();
       renderCart();
-    }
-  });
-
-  cartOverlay?.addEventListener("click", (event) => {
-    if (event.target === cartOverlay) {
-      closeCart();
-    }
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      cartOverlay &&
-      !cartOverlay.hidden
-    ) {
-      closeCart();
     }
   });
 
