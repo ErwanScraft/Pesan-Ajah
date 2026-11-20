@@ -84,6 +84,15 @@ $productCategories = require APP_ROOT . '/config/categories.php';
         type="module"
         src="/assets/js/main.js?v=<?= asset_version('assets/js/main.js') ?>"
     ></script>
+    
+    <!-- Google Analytic -->
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5WJ727NJ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    
 </head>
 
 <body
