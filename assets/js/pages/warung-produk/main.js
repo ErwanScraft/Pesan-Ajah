@@ -783,8 +783,43 @@ export async function initWarungProducts({
   }
 
   function setProductUnitField(unitValue) {
-      if (!productForm?.elements.unit) return;
-      productForm.elements.unit.value = String(unitValue || "");
+    const unitSelect = productForm?.elements.unit;
+  
+    if (!unitSelect) return;
+  
+    const rawValue = String(unitValue || "").trim();
+  
+    const legacyMatch = rawValue.match(
+      /^\d+(?:[.,]\d+)?\s+(.+)$/,
+    );
+  
+    const normalizedValue = legacyMatch
+      ? legacyMatch[1].trim()
+      : rawValue;
+  
+    const option = [...unitSelect.options].find(
+      (item) =>
+        item.value.toLocaleLowerCase("id-ID") ===
+        normalizedValue.toLocaleLowerCase("id-ID"),
+    );
+  
+    if (option) {
+      unitSelect.value = option.value;
+      return;
+    }
+  
+    if (!rawValue) {
+      unitSelect.value = "";
+      return;
+    }
+  
+    const legacyOption = new Option(
+      `${rawValue} (tipe lama)`,
+      rawValue,
+    );
+  
+    unitSelect.add(legacyOption);
+    unitSelect.value = rawValue;
   }
 
   function editProduct(id) {
@@ -886,19 +921,17 @@ export async function initWarungProducts({
       const formData = new FormData(productForm);
 
       const payload = {
-          name: String(formData.get("name") || "").trim(),
-          variant: String(formData.get("variant") || "").trim(),
-          category: String(formData.get("category") || "").trim(),
-          price: Number(formData.get("price")),
-          unit: String(formData.get("unit") || "").trim(),
-          tag: String(formData.get("tag") || "").trim(),
-          description: String(
-              formData.get("description") || "",
-          ).trim(),
-          available: formData.has("available"),
+        name: String(formData.get("name") || "").trim(),
+        variant: String(formData.get("variant") || "").trim(),
+        category: String(formData.get("category") || "").trim(),
+        price: Number(formData.get("price")),
+        unit: String(formData.get("unit") || "").trim(),
+        tag: String(formData.get("tag") || "").trim(),
+        description: String(
+          formData.get("description") || "",
+        ).trim(),
+        available: formData.has("available"),
       };
-
-      payload.unit = `${payload.unitQuantity} ${payload.unitName}`;
 
       if (
           !payload.name ||

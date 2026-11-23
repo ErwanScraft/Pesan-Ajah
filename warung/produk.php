@@ -12,6 +12,7 @@ $pageTitle = 'Produk';
 $activePage = 'produk';
 
 $productCategories = require APP_ROOT . '/config/categories.php';
+$productTypes = require APP_ROOT . '/config/product_types.php';
 
 require __DIR__ . '/_header.php';
 
@@ -128,24 +129,19 @@ require __DIR__ . '/_header.php';
                 </select>
             </label>
     
-            <!-- Satuan -->
-            <div class="form-field product-unit-field">
-                <span>Satuan</span>
-    
-                <div class="product-unit-inputs">
-                    <label class="form-field">
-                        <span>Tipe</span>
-                        <input
-                            type="text"
-                            name="unit"
-                            maxlength="30"
-                            placeholder="Contoh: Porsi, Ikat, Kg, Jasa"
-                            autocomplete="off"
-                            required
-                        >
-                    </label>
-                </div>
-            </div>
+            <!-- Tipe -->
+            <label class="form-field">
+                <span>Tipe</span>
+                <select name="unit" required>
+                    <option value="">Pilih tipe</option>
+            
+                    <?php foreach ($productTypes as $type): ?>
+                        <option value="<?= e($type) ?>">
+                            <?= e($type) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
     
             <!-- Foto -->
             <div class="form-field product-image-field">
