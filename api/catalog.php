@@ -92,6 +92,7 @@ try {
             s.owner_name AS store_owner,
             s.icon_image AS store_icon_image,
             COALESCE(sr.average_rating, 0) AS store_rating,
+            COALESCE(sr.review_count, 0) AS store_review_count,
             s.phone AS store_phone,
             s.is_open AS store_is_open,
             s.free_delivery AS store_free_delivery,
@@ -110,7 +111,8 @@ try {
         LEFT JOIN (
             SELECT
                 store_id,
-                AVG(rating) AS average_rating
+                AVG(rating) AS average_rating,
+                COUNT(*) AS review_count
             FROM store_reviews
             GROUP BY store_id
         ) sr ON sr.store_id = s.id
@@ -147,6 +149,9 @@ try {
     foreach ($products as &$product) {
         $product['id'] = (int) $product['id'];
         $product['store_id'] = (int) $product['store_id'];
+        
+        $product['store_rating'] = (float) $product['store_rating'];
+        $product['store_review_count'] = (int) $product['store_review_count'];
 
         $product['price'] = (float) $product['price'];
 

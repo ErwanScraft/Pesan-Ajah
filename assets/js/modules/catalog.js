@@ -624,9 +624,37 @@ export function createCatalog({
       groups.get(storeId).push(product);
     }
   
+    /*
+     * Urutkan warung berdasarkan rating tertinggi.
+     * Jika rating sama, jumlah review terbanyak didahulukan.
+     */
+    const sortedGroups = [...groups.values()].sort((a, b) => {
+      const storeA = a[0];
+      const storeB = b[0];
+    
+      const ratingA = Number(storeA.store_rating) || 0;
+      const ratingB = Number(storeB.store_rating) || 0;
+    
+      if (ratingA !== ratingB) {
+        return ratingB - ratingA;
+      }
+    
+      const reviewCountA = Number(storeA.store_review_count) || 0;
+      const reviewCountB = Number(storeB.store_review_count) || 0;
+    
+      if (reviewCountA !== reviewCountB) {
+        return reviewCountB - reviewCountA;
+      }
+    
+      return String(storeA.store || "").localeCompare(
+        String(storeB.store || ""),
+        "id-ID",
+      );
+    });
+    
     const fragment = document.createDocumentFragment();
-  
-    for (const [, storeProducts] of groups) {
+    
+    for (const storeProducts of sortedGroups) {
       if (storeProducts.length === 0) {
         continue;
       }
