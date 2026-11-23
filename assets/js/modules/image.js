@@ -1,3 +1,5 @@
+export const NO_IMAGE_URL = "/assets/images/no_images.webp";
+
 /**
  * Pesan Ajah — Image Utilities
  *
@@ -60,16 +62,19 @@ export function resolveImageUrl(value) {
  * gagal dimuat.
  */
 export function setImageSource(image, value, onError) {
-  const source = resolveImageUrl(value);
+  const source = resolveImageUrl(value) || NO_IMAGE_URL;
 
-  if (!source) {
-    onError?.();
-    return false;
-  }
+  let usingFallback = source === NO_IMAGE_URL;
 
   image.addEventListener(
     "error",
     () => {
+      if (!usingFallback) {
+        usingFallback = true;
+        image.src = NO_IMAGE_URL;
+        return;
+      }
+
       onError?.();
     },
     { once: true },

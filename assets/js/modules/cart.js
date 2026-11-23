@@ -99,10 +99,18 @@ export function createCart(products) {
   
     container.className = "cart-item-image";
   
-    const placeholder = document.createElement("span");
-  
-    placeholder.className = "cart-item-image-placeholder";
-    placeholder.textContent = "Foto tidak tersedia";
+    const image = document.createElement("img");
+    
+    image.className = "product-photo";
+    image.alt = product.name || "Foto produk";
+    image.loading = "lazy";
+    image.decoding = "async";
+    
+    setImageSource(image, product.image, () => {
+      image.hidden = true;
+    });
+    
+    container.append(image);
   
     const image = document.createElement("img");
   
