@@ -217,53 +217,15 @@ export function createCatalog({
     }
   
     const image = document.createElement("img");
-    
+  
     image.className = "product-photo";
     image.alt = product.name || "Foto produk";
     image.loading = "lazy";
     image.decoding = "async";
-    
-    setImageSource(image, product.image, () => {
-      image.hidden = true;
-    });
-    
+  
+    setImageSource(image, product.image);
+  
     container.append(image);
-  
-    const image = document.createElement("img");
-  
-    image.className = "product-photo";
-    image.alt = product.name || "Foto produk";
-    image.loading = "lazy";
-    image.decoding = "async";
-    image.hidden = true;
-  
-    image.addEventListener(
-      "error",
-      () => {
-        image.hidden = true;
-        placeholder.hidden = false;
-      },
-      { once: true },
-    );
-  
-    if (product.image) {
-      const validSource = setImageSource(
-        image,
-        product.image,
-        () => {
-          image.hidden = true;
-          placeholder.hidden = false;
-        },
-      );
-  
-      if (validSource) {
-        image.hidden = false;
-        placeholder.hidden = true;
-        container.append(image);
-      }
-    }
-  
-    container.append(placeholder);
   
     if (isOutOfStock || isUnavailable) {
       const soldOutLabel = document.createElement("span");

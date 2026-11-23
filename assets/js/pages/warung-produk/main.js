@@ -6,6 +6,7 @@
  */
 import { captureError } from "../../core/error-logger.js";
 import { createBottomSheet } from "../../modules/bottom-sheet.js";
+import { setImageSource } from "../../modules/image.js";
  
 export async function initWarungProducts({
   $,
@@ -540,11 +541,8 @@ export async function initWarungProducts({
 
     function createProductThumbnail(product) {
       const thumbnail = document.createElement("div");
-      thumbnail.className = "manage-product-thumbnail";
     
-      const placeholder = document.createElement("span");
-      placeholder.className = "manage-product-image-placeholder";
-      placeholder.textContent = "Tanpa foto";
+      thumbnail.className = "manage-product-thumbnail";
     
       const image = document.createElement("img");
     
@@ -552,49 +550,12 @@ export async function initWarungProducts({
         ? `Foto ${product.name}`
         : "Foto produk";
     
-      // Jangan gunakan lazy loading untuk gambar yang awalnya hidden.
-      image.loading = "eager";
+      image.loading = "lazy";
       image.decoding = "async";
-      image.hidden = true;
     
-      thumbnail.append(image, placeholder);
+      setImageSource(image, product.image);
     
-      function showImage() {
-        if (image.naturalWidth > 0) {
-          image.hidden = false;
-          placeholder.hidden = true;
-        }
-      }
-    
-      function showPlaceholder() {
-        image.hidden = true;
-        placeholder.hidden = false;
-      }
-    
-      const imageUrl = resolveImageUrl(product.image);
-    
-      if (!imageUrl) {
-        showPlaceholder();
-        return thumbnail;
-      }
-    
-      // Pasang listener sebelum menetapkan src.
-      image.addEventListener("load", showImage);
-    
-      image.addEventListener("error", showPlaceholder, {
-        once: true,
-      });
-    
-      image.src = imageUrl;
-    
-      // Tangani gambar yang sudah tersedia dari browser cache.
-      if (image.complete) {
-        if (image.naturalWidth > 0) {
-          showImage();
-        } else {
-          showPlaceholder();
-        }
-      }
+      thumbnail.append(image);
     
       return thumbnail;
     }

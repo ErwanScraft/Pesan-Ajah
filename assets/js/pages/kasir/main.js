@@ -1,5 +1,6 @@
 import { renderReceipt } from "../../modules/receipt/renderer.js";
 import { shareReceiptImage } from "../../modules/receipt/printer.js";
+import { setImageSource } from "../../modules/image.js";
 
 export async function initWarungKasir({
   $,
@@ -298,17 +299,15 @@ export async function initWarungKasir({
         "cashier-product-image",
       );
 
-      if (product.image) {
-        const image = document.createElement("img");
-
-        image.src = resolveImageUrl(product.image);
-        image.alt = product.name;
-        image.loading = "lazy";
-
-        imageWrapper.append(image);
-      } else {
-        imageWrapper.textContent = "IMG";
-      }
+      const image = document.createElement("img");
+      
+      image.alt = product.name || "Foto produk";
+      image.loading = "lazy";
+      image.decoding = "async";
+      
+      setImageSource(image, product.image);
+      
+      imageWrapper.append(image);
 
       if (!available) {
         imageWrapper.append(

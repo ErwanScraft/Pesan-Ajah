@@ -62,25 +62,26 @@ export function resolveImageUrl(value) {
  * gagal dimuat.
  */
 export function setImageSource(image, value, onError) {
-  const source = resolveImageUrl(value) || NO_IMAGE_URL;
+  const source = resolveImageUrl(value);
 
-  let usingFallback = source === NO_IMAGE_URL;
+  let fallbackActive = !source || source === NO_IMAGE_URL;
 
-  image.addEventListener(
-    "error",
-    () => {
-      if (!usingFallback) {
-        usingFallback = true;
-        image.src = NO_IMAGE_URL;
-        return;
-      }
+  function handleError() {
+    if (!fallbackActive) {
+      fallbackActive = true;
+      image.src = NO_IMAGE_URL;
+      return;
+    }
 
-      onError?.();
-    },
-    { once: true },
-  );
+    image.removeEventListener("error", handleError);
+    image.hidden = true;
 
-  image.src = source;
+    onError?.(image);
+  }
+
+  image.addEventListener("error", handleError);
+
+  image.src = source || NO_IMAGE_URL;
 
   return true;
 }

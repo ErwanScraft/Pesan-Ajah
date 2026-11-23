@@ -1,3 +1,5 @@
+import { setImageSource } from "../../modules/image.js";
+
 export async function initWarungOrderEditor({
   API,
   apiRequest,
@@ -55,14 +57,6 @@ export async function initWarungOrderEditor({
     activeOverlay = null;
   
     document.body.classList.remove("warung-order-edit-open");
-  }
-
-  function getProductImage(image) {
-    if (!image) {
-      return "";
-    }
-
-    return resolveImageUrl(image) || "";
   }
 
   async function loadCatalog() {
@@ -314,22 +308,12 @@ export async function initWarungOrderEditor({
           "img",
           "warung-order-edit-product-image"
         );
-
-        image.alt = item.name;
+        
+        image.alt = item.name || "Foto produk";
         image.loading = "lazy";
-
-        const imageUrl = getProductImage(item.image);
-
-        if (imageUrl) {
-          image.src = imageUrl;
-
-          image.addEventListener("error", () => {
-            image.hidden = true;
-            image.removeAttribute("src");
-          }, { once: true });
-        } else {
-          image.hidden = true;
-        }
+        image.decoding = "async";
+        
+        setImageSource(image, item.image);
 
         const info = createElement(
           "div",

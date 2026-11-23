@@ -100,56 +100,14 @@ export function createCart(products) {
     container.className = "cart-item-image";
   
     const image = document.createElement("img");
-    
-    image.className = "product-photo";
+  
     image.alt = product.name || "Foto produk";
     image.loading = "lazy";
     image.decoding = "async";
-    
-    setImageSource(image, product.image, () => {
-      image.hidden = true;
-    });
-    
+  
+    setImageSource(image, product.image);
+  
     container.append(image);
-  
-    const image = document.createElement("img");
-  
-    image.alt = product.name || "Foto produk";
-    image.loading = "lazy";
-    image.decoding = "async";
-  
-    image.addEventListener(
-      "error",
-      () => {
-        image.hidden = true;
-        placeholder.hidden = false;
-      },
-      { once: true },
-    );
-  
-    if (product.image) {
-      placeholder.hidden = true;
-  
-      const validSource = setImageSource(
-        image,
-        product.image,
-        () => {
-          image.hidden = true;
-          placeholder.hidden = false;
-        },
-      );
-  
-      if (validSource) {
-        container.append(image);
-      } else {
-        placeholder.hidden = false;
-      }
-    } else {
-      image.hidden = true;
-      placeholder.hidden = false;
-    }
-  
-    container.append(placeholder);
   
     return container;
   }

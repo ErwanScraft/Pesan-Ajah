@@ -1,3 +1,5 @@
+import { setImageSource } from "../../modules/image.js";
+
 export async function initWarungStock({
   $,
   API,
@@ -43,18 +45,14 @@ export async function initWarungStock({
     );
   
     const image = document.createElement("img");
-  
+    
     image.alt = product.name || "Produk";
     image.loading = "lazy";
     image.decoding = "async";
-  
-    if (product.image) {
-      image.src = resolveImageUrl(product.image);
-      imageWrapper.append(image);
-    } else {
-      imageWrapper.classList.add("is-empty");
-      imageWrapper.textContent = "IMG";
-    }
+    
+    setImageSource(image, product.image);
+    
+    imageWrapper.append(image);
   
     const information = createElement(
       "div",
