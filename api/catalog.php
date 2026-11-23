@@ -91,6 +91,7 @@ try {
             s.slug AS store_slug,
             s.owner_name AS store_owner,
             s.icon_image AS store_icon_image,
+            COALESCE(sr.average_rating, 0) AS store_rating,
             s.phone AS store_phone,
             s.is_open AS store_is_open,
             s.free_delivery AS store_free_delivery,
@@ -105,6 +106,14 @@ try {
 
         INNER JOIN users u
             ON u.id = s.user_id
+
+        LEFT JOIN (
+            SELECT
+                store_id,
+                AVG(rating) AS average_rating
+            FROM store_reviews
+            GROUP BY store_id
+        ) sr ON sr.store_id = s.id
 
         WHERE s.is_active = 1
           AND u.is_active = 1

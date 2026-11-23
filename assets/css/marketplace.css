@@ -177,6 +177,56 @@
 }
 
 
+/* Rating dan nama pemilik */
+.marketplace-store-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    min-width: 0;
+    overflow: hidden;
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    white-space: nowrap;
+}
+
+.marketplace-store-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+
+    flex: 0 0 auto;
+
+    color: var(--text);
+    font-weight: 700;
+}
+
+.marketplace-store-rating > span:first-child {
+    color: #e5a323;
+}
+
+.marketplace-store-meta-separator {
+    flex: 0 0 auto;
+    color: var(--muted);
+}
+
+.marketplace-store-owner {
+    display: block;
+
+    min-width: 0;
+    overflow: hidden;
+
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* =========================================================
    5. STORE STATUS
    ========================================================= */

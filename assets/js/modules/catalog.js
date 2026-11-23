@@ -390,105 +390,135 @@ export function createCatalog({
   | HEADER WARUNG PADA KATALOG MARKETPLACE
   |--------------------------------------------------------------------------
   */
-  
 
   function createMarketplaceStoreHeader(product) {
-    const link = document.createElement("a");
+      const link = document.createElement("a");
   
-    link.className = "marketplace-store-profile";
-    link.href = product.store_slug
-      ? `/warung/${encodeURIComponent(product.store_slug)}`
-      : "#";
+      link.className = "marketplace-store-profile";
+      link.href = product.store_slug
+          ? `/warung/${encodeURIComponent(product.store_slug)}`
+          : "#";
   
-    if (!product.store_slug) {
-      link.setAttribute("aria-disabled", "true");
-      link.removeAttribute("href");
-    }
-  
-    // Ikon warung
-    const avatar = document.createElement("span");
-    avatar.className = "marketplace-store-avatar";
-    avatar.setAttribute("aria-hidden", "true");
-  
-    const initial =
-      String(product.store || "W")
-        .trim()
-        .charAt(0)
-        .toLocaleUpperCase("id-ID") || "W";
-  
-    const fallback = document.createElement("span");
-    fallback.className = "marketplace-store-initial";
-    fallback.textContent = initial;
-    avatar.append(fallback);
-  
-    if (product.store_icon_image) {
-      const image = document.createElement("img");
-  
-      image.className = "marketplace-store-icon";
-      image.alt = "";
-      image.loading = "lazy";
-      image.decoding = "async";
-  
-      image.addEventListener(
-        "error",
-        () => {
-          image.hidden = true;
-          fallback.hidden = false;
-        },
-        { once: true },
-      );
-  
-      const validSource = setImageSource(
-        image,
-        product.store_icon_image,
-        () => {
-          image.hidden = true;
-          fallback.hidden = false;
-        },
-      );
-  
-      if (validSource) {
-        image.hidden = false;
-        fallback.hidden = true;
-        avatar.append(image);
+      if (!product.store_slug) {
+          link.setAttribute("aria-disabled", "true");
+          link.removeAttribute("href");
       }
-    }
   
-    // Nama warung dan pemilik
-    const identity = document.createElement("span");
-    identity.className = "marketplace-store-identity";
+      // Foto atau logo warung
+      const avatar = document.createElement("span");
+      avatar.className = "marketplace-store-avatar";
+      avatar.setAttribute("aria-hidden", "true");
   
-    const name = document.createElement("strong");
-    name.className = "marketplace-store-name";
-    name.textContent = product.store || "Warung";
+      const initial =
+          String(product.store || "W")
+              .trim()
+              .charAt(0)
+              .toLocaleUpperCase("id-ID") || "W";
   
-    const owner = document.createElement("small");
-    owner.className = "marketplace-store-owner";
-    owner.textContent = product.store_owner || "";
+      const fallback = document.createElement("span");
+      fallback.className = "marketplace-store-initial";
+      fallback.textContent = initial;
   
-    // Status warung di sisi kanan header
-    const isOpen = Boolean(product.store_is_open);
+      avatar.append(fallback);
   
-    const status = document.createElement("span");
-    status.className = [
-      "marketplace-store-status",
-      isOpen ? "is-open" : "is-closed",
-    ].join(" ");
+      if (product.store_icon_image) {
+          const image = document.createElement("img");
   
-    const statusDot = document.createElement("span");
-    statusDot.className = "marketplace-store-status-dot";
-    statusDot.setAttribute("aria-hidden", "true");
+          image.className = "marketplace-store-icon";
+          image.alt = "";
+          image.loading = "lazy";
+          image.decoding = "async";
   
-    const statusText = document.createElement("span");
-    statusText.textContent = isOpen ? "Buka" : "Tutup";
+          image.addEventListener(
+              "error",
+              () => {
+                  image.hidden = true;
+                  fallback.hidden = false;
+              },
+              { once: true },
+          );
   
-    status.append(statusDot, statusText);
+          const validSource = setImageSource(
+              image,
+              product.store_icon_image,
+              () => {
+                  image.hidden = true;
+                  fallback.hidden = false;
+              },
+          );
   
-    // Status menjadi elemen kanan, bukan bagian identitas pemilik
-    identity.append(name, owner);
-    link.append(avatar, identity, status);
+          if (validSource) {
+              image.hidden = false;
+              fallback.hidden = true;
+              avatar.append(image);
+          }
+      }
   
-    return link;
+      // Identitas warung
+      const identity = document.createElement("span");
+      identity.className = "marketplace-store-identity";
+  
+      const name = document.createElement("strong");
+      name.className = "marketplace-store-name";
+      name.textContent = product.store || "Warung";
+  
+      // Rating dan nama pemilik
+      const meta = document.createElement("small");
+      meta.className = "marketplace-store-meta";
+  
+      const rating = document.createElement("span");
+      rating.className = "marketplace-store-rating";
+  
+      const star = document.createElement("span");
+      star.setAttribute("aria-hidden", "true");
+      star.textContent = "★";
+  
+      const ratingValue = document.createElement("span");
+      ratingValue.textContent = Math.max(
+          0,
+          Number(product.store_rating) || 0,
+      ).toFixed(1);
+  
+      rating.append(star, ratingValue);
+  
+      meta.append(rating);
+  
+      if (product.store_owner) {
+          const separator = document.createElement("span");
+          separator.className = "marketplace-store-meta-separator";
+          separator.textContent = "·";
+  
+          const owner = document.createElement("span");
+          owner.className = "marketplace-store-owner";
+          owner.textContent = product.store_owner;
+  
+          meta.append(separator, owner);
+      }
+  
+      identity.append(name, meta);
+  
+      // Status buka / tutup
+      const isOpen = Boolean(product.store_is_open);
+  
+      const status = document.createElement("span");
+  
+      status.className = [
+          "marketplace-store-status",
+          isOpen ? "is-open" : "is-closed",
+      ].join(" ");
+  
+      const statusDot = document.createElement("span");
+      statusDot.className = "marketplace-store-status-dot";
+      statusDot.setAttribute("aria-hidden", "true");
+  
+      const statusText = document.createElement("span");
+      statusText.textContent = isOpen ? "Buka" : "Tutup";
+  
+      status.append(statusDot, statusText);
+  
+      link.append(avatar, identity, status);
+  
+      return link;
   }
 
   /*
