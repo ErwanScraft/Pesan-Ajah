@@ -272,7 +272,6 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
     grid-template-rows:
         36px
         14px
-        14px
         22px
         34px;
 
@@ -284,7 +283,6 @@ body[data-page="index"][data-catalog-loading="true"] .catalog-skeleton {
 
     padding: 11px;
 }
-
 
 /* =========================================================
    9. NAMA PRODUK

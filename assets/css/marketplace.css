@@ -453,7 +453,6 @@
     grid-template-rows:
         36px
         14px
-        14px
         22px
         34px;
 
@@ -518,35 +517,6 @@
 .marketplace-store-products .product-variant:empty {
     visibility: hidden;
 }
-
-
-/* =========================================================
-   13. PRODUCT UNIT
-   ========================================================= */
-
-.marketplace-store-products .product-unit {
-    display: block;
-
-    width: 100%;
-    min-width: 0;
-    height: 14px;
-
-    overflow: hidden;
-
-    color: var(--muted);
-    font-size: 10px;
-    line-height: 14px;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Slot tetap meskipun satuan kosong */
-
-.marketplace-store-products .product-unit:empty {
-    visibility: hidden;
-}
-
 
 /* =========================================================
    14. PRODUCT STOCK
@@ -764,7 +734,6 @@
     .marketplace-store-products .product-info {
         grid-template-rows:
             34px
-            14px
             14px
             22px
             32px;

@@ -260,7 +260,6 @@ export function createCatalog({
 
   function createProductCard(product) {
     const card = document.createElement("article");
-  
     card.className = "product-card";
   
     const image = createProductImage(product);
@@ -269,22 +268,14 @@ export function createCatalog({
     info.className = "product-info";
   
     const name = document.createElement("h3");
-  
     name.className = "product-name";
     name.textContent = product.name || "Produk";
   
     const variant = document.createElement("span");
-  
     variant.className = "product-variant";
     variant.textContent = product.variant || "";
   
-    const unit = document.createElement("span");
-  
-    unit.className = "product-unit";
-    unit.textContent = product.unit || "";
-  
     const stock = document.createElement("span");
-  
     stock.className = "product-stock";
   
     if (product.stock_quantity === 0) {
@@ -301,7 +292,7 @@ export function createCatalog({
         `Stok ${new Intl.NumberFormat("id-ID").format(
           product.stock_quantity,
         )}`;
-    
+  
       stock.classList.add(
         product.stock_quantity <= 5 ? "is-low" : "is-available",
       );
@@ -311,12 +302,10 @@ export function createCatalog({
     bottom.className = "product-bottom";
   
     const price = document.createElement("span");
-  
     price.className = "product-price";
     price.textContent = formatRupiah(product.price);
   
     const addButton = document.createElement("button");
-  
     addButton.className = "add-button";
     addButton.type = "button";
     addButton.dataset.add = String(product.id);
@@ -345,7 +334,6 @@ export function createCatalog({
     info.append(
       name,
       variant,
-      unit,
       stock,
       bottom,
     );

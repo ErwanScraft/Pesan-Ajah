@@ -311,7 +311,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
                                         <span class="skeleton-line skeleton-line--product"></span>
                                         <span class="skeleton-line skeleton-line--variant"></span>
-                                        <span class="skeleton-line skeleton-line--unit"></span>
+                                    
                                         <span class="skeleton-stock"></span>
 
                                         <div class="catalog-skeleton__product-bottom">
