@@ -392,17 +392,8 @@ export function createCatalog({
   */
 
   function createMarketplaceStoreHeader(product) {
-      const link = document.createElement("a");
-  
-      link.className = "marketplace-store-profile";
-      link.href = product.store_slug
-          ? `/warung/${encodeURIComponent(product.store_slug)}`
-          : "#";
-  
-      if (!product.store_slug) {
-          link.setAttribute("aria-disabled", "true");
-          link.removeAttribute("href");
-      }
+      const header = document.createElement("div");
+      header.className = "marketplace-store-profile";
   
       // Foto atau logo warung
       const avatar = document.createElement("span");
@@ -462,7 +453,7 @@ export function createCatalog({
       name.className = "marketplace-store-name";
       name.textContent = product.store || "Warung";
   
-      // Rating dan nama pemilik
+      // Rating dan status warung
       const meta = document.createElement("small");
       meta.className = "marketplace-store-meta";
   
@@ -481,27 +472,9 @@ export function createCatalog({
   
       rating.append(star, ratingValue);
   
-      meta.append(rating);
-  
-      if (product.store_owner) {
-          const separator = document.createElement("span");
-          separator.className = "marketplace-store-meta-separator";
-          separator.textContent = "·";
-  
-          const owner = document.createElement("span");
-          owner.className = "marketplace-store-owner";
-          owner.textContent = product.store_owner;
-  
-          meta.append(separator, owner);
-      }
-  
-      identity.append(name, meta);
-  
-      // Status buka / tutup
       const isOpen = Boolean(product.store_is_open);
   
       const status = document.createElement("span");
-  
       status.className = [
           "marketplace-store-status",
           isOpen ? "is-open" : "is-closed",
@@ -516,9 +489,48 @@ export function createCatalog({
   
       status.append(statusDot, statusText);
   
-      link.append(avatar, identity, status);
+      const separator = document.createElement("span");
+      separator.className = "marketplace-store-meta-separator";
+      separator.textContent = "•";
   
-      return link;
+      meta.append(rating, separator, status);
+      identity.append(name, meta);
+  
+      // Tombol menuju halaman warung
+      const visitButton = document.createElement("a");
+      visitButton.className = "marketplace-store-visit";
+      visitButton.setAttribute("aria-label", "Kunjungi warung");
+  
+      if (product.store_slug) {
+          visitButton.href =
+              `/warung/${encodeURIComponent(product.store_slug)}`;
+      } else {
+          visitButton.setAttribute("aria-disabled", "true");
+          visitButton.tabIndex = -1;
+      }
+  
+      const svgNamespace = "http://www.w3.org/2000/svg";
+      const icon = document.createElementNS(svgNamespace, "svg");
+  
+      icon.setAttribute("viewBox", "0 0 24 24");
+      icon.setAttribute("width", "18");
+      icon.setAttribute("height", "18");
+      icon.setAttribute("fill", "none");
+      icon.setAttribute("stroke", "currentColor");
+      icon.setAttribute("stroke-width", "2");
+      icon.setAttribute("stroke-linecap", "round");
+      icon.setAttribute("stroke-linejoin", "round");
+      icon.setAttribute("aria-hidden", "true");
+  
+      const path = document.createElementNS(svgNamespace, "path");
+      path.setAttribute("d", "M5 12h14 M12 5l7 7-7 7");
+  
+      icon.append(path);
+      visitButton.append(icon);
+  
+      header.append(avatar, identity, visitButton);
+  
+      return header;
   }
 
   /*
