@@ -489,11 +489,7 @@ export function createCatalog({
   
       status.append(statusDot, statusText);
   
-      const separator = document.createElement("span");
-      separator.className = "marketplace-store-meta-separator";
-      separator.textContent = "•";
-  
-      meta.append(rating, separator, status);
+      meta.append(rating, status);
       identity.append(name, meta);
   
       // Tombol menuju halaman warung

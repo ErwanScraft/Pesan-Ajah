@@ -159,16 +159,46 @@
     white-space: nowrap;
 }
 
-.marketplace-store-meta {
+..marketplace-store-meta {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 9px;
 
     min-width: 0;
+
     font-size: 11px;
     font-weight: 500;
     line-height: 1.4;
+
     white-space: nowrap;
+}
+
+.marketplace-store-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    flex: 0 0 auto;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    border-radius: 0;
+
+    background: transparent;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.marketplace-store-status.is-open {
+    color: #176b45;
+}
+
+.marketplace-store-status.is-closed {
+    color: #a52a2a;
 }
 
 .marketplace-store-rating {
@@ -185,12 +215,6 @@
 .marketplace-store-rating > span:first-child {
     color: #e5a323;
 }
-
-.marketplace-store-meta-separator {
-    flex: 0 0 auto;
-    color: var(--muted);
-}
-
 
 .marketplace-store-visit {
     display: grid;
