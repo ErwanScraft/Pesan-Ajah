@@ -13,5 +13,6 @@ return [
     'Kesehatan',
     'Alat Tulis',
     'Rumah Tangga',
+    'Jasa',
     'Lainnya',
 ];

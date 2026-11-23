@@ -133,39 +133,17 @@ require __DIR__ . '/_header.php';
                 <span>Satuan</span>
     
                 <div class="product-unit-inputs">
-                    <input
-                        type="number"
-                        name="unit_quantity"
-                        min="0.001"
-                        max="999999"
-                        step="0.001"
-                        inputmode="decimal"
-                        placeholder="Jumlah"
-                        aria-label="Jumlah satuan"
-                        required
-                    >
-    
-                    <select
-                        name="unit_name"
-                        aria-label="Jenis satuan"
-                        required
-                    >
-                        <option value="pcs">Pcs</option>
-                        <option value="porsi">Porsi</option>
-                        <option value="buah">Buah</option>
-                        <option value="gelas">Gelas</option>
-                        <option value="bungkus">Bungkus</option>
-                        <option value="botol">Botol</option>
-                        <option value="cup">Cup</option>
-                        <option value="gram">Gram</option>
-                        <option value="kg">Kg</option>
-                        <option value="ml">Ml</option>
-                        <option value="liter">Liter</option>
-                        <option value="ikat">Ikat</option>
-                        <option value="pack">Pack</option>
-                        <option value="lembar">Lembar</option>
-                        <option value="pasang">Pasang</option>
-                    </select>
+                    <label class="form-field">
+                        <span>Tipe</span>
+                        <input
+                            type="text"
+                            name="unit"
+                            maxlength="30"
+                            placeholder="Contoh: Porsi, Ikat, Kg, Jasa"
+                            autocomplete="off"
+                            required
+                        >
+                    </label>
                 </div>
             </div>
     

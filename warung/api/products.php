@@ -280,56 +280,20 @@ function validate_product_input(array $input): array
     }
 
     /*
-     * Satuan baru dikirim sebagai jumlah + jenis.
-     * Input "unit" tetap didukung untuk kompatibilitas API lama,
-     * termasuk pembaruan ketersediaan produk.
+     * Tipe produk disimpan langsung pada kolom products.unit.
+     * Input lama tetap didukung untuk kompatibilitas API.
      */
-    if (
-        array_key_exists('unit_quantity', $input)
-        || array_key_exists('unit_name', $input)
-    ) {
-        $quantityInput = trim(
-            (string) ($input['unit_quantity'] ?? '')
-        );
+    $unit = api_required_text(
+        $input['unit'] ?? null,
+        'Tipe',
+        30
+    );
     
-        $unitName = api_required_text(
-            $input['unit_name'] ?? null,
-            'Jenis satuan',
-            20
-        );
-    
-        if (
-            !preg_match('/^\d+(?:\.\d{1,3})?$/', $quantityInput)
-            || (float) $quantityInput <= 0
-            || (float) $quantityInput > 999999
-        ) {
-            api_json([
-                'success' => false,
-                'message' => 'Jumlah satuan harus lebih dari 0 dan maksimal 999999.',
-            ], 422);
-        }
-    
-        if (preg_match('/[\r\n\t]/', $unitName)) {
-            api_json([
-                'success' => false,
-                'message' => 'Jenis satuan tidak valid.',
-            ], 422);
-        }
-    
-        // Normalisasi angka: 1.500 menjadi 1.5, 2.000 menjadi 2.
-        $quantity = rtrim(
-            rtrim(number_format((float) $quantityInput, 3, '.', ''), '0'),
-            '.'
-        );
-    
-        $unit = $quantity . ' ' . $unitName;
-    } else {
-        // Fallback agar permintaan API lama tetap berfungsi.
-        $unit = api_required_text(
-            $input['unit'] ?? null,
-            'Satuan',
-            30
-        );
+    if (preg_match('/[\r\n\t]/', $unit)) {
+        api_json([
+            'success' => false,
+            'message' => 'Tipe produk tidak valid.',
+        ], 422);
     }
 
     $description = trim(

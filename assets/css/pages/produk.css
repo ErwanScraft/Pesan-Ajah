@@ -514,25 +514,6 @@
   opacity: 0.65;
 }
 
-/* SATUAN */
-
-.product-form--sheet .product-unit-field {
-  min-width: 0;
-}
-
-.product-form--sheet .product-unit-inputs {
-  display: grid;
-  min-width: 0;
-  grid-template-columns: 0.7fr 1.3fr;
-  gap: 10px;
-}
-
-.product-form--sheet .product-unit-inputs input,
-.product-form--sheet .product-unit-inputs select {
-  width: 100%;
-  min-width: 0;
-}
-
 /* GAMBAR */
 
 .product-form--sheet .product-image-field {

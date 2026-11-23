@@ -770,10 +770,6 @@ export async function initWarungProducts({
 
     productForm.reset();
 
-    if (productForm.elements.unit_quantity) {
-      productForm.elements.unit_quantity.value = "1";
-    }
-
     editingProductId = null;
 
     resetProductImageState();
@@ -786,50 +782,9 @@ export async function initWarungProducts({
     }
   }
 
-  function parseProductUnit(unitValue) {
-    const value = String(unitValue || "").trim();
-
-    const match = value.match(/^(\d+(?:[.,]\d+)?)\s+(.+)$/);
-
-    if (match) {
-      return {
-        quantity: match[1].replace(",", "."),
-        name: match[2].trim(),
-      };
-    }
-
-    return {
-      quantity: "1",
-      name: value || "pcs",
-    };
-  }
-
-  function setProductUnitFields(unitValue) {
-    const quantityInput = productForm?.elements.unit_quantity;
-    const unitSelect = productForm?.elements.unit_name;
-
-    if (!quantityInput || !unitSelect) return;
-
-    const parsed = parseProductUnit(unitValue);
-    const unitName = parsed.name;
-
-    quantityInput.value = parsed.quantity;
-
-    const existingOption = Array.from(unitSelect.options).find(
-      (option) =>
-        option.value.toLowerCase() === unitName.toLowerCase(),
-    );
-
-    if (!existingOption) {
-      const legacyOption = document.createElement("option");
-      legacyOption.value = unitName;
-      legacyOption.textContent = unitName;
-      unitSelect.add(legacyOption);
-    }
-
-    unitSelect.value = existingOption
-      ? existingOption.value
-      : unitName;
+  function setProductUnitField(unitValue) {
+      if (!productForm?.elements.unit) return;
+      productForm.elements.unit.value = String(unitValue || "");
   }
 
   function editProduct(id) {
@@ -848,7 +803,7 @@ export async function initWarungProducts({
     productForm.elements.category.value = product.category;
     productForm.elements.price.value = String(product.price);
 
-    setProductUnitFields(product.unit);
+    setProductUnitField(product.unit);
 
     if (productForm.elements.tag) {
       productForm.elements.tag.value = product.tag || "";
@@ -931,33 +886,30 @@ export async function initWarungProducts({
       const formData = new FormData(productForm);
 
       const payload = {
-        name: String(formData.get("name") || "").trim(),
-        variant: String(formData.get("variant") || "").trim(),
-        category: String(formData.get("category") || "").trim(),
-        price: Number(formData.get("price")),
-        unitQuantity: Number(formData.get("unit_quantity")),
-        unitName: String(formData.get("unit_name") || "").trim(),
-        tag: String(formData.get("tag") || "").trim(),
-        description: String(
-          formData.get("description") || "",
-        ).trim(),
-        available: formData.has("available"),
+          name: String(formData.get("name") || "").trim(),
+          variant: String(formData.get("variant") || "").trim(),
+          category: String(formData.get("category") || "").trim(),
+          price: Number(formData.get("price")),
+          unit: String(formData.get("unit") || "").trim(),
+          tag: String(formData.get("tag") || "").trim(),
+          description: String(
+              formData.get("description") || "",
+          ).trim(),
+          available: formData.has("available"),
       };
 
       payload.unit = `${payload.unitQuantity} ${payload.unitName}`;
 
       if (
-        !payload.name ||
-        !payload.category ||
-        !payload.unitName ||
-        !Number.isFinite(payload.unitQuantity) ||
-        payload.unitQuantity <= 0 ||
-        payload.unitQuantity > 999999 ||
-        !Number.isSafeInteger(payload.price) ||
-        payload.price < 1
+          !payload.name ||
+          !payload.category ||
+          !payload.unit ||
+          payload.unit.length > 30 ||
+          !Number.isSafeInteger(payload.price) ||
+          payload.price < 1
       ) {
-        notify("Periksa kembali informasi produk.");
-        return;
+          notify("Periksa kembali informasi produk.");
+          return;
       }
 
       const requestData = new FormData();
@@ -967,11 +919,6 @@ export async function initWarungProducts({
       requestData.set("category", payload.category);
       requestData.set("price", String(payload.price));
       requestData.set("unit", payload.unit);
-      requestData.set(
-        "unit_quantity",
-        String(payload.unitQuantity),
-      );
-      requestData.set("unit_name", payload.unitName);
       requestData.set("tag", payload.tag);
       requestData.set("description", payload.description);
       requestData.set("available", String(payload.available));
