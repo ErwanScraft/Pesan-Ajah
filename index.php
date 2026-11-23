@@ -2,18 +2,25 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| PESAN AJAH — MARKETPLACE HOMEPAGE
-|--------------------------------------------------------------------------
-|
-| Beranda marketplace.
-| Katalog diambil melalui /api/catalog.php.
-| Keranjang menggunakan partials/cart.php.
-|
-*/
-
 require_once __DIR__ . '/app/bootstrap.php';
+
+$pageTitle = 'Pesan Ajah — Marketplace Warung Lokal';
+$pageDescription = 'Belanja kebutuhan harian dari warung lokal dengan mudah.';
+
+$pageMeta = [
+    'theme_color' => '#176b45',
+    'color_scheme' => 'light',
+    'application_name' => 'Pesan Ajah',
+    'robots' => 'index, follow',
+];
+
+$pageOpenGraph = [
+    'type' => 'website',
+    'locale' => 'id_ID',
+    'site_name' => 'Pesan Ajah',
+    'title' => $pageTitle,
+    'description' => $pageDescription,
+];
 
 $productCategories = require APP_ROOT . '/config/categories.php';
 
@@ -21,58 +28,34 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
 <!doctype html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+    <meta name="theme-color" content="<?= e($pageMeta['theme_color']) ?>">
+    <meta name="color-scheme" content="<?= e($pageMeta['color_scheme']) ?>">
+    <meta name="application-name" content="<?= e($pageMeta['application_name']) ?>">
 
-    <meta name="theme-color" content="#176b45">
-    <meta name="color-scheme" content="light">
-    <meta name="application-name" content="Pesan Ajah">
+    <meta name="description" content="<?= e($pageDescription) ?>">
+    <meta name="robots" content="<?= e($pageMeta['robots']) ?>">
 
-    <meta
-        name="description"
-        content="Belanja kebutuhan harian dari warung lokal Banyukuning dengan mudah."
-    >
+    <meta property="og:type" content="<?= e($pageOpenGraph['type']) ?>">
+    <meta property="og:locale" content="<?= e($pageOpenGraph['locale']) ?>">
+    <meta property="og:site_name" content="<?= e($pageOpenGraph['site_name']) ?>">
+    <meta property="og:title" content="<?= e($pageOpenGraph['title']) ?>">
+    <meta property="og:description" content="<?= e($pageOpenGraph['description']) ?>">
 
-    <meta name="robots" content="index, follow">
+    <title><?= e($pageTitle) ?></title>
 
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="id_ID">
-    <meta property="og:site_name" content="Pesan Ajah">
-
-    <meta
-        property="og:title"
-        content="Pesan Ajah — Marketplace Warung Banyukuning"
-    >
-
-    <meta
-        property="og:description"
-        content="Belanja kebutuhan harian dari warung lokal Banyukuning dengan mudah."
-    >
-
-    <title>Pesan Ajah — Marketplace Warung Banyukuning</title>
-
-    <link
-        rel="icon"
-        type="image/webp"
-        href="/assets/images/logo.webp"
-    >
+    <link rel="icon" type="image/webp" href="/assets/images/logo.webp">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
     >
 
     <link
@@ -84,15 +67,21 @@ $productCategories = require APP_ROOT . '/config/categories.php';
         type="module"
         src="/assets/js/main.js?v=<?= asset_version('assets/js/main.js') ?>"
     ></script>
-    
-    <!-- Google Analytic -->
-    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5WJ727NJ"></script>
+
+    <script
+        async
+        src="https://www.googletagmanager.com/gtm.js?id=GTM-5WJ727NJ"
+    ></script>
+
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
     </script>
-    
 </head>
 
 <body
@@ -100,7 +89,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
     data-page="index"
 >
 
-    <!-- HEADER -->
     <?php
     $isStorePage = false;
     require __DIR__ . '/_header.php';
@@ -108,7 +96,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
     <main>
 
-        <!-- HERO -->
         <section class="hero">
             <div class="container hero-layout">
 
@@ -129,7 +116,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                         id="search-form"
                         role="search"
                     >
-
                         <input
                             id="search-input"
                             type="search"
@@ -147,7 +133,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
                 </div>
 
-                <!-- BANNER BERANDA -->
                 <section
                     class="homepage-banner"
                     id="homepage-banner"
@@ -163,7 +148,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
             </div>
         </section>
 
-        <!-- KATEGORI -->
         <section
             class="container section"
             id="categories"
@@ -172,13 +156,10 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
             <div class="section-heading">
                 <div>
-                    <h2 id="category-title">
-                        Kategori
-                    </h2>
+                    <h2 id="category-title">Kategori</h2>
                 </div>
             </div>
 
-            <!-- SKELETON KATEGORI -->
             <div
                 class="skeleton-category-grid"
                 id="category-loading"
@@ -202,13 +183,12 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                         <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
                     </svg>
                 </span>
-            
+
                 <?php for ($i = 0; $i < 5; $i++): ?>
                     <span class="skeleton-category"></span>
                 <?php endfor; ?>
             </div>
 
-            <!-- DAFTAR KATEGORI ASLI -->
             <div
                 class="category-grid"
                 id="category-list"
@@ -279,7 +259,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
             </div>
         </section>
 
-        <!-- KATALOG WARUNG -->
         <section
             class="container section products-section"
             id="products"
@@ -291,7 +270,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                 </div>
             </div>
 
-            <!-- SKELETON KATALOG -->
             <div
                 class="catalog-skeleton"
                 id="catalog-skeleton"
@@ -309,7 +287,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                         aria-hidden="true"
                     >
 
-                        <!-- PROFIL WARUNG -->
                         <div class="catalog-skeleton__profile">
 
                             <span class="skeleton-avatar"></span>
@@ -323,7 +300,6 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
                         </div>
 
-                        <!-- PRODUK WARUNG -->
                         <div class="catalog-skeleton__products">
 
                             <?php for ($product = 0; $product < 4; $product++): ?>
@@ -333,29 +309,17 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
                                     <div class="catalog-skeleton__product-info">
 
-                                        <!-- Nama produk -->
                                         <span class="skeleton-line skeleton-line--product"></span>
-                                    
-                                        <!-- Varian -->
                                         <span class="skeleton-line skeleton-line--variant"></span>
-                                    
-                                        <!-- Satuan -->
                                         <span class="skeleton-line skeleton-line--unit"></span>
-                                    
-                                        <!-- Stock -->
                                         <span class="skeleton-stock"></span>
-                                    
-                                        <!-- Harga dan tombol tambah -->
-                                        <div class="catalog-skeleton__product-bottom">
-                                    
-                                            <span class="skeleton-line skeleton-line--price"></span>
-                                    
-                                            <span class="skeleton-add-button"></span>
-                                    
-                                        </div>
-                                    
-                                    </div>
 
+                                        <div class="catalog-skeleton__product-bottom">
+                                            <span class="skeleton-line skeleton-line--price"></span>
+                                            <span class="skeleton-add-button"></span>
+                                        </div>
+
+                                    </div>
                                 </div>
                             <?php endfor; ?>
 
@@ -365,14 +329,12 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
             </div>
 
-            <!-- KATALOG ASLI: DIISI OLEH main.js -->
             <div
                 class="product-grid"
                 id="product-grid"
                 aria-live="polite"
             ></div>
 
-            <!-- KONDISI KATALOG KOSONG -->
             <div
                 class="empty-state"
                 id="empty-state"
@@ -400,23 +362,22 @@ $productCategories = require APP_ROOT . '/config/categories.php';
 
     </main>
 
-    <!-- FOOTER -->
     <?php require __DIR__ . '/_footer.php'; ?>
 
-    <!-- KERANJANG -->
     <?php require __DIR__ . '/partials/cart.php'; ?>
 
-    <!-- NOTIFIKASI -->
     <div
         class="toast"
         id="toast"
         role="status"
         aria-live="polite"
     ></div>
-    
-    <!-- Google ADS -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6568186199598824"
-     crossorigin="anonymous"></script>
+
+    <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6568186199598824"
+        crossorigin="anonymous"
+    ></script>
 
 </body>
 </html>
