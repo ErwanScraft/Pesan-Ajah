@@ -473,23 +473,22 @@ export function createCatalog({
       rating.append(star, ratingValue);
   
       const isOpen = Boolean(product.store_is_open);
-  
+
       const status = document.createElement("span");
       status.className = [
           "marketplace-store-status",
           isOpen ? "is-open" : "is-closed",
       ].join(" ");
-  
-      const statusDot = document.createElement("span");
-      statusDot.className = "marketplace-store-status-dot";
-      statusDot.setAttribute("aria-hidden", "true");
-  
-      const statusText = document.createElement("span");
-      statusText.textContent = isOpen ? "Buka" : "Tutup";
-  
-      status.append(statusDot, statusText);
-  
-      meta.append(rating, status);
+      
+      status.textContent = isOpen ? "Buka" : "Tutup";
+      
+      // Pemisah rating dan status
+      const separator = document.createElement("span");
+      separator.className = "marketplace-store-meta-separator";
+      separator.textContent = "•";
+      separator.setAttribute("aria-hidden", "true");
+      
+      meta.append(rating, separator, status);
       identity.append(name, meta);
   
       // Tombol menuju halaman warung
