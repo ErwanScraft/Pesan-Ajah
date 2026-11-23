@@ -811,22 +811,19 @@
     }
 }
 
-
-
 /* =========================================================
-   PESAN AJAH — MARKETPLACE CATEGORY NAVIGATION
-   Scope: kategori pada halaman beranda
+   MARKETPLACE CATEGORY NAVIGATION
    ========================================================= */
 
 #categories .category-grid {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
 
     width: 100%;
     min-width: 0;
 
-    padding: 3px 2px 8px;
+    padding: 4px 2px 10px;
 
     overflow-x: auto;
     overflow-y: hidden;
@@ -836,28 +833,25 @@
     overscroll-behavior-x: contain;
     touch-action: pan-x;
 
-    scroll-padding-left: 52px;
+    scroll-padding-inline: 2px;
+    scroll-snap-type: x proximity;
 }
 
 #categories .category-grid::-webkit-scrollbar {
     display: none;
 }
 
-/* Semua tombol kategori */
-
 #categories .category-card {
     display: inline-flex;
     flex: 0 0 auto;
 
     min-width: 0;
-    min-height: 38px;
+    min-height: 40px;
 
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 0;
 
-    padding: 9px 15px;
+    padding: 0 17px;
 
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -868,152 +862,109 @@
     font-family: inherit;
     font-size: 12px;
     font-weight: 650;
-    line-height: 1.2;
+    line-height: 1;
 
     white-space: nowrap;
     text-align: center;
 
     box-shadow: none;
     transform: none;
+
     cursor: pointer;
+    scroll-snap-align: start;
 
     transition:
-        color 0.18s ease,
-        background-color 0.18s ease,
-        border-color 0.18s ease;
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
 }
-
-/* Ikon dekoratif pada kategori biasa disembunyikan */
 
 #categories .category-card > span {
     display: none;
 }
 
-/* Hover kategori nonaktif */
-
-#categories .category-card:hover {
-    border-color: #c7ddcc;
-    background: #f7faf6;
+#categories .category-card:hover:not(.active) {
+    border-color: #c5d9ca;
+    background: #f6faf6;
+    color: var(--green-dark);
 }
-
-/* Kategori aktif */
 
 #categories .category-card.active {
     border-color: var(--green);
     background: var(--green);
     color: var(--white);
 
-    box-shadow: none;
-    transform: none;
+    box-shadow: 0 2px 5px rgb(23 107 69 / 12%);
 }
-
-/* Fokus keyboard */
 
 #categories .category-card:focus-visible {
     outline: 2px solid var(--green);
     outline-offset: 3px;
 }
 
-/* =========================================================
-   TOMBOL SEMUA — IKON TETAP DI KIRI
-   ========================================================= */
+/* Tombol Semua */
 
 #categories .category-all-button {
     position: sticky;
     left: 0;
     z-index: 2;
 
-    display: inline-flex;
-    flex: 0 0 42px;
+    flex: 0 0 auto;
 
-    width: 42px;
-    min-width: 42px;
-    height: 38px;
-    min-height: 38px;
+    min-width: 40px;
+    min-height: 40px;
 
-    align-items: center;
-    justify-content: center;
+    padding-inline: 14px;
 
-    margin-right: 1px;
-    padding: 0;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 999px;
 
     background: var(--white);
-    color: var(--text);
-
     box-shadow: 4px 0 8px rgb(0 0 0 / 4%);
 }
-
-/* Tampilkan ikon grid pada tombol Semua */
-
-#categories .category-all-button > .category-all-icon {
-    display: grid;
-
-    width: 20px;
-    height: 20px;
-    flex: 0 0 20px;
-
-    place-items: center;
-
-    background: transparent;
-    color: currentColor;
-}
-
-#categories .category-all-button > .category-all-icon svg {
-    display: block;
-    width: 20px;
-    height: 20px;
-}
-
-/* Hover tombol Semua */
-
-#categories .category-all-button:hover {
-    border-color: #b7d9c0;
-    background: #f7faf6;
-}
-
-/* Semua aktif */
 
 #categories .category-all-button.active {
     border-color: var(--green);
     background: var(--green);
     color: var(--white);
-
-    box-shadow: 4px 0 8px rgb(0 0 0 / 7%);
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+/* Mobile */
 
 @media (max-width: 700px) {
     #categories .category-grid {
         gap: 8px;
-        margin-right: -2px;
-
-        padding-top: 3px;
-        padding-bottom: 7px;
+        padding: 3px 2px 9px;
     }
 
     #categories .category-card {
-        min-height: 36px;
-        padding: 9px 13px;
-
+        min-height: 37px;
+        padding-inline: 14px;
         font-size: 11px;
     }
 
     #categories .category-all-button {
-        flex-basis: 40px;
+        min-width: 38px;
+        min-height: 37px;
+        padding-inline: 13px;
+    }
+}
 
-        width: 40px;
-        min-width: 40px;
-        height: 36px;
-        min-height: 36px;
+/* Small mobile */
 
-        padding: 0;
-        border-radius: 11px;
+@media (max-width: 380px) {
+    #categories .category-grid {
+        gap: 7px;
+    }
+
+    #categories .category-card {
+        min-height: 35px;
+        padding-inline: 12px;
+        font-size: 10px;
+    }
+
+    #categories .category-all-button {
+        min-width: 36px;
+        min-height: 35px;
     }
 }
 
