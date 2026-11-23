@@ -26,7 +26,7 @@
     --cart-primary-light: #edf7f0;
 
     --cart-text: #202820;
-    --cart-muted: #788078;
+    --cart-muted: #626b62;
 
     --cart-border: #e7ebe6;
     --cart-border-light: #eff2ee;
@@ -432,7 +432,7 @@
 
 #cart-overlay .form-field input::placeholder,
 #cart-overlay .form-field textarea::placeholder {
-    color: #a0a8a0;
+    color: #626b62;
     opacity: 1;
 }
 
