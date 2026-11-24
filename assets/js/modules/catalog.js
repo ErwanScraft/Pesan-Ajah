@@ -16,13 +16,17 @@ export function createCatalog({
 
   let selectedCategory = "Semua";
   let query = "";
+  let renderedCategoryKey = null;
 
   const categoryComponent =
     !groupedMode && categoryList
       ? createCategory({
           container: categoryList,
           variant: "grid",
-          onChange: (category) => setCategory(category),
+          onChange: (category) => {
+            selectedCategory = category;
+            render();
+          },
         })
       : null;
   
@@ -96,7 +100,6 @@ export function createCatalog({
   |
   */
 
-
   function renderCategories() {
     if (!categoryList) {
       return;
@@ -109,68 +112,60 @@ export function createCatalog({
           .map((product) => normalizeCategory(product.category)),
       ),
     ].sort(compareCategories);
-    
-    // Gunakan komponen kategori untuk halaman marketplace.
+
     if (categoryComponent) {
-      categoryComponent.render(categories, selectedCategory);
+      if (
+        selectedCategory !== "Semua" &&
+        !categories.includes(selectedCategory)
+      ) {
+        selectedCategory = "Semua";
+      }
+
+      const categoryKey = JSON.stringify(categories);
+
+      if (categoryKey !== renderedCategoryKey) {
+        categoryComponent.render(categories, selectedCategory);
+        renderedCategoryKey = categoryKey;
+      } else {
+        categoryComponent.setActive(selectedCategory);
+      }
+
       return;
     }
 
     const fragment = document.createDocumentFragment();
-    const svgNamespace = "http://www.w3.org/2000/svg";
 
-    // Tombol Semua: struktur sama untuk beranda dan warung.
-    const allButton = document.createElement(
-      groupedMode ? "a" : "button",
-    );
+    const allButton = document.createElement("a");
 
     allButton.className = "category-card category-all-button";
     allButton.dataset.category = "Semua";
+    allButton.href = "#";
     allButton.setAttribute("aria-label", "Tampilkan semua produk");
     allButton.setAttribute("title", "Semua kategori");
     allButton.setAttribute(
       "aria-pressed",
       String(selectedCategory === "Semua"),
     );
-
-    if (groupedMode) {
-      allButton.href = "#";
-    } else {
-      allButton.type = "button";
-    }
-
-    // Tombol Semua menggunakan teks.
     allButton.textContent = "Semua";
-
     allButton.classList.toggle(
       "active",
       selectedCategory === "Semua",
     );
 
-    fragment.appendChild(allButton);
+    fragment.append(allButton);
 
-    // Kategori produk tetap dinamis.
     categories.forEach((category) => {
-      const button = document.createElement(
-        groupedMode ? "a" : "button",
-      );
-
+      const button = document.createElement("a");
       const isActive = selectedCategory === category;
 
       button.className = "category-card";
       button.dataset.category = category;
+      button.href = "#";
       button.setAttribute("aria-pressed", String(isActive));
-
-      if (groupedMode) {
-        button.href = "#";
-      } else {
-        button.type = "button";
-      }
-
       button.textContent = category;
       button.classList.toggle("active", isActive);
 
-      fragment.appendChild(button);
+      fragment.append(button);
     });
 
     categoryList.replaceChildren(fragment);
@@ -722,23 +717,15 @@ export function createCatalog({
   function setCategory(category) {
     selectedCategory = category || "Semua";
 
-    if (categoryComponent) {
-      categoryComponent.setActive(selectedCategory);
-    } else {
-      categoryList
-        ?.querySelectorAll("[data-category]")
-        .forEach((button) => {
-          const isActive =
-            button.dataset.category === selectedCategory;
+    categoryList
+      ?.querySelectorAll("[data-category]")
+      .forEach((button) => {
+        const isActive =
+          button.dataset.category === selectedCategory;
 
-          button.classList.toggle("active", isActive);
-
-          button.setAttribute(
-            "aria-pressed",
-            String(isActive),
-          );
-        });
-    }
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
 
     render();
   }
