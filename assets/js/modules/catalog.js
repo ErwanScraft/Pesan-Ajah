@@ -1,5 +1,6 @@
 import { formatRupiah } from "./format.js";
 import { setImageSource } from "./image.js";
+import { createCategory } from "./category.js";
 
 export function createCatalog({
   products,
@@ -15,7 +16,15 @@ export function createCatalog({
 
   let selectedCategory = "Semua";
   let query = "";
-  
+
+  const categoryComponent =
+    !groupedMode && categoryList
+      ? createCategory({
+          container: categoryList,
+          variant: "grid",
+          onChange: (category) => setCategory(category),
+        })
+      : null;
   
   /*
   |--------------------------------------------------------------------------
@@ -100,6 +109,12 @@ export function createCatalog({
           .map((product) => normalizeCategory(product.category)),
       ),
     ].sort(compareCategories);
+    
+    // Gunakan komponen kategori untuk halaman marketplace.
+    if (categoryComponent) {
+      categoryComponent.render(categories, selectedCategory);
+      return;
+    }
 
     const fragment = document.createDocumentFragment();
     const svgNamespace = "http://www.w3.org/2000/svg";
@@ -707,34 +722,42 @@ export function createCatalog({
   function setCategory(category) {
     selectedCategory = category || "Semua";
 
-    categoryList
-      ?.querySelectorAll("[data-category]")
-      .forEach((button) => {
-        const isActive =
-          button.dataset.category === selectedCategory;
+    if (categoryComponent) {
+      categoryComponent.setActive(selectedCategory);
+    } else {
+      categoryList
+        ?.querySelectorAll("[data-category]")
+        .forEach((button) => {
+          const isActive =
+            button.dataset.category === selectedCategory;
 
-        button.classList.toggle("active", isActive);
+          button.classList.toggle("active", isActive);
 
-        button.setAttribute(
-          "aria-pressed",
-          String(isActive),
-        );
-      });
+          button.setAttribute(
+            "aria-pressed",
+            String(isActive),
+          );
+        });
+    }
 
     render();
   }
 
-  categoryList?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-category]");
+  // Halaman marketplace menggunakan event dari category.js.
+  // Halaman warung tetap menggunakan event lama.
+  if (!categoryComponent) {
+    categoryList?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
 
-    if (!button || !categoryList.contains(button)) {
-      return;
-    }
+      if (!button || !categoryList.contains(button)) {
+        return;
+      }
 
-    event.preventDefault();
+      event.preventDefault();
 
-    setCategory(button.dataset.category);
-  });
+      setCategory(button.dataset.category);
+    });
+  }
 
   /*
   |--------------------------------------------------------------------------

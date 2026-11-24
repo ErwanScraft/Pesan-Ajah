@@ -231,7 +231,7 @@ $productCategories = require APP_ROOT . '/config/categories.php';
                     | JSON_HEX_APOS
                     | JSON_HEX_QUOT
                 )) ?>"
-            >
+            ></div>
 
                 <button
                     class="category-card category-all-button active"
