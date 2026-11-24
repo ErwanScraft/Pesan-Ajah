@@ -18,17 +18,13 @@ export function createCatalog({
   let query = "";
   let renderedCategoryKey = null;
 
-  const categoryComponent =
-    !groupedMode && categoryList
-      ? createCategory({
-          container: categoryList,
-          variant: "grid",
-          onChange: (category) => {
-            selectedCategory = category;
-            render();
-          },
-        })
-      : null;
+  const categoryComponent = categoryList
+    ? createCategory({
+        container: categoryList,
+        variant: groupedMode ? "navigation" : "grid",
+        onChange: setCategory,
+      })
+    : null;
   
   /*
   |--------------------------------------------------------------------------
@@ -101,7 +97,7 @@ export function createCatalog({
   */
 
   function renderCategories() {
-    if (!categoryList) {
+    if (!categoryList || !categoryComponent) {
       return;
     }
 
@@ -113,62 +109,24 @@ export function createCatalog({
       ),
     ].sort(compareCategories);
 
-    if (categoryComponent) {
-      if (
-        selectedCategory !== "Semua" &&
-        !categories.includes(selectedCategory)
-      ) {
-        selectedCategory = "Semua";
-      }
+    // Kembalikan ke Semua jika kategori aktif sudah tidak tersedia.
+    if (
+      selectedCategory !== "Semua" &&
+      !categories.includes(selectedCategory)
+    ) {
+      selectedCategory = "Semua";
+    }
 
-      const categoryKey = JSON.stringify(categories);
+    const categoryKey = JSON.stringify(categories);
 
-      if (categoryKey !== renderedCategoryKey) {
-        categoryComponent.render(categories, selectedCategory);
-        renderedCategoryKey = categoryKey;
-      } else {
-        categoryComponent.setActive(selectedCategory);
-      }
-
+    // Bangun ulang tombol hanya ketika daftar kategori berubah.
+    if (categoryKey !== renderedCategoryKey) {
+      categoryComponent.render(categories, selectedCategory);
+      renderedCategoryKey = categoryKey;
       return;
     }
 
-    const fragment = document.createDocumentFragment();
-
-    const allButton = document.createElement("a");
-
-    allButton.className = "category-card category-all-button";
-    allButton.dataset.category = "Semua";
-    allButton.href = "#";
-    allButton.setAttribute("aria-label", "Tampilkan semua produk");
-    allButton.setAttribute("title", "Semua kategori");
-    allButton.setAttribute(
-      "aria-pressed",
-      String(selectedCategory === "Semua"),
-    );
-    allButton.textContent = "Semua";
-    allButton.classList.toggle(
-      "active",
-      selectedCategory === "Semua",
-    );
-
-    fragment.append(allButton);
-
-    categories.forEach((category) => {
-      const button = document.createElement("a");
-      const isActive = selectedCategory === category;
-
-      button.className = "category-card";
-      button.dataset.category = category;
-      button.href = "#";
-      button.setAttribute("aria-pressed", String(isActive));
-      button.textContent = category;
-      button.classList.toggle("active", isActive);
-
-      fragment.append(button);
-    });
-
-    categoryList.replaceChildren(fragment);
+    categoryComponent.setActive(selectedCategory);
   }
 
   /*
@@ -716,34 +674,7 @@ export function createCatalog({
 
   function setCategory(category) {
     selectedCategory = category || "Semua";
-
-    categoryList
-      ?.querySelectorAll("[data-category]")
-      .forEach((button) => {
-        const isActive =
-          button.dataset.category === selectedCategory;
-
-        button.classList.toggle("active", isActive);
-        button.setAttribute("aria-pressed", String(isActive));
-      });
-
     render();
-  }
-
-  // Halaman marketplace menggunakan event dari category.js.
-  // Halaman warung tetap menggunakan event lama.
-  if (!categoryComponent) {
-    categoryList?.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-category]");
-
-      if (!button || !categoryList.contains(button)) {
-        return;
-      }
-
-      event.preventDefault();
-
-      setCategory(button.dataset.category);
-    });
   }
 
   /*

@@ -117,10 +117,11 @@
     color: var(--white);
 }
 
-/* 2. NAVIGATION VARIANT */
+/* 2. STORE NAVIGATION VARIANT */
 
 .store-category-nav {
     position: relative;
+    isolation: isolate;
     z-index: 1;
 
     display: flex;
@@ -131,13 +132,18 @@
     max-width: 100%;
     min-width: 0;
 
+    padding: 2px 1px 8px;
+
     overflow-x: auto;
     overflow-y: hidden;
 
     white-space: nowrap;
+
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    scrollbar-width: none;
+    touch-action: pan-x;
+    scroll-padding-inline-start: 84px;
 }
 
 .store-category-nav::-webkit-scrollbar {
@@ -149,12 +155,14 @@
 }
 
 .store-category-nav .category-card {
+    position: relative;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
     min-width: 0;
-    min-height: 38px;
+    min-height: 39px;
     padding: 0 16px;
 
     color: var(--store-muted);
@@ -176,7 +184,7 @@
         border-color var(--transition);
 }
 
-.store-category-nav .category-card:hover {
+.store-category-nav .category-card:hover:not(.active) {
     color: var(--store-brand-dark);
     background: var(--store-brand-light);
     border-color: var(--store-brand-light);
@@ -188,10 +196,13 @@
     border-color: var(--store-brand);
 }
 
+/* Tombol Semua tetap di sisi kiri saat kategori digeser */
+
 .store-category-nav .category-all-button {
     position: sticky;
-    left: 0;
-    z-index: 2;
+    inset-inline-start: 0;
+    z-index: 10;
+    isolation: isolate;
 
     display: inline-flex;
     flex: 0 0 auto;
@@ -199,18 +210,20 @@
     justify-content: center;
 
     min-width: 72px;
-    min-height: 38px;
+    min-height: 39px;
     padding: 0 16px;
 
     color: var(--store-muted);
-    background: var(--store-surface);
+    background-color: var(--store-surface);
 
     border: 1px solid var(--store-border);
     border-radius: 999px;
 
     font-size: 0.8rem;
-    font-weight: 650;
+    font-weight: 700;
     white-space: nowrap;
+
+    box-shadow: 8px 0 12px -8px rgb(0 0 0 / 35%);
 
     cursor: pointer;
 
@@ -220,17 +233,16 @@
         border-color var(--transition);
 }
 
-.store-category-nav .category-all-button:hover {
+.store-category-nav .category-all-button:hover:not(.active) {
     color: var(--store-brand-dark);
-    background: var(--store-brand-light);
+    background-color: var(--store-brand-light);
 }
 
 .store-category-nav .category-all-button.active {
     color: var(--white);
-    background: var(--store-brand);
+    background-color: var(--store-brand);
     border-color: var(--store-brand);
 }
-
 
 /* 3. RESPONSIVE GRID */
 
@@ -256,7 +268,6 @@
     .store-category-nav {
         gap: 8px;
         margin-bottom: 16px;
-        padding: 2px 1px 8px;
     }
 
     .store-category-nav .category-card {
@@ -265,6 +276,12 @@
         border-radius: 11px;
         font-size: 0.78rem;
         line-height: 1;
+    }
+
+    .store-category-nav .category-all-button {
+        min-width: 72px;
+        min-height: 39px;
+        padding-inline: 15px;
     }
 }
 
@@ -296,10 +313,9 @@
     }
 
     .store-category-nav .category-all-button {
-        width: 37px;
-        min-width: 37px;
+        min-width: 68px;
         min-height: 37px;
-        padding: 0;
+        padding-inline: 12px;
     }
 }
 
