@@ -80,6 +80,18 @@ require __DIR__ . '/_header.php';
                 <option value="unavailable">Habis</option>
             </select>
         </div>
+        
+        <!-- Navigasi kategori -->
+        <section
+            class="products-category-filter"
+            aria-label="Filter kategori produk"
+        >
+            <div
+                class="category-grid"
+                id="product-category-filter"
+                aria-label="Pilih kategori produk"
+            ></div>
+        </section>
     
         <div
             class="product-manage-list"

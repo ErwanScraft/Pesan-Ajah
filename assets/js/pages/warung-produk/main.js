@@ -7,6 +7,7 @@
 import { captureError } from "../../core/error-logger.js";
 import { createBottomSheet } from "../../modules/bottom-sheet.js";
 import { setImageSource } from "../../modules/image.js";
+import { createCategory } from "../../modules/category.js";
  
 export async function initWarungProducts({
   $,
@@ -194,9 +195,40 @@ export async function initWarungProducts({
   const productList = $("#manage-products");
   const addProductButton = $("#add-product-button");
   const productSearchInput = $("#product-search");
-  const productStatusFilter = $("#product-status-filter");
   const bottomSheet = createBottomSheet();
   const productFormHost = $("#product-form-host");
+  
+  const productStatusFilter = $("#product-status-filter");
+  const productCategoryFilter = $("#product-category-filter");
+
+  let activeCategory = "Semua";
+
+  const categoryNavigation = productCategoryFilter
+    ? createCategory({
+        container: productCategoryFilter,
+        variant: "grid",
+        onChange: (category) => {
+          activeCategory = category;
+          renderProducts();
+        },
+      })
+    : null;
+
+  function readCategoryOrder() {
+    try {
+      const parsed = JSON.parse(
+        document.body.dataset.categoryOrder || "[]",
+      );
+
+      return Array.isArray(parsed)
+        ? parsed.filter(
+            (category) => typeof category === "string",
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  }
 
   function openProductSheet() {
     if (!productForm) return;
@@ -437,6 +469,8 @@ export async function initWarungProducts({
       .toLocaleLowerCase("id-ID");
 
     const statusFilter = productStatusFilter?.value || "all";
+    
+    const categoryFilter = activeCategory;
 
     const visibleProducts = products.filter((product) => {
       const searchableText = [
@@ -456,14 +490,22 @@ export async function initWarungProducts({
         (statusFilter === "available" && product.available) ||
         (statusFilter === "unavailable" && !product.available);
 
-      return matchesSearch && matchesStatus;
+      const matchesCategory =
+        categoryFilter === "Semua" ||
+        String(product.category || "").trim() === categoryFilter;
+
+      return matchesSearch && matchesStatus && matchesCategory;
     });
 
     if (count) {
-      count.textContent =
-        searchTerm || statusFilter !== "all"
-          ? `${visibleProducts.length} dari ${products.length} produk`
-          : `${products.length} produk`;
+      const isFiltered =
+        searchTerm ||
+        statusFilter !== "all" ||
+        categoryFilter !== "Semua";
+
+      count.textContent = isFiltered
+        ? `${visibleProducts.length} dari ${products.length} produk`
+        : `${products.length} produk`;
     }
 
     if (products.length === 0) {
@@ -478,8 +520,11 @@ export async function initWarungProducts({
     if (visibleProducts.length === 0) {
       const empty = document.createElement("p");
       empty.className = "product-empty";
+
       empty.textContent =
-        "Tidak ada produk yang sesuai dengan pencarian.";
+        categoryFilter !== "Semua"
+          ? `Belum ada produk dalam kategori ${categoryFilter}.`
+          : "Tidak ada produk yang sesuai dengan pencarian.";
 
       productList.append(empty);
       return;
@@ -722,6 +767,8 @@ export async function initWarungProducts({
     
       available: Boolean(Number(product.is_available)),
     }));
+
+    categoryNavigation?.render(readCategoryOrder());
 
     renderProducts();
   }
