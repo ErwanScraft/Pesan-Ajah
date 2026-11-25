@@ -305,6 +305,20 @@
     letter-spacing: -0.035em;
 }
 
+.store-identity-text .store-compact-rating {
+    display: none;
+    align-items: center;
+    gap: 3px;
+    margin-top: 3px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.store-profile.is-compact .store-identity-text .store-compact-rating {
+    display: inline-flex;
+}
+
 @keyframes store-status-enter {
     from {
         opacity: 0;
