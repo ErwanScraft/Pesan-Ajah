@@ -400,9 +400,13 @@
     .store-review-rating span {
         font-size: 2.25rem;
     }
-
+    
     .store-reviews-sheet-body {
         padding: 16px 17px;
+    }
+    
+    .store-reviews-sheet-body .store-review-card {
+        padding: 13px;
     }
     
     .store-reviews-sheet-footer {
