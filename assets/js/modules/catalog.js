@@ -225,7 +225,7 @@ export function createCatalog({
   | KARTU PRODUK
   |--------------------------------------------------------------------------
   */
-
+  
   function createProductCard(product) {
     const card = document.createElement("article");
     card.className = "product-card";
@@ -235,14 +235,38 @@ export function createCatalog({
     const info = document.createElement("div");
     info.className = "product-info";
   
+    // Nama produk
+    const heading = document.createElement("div");
+    heading.className = "product-heading";
+  
     const name = document.createElement("h3");
     name.className = "product-name";
     name.textContent = product.name || "Produk";
   
+    // Harga dan satuan
+    const price = document.createElement("span");
+    price.className = "product-price";
+    price.textContent = formatRupiah(product.price);
+  
+    const unitValue = String(
+      product.unit || product.unit_name || "",
+    ).trim();
+  
+    if (unitValue) {
+      const unit = document.createElement("span");
+      unit.className = "product-unit";
+      unit.textContent = `/ ${unitValue}`;
+      price.append(" ", unit);
+    }
+  
+    heading.append(name, price);
+  
+    // Varian produk
     const variant = document.createElement("span");
     variant.className = "product-variant";
     variant.textContent = product.variant || "";
   
+    // Informasi stok
     const stock = document.createElement("span");
     stock.className = "product-stock";
   
@@ -266,12 +290,9 @@ export function createCatalog({
       );
     }
   
-    const bottom = document.createElement("div");
-    bottom.className = "product-bottom";
-  
-    const price = document.createElement("span");
-    price.className = "product-price";
-    price.textContent = formatRupiah(product.price);
+    // Baris stok dan tombol tambah
+    const footer = document.createElement("div");
+    footer.className = "product-footer";
   
     const addButton = document.createElement("button");
     addButton.className = "add-button";
@@ -288,7 +309,7 @@ export function createCatalog({
     addButton.title = product.available
       ? "Tambah ke keranjang"
       : product.stock_quantity === 0
-        ? "Stock produk habis"
+        ? "Stok produk habis"
         : !product.is_available
           ? "Produk tidak tersedia"
           : "Warung sedang tutup";
@@ -297,15 +318,9 @@ export function createCatalog({
       ? String(cart.quantityFor(product.id) || "+")
       : "–";
   
-    bottom.append(price, addButton);
+    footer.append(stock, addButton);
   
-    info.append(
-      name,
-      variant,
-      stock,
-      bottom,
-    );
-  
+    info.append(heading, variant, footer);
     card.append(image, info);
   
     return card;
