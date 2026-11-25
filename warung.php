@@ -209,11 +209,6 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
         href="/assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>"
     >
     
-    <link
-        rel="stylesheet"
-        href="/assets/css/warung.css?v=<?= asset_version('assets/css/warung.css') ?>"
-    >
-    
     <!-- Google Analytic -->
     <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5WJ727NJ"></script>
     <script>

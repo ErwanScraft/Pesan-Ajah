@@ -65,7 +65,11 @@
 /* 16. Editor pesanan warung */
 @import url("./pages/warung-pesanan-edit.css");
 
-/* 17. Style Module */
+/* 17. Halman Warung */
+
+@import url("./pages/halaman-utama/warung/main.css");
+
+/* 18. Style Module */
 @import url("./modules/receipt.css");
 @import url("./modules/bottom-sheet.css");
 @import url("./modules/category.css");
