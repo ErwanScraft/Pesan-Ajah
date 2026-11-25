@@ -523,6 +523,11 @@ function login_user(array $user): void
 
 function logout_user(): void
 {
+    // Cabut token login persisten perangkat saat ini.
+    if (function_exists('remember_forget')) {
+        remember_forget();
+    }
+
     $_SESSION = [];
 
     if (ini_get('session.use_cookies')) {
@@ -611,3 +616,13 @@ function is_valid_store_slug(string $slug): bool
 */
 
 require_once CONFIG_PATH . '/database.php';
+
+/*
+|---------------------------------------------------------------------------
+| WARUNG REMEMBER ME
+|---------------------------------------------------------------------------
+*/
+
+require_once APP_PATH . '/modules/auth/remember.php';
+
+remember_restore_session();

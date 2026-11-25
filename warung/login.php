@@ -128,7 +128,14 @@ if (request_is_post()) {
                 'name' => (string) $user['username'],
                 'role' => 'warung',
             ]);
-
+        
+            if (($_POST['remember_me'] ?? '') === '1') {
+                remember_create(
+                    (int) $user['id'],
+                    (string) $user['password_hash']
+                );
+            }
+        
             redirect('/warung/dashboard.php');
         }
 
@@ -208,6 +215,26 @@ if (request_is_post()) {
             border-radius: 10px;
             font: inherit;
         }
+        
+        .auth-remember {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        
+            color: #526158;
+            font-size: 13px;
+        
+            cursor: pointer;
+        }
+        
+        .auth-remember input {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 auto;
+        
+            accent-color: #176b45;
+            cursor: pointer;
+        }
 
         .auth-card button {
             width: 100%;
@@ -279,6 +306,16 @@ if (request_is_post()) {
                         maxlength="4096"
                         required
                     >
+                </label>
+                
+                <label class="auth-remember">
+                    <input
+                        type="checkbox"
+                        name="remember_me"
+                        value="1"
+                    >
+                
+                    <span>Ingat Saya</span>
                 </label>
 
                 <button
