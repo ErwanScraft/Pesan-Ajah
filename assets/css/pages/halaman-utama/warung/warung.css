@@ -1525,9 +1525,8 @@
     text-align: center;
 }
 
-.store-reviews-sheet-footer #store-reviews-write {
+.app-bottom-sheet__body .store-reviews-sheet-footer button#store-reviews-write {
     display: flex;
-    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
 
@@ -1536,8 +1535,8 @@
     margin: 0;
     padding: 12px 16px;
 
-    color: #fff;
-    background: var(--store-brand-dark);
+    color: #fff !important;
+    background-color: #176b45 !important;
     border: 0;
     border-radius: 10px;
 
@@ -1549,14 +1548,10 @@
     text-align: center;
     cursor: pointer;
 
-    visibility: visible;
     opacity: 1;
+    visibility: visible;
 }
 
-.store-reviews-sheet-footer #store-reviews-write:hover {
-    filter: brightness(0.95);
-}
-
-.store-reviews-sheet-footer #store-reviews-write:active {
-    transform: scale(0.98);
+.app-bottom-sheet__body .store-reviews-sheet-footer button#store-reviews-write:hover {
+    background-color: #125638 !important;
 }
