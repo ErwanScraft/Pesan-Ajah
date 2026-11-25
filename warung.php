@@ -283,12 +283,17 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
                     <?= number_format($averageRating, 1) ?>
                 </div>
         
-                <span class="store-overview-label">
-                    Penilaian
+                <button
+                    type="button"
+                    class="store-overview-label store-reviews-trigger"
+                    id="store-reviews-open"
+                    aria-label="Lihat ulasan warung"
+                >
+                    Ulasan
                     <?php if ($reviewCount > 0): ?>
                         (<?= number_format($reviewCount, 0, ',', '.') ?>)
                     <?php endif; ?>
-                </span>
+                </button>
             </div>
         
             <!-- Produk -->
@@ -435,57 +440,73 @@ $storePageUrl = $siteUrl . '/warung/' . rawurlencode($slug);
             </div>
 
         </section>
-        
-        <!-- Review warung -->
-        <section
-            class="store-reviews"
-            id="store-reviews"
-            aria-labelledby="store-reviews-title"
-        >
-            <div class="store-reviews-heading">
-                <div>
-                    <h2 id="store-reviews-title">Review Pembeli</h2>
-                    <p>
-                        <?= number_format($averageRating, 1) ?> dari 5
-                        · <?= number_format($reviewCount, 0, ',', '.') ?> penilaian
-                    </p>
-                </div>
-            </div>
-        
+    </main>
+    
+    <!-- Template Ulasan Warung -->
+    <template id="store-reviews-template">
+    
+        <div class="store-reviews-sheet-body">
+    
             <?php if ($storeReviews): ?>
+    
                 <div class="store-review-list">
+    
                     <?php foreach ($storeReviews as $review): ?>
+    
                         <article class="store-review-card">
+    
                             <div class="store-review-card-heading">
+    
                                 <strong>
                                     <?= e($review['buyer_name'] ?: 'Pembeli') ?>
                                 </strong>
-        
-                                <span class="store-review-stars" aria-label="<?= (int) $review['rating'] ?> dari 5 bintang">
-                                    <?= str_repeat('★', (int) $review['rating']) ?>
-                                    <span>
-                                        <?= str_repeat('★', 5 - (int) $review['rating']) ?>
-                                    </span>
+    
+                                <span
+                                    class="store-review-stars"
+                                    aria-label="<?= (int) $review['rating'] ?> dari 5 bintang"
+                                >
+                                    <?= str_repeat('★', (int) $review['rating']) ?><span><?= str_repeat('★', 5 - (int) $review['rating']) ?></span>
                                 </span>
+    
                             </div>
-        
+    
                             <?php if (!empty($review['comment'])): ?>
-                                <p><?= nl2br(e($review['comment'])) ?></p>
+                                <p>
+                                    <?= nl2br(e($review['comment'])) ?>
+                                </p>
                             <?php endif; ?>
-        
-                            <time datetime="<?= e(date('c', strtotime($review['created_at']))) ?>">
-                                <?= e(date('d-m-Y', strtotime($review['created_at']))) ?>
-                            </time>
+    
                         </article>
+    
                     <?php endforeach; ?>
+    
                 </div>
+    
             <?php else: ?>
+    
                 <div class="store-review-empty">
-                    Belum ada penilaian untuk warung ini.
+                    Belum ada ulasan untuk warung ini.
                 </div>
+    
             <?php endif; ?>
-        </section>
-    </main>
+    
+        </div>
+    
+        <div class="store-reviews-sheet-footer">
+    
+            <p>Sudah pernah Memesan di Warung ini?</p>
+    
+            <button
+                type="button"
+                class="store-review-submit"
+                id="store-reviews-write"
+            >
+                Yuk ikut Review
+            </button>
+    
+        </div>
+    
+    </template>
     
     <div
         class="store-review-modal"

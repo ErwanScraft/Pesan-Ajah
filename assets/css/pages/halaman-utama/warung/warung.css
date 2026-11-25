@@ -305,6 +305,14 @@
     letter-spacing: -0.035em;
 }
 
+.store-identity-text .store-status {
+    display: none;
+}
+
+.store-profile.is-compact .store-identity-text .store-status {
+    display: inline-flex;
+}
+
 .store-identity-text .store-compact-rating {
     display: none;
     align-items: center;
@@ -1401,4 +1409,72 @@
 
 .store-review-form-message.is-error {
     color: #b42318;
+}
+
+/* =========================================================
+   REVIEW — BOTTOM SHEET CONTENT
+========================================================= */
+
+.store-reviews-trigger {
+    padding: 0;
+
+    color: var(--store-muted);
+    background: transparent;
+    border: 0;
+
+    font: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+
+    cursor: pointer;
+}
+
+.store-reviews-trigger:hover {
+    color: var(--store-brand-dark);
+}
+
+/* Review List */
+
+.store-reviews-sheet-body {
+    padding: 18px 20px;
+}
+
+.store-reviews-sheet-body .store-review-list {
+    gap: 0;
+}
+
+.store-reviews-sheet-body .store-review-card {
+    padding: 15px 0;
+
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--store-border);
+    border-radius: 0;
+}
+
+.store-reviews-sheet-body .store-review-card:first-child {
+    padding-top: 0;
+}
+
+.store-reviews-sheet-body .store-review-card:last-child {
+    border-bottom: 0;
+}
+
+/* Review Footer */
+
+.store-reviews-sheet-footer {
+    padding: 16px 20px calc(18px + env(safe-area-inset-bottom));
+
+    background: var(--store-surface);
+    border-top: 1px solid var(--store-border);
+}
+
+.store-reviews-sheet-footer p {
+    margin: 0 0 12px;
+
+    color: var(--store-text);
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    text-align: center;
 }

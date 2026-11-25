@@ -1,7 +1,12 @@
+import { createBottomSheet } from "../../modules/bottom-sheet.js";
+
 export function initStoreReview({ showToast }) {
   const $ = (selector) => document.querySelector(selector);
 
   const modal = $("#store-review-modal");
+  const reviewsOpenButton = $("#store-reviews-open");
+  const reviewsTemplate = $("#store-reviews-template");
+  const reviewsSheet = createBottomSheet();
   const openButton = $("#store-review-open");
   const closeButtons = document.querySelectorAll("[data-review-close]");
   const form = $("#store-review-form");
@@ -22,6 +27,32 @@ export function initStoreReview({ showToast }) {
   }
 
   let previousFocus = null;
+  
+  function openReviewsSheet() {
+    if (!reviewsTemplate || reviewsSheet.isOpen()) return;
+  
+    const content = reviewsTemplate.content.cloneNode(true);
+  
+    const writeButton = content.querySelector(
+      "#store-reviews-write",
+    );
+  
+    writeButton?.addEventListener("click", () => {
+      reviewsSheet.close();
+  
+      setTimeout(() => {
+        openButton.click();
+      }, 300);
+    });
+  
+    reviewsSheet.open({
+      title: "Ulasan Warung",
+      content,
+      size: "large",
+      closeOnBackdrop: true,
+      closeButton: true,
+    });
+  }
 
   function setMessage(text = "", isError = false) {
     message.textContent = text;
@@ -211,6 +242,11 @@ export function initStoreReview({ showToast }) {
   }
 
   openButton.addEventListener("click", openModal);
+  
+  reviewsOpenButton?.addEventListener(
+    "click",
+    openReviewsSheet,
+  );
 
   closeButtons.forEach((button) => {
     button.addEventListener("click", closeModal);
