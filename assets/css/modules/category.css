@@ -95,20 +95,14 @@
 
 #categories .category-all-button {
     position: sticky;
-    left: 0;
-    z-index: 2;
+    inset-inline-start: 0;
+    z-index: 10;
+    isolation: isolate;
 
-    flex: 0 0 auto;
-
-    min-width: 40px;
-    min-height: 40px;
-
-    padding-inline: 14px;
-
-    border-radius: 999px;
+    min-width: 72px;
 
     background: var(--white);
-    box-shadow: 4px 0 8px rgb(0 0 0 / 4%);
+    box-shadow: 8px 0 12px -8px rgb(0 0 0 / 20%);
 }
 
 #categories .category-all-button.active {
@@ -260,9 +254,9 @@
     }
 
     #categories .category-all-button {
-        min-width: 38px;
-        min-height: 37px;
-        padding-inline: 13px;
+        min-width: 72px;
+        min-height: 39px;
+        padding-inline: 15px;
     }
 
     .store-category-nav {
@@ -298,8 +292,9 @@
     }
 
     #categories .category-all-button {
-        min-width: 36px;
-        min-height: 35px;
+        min-width: 68px;
+        min-height: 37px;
+        padding-inline: 12px;
     }
 
     .store-category-nav {

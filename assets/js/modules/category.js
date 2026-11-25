@@ -61,22 +61,15 @@ export function createCategory({
     button.dataset.category = category;
     button.setAttribute("aria-pressed", String(isActive));
 
-    if (isAll && isGrid) {
+    button.textContent = category;
+    
+    if (isAll) {
       button.setAttribute(
         "aria-label",
         "Tampilkan semua produk",
       );
-
+    
       button.title = "Semua kategori";
-
-      const icon = document.createElement("span");
-      icon.className = "category-all-icon";
-      icon.setAttribute("aria-hidden", "true");
-      icon.append(createAllIcon());
-
-      button.append(icon);
-    } else {
-      button.textContent = category;
     }
 
     button.classList.toggle("active", isActive);
