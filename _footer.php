@@ -127,3 +127,8 @@ declare(strict_types=1);
 
     </div>
 </footer>
+
+<script
+    type="module"
+    src="/assets/js/modules/cookie/index.js?v=<?= asset_version('assets/js/modules/cookie/index.js') ?>"
+></script>

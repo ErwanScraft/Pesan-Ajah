@@ -1,0 +1,234 @@
+/* =========================================================
+   PESAN AJAH — COOKIE CONSENT
+   ========================================================= */
+
+.pa-cookie-consent {
+    position: fixed;
+    inset-inline: 16px;
+    bottom: 16px;
+    z-index: 9990;
+
+    width: min(100% - 32px, 540px);
+    margin-inline: auto;
+
+    padding: 20px;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    box-shadow: 0 12px 40px rgb(0 0 0 / 16%);
+
+    animation: pa-cookie-enter 220ms ease;
+}
+
+.pa-cookie-consent__title,
+.pa-cookie-dialog__title {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.pa-cookie-consent__description,
+.pa-cookie-dialog__description {
+    margin: 8px 0 16px;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.pa-cookie-consent__actions,
+.pa-cookie-dialog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pa-cookie-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+    padding: 0 15px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+}
+
+.pa-cookie-button--primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--white);
+}
+
+.pa-cookie-button--primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+.pa-cookie-button--secondary {
+    background: var(--white);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.pa-cookie-button--secondary:hover {
+    background: #f5f7f5;
+}
+
+.pa-cookie-button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+/* Dialog pengaturan */
+
+.pa-cookie-dialog {
+    width: min(460px, calc(100% - 32px));
+    max-width: 460px;
+    max-height: min(85vh, 680px);
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 16px;
+
+    background: transparent;
+    color: var(--text);
+}
+
+.pa-cookie-dialog::backdrop {
+    background: rgb(0 0 0 / 48%);
+    backdrop-filter: blur(3px);
+}
+
+.pa-cookie-dialog__panel {
+    padding: 22px;
+
+    background: var(--white);
+    border-radius: 16px;
+
+    overflow-y: auto;
+}
+
+.pa-cookie-dialog__options {
+    display: grid;
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.pa-cookie-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 13px;
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    cursor: pointer;
+}
+
+.pa-cookie-option__content {
+    display: grid;
+    gap: 4px;
+}
+
+.pa-cookie-option__title {
+    color: var(--text);
+    font-size: 13px;
+}
+
+.pa-cookie-option__description {
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.pa-cookie-option input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+
+    accent-color: var(--green);
+    cursor: pointer;
+}
+
+.pa-cookie-option input:disabled {
+    cursor: not-allowed;
+}
+
+@keyframes pa-cookie-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .pa-cookie-consent {
+        inset-inline: 10px;
+        bottom: 10px;
+
+        width: calc(100% - 20px);
+        padding: 16px;
+
+        border-radius: 14px;
+    }
+
+    .pa-cookie-consent__actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .pa-cookie-button {
+        min-height: 42px;
+        padding-inline: 10px;
+    }
+
+    .pa-cookie-button--primary {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .pa-cookie-dialog__panel {
+        padding: 18px;
+    }
+
+    .pa-cookie-dialog__actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pa-cookie-consent,
+    .pa-cookie-button {
+        animation: none;
+        transition: none;
+    }
+}
