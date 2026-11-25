@@ -405,6 +405,11 @@
         padding: 16px 17px;
     }
     
+    .store-reviews-trigger.store-overview-label {
+        font-size: 0.74rem;
+        font-weight: 600;
+    }
+    
     .store-reviews-sheet-body .store-review-card {
         padding: 13px;
     }
