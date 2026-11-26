@@ -636,6 +636,7 @@
 }
 
 
+
 /* =========================================================
    16. MARKETPLACE PRODUCT INFORMATION
    ========================================================= */
@@ -643,13 +644,9 @@
 .marketplace-store-products .product-info {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 14px 34px;
 
-    grid-template-rows:
-        minmax(36px, auto)
-        14px
-        34px;
-
-    gap: 7px;
+    gap: 6px;
 
     width: 100%;
     min-width: 0;
@@ -658,25 +655,16 @@
     padding: 11px;
 }
 
-/* Nama dan harga produk */
+/* Nama produk */
 
 .marketplace-store-products .product-heading {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-
-    gap: 7px;
-
+    display: block;
     width: 100%;
     min-width: 0;
 }
 
-/* Nama produk */
-
 .marketplace-store-products .product-name {
     display: -webkit-box;
-
-    flex: 1 1 auto;
 
     width: 100%;
     min-width: 0;
@@ -687,7 +675,7 @@
 
     color: var(--text);
 
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 18px;
 
@@ -697,7 +685,7 @@
     -webkit-line-clamp: 2;
 }
 
-/* Varian produk */
+/* Varian */
 
 .marketplace-store-products .product-variant {
     display: block;
@@ -723,55 +711,7 @@
 
 
 /* =========================================================
-   17. MARKETPLACE PRODUCT STOCK
-   ========================================================= */
-
-.marketplace-store-products .product-stock {
-    display: inline-flex;
-    align-items: center;
-
-    width: fit-content;
-    max-width: 100%;
-    height: 22px;
-    min-width: 0;
-
-    padding: 0 8px;
-
-    overflow: hidden;
-
-    border-radius: 6px;
-
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.marketplace-store-products .product-stock.is-available {
-    background: #edf8f0;
-    color: #176b45;
-}
-
-.marketplace-store-products .product-stock.is-unlimited {
-    background: #f1f5f2;
-    color: #64746a;
-}
-
-.marketplace-store-products .product-stock.is-low {
-    background: #fff5e5;
-    color: #a65c08;
-}
-
-.marketplace-store-products .product-stock.is-out {
-    background: #fff0f0;
-    color: #b42323;
-}
-
-
-/* =========================================================
-   18. MARKETPLACE PRODUCT FOOTER
+   17. MARKETPLACE PRODUCT FOOTER
    ========================================================= */
 
 .marketplace-store-products .product-footer {
@@ -789,7 +729,7 @@
     padding: 0;
 }
 
-/* Harga produk */
+/* Harga */
 
 .marketplace-store-products .product-price {
     display: inline-flex;
@@ -802,7 +742,7 @@
 
     color: var(--green);
 
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
     line-height: 1.4;
 
@@ -810,7 +750,7 @@
     white-space: nowrap;
 }
 
-/* Satuan produk */
+/* Satuan */
 
 .marketplace-store-products .product-unit {
     flex: 0 0 auto;
@@ -823,7 +763,7 @@
 
 
 /* =========================================================
-   19. MARKETPLACE ADD BUTTON
+   18. MARKETPLACE ADD BUTTON
    ========================================================= */
 
 .marketplace-store-products .add-button {

@@ -147,17 +147,9 @@
     }
 
     .marketplace-store-products .product-info {
-        grid-template-rows:
-            minmax(34px, auto)
-            14px
-            32px;
-
-        gap: 6px;
-        padding: 9px;
-    }
-
-    .marketplace-store-products .product-heading {
+        grid-template-rows: 34px 14px 32px;
         gap: 5px;
+        padding: 9px;
     }
 
     .marketplace-store-products .product-name {
@@ -168,10 +160,7 @@
 
     .marketplace-store-products .product-variant {
         height: 14px;
-    }
-
-    .marketplace-store-products .product-stock {
-        font-size: 9px;
+        font-size: 10px;
     }
 
     .marketplace-store-products .product-footer {
@@ -180,7 +169,7 @@
     }
 
     .marketplace-store-products .product-price {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .marketplace-store-products .product-unit {

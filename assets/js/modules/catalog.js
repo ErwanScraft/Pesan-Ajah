@@ -243,7 +243,17 @@ export function createCatalog({
     name.className = "product-name";
     name.textContent = product.name || "Produk";
   
-    // Harga dan satuan
+    heading.append(name);
+  
+    // Varian produk
+    const variant = document.createElement("span");
+    variant.className = "product-variant";
+    variant.textContent = product.variant || "";
+  
+    // Footer harga dan tombol tambah
+    const footer = document.createElement("div");
+    footer.className = "product-footer";
+  
     const price = document.createElement("span");
     price.className = "product-price";
     price.textContent = formatRupiah(product.price);
@@ -258,41 +268,6 @@ export function createCatalog({
       unit.textContent = `/ ${unitValue}`;
       price.append(" ", unit);
     }
-  
-    heading.append(name, price);
-  
-    // Varian produk
-    const variant = document.createElement("span");
-    variant.className = "product-variant";
-    variant.textContent = product.variant || "";
-  
-    // Informasi stok
-    const stock = document.createElement("span");
-    stock.className = "product-stock";
-  
-    if (product.stock_quantity === 0) {
-      stock.textContent = "Stok habis";
-      stock.classList.add("is-out");
-    } else if (!product.is_available) {
-      stock.textContent = "Produk tidak tersedia";
-      stock.classList.add("is-out");
-    } else if (product.stock_quantity === null) {
-      stock.textContent = "Stok tersedia";
-      stock.classList.add("is-unlimited");
-    } else {
-      stock.textContent =
-        `Stok ${new Intl.NumberFormat("id-ID").format(
-          product.stock_quantity,
-        )}`;
-  
-      stock.classList.add(
-        product.stock_quantity <= 5 ? "is-low" : "is-available",
-      );
-    }
-  
-    // Baris stok dan tombol tambah
-    const footer = document.createElement("div");
-    footer.className = "product-footer";
   
     const addButton = document.createElement("button");
     addButton.className = "add-button";
@@ -318,7 +293,7 @@ export function createCatalog({
       ? String(cart.quantityFor(product.id) || "+")
       : "–";
   
-    footer.append(stock, addButton);
+    footer.append(price, addButton);
   
     info.append(heading, variant, footer);
     card.append(image, info);
