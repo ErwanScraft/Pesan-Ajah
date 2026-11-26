@@ -690,6 +690,34 @@
     object-position: center;
 }
 
+.store-page .product-image.is-out-of-stock .product-photo {
+    filter: grayscale(100%);
+}
+
+.store-page .product-image .product-sold-out-label {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+
+    color: #fff;
+    background: rgb(0 0 0 / 38%);
+
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-align: center;
+
+    pointer-events: none;
+}
+
 /* Informasi produk */
 
 .store-page .product-info {

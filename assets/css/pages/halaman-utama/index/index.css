@@ -613,6 +613,11 @@
     filter: grayscale(100%);
 }
 
+.marketplace-store-products
+.product-image.is-out-of-stock .product-photo {
+    filter: grayscale(100%);
+}
+
 .marketplace-store-products .product-sold-out-label {
     position: absolute;
     inset: 0;

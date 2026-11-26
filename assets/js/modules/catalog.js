@@ -180,6 +180,10 @@ export function createCatalog({
     const isOutOfStock = product.stock_quantity === 0;
     const isUnavailable = !product.is_available;
   
+    if (isOutOfStock) {
+      container.classList.add("is-out-of-stock");
+    }
+    
     if (isOutOfStock || isUnavailable) {
       container.classList.add("is-sold-out");
     }
@@ -200,7 +204,7 @@ export function createCatalog({
   
       soldOutLabel.className = "product-sold-out-label";
       soldOutLabel.textContent = isOutOfStock
-        ? "STOK HABIS"
+        ? "HABIS"
         : "TIDAK TERSEDIA";
   
       soldOutLabel.setAttribute("aria-hidden", "true");
