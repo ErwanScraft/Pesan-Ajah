@@ -38,9 +38,6 @@
 /* 7. Responsif umum */
 @import url("./responsive.css");
 
-/* 8. Tampilan katalog marketplace */
-@import url("./marketplace.css");
-
 /* 9. Skeleton loading */
 @import url("./skeleton.css");
 
@@ -65,9 +62,10 @@
 /* 16. Editor pesanan warung */
 @import url("./pages/warung-pesanan-edit.css");
 
-/* 17. Halman Warung */
+/* 17. Halman Utama */
 
 @import url("./pages/halaman-utama/warung/main.css");
+@import url("./pages/halaman-utama/index/main.css");
 
 /* 18. Style Module */
 @import url("./modules/receipt.css");

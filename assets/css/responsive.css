@@ -106,13 +106,6 @@ a {
 
 @media (max-width: 1000px) {
 
-    /* Hero */
-
-    .hero-layout {
-        gap: 26px;
-        padding: 30px;
-    }
-
 
     /* Kategori */
 
@@ -1080,24 +1073,6 @@ a {
         min-width: 36px;
         height: 36px;
         min-height: 36px;
-    }
-
-
-    /* -----------------------------------------------------
-       5.3 HERO AND SEARCH
-       ----------------------------------------------------- */
-
-    .hero-layout {
-        padding: 18px 13px;
-    }
-
-    .search-bar {
-        gap: 5px;
-    }
-
-    .search-bar .button {
-        padding-inline: 8px;
-        font-size: 10px;
     }
 
 
