@@ -1,0 +1,211 @@
+
+/* =========================================================
+   PESAN AJAH — HOMEPAGE RESPONSIVE
+   File: assets/css/pages/halaman-utama/index/media.css
+
+   1. Tablet
+   2. Mobile
+   3. Reduced Motion
+   ========================================================= */
+
+
+/* =========================================================
+   1. TABLET
+   Breakpoint: max-width 768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    /* Homepage Banner */
+
+    .homepage-banner {
+        border-radius: 13px;
+        box-shadow: 0 5px 16px rgb(24 55 31 / 6%);
+    }
+
+}
+
+
+/* =========================================================
+   2. MOBILE
+   Breakpoint: max-width 700px
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .hero {
+        padding-block: 16px 8px;
+    }
+
+    .hero-layout {
+        display: grid;
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+        padding: 22px 16px;
+        border-radius: var(--radius-lg);
+    }
+
+    .hero-copy {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .hero h1 {
+        max-width: 100%;
+        font-size: clamp(28px, 8vw, 38px);
+        line-height: 1.12;
+        letter-spacing: -1px;
+        overflow-wrap: anywhere;
+    }
+
+    .hero-copy > p {
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .search-bar {
+        width: 100%;
+        min-width: 0;
+        gap: 8px;
+        padding: 6px;
+    }
+
+    .search-bar > span {
+        flex: 0 0 auto;
+        font-size: 19px;
+    }
+
+    .search-bar input {
+        flex: 1 1 auto;
+        width: 0;
+        min-width: 0;
+        font-size: 12px;
+    }
+
+    #categories .section-heading {
+        margin-bottom: 16px;
+    }
+
+    #categories .section-heading h2 {
+        font-size: 19px;
+    }
+
+    #products .section-heading {
+        margin-bottom: 16px;
+    }
+
+    #products .section-heading h2 {
+        font-size: 19px;
+    }
+
+    #product-grid {
+        gap: 25px;
+    }
+
+    .marketplace-store-section {
+        min-width: 0;
+    }
+
+    .marketplace-store-header {
+        margin-bottom: 11px;
+    }
+
+    .marketplace-store-profile {
+        gap: 9px;
+    }
+
+    .marketplace-store-avatar {
+        width: 43px;
+        height: 43px;
+        flex-basis: 43px;
+        border-radius: 12px;
+    }
+
+    .marketplace-store-name {
+        font-size: 13px;
+    }
+
+    .marketplace-store-visit {
+        width: 33px;
+        height: 33px;
+        flex-basis: 33px;
+    }
+    
+    .marketplace-store-products {
+        grid-auto-columns: 152px;
+        gap: 10px;
+        padding-bottom: 10px;
+    }
+
+    .marketplace-store-products > .product-card {
+        min-width: 0;
+    }
+
+    .marketplace-store-products .product-info {
+        grid-template-rows:
+            34px
+            14px
+            22px
+            32px;
+
+        gap: 6px;
+        padding: 9px;
+    }
+
+    .marketplace-store-products .product-name {
+        height: 34px;
+        font-size: 12px;
+        line-height: 17px;
+    }
+
+    .marketplace-store-products .product-variant {
+        height: 14px;
+    }
+
+    .marketplace-store-products .product-stock {
+        font-size: 9px;
+    }
+
+    .marketplace-store-products .product-bottom {
+        height: 32px;
+    }
+
+    .marketplace-store-products .product-price {
+        font-size: 11px;
+    }
+
+    .marketplace-store-products .add-button {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        flex-basis: 32px;
+    }
+
+}
+
+/* =========================================================
+   3. REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .homepage-banner__track {
+        scroll-behavior: auto;
+    }
+
+    .marketplace-store-products > .product-card {
+        transition: none;
+    }
+
+    .marketplace-store-products .product-photo {
+        transition: none;
+    }
+
+    .marketplace-store-products .add-button {
+        transition: none;
+    }
+
+}

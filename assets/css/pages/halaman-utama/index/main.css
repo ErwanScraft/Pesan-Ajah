@@ -1,0 +1,10 @@
+/* =========================================================
+   PESAN AJAH — INDEX PAGE CSS (ENTRY POINT)
+   File: assets/css/pages/halaman-utama/index/main.css
+   ========================================================= */
+
+/* 1. Layout dan komponen utama */
+@import url("./index.css");
+
+/* 2. Responsive: tablet dan mobile */
+@import url("./media.css");

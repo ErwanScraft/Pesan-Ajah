@@ -267,38 +267,7 @@ a {
        4.3 HERO
        ----------------------------------------------------- */
 
-    .hero {
-        padding-block: 16px 8px;
-    }
 
-    .hero-layout {
-        display: grid;
-        width: 100%;
-        min-width: 0;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 20px;
-        padding: 22px 16px;
-        border-radius: var(--radius-lg);
-    }
-
-    .hero-copy {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .hero h1 {
-        max-width: 100%;
-        font-size: clamp(28px, 8vw, 38px);
-        line-height: 1.12;
-        letter-spacing: -1px;
-        overflow-wrap: anywhere;
-    }
-
-    .hero-copy > p {
-        max-width: 100%;
-        font-size: 13px;
-        line-height: 1.6;
-    }
 
     .hero-points {
         gap: 9px 12px;
@@ -360,31 +329,7 @@ a {
        4.4 SEARCH
        ----------------------------------------------------- */
 
-    .search-bar {
-        width: 100%;
-        min-width: 0;
-        gap: 8px;
-        padding: 6px;
-    }
 
-    .search-bar > span {
-        flex: 0 0 auto;
-        font-size: 19px;
-    }
-
-    .search-bar input {
-        flex: 1 1 auto;
-        width: 0;
-        min-width: 0;
-        font-size: 12px;
-    }
-
-    .search-bar .button {
-        flex: 0 0 auto;
-        min-height: 38px;
-        padding: 9px 11px;
-        font-size: 11px;
-    }
 
 
     /* -----------------------------------------------------

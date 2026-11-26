@@ -1,0 +1,837 @@
+/* =========================================================
+   PESAN AJAH — HOMEPAGE
+   File: assets/css/pages/halaman-utama/index/index.css
+   ========================================================= */
+
+
+/* =========================================================
+   1. HERO SECTION
+   ========================================================= */
+   
+.hero {
+  overflow: hidden;
+  padding-block: 48px 28px;
+}
+
+.hero-layout {
+  display: grid;
+  min-height: 360px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  align-items: center;
+  gap: 44px;
+  padding: 42px;
+  border: 1px solid #e3ecdf;
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 82% 16%, #e2f1d7 0, transparent 32%),
+    linear-gradient(120deg, #f1f8ed, #fbfcf8 70%);
+}
+
+.hero-copy {
+  max-width: 570px;
+}
+
+.hero h1 {
+  max-width: 600px;
+  margin-bottom: 16px;
+  font-size: clamp(34px, 4.5vw, 52px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+
+.hero h1 span {
+  color: var(--green);
+}
+
+.hero-copy > p {
+  max-width: 510px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* =========================================================
+   2. SEARCH BAR
+   ========================================================= */
+   
+.search-bar {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.search-bar:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgb(23 107 69 / 10%);
+}
+
+.search-bar > span {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--muted);
+}
+
+.search-bar__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.search-bar input::placeholder {
+  color: #969e96;
+}
+
+.search-bar__clear {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.search-bar__clear:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.search-bar__clear[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   3. HOMEPAGE BANNER
+   ========================================================= */
+   
+.homepage-banner {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    isolation: isolate;
+
+    border: 1px solid rgb(23 107 69 / 8%);
+    border-radius: 18px;
+    background: #f2f6ef;
+
+    box-shadow: 0 8px 24px rgb(24 55 31 / 7%);
+}
+
+.homepage-banner__track {
+    display: flex;
+    align-items: flex-start;
+
+    width: 100%;
+    min-width: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+.homepage-banner__track::-webkit-scrollbar {
+    display: none;
+}
+
+.homepage-banner__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+
+    overflow: hidden;
+    scroll-snap-align: start;
+
+    background: #f2f6ef;
+}
+
+.homepage-banner__slide > a {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    color: inherit;
+    line-height: 0;
+}
+
+.homepage-banner__image {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+
+    margin: 0;
+
+    object-fit: contain;
+    object-position: center;
+}
+
+.homepage-banner__slide > a:focus-visible {
+    outline: 3px solid #176b45;
+    outline-offset: -3px;
+}
+
+/* =========================================================
+   4. CATEGORY & PRODUCT SECTION HEADING
+   ========================================================= */
+
+#categories .section-heading,
+#products .section-heading {
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#categories .section-heading h2,
+#products .section-heading h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(20px, 2.5vw, 24px);
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+#categories .section-heading > div,
+#products .section-heading > div {
+    min-width: 0;
+}
+
+/* =========================================================
+   5. PRODUCT GRID / STORE LIST
+   ========================================================= */
+
+#product-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+}
+
+#product-grid[hidden] {
+    display: none !important;
+}
+
+/* =========================================================
+   6. MARKETPLACE STORE SECTION
+   ========================================================= */
+
+.marketplace-store-section {
+    min-width: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   7. MARKETPLACE STORE HEADER
+   ========================================================= */
+
+.marketplace-store-header {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin-bottom: 14px;
+}
+
+.marketplace-store-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+
+    color: var(--text);
+}
+
+.marketplace-store-profile:hover {
+    color: var(--green-dark);
+}
+
+.marketplace-store-profile:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+/* =========================================================
+   8. MARKETPLACE STORE AVATAR
+   ========================================================= */
+
+.marketplace-store-avatar {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: #edf6e9;
+    color: var(--green-dark);
+}
+
+.marketplace-store-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.marketplace-store-icon[hidden] {
+    display: none !important;
+}
+
+.marketplace-store-initial {
+    display: grid;
+    place-items: center;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   9. MARKETPLACE STORE IDENTITY
+   ========================================================= */
+
+.marketplace-store-identity {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.marketplace-store-name {
+    display: block;
+    overflow: hidden;
+
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   10. MARKETPLACE STORE INFORMATION
+   ========================================================= */
+
+.marketplace-store-meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-width: 0;
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    white-space: nowrap;
+}
+
+.marketplace-store-status {
+    display: inline-flex;
+    align-items: center;
+
+    flex: 0 0 auto;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    border-radius: 0;
+
+    background: transparent;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.marketplace-store-status.is-open {
+    color: #176b45;
+}
+
+.marketplace-store-status.is-closed {
+    color: #a52a2a;
+}
+
+.marketplace-store-meta-separator {
+    flex: 0 0 auto;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.marketplace-store-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+
+    flex: 0 0 auto;
+
+    color: var(--text);
+    font-weight: 700;
+}
+
+.marketplace-store-rating > span:first-child {
+    color: #e5a323;
+}
+
+.marketplace-store-visit {
+    display: grid;
+    place-items: center;
+
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    background: var(--white);
+    color: var(--green);
+
+    text-decoration: none;
+    transition:
+        background-color var(--transition),
+        color var(--transition);
+}
+
+.marketplace-store-visit:hover {
+    background: var(--green);
+    color: var(--white);
+}
+
+.marketplace-store-visit:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+.marketplace-store-visit[aria-disabled="true"] {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* =========================================================
+   11. MARKETPLACE STORE PRODUCTS
+   ========================================================= */
+
+.marketplace-store-products {
+    display: grid;
+
+    grid-auto-columns: 178px;
+    grid-auto-flow: column;
+    grid-template-rows: 1fr;
+
+    gap: 13px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 2px 2px 12px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 2px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cbd8cb transparent;
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+.marketplace-store-products::-webkit-scrollbar {
+    height: 4px;
+}
+
+.marketplace-store-products::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.marketplace-store-products::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cbd8cb;
+}
+
+/* =========================================================
+   12. MARKETPLACE PRODUCT CARD
+   ========================================================= */
+
+.marketplace-store-products > .product-card {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+
+    scroll-snap-align: start;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.marketplace-store-products > .product-card:hover {
+    border-color: #cbdccf;
+    box-shadow: var(--shadow-md);
+}
+
+
+/* =========================================================
+   13. MARKETPLACE PRODUCT IMAGE
+   ========================================================= */
+
+.marketplace-store-products .product-image {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    flex: 0 0 auto;
+
+    overflow: hidden;
+
+    background: var(--surface);
+}
+
+.marketplace-store-products .product-photo {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    object-position: center;
+}
+
+.marketplace-store-products .product-image-placeholder {
+    padding: 12px;
+
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   14. MARKETPLACE PRODUCT TAG
+   ========================================================= */
+
+.marketplace-store-products .product-tag {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    z-index: 3;
+
+    max-width: calc(100% - 18px);
+    padding: 5px 8px;
+
+    overflow: hidden;
+
+    border-radius: 7px;
+
+    background: var(--green);
+    color: var(--white);
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   15. MARKETPLACE PRODUCT SOLD OUT
+   ========================================================= */
+
+.marketplace-store-products
+.product-image.is-sold-out .product-photo,
+.marketplace-store-products
+.product-image.is-sold-out .product-image-placeholder {
+    filter: grayscale(100%);
+}
+
+.marketplace-store-products .product-sold-out-label {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px;
+
+    background: rgb(0 0 0 / 43%);
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-align: center;
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   16. MARKETPLACE PRODUCT INFORMATION
+   ========================================================= */
+
+.marketplace-store-products .product-info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+
+    grid-template-rows:
+        36px
+        14px
+        22px
+        34px;
+
+    gap: 6px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    padding: 11px;
+}
+
+.marketplace-store-products .product-name {
+    display: -webkit-box;
+
+    width: 100%;
+    min-width: 0;
+    height: 36px;
+    margin: 0;
+
+    overflow: hidden;
+
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+
+    overflow-wrap: anywhere;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.marketplace-store-products .product-variant {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+    height: 14px;
+
+    overflow: hidden;
+
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 14px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.marketplace-store-products .product-variant:empty {
+    visibility: hidden;
+}
+
+/* =========================================================
+   17. MARKETPLACE PRODUCT STOCK
+   ========================================================= */
+
+.marketplace-store-products .product-stock {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+
+    width: fit-content;
+    max-width: 100%;
+    height: 22px;
+    min-width: 0;
+
+    padding: 0 8px;
+
+    overflow: hidden;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.marketplace-store-products .product-stock.is-available {
+    background: #edf8f0;
+    color: #176b45;
+}
+
+.marketplace-store-products .product-stock.is-unlimited {
+    background: #f1f5f2;
+    color: #64746a;
+}
+
+.marketplace-store-products .product-stock.is-low {
+    background: #fff5e5;
+    color: #a65c08;
+}
+
+.marketplace-store-products .product-stock.is-out {
+    background: #fff0f0;
+    color: #b42323;
+}
+
+/* =========================================================
+   18. MARKETPLACE PRODUCT PRICE
+   ========================================================= */
+
+.marketplace-store-products .product-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+
+    margin: 0;
+    padding: 0;
+}
+
+.marketplace-store-products .product-price {
+    display: block;
+
+    min-width: 0;
+    max-width: calc(100% - 42px);
+
+    overflow: hidden;
+
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   19. MARKETPLACE ADD BUTTON
+   ========================================================= */
+
+.marketplace-store-products .add-button {
+    display: inline-grid;
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+
+    flex: 0 0 34px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: var(--green);
+    color: var(--white);
+
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition),
+        transform var(--transition);
+}
+
+.marketplace-store-products
+.add-button:hover:not(:disabled) {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+}
+
+.marketplace-store-products
+.add-button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+.marketplace-store-products
+.add-button:disabled {
+    background: #e5e9e6;
+    color: #8b948e;
+    cursor: not-allowed;
+    transform: none;
+}
