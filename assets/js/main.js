@@ -149,37 +149,8 @@ const toast = $("#toast");
 
 let catalog;
 let productDetail;
-
-catalog = createCatalog({
-  products,
-
-  grid: $("#product-grid"),
-  total: $("#product-total"),
-  empty: $("#empty-state"),
-  categoryList: $("#category-list"),
-  searchInput: $("#search-input"),
-
-  cart,
-
-  onAdd: (productId) => cartPage.addToCart(productId),
-
-  onView: (productId) => productDetail?.open(productId),
-});
-
 let cartPage;
 
-productDetail = createProductDetail({
-  products,
-
-  onAdd: (productId) => {
-    cartPage.addToCart(productId);
-  },
-});
-
-/*
- * Array products berasal dari modul data lama.
- * Array ini diisi dengan data hasil API MySQL.
- */
 const cart = createCart(products);
 
 async function loadCatalog() {
@@ -355,6 +326,8 @@ catalog = createCatalog({
   cart,
 
   onAdd: (productId) => cartPage.addToCart(productId),
+
+  onView: (productId) => productDetail?.open(productId),
 });
 
 cartPage = initCartPage({
@@ -363,6 +336,14 @@ cartPage = initCartPage({
   showToast,
   formatRupiah,
   onCatalogRender: () => catalog?.render(),
+});
+
+productDetail = createProductDetail({
+  products,
+
+  onAdd: (productId) => {
+    cartPage.addToCart(productId);
+  },
 });
 
 catalog.render();
