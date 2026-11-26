@@ -133,7 +133,9 @@
         height: 33px;
         flex-basis: 33px;
     }
-    
+
+    /* Product Card */
+
     .marketplace-store-products {
         grid-auto-columns: 152px;
         gap: 10px;
@@ -146,13 +148,16 @@
 
     .marketplace-store-products .product-info {
         grid-template-rows:
-            34px
+            minmax(34px, auto)
             14px
-            22px
             32px;
 
         gap: 6px;
         padding: 9px;
+    }
+
+    .marketplace-store-products .product-heading {
+        gap: 5px;
     }
 
     .marketplace-store-products .product-name {
@@ -169,12 +174,17 @@
         font-size: 9px;
     }
 
-    .marketplace-store-products .product-bottom {
+    .marketplace-store-products .product-footer {
         height: 32px;
+        gap: 5px;
     }
 
     .marketplace-store-products .product-price {
         font-size: 11px;
+    }
+
+    .marketplace-store-products .product-unit {
+        font-size: 8px;
     }
 
     .marketplace-store-products .add-button {
