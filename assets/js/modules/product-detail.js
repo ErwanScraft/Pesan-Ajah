@@ -46,7 +46,37 @@ export function createProductDetail({
 
       <div class="product-detail__information">
 
-        <h1 class="product-detail__name"></h1>
+        <div class="product-detail__heading">
+        
+          <h1 class="product-detail__name"></h1>
+        
+          <button
+            type="button"
+            class="product-detail__share"
+            aria-label="Bagikan produk melalui WhatsApp"
+            title="Bagikan produk"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="18" cy="5" r="3"/>
+              <circle cx="6" cy="12" r="3"/>
+              <circle cx="18" cy="19" r="3"/>
+              <path d="m8.7 10.7 6.6-4.4"/>
+              <path d="m8.7 13.3 6.6 4.4"/>
+            </svg>
+          </button>
+        
+        </div>
 
         <p class="product-detail__variant"></p>
 
@@ -88,6 +118,7 @@ export function createProductDetail({
   const description = $(".product-detail__description p");
   const price = $(".product-detail__price");
   const addButton = $(".product-detail__add");
+  const shareButton = $(".product-detail__share");
 
   function close() {
     if (overlay.hidden) return;
@@ -161,6 +192,50 @@ export function createProductDetail({
 
     $(".product-detail__back").focus();
   }
+  
+  function shareProduct() {
+    if (!activeProduct) return;
+  
+    const product = activeProduct;
+  
+    const productUrl = new URL(
+      `/product.php?id=${encodeURIComponent(product.id)}`,
+      window.location.origin,
+    ).href;
+  
+    const productName = product.name || "Produk";
+  
+    const productPrice = formatRupiah(product.price);
+  
+    const productDescription =
+      product.description?.trim() ||
+      "Belum ada deskripsi produk.";
+  
+    const unit = String(
+      product.unit || product.unit_name || "",
+    ).trim();
+  
+    const message = [
+      `*${productName}*`,
+      `Harga: ${productPrice}${unit ? ` / ${unit}` : ""}`,
+      "",
+      productDescription,
+      "",
+      "Lihat produk di Pesan Ajah:",
+      productUrl,
+    ].join("\n");
+  
+    const whatsappUrl =
+      `https://wa.me/?text=${encodeURIComponent(message)}`;
+  
+    window.open(
+      whatsappUrl,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+  
+  shareButton.addEventListener("click", shareProduct);
 
   $(".product-detail__back").addEventListener(
     "click",

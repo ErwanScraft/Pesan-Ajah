@@ -153,6 +153,64 @@ body.product-detail-open {
 }
 
 /* =========================================================
+   5.1 PRODUCT HEADING & SHARE
+   ========================================================= */
+
+.product-detail__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+    width: 100%;
+}
+
+.product-detail__name {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-detail__share {
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    background: var(--white);
+    color: var(--text);
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition),
+        color var(--transition),
+        border-color var(--transition);
+}
+
+.product-detail__share:hover {
+    background: var(--surface);
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.product-detail__share:active {
+    transform: scale(0.96);
+}
+
+.product-detail__share:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+}
+
+/* =========================================================
    6. DESCRIPTION
    ========================================================= */
 
