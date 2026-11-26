@@ -303,6 +303,98 @@ export function createCatalog({
   
   /*
   |--------------------------------------------------------------------------
+  | KARTU PRODUK KHUSUS HALAMAN WARUNG
+  |--------------------------------------------------------------------------
+  */
+  
+  function createStoreProductCard(product) {
+    const card = document.createElement("article");
+    card.className = "product-card store-product-card";
+  
+    const image = createProductImage(product);
+  
+    const info = document.createElement("div");
+    info.className = "product-info";
+  
+    // Nama dan harga produk
+    const heading = document.createElement("div");
+    heading.className = "product-heading";
+  
+    const name = document.createElement("h3");
+    name.className = "product-name";
+    name.textContent = product.name || "Produk";
+  
+    const price = document.createElement("span");
+    price.className = "product-price";
+    price.textContent = formatRupiah(product.price);
+  
+    const unitValue = String(
+      product.unit || product.unit_name || "",
+    ).trim();
+  
+    if (unitValue) {
+      const unit = document.createElement("span");
+      unit.className = "product-unit";
+      unit.textContent = `/${unitValue}`;
+      price.append(" ", unit);
+    }
+  
+    heading.append(name, price);
+  
+    // Varian produk
+    const variant = document.createElement("span");
+    variant.className = "product-variant";
+    variant.textContent = product.variant || "";
+  
+    // Informasi stok dan tombol tambah
+    const footer = document.createElement("div");
+    footer.className = "product-footer";
+  
+    const stock = document.createElement("span");
+    stock.className = "product-stock";
+  
+    if (product.stock_quantity === 0) {
+      stock.textContent = "Stok habis";
+    } else if (product.stock_quantity == null) {
+      stock.textContent = "Stok tersedia";
+    } else {
+      stock.textContent = `Stok: ${product.stock_quantity}`;
+    }
+  
+    const addButton = document.createElement("button");
+    addButton.className = "add-button";
+    addButton.type = "button";
+    addButton.dataset.add = String(product.id);
+  
+    addButton.setAttribute(
+      "aria-label",
+      `Tambah ${product.name}`,
+    );
+  
+    addButton.disabled = !product.available;
+  
+    addButton.title = product.available
+      ? "Tambah ke keranjang"
+      : product.stock_quantity === 0
+        ? "Stok produk habis"
+        : !product.is_available
+          ? "Produk tidak tersedia"
+          : "Warung sedang tutup";
+  
+    addButton.textContent = product.available
+      ? String(cart.quantityFor(product.id) || "+")
+      : "–";
+  
+    footer.append(stock, addButton);
+  
+    info.append(heading, variant, footer);
+    card.append(image, info);
+  
+    return card;
+  }
+  
+  /*
+  |--------------------------------------------------------------------------
   | HEADER WARUNG PADA KATALOG MARKETPLACE
   |--------------------------------------------------------------------------
   */
@@ -503,7 +595,7 @@ export function createCatalog({
       productList.className = "store-category-products";
 
       for (const product of categoryProducts) {
-        productList.append(createProductCard(product));
+        productList.append(createStoreProductCard(product));
       }
 
       section.append(heading, productList);

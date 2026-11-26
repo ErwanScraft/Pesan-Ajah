@@ -302,6 +302,7 @@
         grid-template-columns: 82px minmax(0, 1fr);
         align-items: stretch;
         gap: 10px;
+
         padding: 10px;
         border-radius: 13px;
     }
@@ -315,15 +316,19 @@
         width: 82px;
         height: 100%;
         min-height: 82px;
+
         align-self: stretch;
+
         border-radius: 10px;
     }
 
     .store-page .product-tag {
         top: 4px;
         left: 4px;
+
         max-width: calc(100% - 8px);
         padding: 3px 5px;
+
         font-size: 0.56rem;
     }
 
@@ -333,7 +338,8 @@
     }
 
     .store-page .product-heading {
-        gap: 5px;
+        align-items: flex-start;
+        gap: 6px;
     }
 
     .store-page .product-name {
@@ -359,6 +365,7 @@
 
     .store-page .product-footer .add-button {
         flex-basis: 34px;
+
         width: 34px;
         min-width: 34px;
         height: 34px;
