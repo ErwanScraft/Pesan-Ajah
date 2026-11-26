@@ -11,6 +11,7 @@ export function createCatalog({
   searchInput,
   cart,
   onAdd,
+  onView,
 }) {
   const groupedMode = document.body.dataset.storePage === "true";
 
@@ -244,8 +245,17 @@ export function createCatalog({
     heading.className = "product-heading";
   
     const name = document.createElement("h3");
+
     name.className = "product-name";
     name.textContent = product.name || "Produk";
+    
+    name.dataset.productDetail = String(product.id);
+    name.setAttribute("role", "button");
+    name.setAttribute("tabindex", "0");
+    name.setAttribute(
+      "aria-label",
+      `Lihat detail ${product.name}`,
+    );
   
     heading.append(name);
   
@@ -792,6 +802,38 @@ export function createCatalog({
     }
 
     onAdd(Number(button.dataset.add));
+  });
+  
+  /*
+  |--------------------------------------------------------------------------
+  | DETAIL PRODUK
+  |--------------------------------------------------------------------------
+  */
+  
+  grid?.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-product-detail]");
+  
+    if (!target || !grid.contains(target)) {
+      return;
+    }
+  
+    onView?.(Number(target.dataset.productDetail));
+  });
+  
+  grid?.addEventListener("keydown", (event) => {
+    const target = event.target.closest("[data-product-detail]");
+  
+    if (
+      !target ||
+      !grid.contains(target) ||
+      (event.key !== "Enter" && event.key !== " ")
+    ) {
+      return;
+    }
+  
+    event.preventDefault();
+  
+    onView?.(Number(target.dataset.productDetail));
   });
 
   /*

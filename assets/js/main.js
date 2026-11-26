@@ -8,6 +8,7 @@ import { initBuyerMenu } from "./modules/buyer-menu.js";
 import { initIndexPage } from "./pages/index/main.js";
 import { initCartPage } from "./pages/cart/main.js";
 import { initStoreReview } from "./pages/store-review/main.js";
+import { createProductDetail } from "./modules/product-detail.js";
 
 import {
   initErrorLogger,
@@ -16,7 +17,6 @@ import {
 initErrorLogger();
 
 const $ = (selector) => document.querySelector(selector);
-
 
 function initStoreProfileScroll() {
   const profile = $(".store-profile");
@@ -148,7 +148,33 @@ if (document.body.dataset.page === "index") {
 const toast = $("#toast");
 
 let catalog;
+let productDetail;
+
+catalog = createCatalog({
+  products,
+
+  grid: $("#product-grid"),
+  total: $("#product-total"),
+  empty: $("#empty-state"),
+  categoryList: $("#category-list"),
+  searchInput: $("#search-input"),
+
+  cart,
+
+  onAdd: (productId) => cartPage.addToCart(productId),
+
+  onView: (productId) => productDetail?.open(productId),
+});
+
 let cartPage;
+
+productDetail = createProductDetail({
+  products,
+
+  onAdd: (productId) => {
+    cartPage.addToCart(productId);
+  },
+});
 
 /*
  * Array products berasal dari modul data lama.
