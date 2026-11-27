@@ -1,8 +1,66 @@
 import { formatRupiah } from "./format.js";
 import { setImageSource } from "./image.js";
 
+
 export function createCart(products) {
   const items = new Map();
+
+  const storageKey = "pesan_ajah_cart_v1";
+
+  // Simpan keranjang ke browser.
+  function saveCart() {
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify(
+          [...items.entries()].map(([productId, quantity]) => ({
+            product_id: productId,
+            quantity,
+          })),
+        ),
+      );
+    } catch (error) {
+      console.warn(
+        "[Pesan Ajah] Keranjang gagal disimpan:",
+        error,
+      );
+    }
+  }
+
+  // Pulihkan keranjang setelah halaman dimuat.
+  function restoreCart() {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem(storageKey) || "[]",
+      );
+
+      if (!Array.isArray(stored)) return;
+
+      stored.forEach((entry) => {
+        const productId = Number(entry.product_id);
+        const quantity = Number(entry.quantity);
+
+        if (
+          !Number.isSafeInteger(productId) ||
+          productId <= 0 ||
+          !Number.isInteger(quantity) ||
+          quantity < 1 ||
+          quantity > 99
+        ) {
+          return;
+        }
+
+        items.set(productId, quantity);
+      });
+    } catch (error) {
+      console.warn(
+        "[Pesan Ajah] Data keranjang tidak dapat dipulihkan:",
+        error,
+      );
+    }
+  }
+
+  restoreCart();
 
   function findProduct(productId) {
     return products.find(
@@ -26,6 +84,7 @@ export function createCart(products) {
     }
 
     items.set(Number(productId), current + 1);
+    saveCart();
 
     return product;
   }
@@ -39,7 +98,8 @@ export function createCart(products) {
 
     if (!Number.isFinite(next) || next <= 0) {
       items.delete(id);
-
+      saveCart();
+      
       return 0;
     }
 
@@ -49,7 +109,8 @@ export function createCart(products) {
     );
 
     items.set(id, quantity);
-
+    saveCart();
+    
     return quantity;
   }
 
@@ -92,6 +153,8 @@ export function createCart(products) {
 
   function clear() {
     items.clear();
+  
+    localStorage.removeItem(storageKey);
   }
 
   function createCartImage(product) {
