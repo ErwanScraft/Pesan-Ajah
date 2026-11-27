@@ -17,7 +17,12 @@ export function initCartPage({
   const cartItems = $("#cart-items");
   const cartCountItems = $("#cart-count-items");
   const checkoutButton = $("#checkout-button");
-  const cartSheet = createBottomSheet();
+  const cartSheet = createBottomSheet({
+    independent: true,
+  });
+  const checkoutSheet = createBottomSheet({
+    independent: true,
+  });
   const cartFooter = $("#cart-footer");
   const confirmationPanel = $("#cart-confirmation");
   const successPanel = $("#cart-order-success");
@@ -76,6 +81,9 @@ export function initCartPage({
   let catalogLoaded = false;
   let deliveryAvailable = null;
   let activeStoreId = null;
+  let activeCartStage = "selection";
+  let openCheckoutAfterCartClose = false;
+  let reopenCartAfterCheckoutClose = false;
 
   function selectedFulfillment() {
     return document.querySelector(
@@ -164,7 +172,14 @@ export function initCartPage({
   }
   
   function renderCart() {
-    cart.render(cartView);
+    cart.render({
+      ...cartView,
+      storeId:
+        activeCartStage === "checkout"
+          ? activeStoreId
+          : null,
+      showCheckout: activeCartStage === "selection",
+    });
   
     if (cartCountItems) {
       cartCountItems.textContent = String(cart.quantity());
@@ -340,7 +355,47 @@ export function initCartPage({
   }
   
   function setSheetTitle(value) {
-      cartSheet.setTitle(value);
+    const activeSheet = checkoutSheet.isOpen()
+      ? checkoutSheet
+      : cartSheet;
+  
+    activeSheet.setTitle(value);
+  }
+  
+  function setCartStage(stage) {
+    activeCartStage = stage;
+  
+    const isSelection = stage === "selection";
+  
+    const checkoutSections = [
+      ".checkout-form",
+      ".buyer-note-section",
+      ".fulfillment-section",
+      ".order-summary",
+      ".checkout-actions",
+    ];
+  
+    checkoutSections.forEach((selector) => {
+      const element = cartOverlay.querySelector(selector);
+  
+      if (element) {
+        element.hidden = isSelection;
+      }
+    });
+  
+    const productsHeading = cartOverlay.querySelector(
+      ".cart-products-section .cart-section-heading h3",
+    );
+  
+    if (productsHeading) {
+      productsHeading.textContent = isSelection
+        ? "Daftar Warung"
+        : "Item Pesanan";
+    }
+  
+    setSheetTitle(
+      isSelection ? "Pilih Warung" : "Checkout",
+    );
   }
   
   function showConfirmation() {
@@ -459,68 +514,162 @@ export function initCartPage({
   }
   
   function showCartEditor() {
-      confirmationPanel.hidden = true;
-      successPanel.hidden = true;
+    confirmationPanel.hidden = true;
+    successPanel.hidden = true;
   
-      cartFooter.hidden = false;
+    setCartStage("checkout");
   
-      setSheetTitle("Keranjang");
-      
-      $("#cart-empty").hidden = cart.quantity() > 0;
+    cartFooter.hidden = false;
+  
+    $("#cart-empty").hidden =
+      cart.quantity(activeStoreId) > 0;
+  
+    renderCart();
   }
   
   function showOrderSuccess() {
-      cartFooter.hidden = true;
-      confirmationPanel.hidden = true;
-      successPanel.hidden = false;
+    cartFooter.hidden = true;
+    confirmationPanel.hidden = true;
+    successPanel.hidden = false;
   
-      $("#cart-empty").hidden = true;
+    $("#cart-empty").hidden = true;
   
-      setSheetTitle("Pesanan Berhasil");
+    setSheetTitle("Pesanan Berhasil");
   }
 
   function openCart() {
-    if (!cartOverlay || cartSheet.isOpen()) return;
+    if (
+      !cartOverlay ||
+      cartSheet.isOpen() ||
+      checkoutSheet.isOpen()
+    ) {
+      return;
+    }
+  
+    activeStoreId = null;
+  
+    setCartStage("selection");
   
     cartOverlay.hidden = false;
   
+    renderCart();
+  
     cartSheet.open({
-      title: "Keranjang",
+      title: "Pilih Warung",
       content: cartOverlay,
-      size: "large",
+      size: "full",
       closeOnBackdrop: true,
       closeButton: true,
       onClose: () => {
+        if (openCheckoutAfterCartClose) {
+          openCheckoutAfterCartClose = false;
+          openCheckoutSheet();
+          return;
+        }
+    
         cartOverlay.hidden = true;
       },
     });
   }
   
-  function closeCart() {
-    if (!cartSheet.isOpen()) return;
+  function openCheckoutSheet() {
+    if (!activeStoreId) return;
   
-    cartSheet.close();
-  }
-
-  async function loadCsrfToken() {
-    const response = await fetch("/api/csrf.php", {
-      method: "GET",
-      credentials: "same-origin",
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
+    cartOverlay.hidden = false;
+  
+    setCartStage("checkout");
+  
+    cartFooter.hidden = false;
+    confirmationPanel.hidden = true;
+    successPanel.hidden = true;
+  
+    renderCart();
+  
+    checkoutSheet.open({
+      title: "Checkout",
+      content: cartOverlay,
+      size: "large",
+      closeOnBackdrop: true,
+      closeButton: true,
+  
+      onClose: () => {
+        cartOverlay.hidden = true;
+  
+        activeStoreId = null;
+  
+        setCartStage("selection");
+  
+        renderCart();
+  
+        if (
+          reopenCartAfterCheckoutClose &&
+          cart.quantity() > 0
+        ) {
+          reopenCartAfterCheckoutClose = false;
+  
+          openCart();
+        }
       },
     });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success || !data.csrf_token) {
-      throw new Error(
-        data.message || "Token keamanan tidak dapat dimuat.",
-      );
+  }
+  
+  function selectStoreForCheckout(storeId) {
+    const selectedId = Number(storeId);
+  
+    if (
+      !Number.isSafeInteger(selectedId) ||
+      selectedId <= 0
+    ) {
+      showToast(toast, "Warung tidak valid.");
+      return;
     }
-
-    csrfToken = data.csrf_token;
+  
+    const entries = cart.entries(selectedId);
+  
+    if (entries.length === 0) {
+      showToast(toast, "Keranjang warung ini kosong.");
+      return;
+    }
+  
+    const product = products.find(
+      (item) =>
+        Number(item.store_id) === selectedId &&
+        entries.some(
+          (entry) =>
+            Number(entry.product_id) === Number(item.id),
+        ),
+    );
+  
+    if (!product) {
+      showToast(toast, "Produk warung tidak ditemukan.");
+      return;
+    }
+  
+    if (!product.store_is_open) {
+      showToast(toast, "Warung sedang tutup.");
+      return;
+    }
+  
+    activeStoreId = selectedId;
+  
+    if (cartSheet.isOpen()) {
+      openCheckoutAfterCartClose = true;
+      cartSheet.close();
+      return;
+    }
+  
+    openCheckoutSheet();
+  }
+  
+  function closeCart() {
+    if (checkoutSheet.isOpen()) {
+      checkoutSheet.close();
+      return;
+    }
+  
+    if (cartSheet.isOpen()) {
+      cartSheet.close();
+    }
   }
 
   async function loadBuyerProfile() {
@@ -1049,8 +1198,6 @@ export function initCartPage({
   
           cart.clearStore(activeStoreId);
           
-          activeStoreId = null;
-          
           renderCart();
           onCatalogRender?.();
           
@@ -1104,25 +1251,10 @@ export function initCartPage({
     );
   
     if (checkoutStoreButton) {
-      activeStoreId = Number(
+      selectStoreForCheckout(
         checkoutStoreButton.dataset.checkoutStore,
       );
   
-      if (!Number.isSafeInteger(activeStoreId) || activeStoreId <= 0) {
-        activeStoreId = null;
-        showToast(toast, "Warung tidak valid.");
-        return;
-      }
-  
-      const product = selectedStore();
-  
-      if (!product || !product.store_is_open) {
-        showToast(toast, "Warung sedang tutup.");
-        return;
-      }
-  
-      renderCart();
-      showConfirmation();
       return;
     }
   
@@ -1132,34 +1264,25 @@ export function initCartPage({
     }
   
     if (removeButton) {
-      cart.change(Number(removeButton.dataset.remove), -1);
+      cart.change(
+        Number(removeButton.dataset.remove),
+        -1,
+      );
+  
       onCatalogRender?.();
       renderCart();
     }
   });
 
-  checkoutButton?.addEventListener("click", () => {
-    const firstEntry = cart.entries()[0];
+  checkoutButton?.addEventListener(
+    "click",
+    showConfirmation,
+  );
   
-    if (!firstEntry) {
-      showToast(toast, "Keranjang masih kosong.");
-      return;
-    }
-  
-    const product = products.find(
-      (item) => Number(item.id) === firstEntry.product_id,
-    );
-  
-    activeStoreId = Number(product?.store_id) || null;
-  
-    renderCart();
-    showConfirmation();
-  });
-  
-  $("#edit-cart-button")?.addEventListener("click", () => {
-    showCartEditor();
-    renderCart();
-  });
+  $("#edit-cart-button")?.addEventListener(
+    "click",
+    showCartEditor,
+  );
   
   $("#confirm-order-button")?.addEventListener(
       "click",
@@ -1167,10 +1290,9 @@ export function initCartPage({
   );
   
   $("#success-back-button")?.addEventListener("click", () => {
-    activeStoreId = null;
-    showCartEditor();
-    renderCart();
-    closeCart();
+    reopenCartAfterCheckoutClose = true;
+  
+    checkoutSheet.close();
   });
 
   renderCart();

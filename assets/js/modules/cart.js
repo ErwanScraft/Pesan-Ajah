@@ -219,101 +219,118 @@ export function createCart(products) {
       empty,
       footer,
       totalLabel,
+      storeId = null,
+      showCheckout = true,
     } = view;
-
+  
     const cartEntries = [...items.entries()].filter(
-      ([productId]) => findProduct(productId),
+      ([productId]) => {
+        const product = findProduct(productId);
+  
+        if (!product) return false;
+  
+        return (
+          storeId === null ||
+          Number(product.store_id) === Number(storeId)
+        );
+      },
     );
-
+  
     count.textContent = String(quantity());
-
+  
     empty.hidden = cartEntries.length > 0;
     footer.hidden = cartEntries.length === 0;
-
+  
     list.replaceChildren();
-
+  
     const storeGroups = new Map();
-
+  
     for (const [productId, amount] of cartEntries) {
       const product = findProduct(productId);
-
+  
       if (!product) continue;
-
-      const storeId = Number(product.store_id);
-
-      if (!storeGroups.has(storeId)) {
-        storeGroups.set(storeId, {
+  
+      const currentStoreId = Number(product.store_id);
+  
+      if (!storeGroups.has(currentStoreId)) {
+        storeGroups.set(currentStoreId, {
           product,
           items: [],
           subtotal: 0,
         });
       }
-
-      const group = storeGroups.get(storeId);
-
+  
+      const group = storeGroups.get(currentStoreId);
+  
       group.items.push({
         product,
         productId,
         quantity: amount,
       });
-
+  
       group.subtotal += Number(product.price) * amount;
     }
-
-    for (const [storeId, group] of storeGroups) {
+  
+    for (const [currentStoreId, group] of storeGroups) {
       const storeCard = document.createElement("section");
       storeCard.className = "cart-store-group";
-
+  
       const storeHeader = document.createElement("div");
       storeHeader.className = "cart-store-header";
-
+  
       storeHeader.append(createStoreImage(group.product));
-
+  
       const storeName = document.createElement("strong");
       storeName.className = "cart-store-name";
-      storeName.textContent = group.product.store_name || "Warung";
-
+      storeName.textContent =
+        group.product.store_name || "Warung";
+  
       storeHeader.append(storeName);
       storeCard.append(storeHeader);
-
+  
       const productList = document.createElement("div");
       productList.className = "cart-store-products";
-
+  
       for (const entry of group.items) {
-        const { product, productId, quantity } = entry;
-
+        const {
+          product,
+          productId,
+          quantity,
+        } = entry;
+  
         const item = document.createElement("article");
         item.className = "cart-item";
-
+  
         const image = createCartImage(product);
-
+  
         const details = document.createElement("div");
         details.className = "cart-item-details";
-
+  
         const name = document.createElement("p");
         name.className = "cart-item-name";
         name.textContent = product.name;
-
+  
         details.append(name);
-
+  
         if (product.variant) {
           const variant = document.createElement("small");
           variant.className = "cart-item-variant";
           variant.textContent = product.variant;
+  
           details.append(variant);
         }
-
+  
         const price = document.createElement("span");
         price.className = "cart-item-price";
         price.textContent = formatRupiah(
           Number(product.price) * quantity,
         );
-
+  
         details.append(price);
-
+  
         const controls = document.createElement("div");
         controls.className = "quantity-control";
-
+  
         const removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.dataset.remove = String(productId);
@@ -322,11 +339,11 @@ export function createCart(products) {
           `Kurangi ${product.name}`,
         );
         removeButton.textContent = "−";
-
+  
         const quantityLabel = document.createElement("span");
         quantityLabel.textContent = String(quantity);
         quantityLabel.setAttribute("aria-label", "Jumlah");
-
+  
         const addButton = document.createElement("button");
         addButton.type = "button";
         addButton.dataset.add = String(productId);
@@ -335,51 +352,54 @@ export function createCart(products) {
           `Tambah ${product.name}`,
         );
         addButton.textContent = "+";
-        addButton.disabled = !product.available || quantity >= 99;
-
+        addButton.disabled =
+          !product.available || quantity >= 99;
+  
         controls.append(
           removeButton,
           quantityLabel,
           addButton,
         );
-
+  
         item.append(image, details, controls);
         productList.append(item);
       }
-
+  
       const summary = document.createElement("div");
       summary.className = "cart-store-summary";
-
+  
       const subtotalLabel = document.createElement("span");
       subtotalLabel.textContent = "Subtotal";
-
+  
       const subtotalValue = document.createElement("strong");
       subtotalValue.textContent = formatRupiah(group.subtotal);
-
+  
       summary.append(subtotalLabel, subtotalValue);
-
-      const checkout = document.createElement("button");
-      checkout.type = "button";
-      checkout.className = "button button-primary button-full cart-store-checkout";
-      checkout.dataset.checkoutStore = String(storeId);
-      checkout.textContent = "Checkout";
-
-      checkout.disabled = !group.product.store_is_open;
-
-      if (!group.product.store_is_open) {
-        checkout.textContent = "Warung Tutup";
+  
+      storeCard.append(productList, summary);
+  
+      if (showCheckout) {
+        const checkout = document.createElement("button");
+  
+        checkout.type = "button";
+        checkout.className =
+          "button button-primary button-full cart-store-checkout";
+  
+        checkout.dataset.checkoutStore = String(currentStoreId);
+        checkout.textContent = "Checkout";
+        checkout.disabled = !group.product.store_is_open;
+  
+        if (!group.product.store_is_open) {
+          checkout.textContent = "Warung Tutup";
+        }
+  
+        storeCard.append(checkout);
       }
-
-      storeCard.append(
-        productList,
-        summary,
-        checkout,
-      );
-
+  
       list.append(storeCard);
     }
-
-    totalLabel.textContent = formatRupiah(total());
+  
+    totalLabel.textContent = formatRupiah(total(storeId));
   }
 
   return {

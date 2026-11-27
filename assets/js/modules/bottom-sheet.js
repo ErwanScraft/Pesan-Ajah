@@ -60,10 +60,10 @@ function createSheetElement() {
   };
 }
 
-export function createBottomSheet() {
-  if (!activeSheet) {
-    activeSheet = createSheetElement();
-  }
+export function createBottomSheet({ independent = false } = {}) {
+  const sheetElement = independent
+    ? createSheetElement()
+    : (activeSheet ??= createSheetElement());
 
   const {
     overlay,
@@ -71,7 +71,7 @@ export function createBottomSheet() {
     title,
     description,
     body,
-  } = activeSheet;
+  } = sheetElement;
 
   let previousFocus = null;
   let closeTimer = null;

@@ -1764,6 +1764,135 @@
 
 
 /* =========================================================
+   CART — STAGE 1: STORE SELECTION
+   ========================================================= */
+
+#cart-overlay .cart-footer {
+    gap: 18px;
+}
+
+#cart-overlay .cart-footer > .cart-products-section {
+    padding-top: 0;
+    border-top: 0;
+}
+
+#cart-overlay .cart-store-group {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 14px;
+
+    background: var(--cart-white);
+    border: 1px solid var(--cart-border);
+    border-radius: 15px;
+}
+
+#cart-overlay .cart-store-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding-bottom: 11px;
+
+    border-bottom: 1px solid var(--cart-border-light);
+}
+
+#cart-overlay .cart-store-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 42px;
+
+    width: 42px;
+    height: 42px;
+
+    overflow: hidden;
+
+    background: var(--cart-surface);
+    border: 1px solid var(--cart-border);
+    border-radius: 11px;
+}
+
+#cart-overlay .cart-store-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#cart-overlay .cart-store-name {
+    min-width: 0;
+
+    color: var(--cart-text);
+
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.45;
+
+    overflow-wrap: anywhere;
+}
+
+#cart-overlay .cart-store-products {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#cart-overlay .cart-store-products .cart-item {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 10px;
+
+    padding: 9px;
+
+    border-color: var(--cart-border-light);
+}
+
+#cart-overlay .cart-store-products .cart-item-image {
+    width: 58px;
+    height: 58px;
+}
+
+#cart-overlay .cart-store-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid var(--cart-border-light);
+}
+
+#cart-overlay .cart-store-summary span {
+    color: var(--cart-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#cart-overlay .cart-store-summary strong {
+    color: var(--cart-text);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+#cart-overlay .cart-store-checkout {
+    width: 100%;
+    min-height: 45px;
+}
+
+#cart-overlay .cart-store-checkout:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 
