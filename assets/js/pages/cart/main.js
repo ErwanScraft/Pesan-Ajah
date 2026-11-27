@@ -1,4 +1,5 @@
 import { createBottomSheet } from "../../modules/bottom-sheet.js";
+import { createGps } from "../../components/gps.js";
 
 export function initCartPage({
   products,
@@ -25,6 +26,43 @@ export function initCartPage({
   const fulfillmentInputs = document.querySelectorAll(
     'input[name="fulfillment-method"]',
   );
+  
+  const gps = createGps({
+      button: $("#use-location-button"),
+      errorElement: $("#delivery-gps-error"),
+      latitudeInput: $("#delivery-latitude"),
+      longitudeInput: $("#delivery-longitude"),
+      mapsUrlInput: $("#delivery-maps-url"),
+  
+      onSuccess: (location) => {
+        renderCart();
+  
+        showToast(
+          toast,
+          "Lokasi GPS berhasil diperoleh.",
+        );
+  
+        console.info(
+          "[Pesan Ajah] GPS berhasil:",
+          {
+            accuracy: location.accuracy,
+          },
+        );
+      },
+  
+      onError: (error) => {
+        showToast(
+          toast,
+        error.gpsMessage || error.message,
+      );
+
+      console.warn(
+        "[Pesan Ajah] GPS gagal:",
+        error,
+      );
+    },
+  });
+
 
   const cartView = {
     count: $("#cart-count"),
@@ -328,12 +366,12 @@ export function initCartPage({
           const longitude = $("#delivery-longitude")?.value.trim() ?? "";
   
           if (!latitude || !longitude) {
-              showGpsRequiredError();
+              gps.showRequiredError();
               return;
           }
       }
   
-      hideGpsRequiredError();
+      gps.clearError();
   
       const rows = cart.entries().map((entry) => {
           const item = products.find(
@@ -545,7 +583,7 @@ export function initCartPage({
         latitudeInput?.value &&
         longitudeInput?.value
       ) {
-        setLocationStatus("success");
+        gps.resetStatus();
       }
   
       renderCart();
@@ -557,57 +595,6 @@ export function initCartPage({
         error,
       );
     }
-  }
-
-  function setLocationStatus(state = "idle") {
-    const button = $("#use-location-button");
-  
-    if (!button) return;
-  
-    const labels = {
-      idle: "Pilih lokasi GPS",
-      loading: "Sedang mencari lokasi",
-      success: "Lokasi berhasil dipilih",
-      error: "Gagal memilih lokasi, coba lagi",
-    };
-  
-    const label = labels[state] || labels.idle;
-  
-    button.setAttribute("aria-label", label);
-    button.title = label;
-    button.dataset.locationState = state;
-  }
-  
-  function showGpsRequiredError() {
-      const error = $("#delivery-gps-error");
-      const button = $("#use-location-button");
-  
-      if (error) {
-          error.hidden = false;
-      }
-  
-      if (button) {
-          button.dataset.locationState = "required";
-          button.setAttribute("aria-invalid", "true");
-  
-          button.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-          });
-      }
-  }
-  
-  function hideGpsRequiredError() {
-      const error = $("#delivery-gps-error");
-      const button = $("#use-location-button");
-  
-      if (error) {
-          error.hidden = true;
-      }
-  
-      if (button) {
-          button.removeAttribute("aria-invalid");
-      }
   }
 
   function toggleDeliveryFields() {
@@ -631,14 +618,10 @@ export function initCartPage({
           !isDelivery ||
           (latitude?.value && longitude?.value)
       ) {
-          hideGpsRequiredError();
+          gps.clearError();
       }
   
-      setLocationStatus(
-          latitude?.value && longitude?.value
-              ? "success"
-              : "idle",
-      );
+      gps.resetStatus();
   }
 
   function validMapsUrl(value) {
@@ -665,74 +648,6 @@ export function initCartPage({
       );
     } catch {
       return false;
-    }
-  }
-
-  async function useCurrentLocation() {
-    if (!navigator.geolocation) {
-      setLocationStatus("error");
-      showToast(
-        toast,
-        "Browser tidak mendukung akses lokasi.",
-      );
-      return;
-    }
-
-    const button = $("#use-location-button");
-
-    if (button) {
-      button.disabled = true;
-    }
-
-    setLocationStatus("loading");
-
-    try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0,
-          },
-        );
-      });
-
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-
-      $("#delivery-latitude").value = latitude.toFixed(7);
-      $("#delivery-longitude").value = longitude.toFixed(7);
-
-      $("#delivery-maps-url").value =
-          `https://maps.google.com/?q=${latitude},${longitude}`;
-      
-      hideGpsRequiredError();
-      
-      setLocationStatus("success");
-      renderCart();
-      
-    } catch (error) {
-      let message = "Lokasi tidak berhasil diperoleh.";
-
-      if (error?.code === 1) {
-        message =
-          "Izin lokasi ditolak. Aktifkan izin lokasi atau coba lagi.";
-      } else if (error?.code === 2) {
-        message =
-          "Lokasi tidak tersedia. Periksa GPS perangkat Anda.";
-      } else if (error?.code === 3) {
-        message =
-          "Pengambilan lokasi melewati batas waktu. Silakan coba lagi.";
-      }
-
-      setLocationStatus("error");
-      showToast(toast, message);
-    } finally {
-      if (button) {
-        button.disabled = false;
-      }
     }
   }
 
@@ -780,32 +695,50 @@ export function initCartPage({
   
       const deliveryLongitude =
           $("#delivery-longitude")?.value.trim() ?? "";
-  
-      if (
-          deliveryMethod === "delivery" &&
-          !product.store_free_delivery
-      ) {
+      
+      if (deliveryMethod === "delivery") {
           const buyerLat = Number(deliveryLatitude);
           const buyerLon = Number(deliveryLongitude);
-  
+
           if (!deliveryLatitude || !deliveryLongitude) {
+              gps.showRequiredError();
+
               showToast(
                   toast,
-                  "Pilih lokasi GPS pengantaran untuk menghitung ongkir.",
+                  "Atur lokasi GPS terlebih dahulu.",
               );
+
               return;
           }
-  
+
           if (
               !Number.isFinite(buyerLat) ||
               !Number.isFinite(buyerLon) ||
-              !Number.isFinite(product.store_latitude) ||
-              !Number.isFinite(product.store_longitude)
+              buyerLat < -90 ||
+              buyerLat > 90 ||
+              buyerLon < -180 ||
+              buyerLon > 180
           ) {
               showToast(
                   toast,
-                  "Lokasi warung atau pembeli belum valid. Periksa pengaturan lokasi.",
+                  "Koordinat lokasi pembeli tidak valid. Atur GPS kembali.",
               );
+
+              return;
+          }
+
+          if (
+              !product.store_free_delivery &&
+              (
+                  !Number.isFinite(Number(product.store_latitude)) ||
+                  !Number.isFinite(Number(product.store_longitude))
+              )
+          ) {
+              showToast(
+                  toast,
+                  "Lokasi warung belum valid. Periksa pengaturan lokasi warung.",
+              );
+
               return;
           }
       }
@@ -1144,11 +1077,6 @@ export function initCartPage({
   cartButton?.addEventListener("click", openCart);
   closeCartButton?.addEventListener("click", closeCart);
   $("#empty-cart-close")?.addEventListener("click", closeCart);
-
-  $("#use-location-button")?.addEventListener(
-    "click",
-    useCurrentLocation,
-  );
 
   fulfillmentInputs.forEach((input) => {
     input.addEventListener("change", () => {

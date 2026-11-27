@@ -258,6 +258,20 @@ if (
     ], 422);
 }
 
+if (
+    $deliveryMethod === 'delivery'
+    && (
+        $deliveryLatitude === null
+        || $deliveryLongitude === null
+    )
+) {
+    checkout_json([
+        'success' => false,
+        'message' => 'Lokasi GPS wajib diatur untuk pengantaran.',
+        'code' => 'GPS_REQUIRED',
+    ], 422);
+}
+
 /*
 |--------------------------------------------------------------------------
 | NORMALISASI KERANJANG
