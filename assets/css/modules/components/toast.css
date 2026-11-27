@@ -143,13 +143,11 @@
 
 .toast__progress {
     position: absolute;
-
     right: 0;
     bottom: 0;
     left: 0;
 
     height: 3px;
-
     overflow: hidden;
 
     background: #edf0f2;
@@ -167,19 +165,16 @@
 
     background: var(--toast-accent);
 
-    transform-origin: left center;
-
-    animation:
-        toast-progress var(--toast-duration) linear forwards;
+    animation: toast-progress var(--toast-duration) linear forwards;
 }
 
 @keyframes toast-progress {
     from {
-        transform: scaleX(1);
+        width: 100%;
     }
 
     to {
-        transform: scaleX(0);
+        width: 0%;
     }
 }
 
@@ -229,11 +224,20 @@
 @media (prefers-reduced-motion: reduce) {
     .toast,
     .toast.visible {
-        transition:
-            opacity 150ms ease;
+        transition: opacity 150ms ease;
     }
 
+    /*
+     * Progress tetap berjalan karena menunjukkan
+     * sisa waktu sebelum toast menghilang.
+     *
+     * Override aturan global responsive.css.
+     */
     .toast__progress-bar {
-        animation: none;
+        animation-name: toast-progress !important;
+        animation-duration: var(--toast-duration) !important;
+        animation-timing-function: linear !important;
+        animation-iteration-count: 1 !important;
+        animation-fill-mode: forwards !important;
     }
 }
