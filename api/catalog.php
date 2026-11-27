@@ -131,11 +131,11 @@ try {
         $params['store_id'] = $storeId;
     }
 
-    $sql .= '
+    $sql .= "
         ORDER BY
             s.name ASC,
             p.name ASC
-    ';
+    ";
 
     $productStmt = $db->prepare($sql);
     $productStmt->execute($params);
