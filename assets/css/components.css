@@ -10,7 +10,6 @@
    5. Badge produk
    6. Empty state
    7. Promosi penjual
-   8. Toast notification
    9. Gambar produk pada keranjang
 
    Catatan:
@@ -766,13 +765,6 @@
 }
 
 @media (max-width: 600px) {
-    .toast {
-        right: 12px;
-        bottom: max(12px, env(safe-area-inset-bottom));
-        max-width: calc(100vw - 24px);
-        padding: 13px;
-        border-radius: 14px;
-    }
 
     .app-confirm {
         border-radius: 20px;
@@ -798,7 +790,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .toast,
     .app-confirm__button {
         transition: none;
     }
@@ -1000,12 +991,6 @@
         width: 52px;
         height: 52px;
         flex-basis: 52px;
-    }
-
-    .toast {
-        right: 12px;
-        bottom: 12px;
-        max-width: calc(100% - 24px);
     }
 }
 

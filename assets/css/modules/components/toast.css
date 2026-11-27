@@ -1,7 +1,10 @@
 /* =========================================================
-   PESAN AJAH — GLOBAL TOAST COMPONENT
-
+   PESAN AJAH — GLOBAL TOAST
    File: assets/css/modules/components/toast.css
+   ========================================================= */
+
+/* =========================================================
+   1. TOAST CONTAINER
    ========================================================= */
 
 .toast {
@@ -18,17 +21,17 @@
     align-items: center;
     gap: 12px;
 
-    width: min(420px, calc(100vw - 32px));
+    width: min(420px, calc(100% - 32px));
     min-height: 68px;
 
     padding: 14px 16px 17px;
 
+    background: var(--white);
+    color: var(--text);
+
     border: 1px solid var(--border);
     border-left: 4px solid var(--toast-accent);
     border-radius: 14px;
-
-    background: var(--white);
-    color: var(--text);
 
     box-shadow:
         0 12px 35px rgb(15 23 42 / 12%),
@@ -42,12 +45,12 @@
 
     transition:
         opacity 250ms ease,
-        transform 350ms cubic-bezier(.2, .8, .2, 1),
-        visibility 250ms ease;
+        transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s linear 350ms;
 }
 
 /* =========================================================
-   NOTIFICATION TYPES
+   2. TOAST TYPES
    ========================================================= */
 
 .toast[data-type="success"] {
@@ -71,7 +74,7 @@
 }
 
 /* =========================================================
-   ANIMATION
+   3. VISIBLE STATE
    ========================================================= */
 
 .toast.visible {
@@ -80,10 +83,15 @@
     pointer-events: auto;
 
     transform: translate3d(-50%, 0, 0);
+
+    transition:
+        opacity 250ms ease,
+        transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        visibility 0s;
 }
 
 /* =========================================================
-   ICON
+   4. ICON
    ========================================================= */
 
 .toast__icon {
@@ -91,21 +99,22 @@
 
     width: 38px;
     height: 38px;
+
     flex: 0 0 38px;
 
     object-fit: contain;
 }
 
 /* =========================================================
-   CONTENT
+   5. CONTENT
    ========================================================= */
 
 .toast__content {
     display: flex;
-    min-width: 0;
     flex: 1;
-
     flex-direction: column;
+
+    min-width: 0;
     gap: 3px;
 }
 
@@ -128,7 +137,7 @@
 }
 
 /* =========================================================
-   PROGRESS BAR
+   6. PROGRESS BAR
    ========================================================= */
 
 .toast__progress {
@@ -162,8 +171,7 @@
     transform-origin: left center;
 
     animation:
-        toast-progress
-        var(--toast-duration) linear forwards;
+        toast-progress var(--toast-duration) linear forwards;
 }
 
 @keyframes toast-progress {
@@ -177,31 +185,50 @@
 }
 
 /* =========================================================
-   RESPONSIVE
+   7. MOBILE
    ========================================================= */
 
 @media (max-width: 480px) {
     .toast {
         top: max(12px, env(safe-area-inset-top));
 
-        width: calc(100vw - 24px);
+        width: calc(100% - 24px);
+        min-height: 64px;
 
         padding: 13px 14px 16px;
 
+        gap: 10px;
         border-radius: 12px;
+    }
+
+    .toast__icon {
+        width: 34px;
+        height: 34px;
+
+        flex-basis: 34px;
+    }
+
+    .toast__title {
+        font-size: 12px;
+    }
+
+    .toast__message {
+        font-size: 11px;
     }
 }
 
 /* =========================================================
-   ACCESSIBILITY
+   8. REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-    .toast {
-        transition: opacity 150ms ease;
+    .toast,
+    .toast.visible {
+        transition:
+            opacity 150ms ease;
     }
 
     .toast__progress-bar {
-        animation-duration: 0ms;
+        animation: none;
     }
 }
