@@ -68,6 +68,7 @@
 @import url("./pages/halaman-utama/index/main.css");
 
 /* 18. Style Module */
+@import url("./modules/components/toast.css");
 @import url("./modules/receipt.css");
 @import url("./modules/bottom-sheet.css");
 @import url("./modules/category.css");

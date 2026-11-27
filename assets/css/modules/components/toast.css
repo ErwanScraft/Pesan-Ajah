@@ -1,0 +1,207 @@
+/* =========================================================
+   PESAN AJAH — GLOBAL TOAST COMPONENT
+
+   File: assets/css/modules/components/toast.css
+   ========================================================= */
+
+.toast {
+    --toast-accent: #2563eb;
+    --toast-tint: #eff6ff;
+
+    position: fixed;
+    z-index: 10000;
+
+    top: max(16px, env(safe-area-inset-top));
+    left: 50%;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: min(420px, calc(100vw - 32px));
+    min-height: 68px;
+
+    padding: 14px 16px 17px;
+
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--toast-accent);
+    border-radius: 14px;
+
+    background: var(--white);
+    color: var(--text);
+
+    box-shadow:
+        0 12px 35px rgb(15 23 42 / 12%),
+        0 2px 8px rgb(15 23 42 / 5%);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: translate3d(-50%, -130%, 0);
+
+    transition:
+        opacity 250ms ease,
+        transform 350ms cubic-bezier(.2, .8, .2, 1),
+        visibility 250ms ease;
+}
+
+/* =========================================================
+   NOTIFICATION TYPES
+   ========================================================= */
+
+.toast[data-type="success"] {
+    --toast-accent: #16834a;
+    --toast-tint: #e8f7ee;
+}
+
+.toast[data-type="error"] {
+    --toast-accent: #c63737;
+    --toast-tint: #fcecec;
+}
+
+.toast[data-type="warning"] {
+    --toast-accent: #a96a00;
+    --toast-tint: #fff4d9;
+}
+
+.toast[data-type="info"] {
+    --toast-accent: #2563eb;
+    --toast-tint: #eff6ff;
+}
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+.toast.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translate3d(-50%, 0, 0);
+}
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.toast__icon {
+    display: block;
+
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.toast__content {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+
+    flex-direction: column;
+    gap: 3px;
+}
+
+.toast__title {
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.toast__message {
+    color: var(--muted);
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+
+.toast__progress {
+    position: absolute;
+
+    right: 12px;
+    bottom: 7px;
+    left: 12px;
+
+    height: 3px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+    background: var(--toast-tint);
+}
+
+.toast__progress[hidden] {
+    display: none;
+}
+
+.toast__progress-bar {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: inherit;
+    background: var(--toast-accent);
+
+    transform-origin: left center;
+
+    animation:
+        toast-progress
+        var(--toast-duration) linear forwards;
+}
+
+@keyframes toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .toast {
+        top: max(12px, env(safe-area-inset-top));
+
+        width: calc(100vw - 24px);
+
+        padding: 13px 14px 16px;
+
+        border-radius: 12px;
+    }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        transition: opacity 150ms ease;
+    }
+
+    .toast__progress-bar {
+        animation-duration: 0ms;
+    }
+}

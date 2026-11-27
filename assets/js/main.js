@@ -1,9 +1,12 @@
 import { products } from "./data/products.js";
 import { createCart } from "./modules/cart.js";
 import { createCatalog } from "./modules/catalog.js";
-import { showToast } from "./modules/toast.js";
 import { formatRupiah } from "./modules/format.js";
 import { initBuyerMenu } from "./modules/buyer-menu.js";
+import {
+  showToast,
+  confirmAction,
+} from "./modules/components/toast.js";
 
 import { initIndexPage } from "./pages/index/main.js";
 import { initCartPage } from "./pages/cart/main.js";

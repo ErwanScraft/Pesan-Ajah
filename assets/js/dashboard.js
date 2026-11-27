@@ -10,7 +10,7 @@ import {
 import {
   showToast,
   confirmAction,
-} from "./modules/toast.js";
+} from "./modules/components/toast.js";
 
 initErrorLogger();
 

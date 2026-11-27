@@ -1,24 +1,23 @@
-let timeoutId;
-let activeDialog = null;
-
 const notificationTypes = {
   success: {
-    icon: "✓",
+    icon: "/assets/images/icons/toast/success.svg",
     title: "Berhasil",
   },
   error: {
-    icon: "×",
+    icon: "/assets/images/icons/toast/error.svg",
     title: "Terjadi kesalahan",
   },
   warning: {
-    icon: "!",
+    icon: "/assets/images/icons/toast/warning.svg",
     title: "Perhatian",
   },
   info: {
-    icon: "i",
+    icon: "/assets/images/icons/toast/info.svg",
     title: "Informasi",
   },
 };
+
+let timeoutId;
 
 export function showToast(
   element,
@@ -35,10 +34,11 @@ export function showToast(
 
   element.replaceChildren();
 
-  const icon = document.createElement("span");
+  const icon = document.createElement("img");
   icon.className = "toast__icon";
+  icon.src = notification.icon;
+  icon.alt = "";
   icon.setAttribute("aria-hidden", "true");
-  icon.textContent = notification.icon;
 
   const content = document.createElement("div");
   content.className = "toast__content";
@@ -52,17 +52,42 @@ export function showToast(
   description.textContent = String(message);
 
   content.append(title, description);
-  element.append(icon, content);
+
+  const progress = document.createElement("div");
+  progress.className = "toast__progress";
+
+  const progressBar = document.createElement("span");
+  progressBar.className = "toast__progress-bar";
+
+  progress.append(progressBar);
+
+  element.append(icon, content, progress);
 
   element.dataset.type = type;
+
   element.setAttribute(
     "role",
     type === "error" ? "alert" : "status",
   );
+
   element.setAttribute(
     "aria-live",
     type === "error" ? "assertive" : "polite",
   );
+
+  if (duration > 0) {
+    progressBar.style.setProperty(
+      "--toast-duration",
+      `${duration}ms`,
+    );
+  } else {
+    progress.hidden = true;
+  }
+
+  element.classList.remove("visible");
+
+  // Memulai ulang animasi ketika notifikasi diganti.
+  void element.offsetWidth;
 
   element.classList.add("visible");
 
@@ -73,6 +98,8 @@ export function showToast(
     }, duration);
   }
 }
+
+let activeDialog = null;
 
 export function confirmAction({
   title = "Konfirmasi tindakan",
