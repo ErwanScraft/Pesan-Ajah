@@ -1,5 +1,5 @@
 import { createBottomSheet } from "../../modules/bottom-sheet.js";
-import { createGps } from "../../modules/component/gps.js";
+import { createGps } from "../../modules/components/gps.js";
 
 export function initCartPage({
   products,
