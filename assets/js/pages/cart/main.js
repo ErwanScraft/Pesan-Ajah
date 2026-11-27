@@ -75,6 +75,7 @@ export function initCartPage({
   let csrfToken = "";
   let catalogLoaded = false;
   let deliveryAvailable = null;
+  let activeStoreId = null;
 
   function selectedFulfillment() {
     return document.querySelector(
@@ -83,12 +84,13 @@ export function initCartPage({
   }
 
   function selectedStore() {
-    const entry = cart.entries()[0];
-
-    if (!entry) return null;
-
+    const entries = cart.entries(activeStoreId);
+  
+    if (!entries.length) return null;
+  
     return products.find(
-      (product) => Number(product.id) === entry.product_id,
+      (product) =>
+        Number(product.id) === Number(entries[0].product_id),
     ) ?? null;
   }
 
@@ -141,23 +143,23 @@ export function initCartPage({
   }
 
   function getDeliveryFee() {
-    if (cart.quantity() === 0) return 0;
+    if (cart.quantity(activeStoreId) === 0) return 0;
     if (selectedFulfillment() !== "delivery") return 0;
-
+  
     const product = selectedStore();
-
+  
     if (!product) return null;
     if (product.store_free_delivery) return 0;
-
+  
     const estimate = estimateDelivery(product);
-
+  
     if (!estimate) return null;
-
+  
     const discount = Math.min(
       Math.max(0, Number(product.store_delivery_discount) || 0),
       2000,
     );
-
+  
     return estimate.fee - discount;
   }
   
@@ -209,8 +211,8 @@ export function initCartPage({
     }
 
     const deliveryFee = getDeliveryFee();
-    const subtotal = cart.total();
-
+    const subtotal = cart.total(activeStoreId);
+    
     const product = selectedStore();
     const estimate = estimateDelivery(product);
     const deliveryOptionPrice = $("#delivery-option-price");
@@ -304,7 +306,7 @@ export function initCartPage({
 
     if (checkoutButton) {
       checkoutButton.disabled =
-        !catalogLoaded || cart.quantity() === 0;
+        !catalogLoaded || cart.quantity(activeStoreId) === 0;
     }
   }
 
@@ -312,27 +314,14 @@ export function initCartPage({
     const product = products.find(
       (item) => Number(item.id) === Number(productId),
     );
-
+  
     if (!product || !product.available) {
       showToast(toast, "Produk tidak tersedia.");
       return;
     }
-
-    const currentStore = selectedStore();
-
-    if (
-      currentStore &&
-      Number(currentStore.store_id) !== Number(product.store_id)
-    ) {
-      showToast(
-        toast,
-        "Keranjang hanya bisa berisi produk dari satu warung. Selesaikan atau kosongkan keranjang terlebih dahulu.",
-      );
-      return;
-    }
-
+  
     const addedProduct = cart.add(productId);
-
+  
     if (!addedProduct) {
       showToast(
         toast,
@@ -340,10 +329,10 @@ export function initCartPage({
       );
       return;
     }
-
+  
     onCatalogRender?.();
     renderCart();
-
+  
     showToast(
       toast,
       `${product.name} ditambahkan ke keranjang.`,
@@ -355,104 +344,118 @@ export function initCartPage({
   }
   
   function showConfirmation() {
-      if (cart.quantity() === 0) {
-          showToast(toast, "Keranjang masih kosong.");
-          return;
+    const entries = cart.entries(activeStoreId);
+  
+    if (entries.length === 0) {
+      showToast(toast, "Keranjang warung ini masih kosong.");
+      return;
+    }
+  
+    const product = selectedStore();
+  
+    if (!product) {
+      showToast(toast, "Warung pada keranjang tidak ditemukan.");
+      return;
+    }
+  
+    if (!product.store_is_open) {
+      showToast(toast, "Warung sedang tutup.");
+      return;
+    }
+  
+    // GPS wajib tersedia untuk semua pesanan Delivery.
+    if (selectedFulfillment() === "delivery") {
+      const latitude = $("#delivery-latitude")?.value.trim() ?? "";
+      const longitude = $("#delivery-longitude")?.value.trim() ?? "";
+  
+      if (!latitude || !longitude) {
+        gps.showRequiredError();
+        return;
       }
+    }
   
-      // GPS wajib tersedia untuk semua pesanan Delivery.
-      if (selectedFulfillment() === "delivery") {
-          const latitude = $("#delivery-latitude")?.value.trim() ?? "";
-          const longitude = $("#delivery-longitude")?.value.trim() ?? "";
+    gps.clearError();
   
-          if (!latitude || !longitude) {
-              gps.showRequiredError();
-              return;
-          }
-      }
+    const rows = entries.map((entry) => {
+      const item = products.find(
+        (product) =>
+          Number(product.id) === Number(entry.product_id),
+      );
   
-      gps.clearError();
+      const quantity = Number(entry.quantity) || 0;
+      const price = Number(item?.price) || 0;
+      const variant = String(item?.variant || "").trim();
   
-      const rows = cart.entries().map((entry) => {
-          const item = products.find(
-              (product) =>
-                  Number(product.id) === Number(entry.product_id),
-          );
+      return {
+        name: item?.name || "Produk",
+        variant,
+        quantity,
+        price,
+        total: quantity * price,
+      };
+    });
   
-          const quantity = Number(entry.quantity) || 0;
-          const price = Number(item?.price) || 0;
-          const variant = String(item?.variant || "").trim();
+    confirmationItems.replaceChildren();
   
-          return {
-              name: item?.name || "Produk",
-              variant,
-              quantity,
-              price,
-              total: quantity * price,
-          };
-      });
+    rows.forEach((item) => {
+      const row = document.createElement("tr");
   
-      confirmationItems.replaceChildren();
+      const nameCell = document.createElement("td");
+      nameCell.textContent = item.variant
+        ? `${item.name} (${item.variant})`
+        : item.name;
   
-      rows.forEach((item) => {
-          const row = document.createElement("tr");
+      const quantityCell = document.createElement("td");
+      quantityCell.textContent = String(item.quantity);
   
-          const nameCell = document.createElement("td");
-          nameCell.textContent = item.variant
-              ? `${item.name} (${item.variant})`
-              : item.name;
+      const priceCell = document.createElement("td");
+      priceCell.textContent = formatRupiah(item.price);
   
-          const quantityCell = document.createElement("td");
-          quantityCell.textContent = String(item.quantity);
+      const totalCell = document.createElement("td");
+      totalCell.textContent = formatRupiah(item.total);
   
-          const priceCell = document.createElement("td");
-          priceCell.textContent = formatRupiah(item.price);
+      row.append(
+        nameCell,
+        quantityCell,
+        priceCell,
+        totalCell,
+      );
   
-          const totalCell = document.createElement("td");
-          totalCell.textContent = formatRupiah(item.total);
+      confirmationItems.append(row);
+    });
   
-          row.append(
-              nameCell,
-              quantityCell,
-              priceCell,
-              totalCell,
-          );
+    const subtotal = cart.total(activeStoreId);
+    const deliveryFee = getDeliveryFee();
+    const isDelivery = selectedFulfillment() === "delivery";
   
-          confirmationItems.append(row);
-      });
+    $("#confirmation-subtotal").textContent =
+      formatRupiah(subtotal);
   
-      const subtotal = cart.total();
-      const deliveryFee = getDeliveryFee();
-      const isDelivery = selectedFulfillment() === "delivery";
+    $("#confirmation-delivery-fee").textContent =
+      deliveryFee === null
+        ? "Belum dihitung"
+        : formatRupiah(deliveryFee);
   
-      $("#confirmation-subtotal").textContent =
-          formatRupiah(subtotal);
+    $("#confirmation-total-label").textContent =
+      deliveryFee === null
+        ? "Total sementara"
+        : "Total Pesanan";
   
-      $("#confirmation-delivery-fee").textContent =
-          deliveryFee === null
-              ? "Belum dihitung"
-              : formatRupiah(deliveryFee);
+    $("#confirmation-total").textContent =
+      deliveryFee === null
+        ? "Menunggu lokasi"
+        : formatRupiah(subtotal + deliveryFee);
   
-      $("#confirmation-total-label").textContent =
-          deliveryFee === null
-              ? "Total sementara"
-              : "Total Pesanan";
+    $("#confirmation-delivery-note").hidden =
+      !isDelivery || deliveryFee !== null;
   
-      $("#confirmation-total").textContent =
-          deliveryFee === null
-              ? "Menunggu lokasi"
-              : formatRupiah(subtotal + deliveryFee);
+    cartFooter.hidden = true;
+    confirmationPanel.hidden = false;
+    successPanel.hidden = true;
   
-      $("#confirmation-delivery-note").hidden =
-          !isDelivery || deliveryFee !== null;
+    $("#cart-empty").hidden = true;
   
-      cartFooter.hidden = true;
-      confirmationPanel.hidden = false;
-      successPanel.hidden = true;
-  
-      $("#cart-empty").hidden = true;
-  
-      setSheetTitle("Konfirmasi Pesanan");
+    setSheetTitle("Konfirmasi Pesanan");
   }
   
   function showCartEditor() {
@@ -652,9 +655,11 @@ export function initCartPage({
   }
 
   async function submitCheckout() {
-      if (cart.quantity() === 0) {
-          showToast(toast, "Keranjang masih kosong.");
-          return;
+      const checkoutEntries = cart.entries(activeStoreId);
+      
+      if (checkoutEntries.length === 0) {
+        showToast(toast, "Keranjang warung ini masih kosong.");
+        return;
       }
   
       const product = selectedStore();
@@ -823,7 +828,7 @@ export function initCartPage({
               delivery_longitude:
                   deliveryMethod === "delivery" ? deliveryLongitude : "",
   
-              items: cart.entries(),
+              items: checkoutEntries,
           };
   
           /*
@@ -1042,7 +1047,9 @@ export function initCartPage({
               );
           }
   
-          cart.clear();
+          cart.clearStore(activeStoreId);
+          
+          activeStoreId = null;
           
           renderCart();
           onCatalogRender?.();
@@ -1092,12 +1099,38 @@ export function initCartPage({
   cartItems?.addEventListener("click", (event) => {
     const addButton = event.target.closest("[data-add]");
     const removeButton = event.target.closest("[data-remove]");
-
+    const checkoutStoreButton = event.target.closest(
+      "[data-checkout-store]",
+    );
+  
+    if (checkoutStoreButton) {
+      activeStoreId = Number(
+        checkoutStoreButton.dataset.checkoutStore,
+      );
+  
+      if (!Number.isSafeInteger(activeStoreId) || activeStoreId <= 0) {
+        activeStoreId = null;
+        showToast(toast, "Warung tidak valid.");
+        return;
+      }
+  
+      const product = selectedStore();
+  
+      if (!product || !product.store_is_open) {
+        showToast(toast, "Warung sedang tutup.");
+        return;
+      }
+  
+      renderCart();
+      showConfirmation();
+      return;
+    }
+  
     if (addButton) {
       addToCart(Number(addButton.dataset.add));
       return;
     }
-
+  
     if (removeButton) {
       cart.change(Number(removeButton.dataset.remove), -1);
       onCatalogRender?.();
@@ -1105,25 +1138,40 @@ export function initCartPage({
     }
   });
 
-  checkoutButton?.addEventListener("click", showConfirmation);
+  checkoutButton?.addEventListener("click", () => {
+    const firstEntry = cart.entries()[0];
   
-  $("#edit-cart-button")?.addEventListener(
-      "click",
-      showCartEditor,
-  );
+    if (!firstEntry) {
+      showToast(toast, "Keranjang masih kosong.");
+      return;
+    }
+  
+    const product = products.find(
+      (item) => Number(item.id) === firstEntry.product_id,
+    );
+  
+    activeStoreId = Number(product?.store_id) || null;
+  
+    renderCart();
+    showConfirmation();
+  });
+  
+  $("#edit-cart-button")?.addEventListener("click", () => {
+    showCartEditor();
+    renderCart();
+  });
   
   $("#confirm-order-button")?.addEventListener(
       "click",
       submitCheckout,
   );
   
-  $("#success-back-button")?.addEventListener(
-      "click",
-      () => {
-          showCartEditor();
-          closeCart();
-      },
-  );
+  $("#success-back-button")?.addEventListener("click", () => {
+    activeStoreId = null;
+    showCartEditor();
+    renderCart();
+    closeCart();
+  });
 
   renderCart();
 
