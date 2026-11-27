@@ -225,38 +225,38 @@
                                 type="text"
                                 id="delivery-address"
                                 name="delivery_address"
-                                placeholder="Detail alamat / rumah"
+                                placeholder="Detail tempat / rumah"
                                 maxlength="255"
                             >
-            
+                        
                             <button
                                 type="button"
                                 id="use-location-button"
                                 aria-label="Gunakan lokasi GPS"
                                 title="Gunakan lokasi GPS"
                             >
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     width="21" height="21"
-                                     aria-hidden="true">
-                                    <path
-                                        d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                    />
-                                    <circle
-                                        cx="12"
-                                        cy="9"
-                                        r="2.5"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                    />
-                                </svg>
+                                <img
+                                    src="/assets/images/icons/location.svg"
+                                    alt=""
+                                    width="21"
+                                    height="21"
+                                >
                             </button>
                         </div>
-            
+                        
+                        <p
+                            id="delivery-gps-error"
+                            class="delivery-gps-error"
+                            role="alert"
+                            hidden
+                        >
+                            Atur GPS terlebih dahulu.
+                        </p>
+                        
                         <input type="hidden" id="delivery-maps-url">
                         <input type="hidden" id="delivery-latitude">
                         <input type="hidden" id="delivery-longitude">
+                        
                     </div>
             
                 </section>

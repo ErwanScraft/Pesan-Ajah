@@ -322,6 +322,19 @@ export function initCartPage({
           return;
       }
   
+      // GPS wajib tersedia untuk semua pesanan Delivery.
+      if (selectedFulfillment() === "delivery") {
+          const latitude = $("#delivery-latitude")?.value.trim() ?? "";
+          const longitude = $("#delivery-longitude")?.value.trim() ?? "";
+  
+          if (!latitude || !longitude) {
+              showGpsRequiredError();
+              return;
+          }
+      }
+  
+      hideGpsRequiredError();
+  
       const rows = cart.entries().map((entry) => {
           const item = products.find(
               (product) =>
@@ -564,29 +577,68 @@ export function initCartPage({
     button.title = label;
     button.dataset.locationState = state;
   }
+  
+  function showGpsRequiredError() {
+      const error = $("#delivery-gps-error");
+      const button = $("#use-location-button");
+  
+      if (error) {
+          error.hidden = false;
+      }
+  
+      if (button) {
+          button.dataset.locationState = "required";
+          button.setAttribute("aria-invalid", "true");
+  
+          button.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+          });
+      }
+  }
+  
+  function hideGpsRequiredError() {
+      const error = $("#delivery-gps-error");
+      const button = $("#use-location-button");
+  
+      if (error) {
+          error.hidden = true;
+      }
+  
+      if (button) {
+          button.removeAttribute("aria-invalid");
+      }
+  }
 
   function toggleDeliveryFields() {
-    const section = $("#delivery-address-section");
-    const phoneField = $("#buyer-phone-field");
-    const isDelivery = selectedFulfillment() === "delivery";
-
-    if (section) section.hidden = !isDelivery;
-    if (phoneField) phoneField.hidden = !isDelivery;
-
-    const address = $("#delivery-address");
-
-    if (address) {
-      address.required = false;
-    }
-
-    const latitude = $("#delivery-latitude");
-    const longitude = $("#delivery-longitude");
-    
-    setLocationStatus(
-      latitude?.value && longitude?.value
-        ? "success"
-        : "idle",
-    );
+      const section = $("#delivery-address-section");
+      const phoneField = $("#buyer-phone-field");
+      const isDelivery = selectedFulfillment() === "delivery";
+  
+      if (section) section.hidden = !isDelivery;
+      if (phoneField) phoneField.hidden = !isDelivery;
+  
+      const address = $("#delivery-address");
+  
+      if (address) {
+          address.required = false;
+      }
+  
+      const latitude = $("#delivery-latitude");
+      const longitude = $("#delivery-longitude");
+  
+      if (
+          !isDelivery ||
+          (latitude?.value && longitude?.value)
+      ) {
+          hideGpsRequiredError();
+      }
+  
+      setLocationStatus(
+          latitude?.value && longitude?.value
+              ? "success"
+              : "idle",
+      );
   }
 
   function validMapsUrl(value) {
@@ -654,10 +706,13 @@ export function initCartPage({
       $("#delivery-longitude").value = longitude.toFixed(7);
 
       $("#delivery-maps-url").value =
-        `https://maps.google.com/?q=${latitude},${longitude}`;
-
+          `https://maps.google.com/?q=${latitude},${longitude}`;
+      
+      hideGpsRequiredError();
+      
       setLocationStatus("success");
       renderCart();
+      
     } catch (error) {
       let message = "Lokasi tidak berhasil diperoleh.";
 
