@@ -84,6 +84,92 @@ export function initCartPage({
   let activeCartStage = "selection";
   let openCheckoutAfterCartClose = false;
   let reopenCartAfterCheckoutClose = false;
+  
+  async function loadCsrfToken() {
+    const response = await fetch("/api/csrf.php", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    let result;
+
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error(
+        "Gagal mengambil token keamanan. Muat ulang halaman.",
+      );
+    }
+
+    if (
+      !response.ok ||
+      !result.success ||
+      typeof result.csrf_token !== "string" ||
+      !result.csrf_token
+    ) {
+      throw new Error(
+        result.message || "Token keamanan tidak tersedia. Coba kembali.",
+      );
+    }
+
+    csrfToken = result.csrf_token;
+
+    return csrfToken;
+  }
+  
+  async function sendCheckoutRequest(payload) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (!csrfToken) {
+        await loadCsrfToken();
+      }
+
+      payload._token = csrfToken;
+
+      const response = await fetch("/api/checkout.php", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let result;
+
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error(
+          "Respons server tidak valid. Silakan coba kembali.",
+        );
+      }
+
+      // Token kedaluwarsa atau tidak cocok: ambil token baru.
+      if (response.status === 419 && attempt === 0) {
+        csrfToken = "";
+        await loadCsrfToken();
+        continue;
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "Checkout gagal diproses.",
+        );
+      }
+
+      return result;
+    }
+
+    throw new Error(
+      "Sesi checkout tidak valid. Muat ulang halaman.",
+    );
+  }
 
   function selectedFulfillment() {
     return document.querySelector(
@@ -953,12 +1039,8 @@ export function initCartPage({
       const orderStorageKey = "pesan_ajah_order_tokens";
   
       try {
-          if (!csrfToken) {
-              await loadCsrfToken();
-          }
-  
           const payload = {
-              _token: csrfToken,
+              _token: "",
               store_id: product.store_id,
               buyer_name: buyerName,
               buyer_phone: buyerPhone,
@@ -1022,26 +1104,7 @@ export function initCartPage({
                   whatsapp_url: pendingOrder.whatsapp_url,
               };
           } else {
-              const response = await fetch("/api/checkout.php", {
-                  method: "POST",
-                  credentials: "same-origin",
-                  cache: "no-store",
-                  headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(payload),
-              });
-  
-              const checkoutResult = await response.json();
-  
-              if (!response.ok || !checkoutResult.success) {
-                  throw new Error(
-                      checkoutResult.message || "Checkout gagal diproses.",
-                  );
-              }
-  
-              result = checkoutResult;
+              result = await sendCheckoutRequest(payload);
           }
   
           if (
